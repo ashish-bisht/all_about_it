@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0e27">
     <title>DSA Arena | Level Up Your Skills</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -35,6 +38,11 @@
             color: var(--text-main);
             min-height: 100vh;
             overflow-x: hidden;
+            /* Safe area insets for iPhone notch */
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
         }
 
         /* Animated Background Stars */
@@ -721,13 +729,342 @@
             color: var(--game-accent);
         }
 
-        /* Mobile Responsive */
+        /* Mobile Responsive - Optimized for iPhone 16 Pro & Samsung S23 Ultra */
         @media (max-width: 768px) {
-            .question-title { font-size: 1.5rem; }
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
-            .game-modes { grid-template-columns: 1fr; }
-            .question-card { padding: 25px; }
-            .combo-display { font-size: 3rem; }
+            /* Navbar adjustments */
+            .nav-top {
+                flex-direction: row;
+                gap: 10px;
+            }
+            
+            .nav-logo {
+                font-size: 1.2rem;
+            }
+            
+            .nav-logo i {
+                font-size: 1.3rem;
+            }
+            
+            .level-badge {
+                padding: 6px 12px;
+                font-size: 0.9rem;
+            }
+            
+            .xp-text {
+                font-size: 0.7rem;
+            }
+            
+            /* Container spacing */
+            .container {
+                padding: 0 15px;
+                margin: 15px auto;
+            }
+            
+            /* Game modes - single column */
+            .game-modes {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .mode-card {
+                padding: 20px;
+            }
+            
+            .mode-icon {
+                font-size: 2.5rem;
+            }
+            
+            .mode-title {
+                font-size: 1.15rem;
+            }
+            
+            .mode-desc {
+                font-size: 0.85rem;
+            }
+            
+            /* Stats grid - 2 columns on mobile */
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+                margin-bottom: 20px;
+            }
+            
+            .stat-card {
+                padding: 15px 10px;
+            }
+            
+            .stat-icon {
+                font-size: 1.5rem;
+                margin-bottom: 8px;
+            }
+            
+            .stat-value {
+                font-size: 2rem;
+            }
+            
+            .stat-label {
+                font-size: 0.7rem;
+            }
+            
+            /* Power-ups */
+            .powerups {
+                flex-wrap: wrap;
+                gap: 8px;
+                margin-bottom: 15px;
+            }
+            
+            .powerup-btn {
+                padding: 10px 15px;
+                font-size: 0.85rem;
+                flex: 1;
+                min-width: calc(50% - 4px);
+            }
+            
+            .powerup-count {
+                padding: 2px 6px;
+                font-size: 0.75rem;
+            }
+            
+            /* Question card */
+            .question-card {
+                padding: 20px 15px;
+                min-height: auto;
+                margin-bottom: 20px;
+            }
+            
+            .question-header {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+                margin-bottom: 20px;
+            }
+            
+            .timer {
+                font-size: 1.5rem;
+                align-self: flex-end;
+            }
+            
+            .difficulty-badge {
+                padding: 6px 12px;
+                font-size: 0.75rem;
+            }
+            
+            .question-title {
+                font-size: 1.4rem;
+                margin-bottom: 15px;
+                line-height: 1.4;
+            }
+            
+            .question-description {
+                font-size: 0.95rem;
+                line-height: 1.6;
+                margin-bottom: 20px;
+            }
+            
+            /* Answer options */
+            .answer-options {
+                gap: 12px;
+            }
+            
+            .answer-btn {
+                padding: 15px 18px;
+                font-size: 0.95rem;
+            }
+            
+            .answer-btn:hover {
+                transform: translateX(5px);
+            }
+            
+            .option-letter {
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
+            }
+            
+            /* Explanation box */
+            .explanation-box {
+                padding: 20px 15px;
+                margin-top: 20px;
+            }
+            
+            .explanation-title {
+                font-size: 1rem;
+                margin-bottom: 12px;
+            }
+            
+            .explanation-text {
+                font-size: 0.95rem;
+                line-height: 1.7;
+            }
+            
+            /* Action buttons */
+            .action-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .btn {
+                padding: 14px 25px;
+                font-size: 0.95rem;
+                width: 100%;
+                justify-content: center;
+            }
+            
+            /* Achievement toast */
+            .achievement-toast {
+                top: 80px;
+                right: 10px;
+                left: 10px;
+                padding: 15px 20px;
+                max-width: calc(100% - 20px);
+            }
+            
+            .achievement-icon {
+                font-size: 2rem;
+            }
+            
+            .achievement-text h4 {
+                font-size: 1rem;
+            }
+            
+            .achievement-text p {
+                font-size: 0.85rem;
+            }
+            
+            /* Combo display */
+            .combo-display {
+                font-size: 3rem;
+            }
+            
+            /* Leaderboard */
+            .leaderboard {
+                padding: 20px 15px;
+                margin-top: 20px;
+            }
+            
+            .leaderboard-title {
+                font-size: 1.5rem;
+                margin-bottom: 15px;
+            }
+            
+            .leaderboard-entry {
+                padding: 12px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .leaderboard-rank {
+                font-size: 1.2rem;
+                width: 40px;
+            }
+            
+            .leaderboard-score {
+                font-size: 1rem;
+            }
+        }
+        
+        /* Extra small devices (iPhone SE, small Androids) */
+        @media (max-width: 390px) {
+            .nav-logo {
+                font-size: 1rem;
+            }
+            
+            .level-badge {
+                font-size: 0.8rem;
+                padding: 5px 10px;
+            }
+            
+            .question-title {
+                font-size: 1.2rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .stat-value {
+                font-size: 1.8rem;
+            }
+            
+            .mode-icon {
+                font-size: 2rem;
+            }
+            
+            .answer-btn {
+                padding: 12px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .option-letter {
+                width: 32px;
+                height: 32px;
+                font-size: 0.9rem;
+            }
+        }
+        
+        /* Landscape mode fixes */
+        @media (max-height: 600px) and (orientation: landscape) {
+            .question-card {
+                min-height: auto;
+                max-height: 70vh;
+                overflow-y: auto;
+            }
+            
+            .question-title {
+                font-size: 1.2rem;
+            }
+            
+            .question-description {
+                font-size: 0.9rem;
+            }
+            
+            .answer-options {
+                gap: 8px;
+            }
+            
+            .answer-btn {
+                padding: 10px 15px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 8px;
+            }
+            
+            .stat-card {
+                padding: 10px;
+            }
+            
+            .stat-value {
+                font-size: 1.5rem;
+            }
+        }
+        
+        /* Smooth scrolling for mobile */
+        @media (max-width: 768px) {
+            html {
+                scroll-behavior: smooth;
+            }
+            
+            body {
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            /* Prevent text selection on buttons */
+            .btn, .answer-btn, .powerup-btn, .mode-card {
+                -webkit-tap-highlight-color: transparent;
+                -webkit-touch-callout: none;
+                -webkit-user-select: none;
+                user-select: none;
+            }
+            
+            /* Better touch targets */
+            .answer-btn {
+                min-height: 60px;
+            }
+            
+            .powerup-btn {
+                min-height: 48px;
+            }
         }
     </style>
 </head>
