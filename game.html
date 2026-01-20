@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DSA Arena | Level Up Your Skills</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-dark: #0a0e27;
+            --bg-card: #1a1f3a;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #818cf8;
+            --success: #34d399;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --gold: #fbbf24;
+            --game-accent: #f472b6;
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background Stars */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        /* Navbar with XP Bar */
+        .navbar {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .nav-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .nav-logo {
+            font-weight: 900;
+            font-size: 1.5rem;
+            color: var(--text-main);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-logo i {
+            color: var(--game-accent);
+            font-size: 1.8rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .level-badge {
+            background: linear-gradient(135deg, var(--gold), #f59e0b);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .xp-bar-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .xp-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--game-accent), var(--primary));
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px var(--game-accent);
+        }
+
+        .xp-text {
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1100px;
+            margin: 20px auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Game Modes Selection */
+        .game-modes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .mode-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 2px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mode-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--game-accent), var(--primary));
+        }
+
+        .mode-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--game-accent);
+            box-shadow: 0 10px 40px rgba(244, 114, 182, 0.3);
+        }
+
+        .mode-card.active {
+            border-color: var(--game-accent);
+            background: rgba(244, 114, 182, 0.1);
+        }
+
+        .mode-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .mode-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .mode-desc {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Stats Dashboard */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+        }
+
+        .stat-card.streak::before { background: linear-gradient(90deg, #ef4444, #f59e0b); }
+        .stat-card.score::before { background: linear-gradient(90deg, #34d399, #10b981); }
+        .stat-card.combo::before { background: linear-gradient(90deg, #818cf8, #6366f1); }
+        .stat-card.time::before { background: linear-gradient(90deg, #f472b6, #ec4899); }
+
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            opacity: 0.8;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Question Card */
+        .question-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 2px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 30px;
+            position: relative;
+            min-height: 450px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .timer {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--warning);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: timerPulse 1s infinite;
+        }
+
+        @keyframes timerPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .timer.danger {
+            color: var(--danger);
+            animation: timerDanger 0.5s infinite;
+        }
+
+        @keyframes timerDanger {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); color: #ff6b6b; }
+        }
+
+        .difficulty-badge {
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .must-do {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+
+        .good-do {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+            border: 1px solid #f59e0b;
+        }
+
+        .bonus {
+            background: rgba(52, 211, 153, 0.2);
+            color: #34d399;
+            border: 1px solid #34d399;
+        }
+
+        .question-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            line-height: 1.3;
+            background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .question-description {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+
+        /* Answer Options */
+        .answer-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: auto;
+        }
+
+        .answer-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid var(--glass-border);
+            padding: 20px 25px;
+            border-radius: 16px;
+            color: var(--text-main);
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .answer-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .answer-btn:hover::before {
+            left: 100%;
+        }
+
+        .answer-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--game-accent);
+            transform: translateX(10px);
+        }
+
+        .answer-btn.correct {
+            background: rgba(52, 211, 153, 0.2);
+            border-color: var(--success);
+            animation: correctAnim 0.6s ease;
+        }
+
+        .answer-btn.wrong {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: var(--danger);
+            animation: wrongAnim 0.6s ease;
+        }
+
+        @keyframes correctAnim {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        @keyframes wrongAnim {
+            0%, 100% { transform: translateX(0); }
+            25%, 75% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+        }
+
+        .answer-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .option-letter {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .answer-btn.correct .option-letter {
+            background: var(--success);
+            color: white;
+        }
+
+        .answer-btn.wrong .option-letter {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Power-ups */
+        .powerups {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .powerup-btn {
+            background: rgba(251, 191, 36, 0.2);
+            border: 2px solid var(--gold);
+            padding: 12px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+        .powerup-btn:hover:not(.disabled) {
+            background: rgba(251, 191, 36, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(251, 191, 36, 0.4);
+        }
+
+        .powerup-btn.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .powerup-count {
+            background: var(--gold);
+            color: #0a0e27;
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 900;
+        }
+
+        /* Explanation Box */
+        .explanation-box {
+            background: linear-gradient(135deg, rgba(52, 211, 153, 0.1), rgba(16, 185, 129, 0.1));
+            border: 2px solid var(--success);
+            border-radius: 20px;
+            padding: 25px;
+            margin-top: 25px;
+            display: none;
+        }
+
+        .explanation-box.show {
+            display: block;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .explanation-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--success);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .explanation-text {
+            color: var(--text-main);
+            line-height: 1.8;
+            font-size: 1.05rem;
+        }
+
+        /* Achievements Toast */
+        .achievement-toast {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--gold), #f59e0b);
+            padding: 20px 25px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(251, 191, 36, 0.5);
+            display: none;
+            z-index: 1000;
+            animation: slideInRight 0.5s ease;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .achievement-toast.show {
+            display: block;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+            }
+            to {
+                transform: translateX(0);
+            }
+        }
+
+        .achievement-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .achievement-icon {
+            font-size: 2.5rem;
+        }
+
+        .achievement-text h4 {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #0a0e27;
+            margin-bottom: 5px;
+        }
+
+        .achievement-text p {
+            font-size: 0.9rem;
+            color: rgba(10, 14, 39, 0.8);
+        }
+
+        /* Combo Multiplier */
+        .combo-display {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 5rem;
+            font-weight: 900;
+            color: var(--game-accent);
+            text-shadow: 0 0 30px var(--game-accent);
+            display: none;
+            z-index: 999;
+            animation: comboAnim 1s ease;
+        }
+
+        .combo-display.show {
+            display: block;
+        }
+
+        @keyframes comboAnim {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0;
+            }
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 35px;
+            border-radius: 14px;
+            font-size: 1.05rem;
+            font-weight: 800;
+            cursor: pointer;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--game-accent), #ec4899);
+            color: white;
+            box-shadow: 0 4px 20px rgba(244, 114, 182, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 30px rgba(244, 114, 182, 0.6);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            border: 2px solid var(--glass-border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--primary);
+        }
+
+        /* Leaderboard */
+        .leaderboard {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 2px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 30px;
+        }
+
+        .leaderboard-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            text-align: center;
+            background: linear-gradient(135deg, var(--gold), #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .leaderboard-entry {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--glass-border);
+        }
+
+        .leaderboard-entry.rank-1 {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.2));
+            border-color: var(--gold);
+        }
+
+        .leaderboard-rank {
+            font-size: 1.5rem;
+            font-weight: 900;
+            width: 50px;
+        }
+
+        .leaderboard-name {
+            flex: 1;
+            font-weight: 700;
+        }
+
+        .leaderboard-score {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--game-accent);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .question-title { font-size: 1.5rem; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .game-modes { grid-template-columns: 1fr; }
+            .question-card { padding: 25px; }
+            .combo-display { font-size: 3rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Animated Background -->
+    <div class="stars" id="stars"></div>
+
+    <!-- Achievement Toast -->
+    <div class="achievement-toast" id="achievement-toast">
+        <div class="achievement-content">
+            <div class="achievement-icon">🏆</div>
+            <div class="achievement-text">
+                <h4 id="achievement-title">Achievement Unlocked!</h4>
+                <p id="achievement-desc">Keep going!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Combo Display -->
+    <div class="combo-display" id="combo-display">5X COMBO!</div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="nav-top">
+                <a href="index.html" class="nav-logo">
+                    <i class="fas fa-fire"></i> DSA ARENA
+                </a>
+                <div class="level-badge">
+                    <i class="fas fa-star"></i>
+                    <span>Level <span id="player-level">1</span></span>
+                </div>
+            </div>
+            <div class="xp-bar-container">
+                <div class="xp-bar" id="xp-bar" style="width: 0%"></div>
+            </div>
+            <div class="xp-text"><span id="current-xp">0</span> / <span id="next-level-xp">100</span> XP</div>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <!-- Game Mode Selection -->
+        <div id="mode-select-screen">
+            <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 30px; background: linear-gradient(135deg, var(--game-accent), var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                Choose Your Battle Mode
+            </h2>
+            
+            <div class="game-modes">
+                <div class="mode-card" onclick="selectMode('speed')">
+                    <div class="mode-icon">⚡</div>
+                    <div class="mode-title">Speed Run</div>
+                    <div class="mode-desc">Race against time! 30 seconds per question. +50 XP per correct answer.</div>
+                </div>
+                
+                <div class="mode-card" onclick="selectMode('survival')">
+                    <div class="mode-icon">💀</div>
+                    <div class="mode-title">Survival Mode</div>
+                    <div class="mode-desc">3 lives. One wrong answer = lose a life. How far can you go? +100 XP per question.</div>
+                </div>
+                
+                <div class="mode-card" onclick="selectMode('practice')">
+                    <div class="mode-icon">🎯</div>
+                    <div class="mode-title">Practice Mode</div>
+                    <div class="mode-desc">No pressure. Learn at your own pace. Unlimited time. +25 XP per question.</div>
+                </div>
+                
+                <div class="mode-card" onclick="selectMode('boss')">
+                    <div class="mode-icon">👹</div>
+                    <div class="mode-title">Boss Rush</div>
+                    <div class="mode-desc">Only HARD questions. For experts only. +200 XP per question!</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen" style="display: none;">
+            
+            <!-- Stats Dashboard -->
+            <div class="stats-grid">
+                <div class="stat-card streak">
+                    <div class="stat-icon">🔥</div>
+                    <div class="stat-value" id="streak-value">0</div>
+                    <div class="stat-label">Streak</div>
+                </div>
+                <div class="stat-card score">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-value" id="score-value">0</div>
+                    <div class="stat-label">Score</div>
+                </div>
+                <div class="stat-card combo">
+                    <div class="stat-icon">⚡</div>
+                    <div class="stat-value" id="combo-value">1x</div>
+                    <div class="stat-label">Multiplier</div>
+                </div>
+                <div class="stat-card time" id="lives-card" style="display: none;">
+                    <div class="stat-icon">❤️</div>
+                    <div class="stat-value" id="lives-value">3</div>
+                    <div class="stat-label">Lives</div>
+                </div>
+            </div>
+
+            <!-- Power-ups -->
+            <div class="powerups">
+                <button class="powerup-btn" id="fifty-fifty-btn" onclick="usePowerup('fifty')" title="Remove 2 wrong answers">
+                    <i class="fas fa-fire"></i>
+                    50:50
+                    <span class="powerup-count" id="fifty-count">3</span>
+                </button>
+                <button class="powerup-btn" id="skip-btn" onclick="usePowerup('skip')" title="Skip this question">
+                    <i class="fas fa-forward"></i>
+                    Skip
+                    <span class="powerup-count" id="skip-count">2</span>
+                </button>
+                <button class="powerup-btn" id="time-btn" onclick="usePowerup('time')" title="Add 15 seconds" style="display: none;">
+                    <i class="fas fa-clock"></i>
+                    +15s
+                    <span class="powerup-count" id="time-count">2</span>
+                </button>
+            </div>
+
+            <!-- Question Card -->
+            <div class="question-card">
+                <div class="question-header">
+                    <div class="difficulty-badge must-do" id="difficulty-badge">Must Do</div>
+                    <div class="timer" id="timer" style="display: none;">
+                        <i class="fas fa-clock"></i>
+                        <span id="time-left">30</span>s
+                    </div>
+                </div>
+
+                <h2 class="question-title" id="question-title"></h2>
+                <p class="question-description" id="question-description"></p>
+
+                <div class="answer-options" id="answer-options"></div>
+
+                <div class="explanation-box" id="explanation">
+                    <div class="explanation-title">
+                        <i class="fas fa-lightbulb"></i> Why This Works
+                    </div>
+                    <div class="explanation-text" id="explanation-text"></div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-secondary" onclick="nextQuestion()">
+                    <i class="fas fa-forward"></i> Next Question
+                </button>
+                <button class="btn btn-secondary" onclick="backToMenu()">
+                    <i class="fas fa-home"></i> Main Menu
+                </button>
+            </div>
+
+        </div>
+
+        <!-- Leaderboard -->
+        <div class="leaderboard" id="leaderboard" style="display: none;">
+            <h3 class="leaderboard-title">🏆 Global Leaderboard</h3>
+            <div id="leaderboard-list"></div>
+        </div>
+
+    </div>
+
+    <script src="game-questions.js"></script>
+    <script>
+        // Generate animated stars
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = star.style.height = Math.random() * 3 + 'px';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+        createStars();
+
+        // Game State
+        let gameState = {
+            mode: null,
+            score: 0,
+            streak: 0,
+            combo: 1,
+            lives: 3,
+            currentQuestion: null,
+            answered: false,
+            timeLeft: 30,
+            timer: null,
+            xp: parseInt(localStorage.getItem('totalXP') || '0'),
+            level: parseInt(localStorage.getItem('playerLevel') || '1'),
+            powerups: {
+                fifty: 3,
+                skip: 2,
+                time: 2
+            },
+            questionsAnswered: 0,
+            correctAnswers: 0
+        };
+
+        // XP and Leveling System
+        function getXPForLevel(level) {
+            return level * 100; // Each level requires 100 more XP
+        }
+
+        function addXP(amount) {
+            gameState.xp += amount;
+            localStorage.setItem('totalXP', gameState.xp);
+            
+            updateXPBar();
+            
+            // Check for level up
+            const nextLevelXP = getXPForLevel(gameState.level);
+            if (gameState.xp >= nextLevelXP) {
+                levelUp();
+            }
+        }
+
+        function updateXPBar() {
+            const nextLevelXP = getXPForLevel(gameState.level);
+            const currentLevelXP = getXPForLevel(gameState.level - 1);
+            const xpInLevel = gameState.xp - currentLevelXP;
+            const xpNeeded = nextLevelXP - currentLevelXP;
+            const percentage = (xpInLevel / xpNeeded) * 100;
+            
+            document.getElementById('xp-bar').style.width = percentage + '%';
+            document.getElementById('current-xp').textContent = xpInLevel;
+            document.getElementById('next-level-xp').textContent = xpNeeded;
+        }
+
+        function levelUp() {
+            gameState.level++;
+            localStorage.setItem('playerLevel', gameState.level);
+            document.getElementById('player-level').textContent = gameState.level;
+            
+            // Reward power-ups on level up
+            gameState.powerups.fifty++;
+            gameState.powerups.skip++;
+            gameState.powerups.time++;
+            updatePowerupCounts();
+            
+            showAchievement(`Level ${gameState.level} Unlocked!`, `You've earned bonus power-ups!`);
+            updateXPBar();
+        }
+
+        // Initialize
+        document.getElementById('player-level').textContent = gameState.level;
+        updateXPBar();
+
+        // Mode Selection
+        function selectMode(mode) {
+            gameState.mode = mode;
+            gameState.score = 0;
+            gameState.streak = 0;
+            gameState.combo = 1;
+            gameState.lives = 3;
+            gameState.questionsAnswered = 0;
+            gameState.correctAnswers = 0;
+            
+            document.getElementById('mode-select-screen').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'block';
+            
+            // Show/hide mode-specific elements
+            if (mode === 'speed' || mode === 'boss') {
+                document.getElementById('timer').style.display = 'flex';
+                document.getElementById('time-btn').style.display = 'flex';
+                document.getElementById('lives-card').style.display = 'none';
+            } else if (mode === 'survival') {
+                document.getElementById('timer').style.display = 'none';
+                document.getElementById('time-btn').style.display = 'none';
+                document.getElementById('lives-card').style.display = 'block';
+            } else {
+                document.getElementById('timer').style.display = 'none';
+                document.getElementById('time-btn').style.display = 'none';
+                document.getElementById('lives-card').style.display = 'none';
+            }
+            
+            updateStats();
+            nextQuestion();
+        }
+
+        function updateStats() {
+            document.getElementById('streak-value').textContent = gameState.streak;
+            document.getElementById('score-value').textContent = gameState.score;
+            document.getElementById('combo-value').textContent = gameState.combo + 'x';
+            document.getElementById('lives-value').textContent = gameState.lives;
+        }
+
+        function updatePowerupCounts() {
+            document.getElementById('fifty-count').textContent = gameState.powerups.fifty;
+            document.getElementById('skip-count').textContent = gameState.powerups.skip;
+            document.getElementById('time-count').textContent = gameState.powerups.time;
+            
+            // Disable buttons if no powerups left
+            document.getElementById('fifty-fifty-btn').classList.toggle('disabled', gameState.powerups.fifty === 0);
+            document.getElementById('skip-btn').classList.toggle('disabled', gameState.powerups.skip === 0);
+            document.getElementById('time-btn').classList.toggle('disabled', gameState.powerups.time === 0);
+        }
+
+        // Power-ups
+        function usePowerup(type) {
+            if (gameState.powerups[type] === 0 || gameState.answered) return;
+            
+            gameState.powerups[type]--;
+            updatePowerupCounts();
+            
+            if (type === 'fifty') {
+                // Remove 2 wrong answers
+                const options = document.querySelectorAll('.answer-btn');
+                const correctIdx = gameState.currentQuestion.correct;
+                let removed = 0;
+                
+                options.forEach((btn, idx) => {
+                    if (idx !== correctIdx && removed < 2 && !btn.style.display) {
+                        btn.style.display = 'none';
+                        removed++;
+                    }
+                });
+                
+                showAchievement('50:50 Used!', '2 wrong answers eliminated');
+            } else if (type === 'skip') {
+                nextQuestion();
+            } else if (type === 'time') {
+                gameState.timeLeft += 15;
+                document.getElementById('time-left').textContent = gameState.timeLeft;
+                showAchievement('+15 Seconds!', 'Time extended');
+            }
+        }
+
+        // Timer
+        function startTimer() {
+            if (gameState.mode !== 'speed' && gameState.mode !== 'boss') return;
+            
+            gameState.timeLeft = 30;
+            document.getElementById('time-left').textContent = gameState.timeLeft;
+            document.getElementById('timer').classList.remove('danger');
+            
+            clearInterval(gameState.timer);
+            gameState.timer = setInterval(() => {
+                gameState.timeLeft--;
+                document.getElementById('time-left').textContent = gameState.timeLeft;
+                
+                if (gameState.timeLeft <= 10) {
+                    document.getElementById('timer').classList.add('danger');
+                }
+                
+                if (gameState.timeLeft <= 0) {
+                    clearInterval(gameState.timer);
+                    // Time's up - treat as wrong answer
+                    handleWrongAnswer();
+                    setTimeout(nextQuestion, 2000);
+                }
+            }, 1000);
+        }
+
+        // Get random question based on mode
+        function getRandomQuestion() {
+            let allQuestions = [];
+            const topics = Object.keys(questionBank);
+            
+            if (gameState.mode === 'boss') {
+                // Only hard questions
+                topics.forEach(topic => {
+                    questionBank[topic].forEach(q => {
+                        if (q.difficulty === 'Must Do') {
+                            allQuestions.push({...q, topic: topic});
+                        }
+                    });
+                });
+            } else {
+                // All questions
+                topics.forEach(topic => {
+                    questionBank[topic].forEach(q => {
+                        allQuestions.push({...q, topic: topic});
+                    });
+                });
+            }
+            
+            return allQuestions[Math.floor(Math.random() * allQuestions.length)];
+        }
+
+        function nextQuestion() {
+            gameState.currentQuestion = getRandomQuestion();
+            gameState.answered = false;
+            gameState.questionsAnswered++;
+            
+            // Reset UI
+            document.getElementById('question-title').textContent = gameState.currentQuestion.title;
+            document.getElementById('question-description').textContent = gameState.currentQuestion.description;
+            document.getElementById('difficulty-badge').textContent = gameState.currentQuestion.difficulty;
+            document.getElementById('difficulty-badge').className = 'difficulty-badge ' + 
+                (gameState.currentQuestion.difficulty === 'Must Do' ? 'must-do' : 
+                 gameState.currentQuestion.difficulty === 'Good to Do' ? 'good-do' : 'bonus');
+            
+            document.getElementById('explanation').classList.remove('show');
+            
+            // Render options
+            const optionsContainer = document.getElementById('answer-options');
+            optionsContainer.innerHTML = '';
+            
+            gameState.currentQuestion.options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'answer-btn';
+                btn.style.display = 'flex'; // Reset from 50:50
+                btn.innerHTML = `
+                    <span class="option-letter">${String.fromCharCode(65 + index)}</span>
+                    <span>${option}</span>
+                `;
+                btn.onclick = () => selectAnswer(index, btn);
+                optionsContainer.appendChild(btn);
+            });
+            
+            // Start timer if needed
+            startTimer();
+            
+            // Check for achievements
+            checkAchievements();
+        }
+
+        function selectAnswer(index, btn) {
+            if (gameState.answered) return;
+            
+            clearInterval(gameState.timer);
+            gameState.answered = true;
+            
+            const correct = index === gameState.currentQuestion.correct;
+            const allOptions = document.querySelectorAll('.answer-btn');
+            
+            if (correct) {
+                btn.classList.add('correct');
+                handleCorrectAnswer();
+            } else {
+                btn.classList.add('wrong');
+                allOptions[gameState.currentQuestion.correct].classList.add('correct');
+                handleWrongAnswer();
+            }
+            
+            // Disable all buttons
+            allOptions.forEach(b => b.classList.add('disabled'));
+            
+            // Show explanation after 1.5 seconds
+            setTimeout(() => {
+                document.getElementById('explanation-text').textContent = gameState.currentQuestion.explanation;
+                document.getElementById('explanation').classList.add('show');
+            }, 1500);
+        }
+
+        function handleCorrectAnswer() {
+            gameState.streak++;
+            gameState.correctAnswers++;
+            
+            // Combo system
+            if (gameState.streak >= 5) {
+                gameState.combo = Math.min(5, Math.floor(gameState.streak / 5) + 1);
+                if (gameState.streak % 5 === 0) {
+                    showCombo();
+                }
+            }
+            
+            // Calculate XP based on mode
+            let baseXP = 25;
+            if (gameState.mode === 'speed') baseXP = 50;
+            else if (gameState.mode === 'survival') baseXP = 100;
+            else if (gameState.mode === 'boss') baseXP = 200;
+            
+            const xpEarned = baseXP * gameState.combo;
+            gameState.score += xpEarned;
+            addXP(xpEarned);
+            
+            updateStats();
+        }
+
+        function handleWrongAnswer() {
+            gameState.streak = 0;
+            gameState.combo = 1;
+            
+            if (gameState.mode === 'survival') {
+                gameState.lives--;
+                if (gameState.lives <= 0) {
+                    gameOver();
+                    return;
+                }
+            }
+            
+            updateStats();
+        }
+
+        function showCombo() {
+            const comboDisplay = document.getElementById('combo-display');
+            comboDisplay.textContent = `${gameState.combo}X COMBO!`;
+            comboDisplay.classList.add('show');
+            
+            setTimeout(() => {
+                comboDisplay.classList.remove('show');
+            }, 1000);
+        }
+
+        function showAchievement(title, desc) {
+            const toast = document.getElementById('achievement-toast');
+            document.getElementById('achievement-title').textContent = title;
+            document.getElementById('achievement-desc').textContent = desc;
+            
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function checkAchievements() {
+            // First question
+            if (gameState.questionsAnswered === 1) {
+                showAchievement('Warrior Awakened!', 'You started your DSA journey');
+            }
+            
+            // 10 streak
+            if (gameState.streak === 10) {
+                showAchievement('On Fire!', '10 correct answers in a row!');
+            }
+            
+            // 20 questions
+            if (gameState.questionsAnswered === 20) {
+                showAchievement('Dedicated Learner!', '20 questions attempted');
+            }
+            
+            // Perfect 10
+            if (gameState.questionsAnswered === 10 && gameState.correctAnswers === 10) {
+                showAchievement('Perfect Start!', '10/10 correct answers!');
+            }
+        }
+
+        function gameOver() {
+            showAchievement('Game Over!', `Score: ${gameState.score} | Streak: ${Math.max(...[gameState.streak])}`);
+            
+            setTimeout(() => {
+                backToMenu();
+            }, 3000);
+        }
+
+        function backToMenu() {
+            clearInterval(gameState.timer);
+            document.getElementById('game-screen').style.display = 'none';
+            document.getElementById('mode-select-screen').style.display = 'block';
+        }
+
+        // Initialize powerup counts
+        updatePowerupCounts();
+    </script>
+
+</body>
+</html>

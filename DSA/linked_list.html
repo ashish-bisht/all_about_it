@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day 4: Linked List Mastery</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-main: #1a202c;
+            --text-muted: #64748b;
+            --primary: #059669; /* Emerald Green for "Links/Growth" */
+            --primary-light: #ecfdf5;
+            --accent: #10b981;
+            --must: #dc2626;
+            --must-bg: #fef2f2;
+            --code-bg: #1e293b;
+        }
+        
+        * { box-sizing: border-box; transition: all 0.2s ease; }
+        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding: 40px 20px; line-height: 1.6; }
+        .container { max-width: 900px; margin: 0 auto; }
+
+        /* Header */
+        .header-section { text-align: center; margin-bottom: 40px; }
+        .header-section h1 { font-size: 2.5rem; margin-bottom: 10px; color: var(--text-main); letter-spacing: -1px; }
+        
+        /* Principal's Thinking Model */
+        .pattern-card { background: linear-gradient(135deg, #064e3b, #065f46); color: white; padding: 30px; border-radius: 16px; margin-bottom: 40px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2); }
+        .pattern-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+        .pattern-col h4 { color: var(--accent); margin-top: 0; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
+        .code-snippet { font-family: 'Menlo', monospace; background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px; color: #fbbf24; font-size: 0.9em; }
+
+        /* Question Cards */
+        .flashcard { background: var(--card-bg); border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-bottom: 30px; overflow: hidden; border: 1px solid #e2e8f0; position: relative; }
+        
+        .card-header { padding: 20px 25px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; background: #fff; }
+        .q-title { font-weight: 800; font-size: 1.25rem; color: var(--text-main); display: flex; align-items: center; gap: 12px; }
+        
+        /* Badges */
+        .badge { font-size: 0.75rem; padding: 4px 10px; border-radius: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .badge-must { background: var(--must-bg); color: var(--must); border: 1px solid #fecaca; }
+        .tag { font-size: 0.85rem; color: var(--text-muted); background: #f1f5f9; padding: 4px 12px; border-radius: 20px; font-weight: 500; }
+
+        .card-body { padding: 25px; }
+
+        /* Metrics */
+        .metrics { display: flex; gap: 20px; margin-bottom: 10px; font-family: 'Menlo', monospace; font-size: 0.85rem; }
+        .metric-item { display: flex; align-items: center; gap: 6px; background: #f8fafc; padding: 8px 12px; border-radius: 6px; border: 1px solid #e2e8f0; color: var(--text-muted); cursor: pointer; }
+        .metric-item:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+        
+        /* Hidden Explanation Box */
+        .metric-explainer { 
+            display: none; 
+            background: #fffbeb; 
+            border: 1px solid #fde68a; 
+            padding: 15px; 
+            border-radius: 8px; 
+            font-size: 0.9rem; 
+            margin-bottom: 20px; 
+            color: #92400e;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Logic Boxes */
+        .info-box { padding: 20px; border-radius: 8px; margin-bottom: 20px; font-size: 0.95rem; position: relative; margin-top: 15px; }
+        .logic-box { background: var(--primary-light); border-left: 5px solid var(--primary); }
+        .trap-box { background: var(--must-bg); border-left: 5px solid var(--must); color: #991b1b; }
+        
+        .box-label { position: absolute; top: -10px; left: 15px; background: inherit; padding: 0 8px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; border-radius: 4px; }
+
+        /* Visual Placeholder */
+        .visual-area { background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 8px; padding: 20px; text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .visual-area i { font-size: 1.5rem; color: var(--primary); }
+
+        /* Code Section */
+        details { margin-top: 15px; background: var(--code-bg); border-radius: 8px; overflow: hidden; }
+        summary { padding: 12px 20px; cursor: pointer; color: #e2e8f0; font-weight: 600; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; list-style: none; }
+        summary:hover { background: rgba(255,255,255,0.05); }
+        summary::after { content: 'Show Code \f121'; font-family: 'Font Awesome 6 Free'; font-weight: 900; }
+        details[open] summary::after { content: 'Hide Code \f128'; }
+        
+        pre { margin: 0; padding: 20px; overflow-x: auto; color: #e2e8f0; font-family: 'Consolas', monospace; font-size: 0.9rem; line-height: 1.5; position: relative; border-top: 1px solid #334155; }
+        .copy-btn { position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.1); border: none; color: white; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Responsive */
+        @media (max-width: 600px) { .pattern-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="header-section">
+        <h1>4️⃣ Linked List Mastery</h1>
+        <p style="color: var(--text-muted);">Principal Engineer DSA • Day 4</p>
+    </div>
+
+    <div class="pattern-card">
+        <h3><i class="fas fa-network-wired"></i> Principal's Mental Model</h3>
+        
+        <div class="pattern-grid">
+            <div class="pattern-col">
+                <h4><i class="fas fa-project-diagram"></i> "Wiring" not "Calculating"</h4>
+                <p style="font-size: 0.9rem; opacity: 0.9;">
+                    Don't think about "numbers." Think about <strong>wires</strong>.
+                    <br>Always draw the pointers. If you change a <code>next</code> pointer, you cut the old wire.
+                    <br><strong>Golden Rule:</strong> Always keep a reference to a node <em>before</em> you cut its wire.
+                </p>
+            </div>
+            <div class="pattern-col">
+                <h4 style="color: #fbbf24;"><i class="fas fa-shield-alt"></i> The "10x" Safety Check</h4>
+                <ul style="padding-left: 20px; line-height: 1.6; font-size: 0.9rem;">
+                    <li><strong>Sentinel Nodes (Dummy Head):</strong> <br>Never write special logic for "Inserting at Head". Use <code>dummy -> head</code>. It solves 90% of edge cases.</li>
+                    <li><strong>Runner Tech:</strong> Use Fast/Slow pointers for cycle detection and finding midpoints.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="flashcard" id="card-1">
+        <div class="card-header">
+            <div class="q-title">
+                <i class="fas fa-memory" style="color: var(--primary);"></i>
+                <span>LRU Cache</span>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <span class="badge badge-must">MUST DO</span>
+                <span class="tag">Design #1</span>
+            </div>
+        </div>
+        <div class="card-body">
+            
+            <div class="metrics">
+                <div class="metric-item" onclick="toggleExplainer('lru-time')">
+                    <i class="far fa-clock"></i> O(1) Get/Put <i class="fas fa-info-circle" style="font-size:0.8em; margin-left:5px;"></i>
+                </div>
+                <div class="metric-item" onclick="toggleExplainer('lru-space')">
+                    <i class="fas fa-server"></i> O(N) Space <i class="fas fa-info-circle" style="font-size:0.8em; margin-left:5px;"></i>
+                </div>
+            </div>
+
+            <div id="lru-time-explainer" class="metric-explainer">
+                <strong>Why O(1)?</strong> <br>
+                <strong>HashMap:</strong> Gives O(1) access to find the node.<br>
+                <strong>Doubly Linked List:</strong> Gives O(1) removal and insertion (because we have pointers to prev and next). Standard Arrays would take O(N) to shift elements.
+            </div>
+            <div id="lru-space-explainer" class="metric-explainer">
+                <strong>Why O(N)?</strong> <br>
+                We store N items in the Map and N nodes in the Linked List.
+            </div>
+
+            <div class="visual-area">
+                
+                <br>
+                <span><strong>Visual: The Hybrid Engine</strong><br>HashMap stores <code>{Key -> Node Address}</code> for speed.<br>Linked List stores <code>Order of Use</code> (Head=Most Recent, Tail=Least Recent).</span>
+            </div>
+
+            <div class="info-box logic-box">
+                <span class="box-label" style="color: var(--primary)">💡 The Crux</span>
+                <strong>The "Wire-Splicing" Strategy:</strong>
+                <br>Do not write spaghetti code. Define two helper functions:
+                <br>1. <code>_remove(node)</code>: Unplugs a node from the middle.
+                <br>2. <code>_add(node)</code>: Plugs a node right after the Dummy Head.
+                <br><strong>Get(x):</strong> Map Find -> <code>_remove(x)</code> -> <code>_add(x)</code> (Move to front).
+                <br><strong>Put(x):</strong> If exists: Update val -> Move to front. If new: Add to front. If full: <code>_remove(tail.prev)</code>.
+            </div>
+
+            <div class="info-box trap-box">
+                <span class="box-label" style="color: #991b1b">⚠️ The Trap</span>
+                <strong>The "Phantom" Pointer:</strong> 
+                <br>When you evict the <strong>Least Recently Used</strong> (LRU) node from the Linked List (at the tail), you <strong>MUST</strong> also delete it from the HashMap. 
+                <br>Often, candidates delete the node but forget the map entry, causing a memory leak or incorrect size tracking.
+            </div>
+
+            <details open>
+                <summary>Python Solution (Clean Helpers)</summary>
+                <div style="position: relative;">
+                    <button class="copy-btn" onclick="copyCode('code-lru')">Copy</button>
+                    <pre id="code-lru">
+class Node:
+    def __init__(self, key, val):
+        self.key = key
+        self.val = val
+        self.prev = None
+        self.next = None
+
+class LRUCache:
+    def __init__(self, capacity: int):
+        self.cap = capacity
+        self.cache = {} # Map Key -> Node
+        
+        # Sentinel Nodes (Dummy Head & Tail)
+        # Allows inserting/removing without checking for None
+        self.head = Node(0, 0)
+        self.tail = Node(0, 0)
+        self.head.next = self.tail
+        self.tail.prev = self.head
+
+    # HELPER 1: Unplug node from current position
+    def _remove(self, node):
+        prev_node = node.prev
+        next_node = node.next
+        prev_node.next = next_node
+        next_node.prev = prev_node
+
+    # HELPER 2: Plug node at the FRONT (Most Recent)
+    def _add(self, node):
+        # Wire node to head and head.next
+        node.prev = self.head
+        node.next = self.head.next
+        
+        # Wire head and head.next to node
+        self.head.next.prev = node
+        self.head.next = node
+
+    def get(self, key: int) -> int:
+        if key in self.cache:
+            node = self.cache[key]
+            # Refresh Recency: Remove and Re-add to front
+            self._remove(node)
+            self._add(node)
+            return node.val
+        return -1
+
+    def put(self, key: int, value: int) -> None:
+        if key in self.cache:
+            # Update existing: Remove old
+            self._remove(self.cache[key])
+        
+        # Create new node & Add to front
+        new_node = Node(key, value)
+        self._add(new_node)
+        self.cache[key] = new_node
+        
+        # Check Capacity
+        if len(self.cache) > self.cap:
+            # Evict LRU (Node before Dummy Tail)
+            lru_node = self.tail.prev
+            self._remove(lru_node)
+            del self.cache[lru_node.key] # Important!</pre>
+                </div>
+            </details>
+        </div>
+    </div>
+
+
+    <div class="flashcard" id="card-2">
+        <div class="card-header">
+            <div class="q-title">
+                <i class="fas fa-random" style="color: var(--must);"></i>
+                <span>Reverse in K Groups</span>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <span class="badge badge-must">MUST DO</span>
+                <span class="tag">Pointer Mastery</span>
+            </div>
+        </div>
+        <div class="card-body">
+            
+            <div class="metrics">
+                <div class="metric-item" onclick="toggleExplainer('rev-time')">
+                    <i class="far fa-clock"></i> O(N) Time <i class="fas fa-info-circle" style="font-size:0.8em; margin-left:5px;"></i>
+                </div>
+                <div class="metric-item" onclick="toggleExplainer('rev-space')">
+                    <i class="fas fa-server"></i> O(1) Space <i class="fas fa-info-circle" style="font-size:0.8em; margin-left:5px;"></i>
+                </div>
+            </div>
+
+            <div id="rev-time-explainer" class="metric-explainer">
+                <strong>Why O(N)?</strong> <br>
+                We visit every node exactly twice: once to check if a group of size K exists, and once to reverse it. Total operations ≈ 2N.
+            </div>
+            <div id="rev-space-explainer" class="metric-explainer">
+                <strong>Why O(1)?</strong> <br>
+                We use the Iterative approach. (Recursion would use O(N/K) stack space). We only use fixed pointers (`dummy`, `curr`, `prev`, `next`).
+            </div>
+
+            <div class="visual-area">
+                
+                <br>
+                <span><strong>Visual: The "Surgery"</strong><br>1. Identify a segment of K nodes.<br>2. Snip the wires at start and end.<br>3. Flip the segment.<br>4. Reconnect: <code>GroupPrev.next = NewHead</code> and <code>NewTail.next = NextGroup</code>.</span>
+            </div>
+
+            <div class="info-box logic-box">
+                <span class="box-label" style="color: var(--primary)">💡 The Crux</span>
+                <strong>Don't get lost in the wires.</strong>
+                <br>Use a helper function `get_kth(curr, k)` to find the end of the current group.
+                <br>1. If `kth` is null, <strong>Stop</strong> (leave remaining nodes).
+                <br>2. If valid, save `groupNext = kth.next`.
+                <br>3. Reverse the inner links (standard reversal).
+                <br>4. <strong>Critical:</strong> Wire `groupPrev.next` to the NEW head (old Kth). Wire the NEW tail (old start) to `groupNext`.
+            </div>
+
+            <div class="info-box trap-box">
+                <span class="box-label" style="color: #991b1b">⚠️ The Trap</span>
+                <strong>Losing the Anchor:</strong> 
+                <br>After reversing a group, your `groupPrev` pointer is now invalid (it points to the old head, which is now the tail).
+                <br><strong>Fix:</strong> You must update `groupPrev` to point to the <em>new tail</em> of the group you just finished, so it's ready for the next iteration.
+            </div>
+
+            <details>
+                <summary>Python Solution (Iterative & Safe)</summary>
+                <div style="position: relative;">
+                    <button class="copy-btn" onclick="copyCode('code-rev')">Copy</button>
+                    <pre id="code-rev">
+def reverseKGroup(head, k):
+    dummy = ListNode(0, head)
+    groupPrev = dummy # The anchor before the group
+    
+    while True:
+        kth = get_kth(groupPrev, k)
+        if not kth:
+            break
+        groupNext = kth.next
+        
+        # Pointers for inner reversal
+        prev, curr = kth.next, groupPrev.next
+        
+        # -- STANDARD REVERSE LOGIC --
+        # We perform K reversals
+        # Notice: initial 'prev' is groupNext (to link tail to next part)
+        while curr != groupNext:
+            tmp = curr.next
+            curr.next = prev
+            prev = curr
+            curr = tmp
+            
+        # -- RE-WIRE ANCHORS --
+        # 1. Save the new tail (it was the first node of the group)
+        tmp = groupPrev.next
+        # 2. Link anchor to the new head (which is 'prev' after reversal)
+        groupPrev.next = prev
+        # 3. Move anchor to the new tail for next round
+        groupPrev = tmp
+        
+    return dummy.next
+
+def get_kth(curr, k):
+    while curr and k > 0:
+        curr = curr.next
+        k -= 1
+    return curr</pre>
+                </div>
+            </details>
+        </div>
+    </div>
+
+
+
+    <div class="flashcard" id="card-3">
+        <div class="card-header">
+            <div class="q-title">
+                <i class="fas fa-undo-alt" style="color: var(--must);"></i>
+                <span>Detect Loop Start</span>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <span class="badge badge-must">MUST DO</span>
+                <span class="tag">Floyd's Algo</span>
+            </div>
+        </div>
+        <div class="card-body">
+            
+            <div class="metrics">
+                <div class="metric-item" onclick="toggleExplainer('cycle-time')">
+                    <i class="far fa-clock"></i> O(N) Time <i class="fas fa-info-circle" style="font-size:0.8em; margin-left:5px;"></i>
+                </div>
+                <div class="metric-item" onclick="toggleExplainer('cycle-space')">
+                    <i class="fas fa-server"></i> O(1) Space <i class="fas fa-info-circle" style="font-size:0.8em; margin-left:5px;"></i>
+                </div>
+            </div>
+
+            <div id="cycle-time-explainer" class="metric-explainer">
+                <strong>Why O(N)?</strong> <br>
+                The Fast pointer traverses the list at most twice. Once to catch the Slow pointer, and a bit more for the Slow pointer to reach the entry. It never loops infinitely if we have a break condition.
+            </div>
+            <div id="cycle-space-explainer" class="metric-explainer">
+                <strong>Why O(1)?</strong> <br>
+                Standard approach uses a HashSet (O(N) space). Floyd's Algorithm uses only two pointers (`slow`, `fast`).
+            </div>
+
+            <div class="visual-area">
+                
+                <br>
+                <span><strong>Visual: The "P" Shape</strong><br>The list looks like a 'P'. <br><strong>Math Magic:</strong> The distance from the <code>Head</code> to the <code>LoopStart</code> is mathematically equal to the distance from the <code>MeetingPoint</code> to the <code>LoopStart</code>.</span>
+            </div>
+
+            <div class="info-box logic-box">
+                <span class="box-label" style="color: var(--primary)">💡 The Crux</span>
+                This is a 2-Phase Algorithm.
+                <br><strong>Phase 1 (Intercept):</strong> Slow moves 1, Fast moves 2. If they collide, a cycle exists.
+                <br><strong>Phase 2 (The Reset):</strong> Teleport <code>slow</code> back to <code>head</code>. Keep <code>fast</code> at the meeting point. Move both <strong>1 step</strong> at a time. They will collide exactly at the Cycle Start.
+            </div>
+
+            <div class="info-box trap-box">
+                <span class="box-label" style="color: #991b1b">⚠️ The Trap</span>
+                <strong>The False Start:</strong> 
+                <br>Do not check `if slow == fast` immediately inside the loop if you initialize both to `head`. They equal at the start!
+                <br><strong>Fix:</strong> Use a `while True` or `do-while` equivalent, OR advance pointers first, then check.
+            </div>
+
+            <details>
+                <summary>Python Solution (The 2-Phase Logic)</summary>
+                <div style="position: relative;">
+                    <button class="copy-btn" onclick="copyCode('code-cycle')">Copy</button>
+                    <pre id="code-cycle">
+def detectCycle(head):
+    # Phase 1: Determine if a cycle exists
+    slow, fast = head, head
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+        
+        if slow == fast:
+            # Phase 2: Find the Entry Point
+            slow = head
+            while slow != fast:
+                slow = slow.next
+                fast = fast.next
+            return slow # Both meet at the Start Node
+            
+    return None # No Cycle</pre>
+                </div>
+            </details>
+        </div>
+    </div>
+    <div class="flashcard" id="card-4">
+        <div class="card-header">
+            <div class="q-title">
+                <i class="fas fa-clone" style="color: var(--must);"></i>
+                <span>Clone with Random Pointer</span>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <span class="badge badge-must">MUST DO</span>
+                <span class="tag">Deep Copy</span>
+            </div>
+        </div>
+        <div class="card-body">
+            
+            <div class="metrics">
+                <div class="metric-item" onclick="toggleExplainer('clone-time')">
+                    <i class="far fa-clock"></i> O(N) Time <i class="fas fa-info-circle" style="font-size:0.8em; margin-left:5px;"></i>
+                </div>
+                <div class="metric-item" onclick="toggleExplainer('clone-space')">
+                    <i class="fas fa-server"></i> O(1) Space <i class="fas fa-info-circle" style="font-size:0.8em; margin-left:5px;"></i>
+                </div>
+            </div>
+
+            <div id="clone-time-explainer" class="metric-explainer">
+                <strong>Why O(N)?</strong> <br>
+                We iterate through the list exactly 3 times (3 passes). 3N is still O(N).
+            </div>
+            <div id="clone-space-explainer" class="metric-explainer">
+                <strong>Why O(1)?</strong> <br>
+                The standard "Junior" solution uses a `HashMap` (O(N) space) to track `Old -> New`. 
+                <br>The "Principal" solution uses <strong>Interleaving</strong>, modifying the pointers in-place to avoid the extra Map.
+            </div>
+
+            <div class="visual-area">
+                
+                <br>
+                <span><strong>Visual: DNA Replication</strong><br>Instead of creating a separate list immediately, we grow the copy <em>inside</em> the original.<br>Step 1 (Weave): <code>A -> A' -> B -> B'</code>.<br>Step 2: Link Randoms.<br>Step 3 (Unweave): Split into two lists.</span>
+            </div>
+
+            <div class="info-box logic-box">
+                <span class="box-label" style="color: var(--primary)">💡 The Crux</span>
+                <strong>The 3-Pass Strategy:</strong>
+                <br>1. <strong>Weave:</strong> Insert `Copy` node right after `Original` node.
+                <br>2. <strong>Random:</strong> <code>curr.next.random = curr.random.next</code> (The copy's random is the original random's neighbor).
+                <br>3. <strong>Unweave:</strong> Restore original list (`curr.next = curr.next.next`) and extract copy list.
+            </div>
+
+            <div class="info-box trap-box">
+                <span class="box-label" style="color: #991b1b">⚠️ The Trap</span>
+                <strong>The Null Crash:</strong> 
+                <br>When assigning random pointers: <code>curr.next.random = curr.random.next</code>.
+                <br>If `curr.random` is None, `curr.random.next` will Crash.
+                <br><strong>Fix:</strong> Always check `if curr.random:` before assignment.
+            </div>
+
+            <details>
+                <summary>Python Solution (O(1) Space Interleaving)</summary>
+                <div style="position: relative;">
+                    <button class="copy-btn" onclick="copyCode('code-clone')">Copy</button>
+                    <pre id="code-clone">
+def copyRandomList(head):
+    if not head: return None
+    
+    # PASS 1: Interleave / Weave
+    # Old: A -> B
+    # New: A -> A' -> B -> B'
+    curr = head
+    while curr:
+        new_node = Node(curr.val)
+        new_node.next = curr.next
+        curr.next = new_node
+        curr = new_node.next
+        
+    # PASS 2: Link Random Pointers
+    # A'.random points to A.random.next (which is A.random')
+    curr = head
+    while curr:
+        if curr.random:
+            curr.next.random = curr.random.next
+        curr = curr.next.next
+        
+    # PASS 3: Unweave / Restore
+    # Separate A -> B and A' -> B'
+    old_head = head
+    new_head = head.next
+    curr_old = old_head
+    curr_new = new_head
+    
+    while curr_old:
+        curr_old.next = curr_old.next.next
+        # Check if there is a next node for the copy
+        if curr_new.next:
+            curr_new.next = curr_new.next.next
+            
+        curr_old = curr_old.next
+        curr_new = curr_new.next
+        
+    return new_head</pre>
+                </div>
+            </details>
+        </div>
+    </div>
+
+    <div class="flashcard" id="card-5">
+        <div class="card-header">
+            <div class="q-title">
+                <i class="fas fa-arrows-alt-h" style="color: var(--must);"></i>
+                <span>Palindrome Linked List</span>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <span class="badge badge-good">GOOD</span>
+                <span class="tag">Half-Reversal</span>
+            </div>
+        </div>
+        <div class="card-body">
+            
+            <div class="metrics">
+                <div class="metric-item" onclick="toggleExplainer('pal-time')">
+                    <i class="far fa-clock"></i> O(N) Time <i class="fas fa-info-circle" style="font-size:0.8em; margin-left:5px;"></i>
+                </div>
+                <div class="metric-item" onclick="toggleExplainer('pal-space')">
+                    <i class="fas fa-server"></i> O(1) Space <i class="fas fa-info-circle" style="font-size:0.8em; margin-left:5px;"></i>
+                </div>
+            </div>
+
+            <div id="pal-time-explainer" class="metric-explainer">
+                <strong>Why O(N)?</strong> <br>
+                1. Find Mid (N/2 steps).<br>
+                2. Reverse Second Half (N/2 steps).<br>
+                3. Compare (N/2 steps).<br>
+                Total is linear.
+            </div>
+            <div id="pal-space-explainer" class="metric-explainer">
+                <strong>Why O(1)?</strong> <br>
+                We modify the linked list in-place (reversing pointers) rather than creating an auxiliary array or stack.
+            </div>
+
+            <div class="visual-area">
+                
+                <br>
+                <span><strong>Visual: The "Butterfly" Technique</strong><br>1. Find the Center (Body).<br>2. Flip the Right Wing (Reverse Second Half).<br>3. Check if Left Wing matches Right Wing.<br>4. (Polite) Flip the Right Wing back.</span>
+            </div>
+
+            <div class="info-box logic-box">
+                <span class="box-label" style="color: var(--primary)">💡 The Crux</span>
+                Singly Lists only go forward ➡️. To check a palindrome, we need to go backward ⬅️ from the tail.
+                <br><strong>Solution:</strong>
+                <br>1. <strong>Find Mid:</strong> Use Fast/Slow pointers.
+                <br>2. <strong>Reverse:</strong> Reverse the list starting from `slow.next`.
+                <br>3. <strong>Compare:</strong> Run two pointers (`head` and `second_half_head`) and check for equality.
+            </div>
+
+            <div class="info-box trap-box">
+                <span class="box-label" style="color: #991b1b">⚠️ The Trap</span>
+                <strong>The Destructive Read:</strong> 
+                <br>This algorithm breaks the original list structure by reversing the second half. In a real system (like a database or API), this might crash other threads reading the list. 
+                <br><strong>Principal habit:</strong> Always reverse it back (restore) before returning, even if the problem doesn't explicitly ask for it.
+            </div>
+
+            <details>
+                <summary>Python Solution (In-Place)</summary>
+                <div style="position: relative;">
+                    <button class="copy-btn" onclick="copyCode('code-pal')">Copy</button>
+                    <pre id="code-pal">
+def isPalindrome(head):
+    if not head or not head.next: return True
+    
+    # 1. Find Middle (Slow ends at Mid)
+    slow, fast = head, head
+    while fast and fast.next:
+        fast = fast.next.next
+        slow = slow.next
+        
+    # 2. Reverse Second Half
+    # Start reversing from slow.next (the start of 2nd half)
+    prev = None
+    curr = slow
+    while curr:
+        tmp = curr.next
+        curr.next = prev
+        prev = curr
+        curr = tmp
+        
+    # 'prev' is now the Head of the reversed second half (Tail of original)
+    left, right = head, prev
+    
+    # 3. Compare
+    result = True
+    while right: # Only need to check until end of right half
+        if left.val != right.val:
+            result = False
+            break
+        left = left.next
+        right = right.next
+        
+    # (Optional) Restore List here by reversing 'prev' again
+    
+    return result</pre>
+                </div>
+            </details>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function toggleExplainer(type) {
+        document.querySelectorAll('.metric-explainer').forEach(el => el.style.display = 'none');
+        const target = document.getElementById(`${type}-explainer`);
+        if (target) target.style.display = 'block';
+    }
+
+    function copyCode(id) {
+        const code = document.getElementById(id).innerText;
+        navigator.clipboard.writeText(code).then(() => {
+            alert('Code copied to clipboard!');
+        });
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day 2: Search Rotated Array II (Deep Dive)</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-main: #1a202c;
+            --text-muted: #64748b;
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --accent: #0ea5e9;
+            --must: #dc2626;
+            --must-bg: #fef2f2;
+            --code-bg: #1e293b;
+        }
+        
+        * { box-sizing: border-box; transition: all 0.2s ease; }
+        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding: 40px 20px; line-height: 1.6; }
+        .container { max-width: 900px; margin: 0 auto; }
+
+        /* Header */
+        .header-section { text-align: center; margin-bottom: 40px; }
+        .header-section h1 { font-size: 2.5rem; margin-bottom: 10px; color: var(--text-main); letter-spacing: -1px; }
+        
+        /* Principal's Thinking Model */
+        .pattern-card { background: linear-gradient(135deg, #0f172a, #1e293b); color: white; padding: 30px; border-radius: 16px; margin-bottom: 40px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2); }
+        .pattern-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+        .pattern-col h4 { color: var(--accent); margin-top: 0; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
+        .code-snippet { font-family: 'Menlo', monospace; background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px; color: #fbbf24; font-size: 0.9em; }
+
+        /* Question Cards */
+        .flashcard { background: var(--card-bg); border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-bottom: 30px; overflow: hidden; border: 1px solid #e2e8f0; position: relative; }
+        
+        .card-header { padding: 20px 25px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; background: #fff; }
+        .q-title { font-weight: 800; font-size: 1.25rem; color: var(--text-main); display: flex; align-items: center; gap: 12px; }
+        
+        /* Badges */
+        .badge { font-size: 0.75rem; padding: 4px 10px; border-radius: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .badge-must { background: var(--must-bg); color: var(--must); border: 1px solid #fecaca; }
+        .tag { font-size: 0.85rem; color: var(--text-muted); background: #f1f5f9; padding: 4px 12px; border-radius: 20px; font-weight: 500; }
+
+        .card-body { padding: 25px; }
+
+        /* Metrics */
+        .metrics { display: flex; gap: 20px; margin-bottom: 10px; font-family: 'Menlo', monospace; font-size: 0.85rem; }
+        .metric-item { display: flex; align-items: center; gap: 6px; background: #f8fafc; padding: 8px 12px; border-radius: 6px; border: 1px solid #e2e8f0; color: var(--text-muted); cursor: pointer; }
+        .metric-item:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+        
+        /* Hidden Explanation Box */
+        .metric-explainer { 
+            display: none; 
+            background: #fffbeb; 
+            border: 1px solid #fde68a; 
+            padding: 15px; 
+            border-radius: 8px; 
+            font-size: 0.9rem; 
+            margin-bottom: 20px; 
+            color: #92400e;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Logic Boxes */
+        .info-box { padding: 20px; border-radius: 8px; margin-bottom: 20px; font-size: 0.95rem; position: relative; margin-top: 15px; }
+        .logic-box { background: var(--primary-light); border-left: 5px solid var(--primary); }
+        .trap-box { background: var(--must-bg); border-left: 5px solid var(--must); color: #991b1b; }
+        
+        .box-label { position: absolute; top: -10px; left: 15px; background: inherit; padding: 0 8px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; border-radius: 4px; }
+
+        /* Visual Placeholder */
+        .visual-area { background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 8px; padding: 20px; text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .visual-area i { font-size: 1.5rem; color: var(--primary); }
+
+        /* Dry Run Section */
+        .dry-run { background: #1e293b; color: #cbd5e1; padding: 20px; border-radius: 8px; font-family: 'Consolas', monospace; font-size: 0.85rem; margin-bottom: 20px; border-left: 4px solid #fbbf24; }
+        .dry-step { margin-bottom: 10px; border-bottom: 1px solid #334155; padding-bottom: 10px; }
+        .dry-step:last-child { border: none; margin: 0; padding: 0; }
+        .var-highlight { color: #93c5fd; font-weight: bold; }
+
+        /* Code Section */
+        details { margin-top: 15px; background: var(--code-bg); border-radius: 8px; overflow: hidden; }
+        summary { padding: 12px 20px; cursor: pointer; color: #e2e8f0; font-weight: 600; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; list-style: none; }
+        summary:hover { background: rgba(255,255,255,0.05); }
+        summary::after { content: 'Show Code \f121'; font-family: 'Font Awesome 6 Free'; font-weight: 900; }
+        details[open] summary::after { content: 'Hide Code \f128'; }
+        
+        pre { margin: 0; padding: 20px; overflow-x: auto; color: #e2e8f0; font-family: 'Consolas', monospace; font-size: 0.9rem; line-height: 1.5; position: relative; border-top: 1px solid #334155; }
+        .copy-btn { position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.1); border: none; color: white; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Responsive */
+        @media (max-width: 600px) { .pattern-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="header-section">
+        <h1>2️⃣ Binary Search Patterns</h1>
+        <p style="color: var(--text-muted);">Principal Engineer DSA • Day 2</p>
+    </div>
+
+    <div class="pattern-card">
+        <h3><i class="fas fa-brain"></i> Principal's Mental Model</h3>
+        
+        <div class="pattern-grid">
+            <div class="pattern-col">
+                <h4><i class="fas fa-search"></i> When to Apply</h4>
+                <ul style="padding-left: 20px; line-height: 1.8;">
+                    <li><strong>Sorted Data:</strong> Classic usage (Find X).</li>
+                    <li><strong>Monotonic Functions:</strong> F(x) goes F, F, T, T. (BS on Answer).</li>
+                    <li><strong>Rotated Structures:</strong> Finding pivots/cliffs.</li>
+                </ul>
+            </div>
+            <div class="pattern-col">
+                <h4 style="color: #fbbf24;"><i class="fas fa-shield-alt"></i> The "10x" Safety Check</h4>
+                <ul style="padding-left: 20px; line-height: 1.8;">
+                    <li><strong>Overflow:</strong> Never use <code>(L+R)//2</code>. Always use <span class="code-snippet">L + (R-L)//2</span>.</li>
+                    <li><strong>Infinite Loops:</strong> 
+                        <br>If <code>high = mid</code> → use <span class="code-snippet">while L < R</span>.
+                        <br>If <code>high = mid-1</code> → use <span class="code-snippet">while L <= R</span>.
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="flashcard" id="card-1">
+        <div class="card-header">
+            <div class="q-title">
+                <i class="fas fa-code-branch" style="color: var(--primary);"></i>
+                <span>Search Rotated Array II</span>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <span class="badge badge-must">MUST DO</span>
+                <span class="tag"><i class="fas fa-exclamation-triangle"></i> Duplicates</span>
+            </div>
+        </div>
+        <div class="card-body">
+            
+            <div class="metrics">
+                <div class="metric-item" onclick="toggleExplainer('time')">
+                    <i class="far fa-clock"></i> Avg O(log N) / Worst O(N) <i class="fas fa-info-circle" style="font-size:0.8em; margin-left:5px;"></i>
+                </div>
+                <div class="metric-item" onclick="toggleExplainer('space')">
+                    <i class="fas fa-server"></i> O(1) Space <i class="fas fa-info-circle" style="font-size:0.8em; margin-left:5px;"></i>
+                </div>
+            </div>
+
+            <div id="time-explainer" class="metric-explainer">
+                <strong>Why O(N)?</strong> <br>
+                Binary search relies on eliminating half the array. If <code>nums[mid] == nums[start] == nums[end]</code> (e.g., [1,1,1,2,1]), we cannot eliminate either side. We are forced to shrink the window by just 1 step (`start++`, `end--`), which is a linear operation.
+            </div>
+            <div id="space-explainer" class="metric-explainer">
+                <strong>Why O(1)?</strong> <br>
+                We only use three integer variables (`low`, `high`, `mid`) to track our position. We do not use recursion (stack space) or extra arrays.
+            </div>
+
+            <div class="visual-area">
+                
+                <br>
+                <span><strong>Visual: The Foggy Cliff</strong><br>Imagine two slopes. When duplicates appear (1,1,1...), the slopes merge into a flat line ("fog"), making it impossible to see the drop. You must walk blindly until the fog clears.</span>
+            </div>
+
+            <div class="info-box logic-box">
+                <span class="box-label" style="color: var(--primary)">💡 The Crux</span>
+                If <code>nums[low] == nums[mid] == nums[high]</code>, we cannot determine which side is sorted.
+                <br><strong>Strategy:</strong> Treat this as "noise". Shrink the window from both ends (<code>low++</code>, <code>high--</code>) until the unique numbers appear.
+            </div>
+
+            <h4 style="margin: 0 0 10px 0; color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase;">Step-by-Step Dry Run</h4>
+            <div class="dry-run">
+                <div><strong>Input:</strong> nums = [1, 0, 1, 1, 1], target = 0</div>
+                <br>
+                <div class="dry-step">
+                    1. L=0(1), R=4(1), M=2(1). <br>
+                    <span class="var-highlight">Collision!</span> 1 == 1 == 1. Can't decide side.<br>
+                    -> Action: L++, R--. (New: L=1, R=3)
+                </div>
+                <div class="dry-step">
+                    2. L=1(0), R=3(1), M=2(1). <br>
+                    Left sorted? 0 <= 1 (Yes). Target(0) in range [0, 1]? (Yes).<br>
+                    -> Action: R = M - 1. (New: R=1)
+                </div>
+                <div class="dry-step">
+                    3. L=1(0), R=1(0), M=1(0).<br>
+                    nums[M] == target. <strong>Return True.</strong>
+                </div>
+            </div>
+
+            <details open>
+                <summary>Python Solution (Principal Grade)</summary>
+                <div style="position: relative;">
+                    <button class="copy-btn" onclick="copyCode('code1')">Copy</button>
+                    <pre id="code1">
+def search(nums, target):
+    low, high = 0, len(nums) - 1
+    
+    while low <= high:
+        # Principal Habit: Prevent Overflow
+        mid = low + (high - low) // 2
+        
+        if nums[mid] == target: return True
+        
+        # KEY: Handle Duplicates (The Fog)
+        if nums[low] == nums[mid] == nums[high]:
+            low += 1
+            high -= 1
+            continue
+            
+        # Standard Rotated Logic
+        # Left side is sorted
+        if nums[low] <= nums[mid]:
+            if nums[low] <= target < nums[mid]:
+                high = mid - 1
+            else:
+                low = mid + 1
+        # Right side is sorted
+        else:
+            if nums[mid] < target <= nums[high]:
+                low = mid + 1
+            else:
+                high = mid - 1
+    return False</pre>
+                </div>
+            </details>
+        </div>
+    </div>
+
+
+
+    <div class="flashcard" id="card-2">
+        <div class="card-header">
+            <div class="q-title">
+                <i class="fas fa-carrot" style="color: var(--good);"></i>
+                <span>Koko Eating Bananas</span>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <span class="badge badge-must">MUST DO</span>
+                <span class="tag">BS on Answer</span>
+            </div>
+        </div>
+        <div class="card-body">
+            
+            <div class="metrics">
+                <div class="metric-item" onclick="toggleExplainer('koko-time')">
+                    <i class="far fa-clock"></i> O(N log M) <i class="fas fa-info-circle" style="font-size:0.8em; margin-left:5px;"></i>
+                </div>
+                <div class="metric-item" onclick="toggleExplainer('koko-space')">
+                    <i class="fas fa-server"></i> O(1) Space <i class="fas fa-info-circle" style="font-size:0.8em; margin-left:5px;"></i>
+                </div>
+            </div>
+
+            <div id="koko-time-explainer" class="metric-explainer">
+                <strong>Why O(N log M)?</strong> <br>
+                <ul>
+                    <li><strong>log M:</strong> Binary Search runs on the range of speeds <code>[1, Max_Pile]</code>.</li>
+                    <li><strong>N:</strong> For every speed check, we iterate all piles `O(N)` to calculate hours.</li>
+                </ul>
+            </div>
+            <div id="koko-space-explainer" class="metric-explainer">
+                <strong>Why O(1)?</strong> <br>
+                We only store integers (`min`, `max`, `mid`, `hours`). No recursion stack or extra arrays needed.
+            </div>
+
+            <div class="visual-area">
+                
+                <br>
+                <span><strong>Visual: The Inverse Curve</strong><br>As Speed (x-axis) increases, Hours (y-axis) decreases. <br>We want the <strong>Left-most</strong> point where Hours <= H.</span>
+            </div>
+
+            <div class="info-box logic-box">
+                <span class="box-label" style="color: var(--primary)">💡 The Crux</span>
+                <strong>1. Search Space:</strong> We don't search the array. We search the range <code>[1, max(piles)]</code>.
+                <br><strong>2. Decision:</strong> If Koko finishes in time (<code><= h</code>), she <em>might</em> be too fast. Try slower (Left). If she fails, she <em>must</em> go faster (Right).
+            </div>
+
+            <div class="info-box trap-box">
+                <span class="box-label" style="color: #991b1b">⚠️ The Trap</span>
+                <strong>Floating Point Math:</strong> 
+                <br>Using `math.ceil` is slow. Use the integer ceiling formula:
+                <br><code>hours = (pile + speed - 1) // speed</code>
+            </div>
+
+            <h4 style="margin: 0 0 10px 0; color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase;">Step-by-Step Dry Run</h4>
+            <div class="dry-run">
+                <div><strong>Input:</strong> piles = [3, 6, 7, 11], h = 8 <br>Range [1, 11].</div>
+                <br>
+                <div class="dry-step">
+                    1. <span class="var-highlight">Mid Speed = 6</span>. Hours: ⌈3/6⌉+... = 6 hrs.<br>
+                    6 <= 8? <strong>YES</strong>. Save ans=6. Try slower (Range: 1-5).
+                </div>
+                <div class="dry-step">
+                    2. <span class="var-highlight">Mid Speed = 3</span>. Hours: 1+2+3+4 = 10 hrs.<br>
+                    10 <= 8? <strong>NO</strong>. Too slow! Try faster (Range: 4-5).
+                </div>
+                <div class="dry-step">
+                    3. <span class="var-highlight">Mid Speed = 4</span>. Hours: 1+2+2+3 = 8 hrs.<br>
+                    8 <= 8? <strong>YES</strong>. Save ans=4. Try slower (Range: 4-3 -> End).
+                </div>
+            </div>
+
+            <details>
+                <summary>Python Solution (Production Grade)</summary>
+                <div style="position: relative;">
+                    <button class="copy-btn" onclick="copyCode('code2')">Copy</button>
+                    <pre id="code2">
+def minEatingSpeed(piles: List[int], h: int) -> int:
+    min_speed, max_speed = 1, max(piles)
+    
+    def get_hours(speed):
+        # (a + b - 1) // b is the integer ceiling formula
+        return sum((p + speed - 1) // speed for p in piles)
+        
+    while min_speed <= max_speed:
+        mid_speed = min_speed + (max_speed - min_speed) // 2
+        
+        if get_hours(mid_speed) <= h:
+            # Finished in time, try to go slower
+            max_speed = mid_speed - 1
+        else:
+            # Too slow, must speed up
+            min_speed = mid_speed + 1
+            
+    return min_speed</pre>
+                </div>
+            </details>
+        </div>
+    </div>
+
+    <div class="flashcard" id="card-3">
+        <div class="card-header">
+            <div class="q-title">
+                <i class="fas fa-server" style="color: var(--sys-design);"></i>
+                <span>Aggressive Cows (Allocation)</span>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <span class="badge badge-must">MUST DO</span>
+                <span class="tag">Min-Max Pattern</span>
+            </div>
+        </div>
+        <div class="card-body">
+            
+            <div class="metrics">
+                <div class="metric-item" onclick="toggleExplainer('cows-time')">
+                    <i class="far fa-clock"></i> O(N log N) <i class="fas fa-info-circle" style="font-size:0.8em; margin-left:5px;"></i>
+                </div>
+                <div class="metric-item" onclick="toggleExplainer('cows-space')">
+                    <i class="fas fa-server"></i> O(1) Space <i class="fas fa-info-circle" style="font-size:0.8em; margin-left:5px;"></i>
+                </div>
+            </div>
+
+            <div id="cows-time-explainer" class="metric-explainer">
+                <strong>Why O(N log N)?</strong> <br>
+                1. <strong>Sorting:</strong> Takes `O(N log N)` (Required).<br>
+                2. <strong>Binary Search:</strong> Runs `log(Range)` times (where Range = MaxPos - MinPos).<br>
+                3. <strong>Check:</strong> Inside BS, we iterate stalls `O(N)`.<br>
+                Total is dominated by the initial sort or the BS steps depending on Range, usually simplified to O(N log N).
+            </div>
+            <div id="cows-space-explainer" class="metric-explainer">
+                <strong>Why O(1)?</strong> <br>
+                Sorting is usually in-place (depending on language) and the Binary Search only uses integer variables.
+            </div>
+
+            <div class="visual-area">
+                
+                <br>
+                <span><strong>System Design Mapping:</strong> Load Balancing.<br>Imagine Stalls are <strong>IP Addresses</strong> and Cows are <strong>Microservices</strong>.<br>We want to maximize the "safety buffer" (distance) between them to prevent cascading failures.</span>
+            </div>
+
+            <div class="info-box logic-box">
+                <span class="box-label" style="color: var(--primary)">💡 The Crux</span>
+                This is a <strong>"Maximize the Minimum"</strong> problem.
+                <br>1. <strong>Sort</strong> the stalls first.
+                <br>2. BS on the <strong>Distance</strong> (Range: 1 to Max-Min).
+                <br>3. <strong>Greedy Check:</strong> Try to place cows with at least `mid` gap. If successful, save answer and try for a <em>bigger</em> gap (Right).
+            </div>
+
+            <div class="info-box trap-box">
+                <span class="box-label" style="color: #991b1b">⚠️ The Trap</span>
+                <strong>The Unsorted Array:</strong> 
+                <br>The binary search is on the <em>Answer</em> (Distance), but the <em>Greedy Check</em> requires the Stalls array to be sorted linearly. If you don't sort <code>stalls[]</code> at the start, the greedy placement fails immediately.
+            </div>
+
+            <h4 style="margin: 0 0 10px 0; color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase;">Step-by-Step Dry Run</h4>
+            <div class="dry-run">
+                <div><strong>Input:</strong> Stalls=[1, 2, 8, 4, 9], K=3 Cows.</div>
+                <div><strong>Step 0:</strong> SORT -> [1, 2, 4, 8, 9]. Range [1, 8].</div>
+                <br>
+                <div class="dry-step">
+                    1. <span class="var-highlight">Mid Dist = 4</span>. Place Cow1 @ 1. Next valid: 8 (8-1>=4). Next: None. Count=2. <br>
+                    Failed (Need 3). Gap too big. Try smaller. (Range 1-3)
+                </div>
+                <div class="dry-step">
+                    2. <span class="var-highlight">Mid Dist = 2</span>. Place @ 1. Next: 4 (4-1>=2). Next: 8 (8-4>=2). Count=3.<br>
+                    Success! We fit 3. Save ans=2. Can we do better? (Range 3-3)
+                </div>
+                <div class="dry-step">
+                    3. <span class="var-highlight">Mid Dist = 3</span>. Place @ 1. Next: 4 (4-1>=3). Next: 8 (8-4>=3). Count=3.<br>
+                    Success! Save ans=3. 
+                </div>
+            </div>
+
+            <details>
+                <summary>Python Solution (Pattern: Min-Max)</summary>
+                <div style="position: relative;">
+                    <button class="copy-btn" onclick="copyCode('code3')">Copy</button>
+                    <pre id="code3">
+def aggressiveCows(stalls: List[int], k: int) -> int:
+    # 0. CRITICAL: Sort stalls to enable linear scan
+    stalls.sort()
+    
+    # Helper: Can we place K cows with at least 'dist' gap?
+    def can_place(min_dist):
+        count = 1  # Place first cow at first stall
+        last_pos = stalls[0]
+        
+        for i in range(1, len(stalls)):
+            if stalls[i] - last_pos >= min_dist:
+                count += 1
+                last_pos = stalls[i]
+                if count == k: return True
+        return False
+
+    # 1. Search Space: Distance between cows
+    low = 1
+    high = stalls[-1] - stalls[0]
+    ans = 1
+    
+    while low <= high:
+        mid = low + (high - low) // 2
+        
+        if can_place(mid):
+            ans = mid      # Possible solution
+            low = mid + 1  # Try to maximize the distance (Right)
+        else:
+            high = mid - 1 # Impossible, shrink the distance (Left)
+            
+    return ans</pre>
+                </div>
+            </details>
+        </div>
+    </div>
+
+    <div class="flashcard" id="card-4">
+        <div class="card-header">
+            <div class="q-title">
+                <i class="fas fa-cut" style="color: var(--must);"></i>
+                <span>Median of 2 Sorted Arrays</span>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <span class="badge badge-good">HARD</span>
+                <span class="tag">Partitioning</span>
+            </div>
+        </div>
+        <div class="card-body">
+            
+            <div class="metrics">
+                <div class="metric-item" onclick="toggleExplainer('median-time')">
+                    <i class="far fa-clock"></i> O(log min(N,M)) <i class="fas fa-info-circle" style="font-size:0.8em; margin-left:5px;"></i>
+                </div>
+                <div class="metric-item" onclick="toggleExplainer('median-space')">
+                    <i class="fas fa-server"></i> O(1) Space <i class="fas fa-info-circle" style="font-size:0.8em; margin-left:5px;"></i>
+                </div>
+            </div>
+
+            <div id="median-time-explainer" class="metric-explainer">
+                <strong>Why O(log min(N,M))?</strong> <br>
+                We only binary search on the <strong>smaller array</strong>. Once we pick a cut on the small array (say index `i`), the cut on the large array (`j`) is mathematically fixed by the total length formula. This ensures maximum efficiency.
+            </div>
+            <div id="median-space-explainer" class="metric-explainer">
+                <strong>Why O(1)?</strong> <br>
+                We do not merge the arrays (which would be O(N+M) space). We calculate indices logically without creating new data structures.
+            </div>
+
+            <div class="visual-area">
+                
+                <br>
+                <span><strong>Mental Model: The Perfect Cut</strong><br>Imagine slicing both arrays with a single knife such that:<br>1. Total elements on Left = Total elements on Right.<br>2. Every element on Left <= Every element on Right.</span>
+            </div>
+
+            <div class="info-box logic-box">
+                <span class="box-label" style="color: var(--primary)">💡 The Crux</span>
+                Don't merge! Partition the smaller array `A` at index `i`.
+                <br>The partition `j` on array `B` is calculated automatically: 
+                <br><code>j = (Total + 1) // 2 - i</code>.
+                <br><strong>Goal:</strong> Find `i` such that <code>A_Left <= B_Right</code> and <code>B_Left <= A_Right</code>.
+            </div>
+
+            <div class="info-box trap-box">
+                <span class="box-label" style="color: #991b1b">⚠️ The Trap</span>
+                <strong>The Edge of the World:</strong> 
+                <br>What if the cut is at index `0` (Nothing on left) or index `N` (Nothing on right)?
+                <br><strong>Fix:</strong> Use "Virtual Infinity".
+                <br>If `i == 0` → Left Value = `-∞`.
+                <br>If `i == N` → Right Value = `+∞`.
+            </div>
+
+            <h4 style="margin: 0 0 10px 0; color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase;">Step-by-Step Dry Run</h4>
+            <div class="dry-run">
+                <div><strong>Input:</strong> X=[1, 3], Y=[2]. Total Len=3. Half=2.</div>
+                <div>BS on X (smaller). Range L=0, R=2.</div>
+                <br>
+                <div class="dry-step">
+                    1. <span class="var-highlight">Cut X at 1</span> (Element 1|3). Cut Y must be 1 (Element 2|Inf).<br>
+                    Left: {1, 2}, Right: {3, Inf}.<br>
+                    Check: 1 <= Inf? OK. 2 <= 3? OK.<br>
+                    <strong>Found!</strong> Median is max(Left) = 2.
+                </div>
+            </div>
+
+            <details>
+                <summary>Python Solution (Virtual Infinity)</summary>
+                <div style="position: relative;">
+                    <button class="copy-btn" onclick="copyCode('code4')">Copy</button>
+                    <pre id="code4">
+def findMedianSortedArrays(nums1, nums2):
+    # Ensure nums1 is the smaller array for O(log(min))
+    if len(nums1) > len(nums2): 
+        nums1, nums2 = nums2, nums1
+    
+    m, n = len(nums1), len(nums2)
+    low, high = 0, m
+    
+    while low <= high:
+        partitionX = low + (high - low) // 2
+        partitionY = (m + n + 1) // 2 - partitionX
+        
+        # Virtual "Infinity" Guards for Edge Cases
+        maxLeftX = float('-inf') if partitionX == 0 else nums1[partitionX - 1]
+        minRightX = float('inf') if partitionX == m else nums1[partitionX]
+        
+        maxLeftY = float('-inf') if partitionY == 0 else nums2[partitionY - 1]
+        minRightY = float('inf') if partitionY == n else nums2[partitionY]
+        
+        # Valid Cut Found?
+        if maxLeftX <= minRightY and maxLeftY <= minRightX:
+            if (m + n) % 2 == 0:
+                # Even length: Avg of middle two
+                return (max(maxLeftX, maxLeftY) + min(minRightX, minRightY)) / 2
+            else:
+                # Odd length: Max of left side
+                return max(maxLeftX, maxLeftY)
+        
+        # Binary Search Logic
+        elif maxLeftX > minRightY:
+            high = partitionX - 1 # Too far right, move left
+        else:
+            low = partitionX + 1  # Too far left, move right</pre>
+                </div>
+            </details>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function toggleExplainer(type) {
+        // Hide all first
+        document.querySelectorAll('.metric-explainer').forEach(el => el.style.display = 'none');
+        
+        // Show specific
+        const target = document.getElementById(`${type}-explainer`);
+        if (target) target.style.display = 'block';
+    }
+
+    function copyCode(id) {
+        const code = document.getElementById(id).innerText;
+        navigator.clipboard.writeText(code).then(() => {
+            alert('Code copied to clipboard!');
+        });
+    }
+</script>
+
+</body>
+</html>

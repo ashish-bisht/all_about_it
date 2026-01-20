@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 1: Arrays & Sliding Window</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-main: #1a202c;
+            --text-muted: #64748b;
+            --primary: #6366f1; /* Indigo for Arrays */
+            --primary-light: #eef2ff;
+            --accent: #38bdf8;
+            --must: #dc2626;
+            --must-bg: #fef2f2;
+            --code-bg: #1e293b;
+        }
+        
+        * { box-sizing: border-box; transition: all 0.2s ease; }
+        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding: 40px 20px; line-height: 1.6; }
+        .container { max-width: 900px; margin: 0 auto; }
+
+        /* Header */
+        .header-section { text-align: center; margin-bottom: 40px; }
+        .header-section h1 { font-size: 2.5rem; margin-bottom: 10px; color: var(--text-main); letter-spacing: -1px; }
+        
+        /* Principal's Thinking Model */
+        .pattern-card { background: linear-gradient(135deg, #0f172a, #1e293b); color: white; padding: 30px; border-radius: 16px; margin-bottom: 40px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2); }
+        .pattern-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+        .pattern-col h4 { color: var(--accent); margin-top: 0; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
+        .code-snippet { font-family: 'Menlo', monospace; background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px; color: #fbbf24; font-size: 0.9em; }
+
+        /* Question Cards */
+        .flashcard { background: var(--card-bg); border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-bottom: 30px; overflow: hidden; border: 1px solid #e2e8f0; position: relative; }
+        
+        .card-header { padding: 20px 25px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; background: #fff; }
+        .q-title { font-weight: 800; font-size: 1.25rem; color: var(--text-main); display: flex; align-items: center; gap: 12px; }
+        
+        /* Badges */
+        .badge { font-size: 0.75rem; padding: 4px 10px; border-radius: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .badge-must { background: var(--must-bg); color: var(--must); border: 1px solid #fecaca; }
+        .tag { font-size: 0.85rem; color: var(--text-muted); background: #f1f5f9; padding: 4px 12px; border-radius: 20px; font-weight: 500; }
+
+        .card-body { padding: 25px; }
+
+        /* Metrics */
+        .metrics { display: flex; gap: 20px; margin-bottom: 10px; font-family: 'Menlo', monospace; font-size: 0.85rem; }
+        .metric-item { display: flex; align-items: center; gap: 6px; background: #f8fafc; padding: 8px 12px; border-radius: 6px; border: 1px solid #e2e8f0; color: var(--text-muted); cursor: pointer; }
+        .metric-item:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+        
+        /* Logic Boxes */
+        .info-box { padding: 20px; border-radius: 8px; margin-bottom: 20px; font-size: 0.95rem; position: relative; margin-top: 15px; }
+        .logic-box { background: var(--primary-light); border-left: 5px solid var(--primary); }
+        .trap-box { background: var(--must-bg); border-left: 5px solid var(--must); color: #991b1b; }
+        
+        .box-label { position: absolute; top: -10px; left: 15px; background: inherit; padding: 0 8px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; border-radius: 4px; }
+
+        /* Visual Placeholder */
+        .visual-area { background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 8px; padding: 20px; text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+
+        /* Dry Run Section */
+        .dry-run { background: #1e293b; color: #cbd5e1; padding: 20px; border-radius: 8px; font-family: 'Consolas', monospace; font-size: 0.85rem; margin-bottom: 20px; border-left: 4px solid #fbbf24; }
+        .dry-step { margin-bottom: 10px; border-bottom: 1px solid #334155; padding-bottom: 10px; }
+        .dry-step:last-child { border: none; margin: 0; padding: 0; }
+        .var-highlight { color: #93c5fd; font-weight: bold; }
+
+        /* Code Section */
+        details { margin-top: 15px; background: var(--code-bg); border-radius: 8px; overflow: hidden; }
+        summary { padding: 12px 20px; cursor: pointer; color: #e2e8f0; font-weight: 600; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; list-style: none; }
+        summary:hover { background: rgba(255,255,255,0.05); }
+        summary::after { content: 'Show Code \f121'; font-family: 'Font Awesome 6 Free'; font-weight: 900; }
+        details[open] summary::after { content: 'Hide Code \f128'; }
+        
+        pre { margin: 0; padding: 20px; overflow-x: auto; color: #e2e8f0; font-family: 'Consolas', monospace; font-size: 0.9rem; line-height: 1.5; position: relative; border-top: 1px solid #334155; }
+        .copy-btn { position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.1); border: none; color: white; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Responsive */
+        @media (max-width: 600px) { .pattern-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="header-section">
+        <h1>1️⃣ Arrays & Sliding Window</h1>
+        <p style="color: var(--text-muted);">Principal Engineer DSA • Day 1</p>
+    </div>
+
+    <div class="pattern-card">
+        <h3><i class="fas fa-brain"></i> Principal's Mental Model</h3>
+        
+        <div class="pattern-grid">
+            <div class="pattern-col">
+                <h4><i class="fas fa-route"></i> When to Apply</h4>
+                <ul style="padding-left: 20px; line-height: 1.8;">
+                    <li><strong>Sorted Data:</strong> Classic usage (Two Pointers).</li>
+                    <li><strong>Contiguous Subarrays:</strong> Think <span class="code-snippet">Sliding Window</span>.</li>
+                    <li><strong>Lookups:</strong> High speed? Think <span class="code-snippet">Hash Map</span>.</li>
+                </ul>
+            </div>
+            <div class="pattern-col">
+                <h4 style="color: #fbbf24;"><i class="fas fa-shield-alt"></i> The "10x" Safety Check</h4>
+                <ul style="padding-left: 20px; line-height: 1.8;">
+                    <li><strong>Edge Cases:</strong> Always handle <span class="code-snippet">if not nums</span> first.</li>
+                    <li><strong>Space Trade-off:</strong> Use <span class="code-snippet">O(N)</span> space to get <span class="code-snippet">O(1)</span> lookup.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+<div class="flashcard" id="card-2">
+        <div class="card-header">
+            <div class="q-title">
+                <i class="fas fa-layer-group" style="color: var(--primary);"></i>
+                <span>3Sum</span>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <span class="badge badge-must">MUST DO</span>
+                <span class="tag">Two Pointers</span>
+            </div>
+        </div>
+        <div class="card-body">
+            
+            <div class="metrics">
+                <div class="metric-item" onclick="toggleExplainer('3sum-time')">
+                    <i class="far fa-clock"></i> O(N²) Time <i class="fas fa-info-circle" style="font-size:0.8em; margin-left:5px;"></i>
+                </div>
+                <div class="metric-item" onclick="toggleExplainer('3sum-space')">
+                    <i class="fas fa-server"></i> O(1) or O(N) Space <i class="fas fa-info-circle" style="font-size:0.8em; margin-left:5px;"></i>
+                </div>
+            </div>
+
+            <div id="3sum-time-explainer" class="metric-explainer">
+                <strong>Why O(N²)?</strong> <br>
+                Sorting takes $O(N \log N)$. The main loop runs $N$ times, and for each iteration, the two-pointer scan takes $O(N)$. Total: $O(N \log N + N^2) \approx O(N^2)$.
+            </div>
+
+            <div class="visual-area">
+                
+                <br>
+                <span><strong>Visual: The Anchor & Squeeze</strong><br>Array ko sort karo. Ek <code>anchor</code> fix karo, aur baaki do numbers ke liye <code>left_pointer</code> aur <code>right_pointer</code> ko tab tak squeeze karo jab tak 0 na mil jaye.</span>
+            </div>
+
+            <div class="info-box logic-box">
+                <span class="box-label" style="color: var(--primary)">💡 The Crux</span>
+                Triple loop ($O(N^3)$) se bachne ke liye **Sort** zaroori hai. Sorting se duplicates handle karna aur Two-Pointer lagana easy ho jata hai.
+                <br><strong>Strategy:</strong>
+                1. <code>anchor_value</code> ko fix karo loop se.
+                2. Agar <code>anchor_value</code> pichle element jaisa hai, toh skip (Duplicate protection).
+                3. Remaining array mein <code>target = -anchor_value</code> dhoondo.
+            </div>
+
+            <div class="info-box trap-box">
+                <span class="box-label" style="color: #991b1b">⚠️ The Trap</span>
+                <strong>Internal Duplicates:</strong> Anchor skip karne ke baad bhi <code>left_pointer</code> same value pe land kar sakta hai.
+                <br><strong>Fix:</strong> Jab triplet mil jaye, <code>left_pointer</code> ko tab tak badhao jab tak naya unique number na mil jaye.
+            </div>
+
+            <h4 style="margin: 0 0 10px 0; color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase;">Step-by-Step Dry Run</h4>
+            <div class="dry-run">
+                <div><strong>Input:</strong> nums = [-1, 0, 1, 2, -1, -4]</div>
+                <div><strong>Sorted:</strong> [-4, -1, -1, 0, 1, 2]</div>
+                <br>
+                <div class="dry-step">
+                    1. i=0 (val=-4). Target = 4. <br>
+                    left_pointer=-1, right_pointer=2. Sum=1. <span class="var-highlight">Small!</span> Move left_pointer.
+                </div>
+                <div class="dry-step">
+                    2. i=1 (val=-1). Target = 1. <br>
+                    left_pointer=-1, right_pointer=2. Sum=1. <span class="var-highlight">Match!</span> Triple: [-1, -1, 2].
+                </div>
+                <div class="dry-step">
+                    3. <span class="var-highlight">Duplicate Check:</span> left_pointer index 2 pe bhi -1 hai. Skip to index 3.
+                </div>
+            </div>
+
+            <details open>
+                <summary>Python Solution (PEP 8 Style)</summary>
+                <div style="position: relative;">
+                    <button class="copy-btn" onclick="copyCode('code-3sum')">Copy</button>
+                    <pre id="code-3sum">
+def three_sum(nums):
+    triplets = []
+    nums.sort()
+
+    for i, anchor_value in enumerate(nums):
+        # Skip duplicate anchors
+        if i > 0 and anchor_value == nums[i - 1]:
+            continue
+
+        left_pointer = i + 1
+        right_pointer = len(nums) - 1
+
+        while left_pointer < right_pointer:
+            current_sum = anchor_value + nums[left_pointer] + nums[right_pointer]
+            
+            if current_sum > 0:
+                right_pointer -= 1
+            elif current_sum < 0:
+                left_pointer += 1
+            else:
+                triplets.append([anchor_value, nums[left_pointer], nums[right_pointer]])
+                left_pointer += 1
+                
+                # Skip duplicate values for the left pointer
+                while nums[left_pointer] == nums[left_pointer - 1] and left_pointer < right_pointer:
+                    left_pointer += 1
+                    
+    return triplets</pre>
+                </div>
+            </details>
+        </div>
+    </div>
+    <div class="flashcard" id="card-3">
+        <div class="card-header">
+            <div class="q-title">
+                <i class="fas fa-bolt" style="color: var(--primary);"></i>
+                <span>Kadane's Algorithm</span>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <span class="badge badge-must">MUST DO</span>
+                <span class="tag">Dynamic Programming</span>
+            </div>
+        </div>
+        <div class="card-body">
+            
+            <div class="metrics">
+                <div class="metric-item">
+                    <i class="far fa-clock"></i> O(N) Time
+                </div>
+                <div class="metric-item">
+                    <i class="fas fa-server"></i> O(1) Space
+                </div>
+            </div>
+
+            <div class="visual-area">
+                
+                <br>
+                <span><strong>Visual: The Reset Button</strong><br>Jab tak <code>current_sum</code> positive hai, wo aage kaam aayega. Jaise hi wo negative hua, wo "bojh" ban gaya. Use turant 0 karke naya safar shuru karo.</span>
+            </div>
+
+            <div class="info-box logic-box">
+                <span class="box-label" style="color: var(--primary)">💡 The Crux</span>
+                Contiguous subarray dhoondna hai. Agar pichla sum negative hai, toh wo current number ki value ko kam hi karega.
+                <br><strong>Strategy:</strong>
+                1. <code>current_sum</code> ko track karo.
+                2. Agar <code>current_sum < 0</code>, toh use <code>0</code> kar do (start fresh).
+                3. Har step pe <code>max_sum</code> update karo.
+            </div>
+
+            <div class="info-box trap-box">
+                <span class="box-label" style="color: #991b1b">⚠️ The Trap</span>
+                <strong>All Negatives:</strong> Agar array <code>[-5, -2, -3]</code> hai aur tumne <code>max_sum = 0</code> se start kiya, toh answer 0 aayega jo galat hai.
+                <br><strong>Fix:</strong> <code>max_sum</code> ko hamesha pehle element (<code>nums[0]</code>) se initialize karo.
+            </div>
+
+            <h4 style="margin: 0 0 10px 0; color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase;">Dry Run</h4>
+            <div class="dry-run">
+                <div><strong>Input:</strong> nums = [-2, 1, -3, 4]</div>
+                <br>
+                <div class="dry-step">
+                    1. n=-2: current_sum=-2. max_sum=-2. <br>
+                    <span class="var-highlight">current_sum < 0</span> -> current_sum = 0.
+                </div>
+                <div class="dry-step">
+                    2. n=1: current_sum=1. max_sum=max(-2, 1) = <span class="var-highlight">1</span>.
+                </div>
+                <div class="dry-step">
+                    3. n=-3: current_sum=-2. max_sum=1. <br>
+                    <span class="var-highlight">current_sum < 0</span> -> current_sum = 0.
+                </div>
+                <div class="dry-step">
+                    4. n=4: current_sum=4. max_sum=max(1, 4) = <span class="var-highlight">4</span>.
+                </div>
+            </div>
+
+            <details>
+                <summary>Python Solution (Pythonic snake_case)</summary>
+                <div style="position: relative;">
+                    <button class="copy-btn" onclick="copyCode('code3')">Copy</button>
+                    <pre id="code3">
+def max_sub_array(nums):
+    # Initialize with first element to handle all-negative arrays
+    max_sum = nums[0]
+    current_sum = 0
+    
+    for n in nums:
+        # If running sum is a liability, drop it
+        if current_sum < 0:
+            current_sum = 0
+            
+        current_sum += n
+        
+        if current_sum > max_sum:
+            max_sum = current_sum
+            
+    return max_sum</pre>
+                </div>
+            </details>
+        </div>
+    </div>
+
+<div class="flashcard" id="card-4">
+        <div class="card-header">
+            <div class="q-title">
+                <i class="fas fa-divide" style="color: var(--primary);"></i>
+                <span>Product Except Self</span>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <span class="badge badge-must">MUST DO</span>
+                <span class="tag">Prefix & Suffix</span>
+            </div>
+        </div>
+        <div class="card-body">
+            
+            <div class="metrics">
+                <div class="metric-item" onclick="toggleExplainer('prod-time')">
+                    <i class="far fa-clock"></i> O(N) Time <i class="fas fa-info-circle" style="font-size:0.8em; margin-left:5px;"></i>
+                </div>
+                <div class="metric-item" onclick="toggleExplainer('prod-space')">
+                    <i class="fas fa-server"></i> O(1) Extra Space <i class="fas fa-info-circle" style="font-size:0.8em; margin-left:5px;"></i>
+                </div>
+            </div>
+
+            <div id="prod-time-explainer" class="metric-explainer">
+                <strong>Why O(N)?</strong> <br>
+                We traverse the array exactly twice: once from left-to-right to compute prefixes, and once from right-to-left to compute suffixes.
+            </div>
+            <div id="prod-space-explainer" class="metric-explainer">
+                <strong>Why O(1) Extra Space?</strong> <br>
+                The problem states the <code>result</code> array does not count toward space complexity. We only use one extra integer variable (<code>suffix_product</code>) for the second pass.
+            </div>
+
+            <div class="visual-area">
+                
+                <br>
+                <span><strong>Visual: The "Sandwich" Logic</strong><br>Index <code>i</code> ke liye: (Left se sabka product) × (Right se sabka product). Hum result array mein pehle left side ka maal bharte hain, phir right side se aate waqt multiply kar dete hain.</span>
+            </div>
+
+            <div class="info-box logic-box">
+                <span class="box-label" style="color: var(--primary)">💡 The Crux</span>
+                Division operator banned hai.
+                <br><strong>Strategy:</strong>
+                1. <strong>Left Pass:</strong> <code>result[i]</code> mein 0 se <code>i-1</code> tak ka product store karo.
+                2. <strong>Right Pass:</strong> Ek variable <code>suffix_product</code> maintain karo aur piche se aate waqt <code>result[i]</code> ko usse multiply karo.
+            </div>
+
+            <div class="info-box trap-box">
+                <span class="box-label" style="color: #991b1b">⚠️ The Trap</span>
+                <strong>Zero Handling:</strong> Agar array mein ek <code>0</code> hai, toh baaki sab index zero ho jayenge except the zero's index. Agar do <code>0</code> hain, toh poora array zero ho jayega.
+                <br><strong>Fix:</strong> Prefix/Suffix logic ise naturally handle karta hai (unlike division which would crash).
+            </div>
+
+            <h4 style="margin: 0 0 10px 0; color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase;">Dry Run</h4>
+            <div class="dry-run">
+                <div><strong>Input:</strong> nums = [1, 2, 3, 4]</div>
+                <br>
+                <div class="dry-step">
+                    1. <strong>Prefix Pass:</strong> result = [1, 1, 2, 6] <br>
+                    (e.g., index 3 stores 1*2*3)
+                </div>
+                <div class="dry-step">
+                    2. <strong>Suffix Pass:</strong> suffix_product start = 1 <br>
+                    - i=3: res[3]*1=6. suffix_product=4. <br>
+                    - i=2: res[2]*4=8. suffix_product=12. <br>
+                    - i=1: res[1]*12=12. suffix_product=24. <br>
+                    - i=0: res[0]*24=24.
+                </div>
+                <div><strong>Final:</strong> [24, 12, 8, 6]</div>
+            </div>
+
+            <details open>
+                <summary>Python Solution (O(1) Extra Space)</summary>
+                <div style="position: relative;">
+                    <button class="copy-btn" onclick="copyCode('code-prod')">Copy</button>
+                    <pre id="code-prod">
+def product_except_self(nums):
+    n = len(nums)
+    result = [1] * n
+    
+    # Prefix pass: Calculate product of all elements to the left
+    prefix_product = 1
+    for i in range(n):
+        result[i] = prefix_product
+        prefix_product *= nums[i]
+        
+    # Suffix pass: Multiply existing result with product of elements to the right
+    suffix_product = 1
+    for i in range(n - 1, -1, -1):
+        result[i] *= suffix_product
+        suffix_product *= nums[i]
+        
+    return result</pre>
+                </div>
+            </details>
+        </div>
+    </div>
+
+
+<div class="flashcard" id="card-5">
+        <div class="card-header">
+            <div class="q-title">
+                <i class="fas fa-cloud-showers-heavy" style="color: var(--primary);"></i>
+                <span>Trapping Rain Water</span>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <span class="badge badge-must" style="background: #fef2f2; color: #dc2626; border: 1px solid #fecaca;">HARD</span>
+                <span class="tag">Two Pointers</span>
+            </div>
+        </div>
+        <div class="card-body">
+            
+            <div class="metrics">
+                <div class="metric-item" onclick="toggleExplainer('trap-time')">
+                    <i class="far fa-clock"></i> O(N) Time <i class="fas fa-info-circle" style="font-size:0.8em; margin-left:5px;"></i>
+                </div>
+                <div class="metric-item" onclick="toggleExplainer('trap-space')">
+                    <i class="fas fa-server"></i> O(1) Space <i class="fas fa-info-circle" style="font-size:0.8em; margin-left:5px;"></i>
+                </div>
+            </div>
+
+            <div id="trap-time-explainer" class="metric-explainer">
+                <strong>Why O(N)?</strong> <br>
+                We use two pointers that start at opposite ends and move toward the center. Each element is visited exactly once.
+            </div>
+            <div id="trap-space-explainer" class="metric-explainer">
+                <strong>Why O(1)?</strong> <br>
+                Unlike the "Prefix Max" approach which uses $O(N)$ arrays, the Two-Pointer method only stores 4 integer variables.
+            </div>
+
+            <div class="visual-area">
+                
+                <br>
+                <span><strong>Visual: The Bottle Neck</strong><br>Kisi bhi bar pe kitna paani rukega? <br><code>water = min(max_left, max_right) - current_height</code>. <br>Hum dono sides se scan karte hain aur jo side "choti" (bottleneck) hai, wahan ka paani calculate karte hain.</span>
+            </div>
+
+            <div class="info-box logic-box">
+                <span class="box-label" style="color: var(--primary)">💡 The Crux</span>
+                Paani tabhi rukega jab dono taraf deewar (boundary) ho. 
+                <br><strong>Strategy:</strong>
+                1. <code>left_pointer</code> aur <code>right_pointer</code> ends pe rakho.
+                2. <code>left_max</code> aur <code>right_max</code> ko track karo.
+                3. Hamesha us side ko move karo jiski height choti hai, kyunki paani ka level humesha "choti deewar" decide karti hai.
+            </div>
+
+            <div class="info-box trap-box">
+                <span class="box-label" style="color: #991b1b">⚠️ The Trap</span>
+                <strong>Negative Water:</strong> Agar <code>current_height</code> hi <code>max_boundary</code> se badi hai, toh math negative ho sakta hai.
+                <br><strong>Fix:</strong> Height update karne se pehle <code>max_boundary</code> update karo taaki <code>boundary - height</code> hamesha $\ge 0$ rahe.
+            </div>
+
+            <h4 style="margin: 0 0 10px 0; color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase;">Step-by-Step Dry Run</h4>
+            <div class="dry-run">
+                <div><strong>Input:</strong> height = [0, 1, 0, 2, 1, 0, 1, 3]</div>
+                <br>
+                <div class="dry-step">
+                    1. L=0 (H=0), R=7 (H=3). Left is smaller. <br>
+                    left_max=0. Water += 0-0. Move L to 1.
+                </div>
+                <div class="dry-step">
+                    2. L=1 (H=1), R=7 (H=3). Left is smaller. <br>
+                    left_max=1. Water += 1-1. Move L to 2.
+                </div>
+                <div class="dry-step">
+                    3. L=2 (H=0), R=7 (H=3). Left is smaller. <br>
+                    <span class="var-highlight">Water += 1 - 0 = 1 unit.</span> Move L to 3.
+                </div>
+            </div>
+
+            <details open>
+                <summary>Python Solution (Two-Pointer Optimized)</summary>
+                <div style="position: relative;">
+                    <button class="copy-btn" onclick="copyCode('code-trap')">Copy</button>
+                    <pre id="code-trap">
+def trap(height):
+    if not height:
+        return 0
+
+    left_pointer, right_pointer = 0, len(height) - 1
+    left_max, right_max = height[left_pointer], height[right_pointer]
+    total_water = 0
+
+    while left_pointer < right_pointer:
+        # Move the side that is lower (the bottleneck)
+        if left_max < right_max:
+            left_pointer += 1
+            left_max = max(left_max, height[left_pointer])
+            total_water += left_max - height[left_pointer]
+        else:
+            right_pointer -= 1
+            right_max = max(right_max, height[right_pointer])
+            total_water += right_max - height[right_pointer]
+
+    return total_water</pre>
+                </div>
+            </details>
+        </div>
+    </div>
+<div class="flashcard" id="card-6">
+        <div class="card-header">
+            <div class="q-title">
+                <i class="fas fa-layer-group" style="color: var(--primary);"></i>
+                <span>Merge Intervals</span>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <span class="badge badge-must">MUST DO</span>
+                <span class="tag">Sorting + Greedy</span>
+            </div>
+        </div>
+        <div class="card-body">
+            
+            <div class="metrics">
+                <div class="metric-item" onclick="toggleExplainer('merge-time')">
+                    <i class="far fa-clock"></i> O(N log N) Time <i class="fas fa-info-circle" style="font-size:0.8em; margin-left:5px;"></i>
+                </div>
+                <div class="metric-item" onclick="toggleExplainer('merge-space')">
+                    <i class="fas fa-server"></i> O(N) Space <i class="fas fa-info-circle" style="font-size:0.8em; margin-left:5px;"></i>
+                </div>
+            </div>
+
+            <div id="merge-time-explainer" class="metric-explainer">
+                <strong>Why O(N log N)?</strong> <br>
+                The sorting step takes $O(N \log N)$. The linear scan after sorting takes $O(N)$. Therefore, sorting is the bottleneck.
+            </div>
+            <div id="merge-space-explainer" class="metric-explainer">
+                <strong>Why O(N)?</strong> <br>
+                In the worst case (no overlaps), the <code>merged_list</code> will store all $N$ intervals. Some sorting algorithms also use $O(N)$ extra space.
+            </div>
+
+            <div class="visual-area">
+                
+                <br>
+                <span><strong>Visual: The Number Line</strong><br>Intervals ko unke <code>start_time</code> se sort karo. Agar agle interval ka <code>start</code>, pichle interval ke <code>end</code> se chota ya barabar hai, toh overlap hai! Dono ko ek bada interval bana do.</span>
+            </div>
+
+            <div class="info-box logic-box">
+                <span class="box-label" style="color: var(--primary)">💡 The Crux</span>
+                Bina sorting ke overlap check karna impossible hai. Sorting simplifies the problem: ab aapko sirf <strong>pichle merged interval</strong> se compare karna hai.
+                <br><strong>Strategy:</strong>
+                1. <code>intervals</code> ko unke <code>start</code> value se sort karo.
+                2. Pehle interval ko <code>merged_list</code> mein daalo.
+                3. Agle intervals ke liye: Agar <code>current_start <= last_merged_end</code>, toh merge karo (update last_end).
+            </div>
+
+            <div class="info-box trap-box">
+                <span class="box-label" style="color: #991b1b">⚠️ The Trap</span>
+                <strong>The Subset Interval:</strong> Agar interval <code>[1, 10]</code> ke baad <code>[2, 5]</code> aaye, toh end 10 hi rehna chahiye, 5 nahi.
+                <br><strong>Fix:</strong> Merging ke waqt hamesha <code>max(last_merged_end, current_end)</code> lo.
+            </div>
+
+            <h4 style="margin: 0 0 10px 0; color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase;">Step-by-Step Dry Run</h4>
+            <div class="dry-run">
+                <div><strong>Input:</strong> [[1, 3], [2, 6], [8, 10]]</div>
+                <br>
+                <div class="dry-step">
+                    1. Sorted? Yes. Merged = [[1, 3]].
+                </div>
+                <div class="dry-step">
+                    2. Next: [2, 6]. Start (2) <= last_end (3). <br>
+                    <span class="var-highlight">Overlap!</span> Merged[-1][1] = max(3, 6) = 6. <br>
+                    Merged = [[1, 6]].
+                </div>
+                <div class="dry-step">
+                    3. Next: [8, 10]. Start (8) > last_end (6). <br>
+                    <span class="var-highlight">No overlap.</span> Append [8, 10].
+                </div>
+            </div>
+
+            <details open>
+                <summary>Python Solution (Standard Greedy)</summary>
+                <div style="position: relative;">
+                    <button class="copy-btn" onclick="copyCode('code-merge')">Copy</button>
+                    <pre id="code-merge">
+def merge_intervals(intervals):
+    if not intervals:
+        return []
+
+    # Sort based on start time
+    intervals.sort(key=lambda x: x[0])
+
+    merged_list = [intervals[0]]
+
+    for i in range(1, len(intervals)):
+        current_start, current_end = intervals[i]
+        last_merged_end = merged_list[-1][1]
+
+        # If current interval overlaps with the last merged interval
+        if current_start <= last_merged_end:
+            # Update the end of the last merged interval
+            merged_list[-1][1] = max(last_merged_end, current_end)
+        else:
+            # No overlap, add current interval to list
+            merged_list.append([current_start, current_end])
+
+    return merged_list</pre>
+                </div>
+            </details>
+        </div>
+    </div>
+<div class="flashcard" id="card-7">
+        <div class="card-header">
+            <div class="q-title">
+                <i class="fas fa-building" style="color: var(--primary);"></i>
+                <span>Meeting Rooms II</span>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <span class="badge badge-must">MUST DO</span>
+                <span class="tag">Min-Heap / Chronological</span>
+            </div>
+        </div>
+        <div class="card-body">
+            
+            <div class="metrics">
+                <div class="metric-item" onclick="toggleExplainer('mr-time')">
+                    <i class="far fa-clock"></i> O(N log N) Time <i class="fas fa-info-circle" style="font-size:0.8em; margin-left:5px;"></i>
+                </div>
+                <div class="metric-item" onclick="toggleExplainer('mr-space')">
+                    <i class="fas fa-server"></i> O(N) Space <i class="fas fa-info-circle" style="font-size:0.8em; margin-left:5px;"></i>
+                </div>
+            </div>
+
+            <div id="mr-time-explainer" class="metric-explainer">
+                <strong>Why O(N log N)?</strong> <br>
+                Sorting the meetings by start time takes $O(N \log N)$. Every meeting is pushed/popped from the Min-Heap once, which takes $O(N \log N)$.
+            </div>
+            <div id="mr-space-explainer" class="metric-explainer">
+                <strong>Why O(N)?</strong> <br>
+                In the worst case (all meetings overlap), the Min-Heap will store $N$ end-times.
+            </div>
+
+            <div class="visual-area">
+                
+                <br>
+                <span><strong>Visual: The Room Re-use Logic</strong><br>Agar naya meeting start ho raha hai, toh check karo: "Kya koi purani meeting khatam ho chuki hai?" Agar haan, toh wahi room <strong>re-use</strong> kar lo. Heap humein batata hai ki sabse pehle kaunsi meeting khatam ho rahi hai.</span>
+            </div>
+
+            <div class="info-box logic-box">
+                <span class="box-label" style="color: var(--primary)">💡 The Crux</span>
+                Humein track karna hai ki kitne rooms <strong>occupied</strong> hain at any time <code>t</code>.
+                <br><strong>Strategy:</strong>
+                1. Sort meetings by <strong>Start Time</strong>.
+                2. <strong>Min-Heap</strong> use karo to store <strong>End Times</strong> of ongoing meetings.
+                3. Har nayi meeting ke liye: Agar <code>new_start >= heap_top</code> (earliest end time), toh matlab room free ho gaya. Heap se pop karo aur naya end time push karo.
+                4. Heap ka size hi aapka answer (rooms needed) hai.
+            </div>
+
+            <div class="info-box trap-box">
+                <span class="box-label" style="color: #991b1b">⚠️ The Trap</span>
+                <strong>The "Just Finished" Case:</strong> Agar ek meeting 1:00 pe khatam ho rahi hai aur dusri 1:00 pe hi shuru ho rahi hai, toh kya room re-use ho sakta hai?
+                <br><strong>Fix:</strong> Question ki constraints check karo. Usually, <code>start >= end</code> matlab room re-use <strong>ho sakta hai</strong>.
+            </div>
+
+            <h4 style="margin: 0 0 10px 0; color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase;">Step-by-Step Dry Run</h4>
+            <div class="dry-run">
+                <div><strong>Input:</strong> [[0, 30], [5, 10], [15, 20]]</div>
+                <br>
+                <div class="dry-step">
+                    1. [0, 30]: Room 1 occupied. Heap = [30].
+                </div>
+                <div class="dry-step">
+                    2. [5, 10]: Start (5) < heap_top (30). <br>
+                    <span class="var-highlight">Overlap!</span> Need Room 2. Heap = [10, 30].
+                </div>
+                <div class="dry-step">
+                    3. [15, 20]: Start (15) > heap_top (10). <br>
+                    <span class="var-highlight">Free!</span> Pop 10, Push 20. Heap = [20, 30].
+                </div>
+                <div><strong>Final Heap Size:</strong> 2</div>
+            </div>
+
+            <details open>
+                <summary>Python Solution (Heap Logic)</summary>
+                <div style="position: relative;">
+                    <button class="copy-btn" onclick="copyCode('code-rooms')">Copy</button>
+                    <pre id="code-rooms">
+import heapq
+
+def min_meeting_rooms(intervals):
+    if not intervals:
+        return 0
+
+    # Sort meetings by start time
+    intervals.sort(key=lambda x: x[0])
+
+    # Min-Heap to store end times of meetings
+    rooms_heap = []
+    
+    # Add the end time of the first meeting
+    heapq.heappush(rooms_heap, intervals[0][1])
+
+    for i in range(1, len(intervals)):
+        current_start, current_end = intervals[i]
+        
+        # If the earliest ending meeting is over, re-use that room
+        if current_start >= rooms_heap[0]:
+            heapq.heappop(rooms_heap)
+            
+        # Add the current meeting's end time (either re-using or adding a room)
+        heapq.heappush(rooms_heap, current_end)
+
+    return len(rooms_heap)</pre>
+                </div>
+            </details>
+        </div>
+    </div>
+
+
+<div class="flashcard" id="card-8">
+        <div class="card-header">
+            <div class="q-title">
+                <i class="fas fa-window-maximize" style="color: var(--primary);"></i>
+                <span>Longest Substring Without Repeating</span>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <span class="badge badge-must">MUST DO</span>
+                <span class="tag">Sliding Window</span>
+            </div>
+        </div>
+        <div class="card-body">
+            
+            <div class="metrics">
+                <div class="metric-item" onclick="toggleExplainer('ls-time')">
+                    <i class="far fa-clock"></i> O(N) Time <i class="fas fa-info-circle" style="font-size:0.8em; margin-left:5px;"></i>
+                </div>
+                <div class="metric-item" onclick="toggleExplainer('ls-space')">
+                    <i class="fas fa-server"></i> O(min(m, n)) Space <i class="fas fa-info-circle" style="font-size:0.8em; margin-left:5px;"></i>
+                </div>
+            </div>
+
+            <div id="ls-time-explainer" class="metric-explainer">
+                <strong>Why O(N)?</strong> <br>
+                The <code>right_pointer</code> traverses the string once. The <code>left_pointer</code> only moves forward (jumps), never backward. Each character is visited at most twice.
+            </div>
+            <div id="ls-space-explainer" class="metric-explainer">
+                <strong>Why O(min(m, n))?</strong> <br>
+                The space is for the <code>last_seen_at</code> map. It depends on the size of the character set (m) and the length of the string (n).
+            </div>
+
+            <div class="visual-area">
+                
+                <br>
+                <span><strong>Visual: The Elastic Window</strong><br>Socho ek rubber band hai. <code>right_pointer</code> use kheech raha hai. Jaise hi koi character repeat hota hai, <code>left_pointer</code> jhatke se aage aata hai taaki uniqueness maintain rahe.</span>
+            </div>
+
+            <div class="info-box logic-box">
+                <span class="box-label" style="color: var(--primary)">💡 The Crux</span>
+                Window ke andar saare characters unique hone chahiye.
+                <br><strong>Strategy:</strong>
+                1. <code>last_seen_at</code> map maintain karo (<code>char -> index</code>).
+                2. <code>right_pointer</code> se scan karo.
+                3. Agar current char map mein hai, toh <code>left_pointer</code> ko uske purane index ke aage jump karao.
+                4. <strong>Important:</strong> Jump tabhi karo agar purana index current window ke <em>andar</em> ho.
+            </div>
+
+            <div class="info-box trap-box">
+                <span class="box-label" style="color: #991b1b">⚠️ The Trap</span>
+                <strong>The Backward Jump:</strong> Agar aapne <code>left_pointer = last_seen_at[char] + 1</code> seedha likh diya bina check kiye, toh left pointer piche bhi ja sakta hai, jo window break kar dega.
+                <br><strong>Fix:</strong> Hamesha <code>left_pointer = max(left_pointer, last_seen_at[char] + 1)</code> use karo.
+            </div>
+
+            <h4 style="margin: 0 0 10px 0; color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase;">Step-by-Step Dry Run</h4>
+            <div class="dry-run">
+                <div><strong>Input:</strong> s = "abba"</div>
+                <br>
+                <div class="dry-step">
+                    1. r=0(a): left=0. Map={'a':0}. max_len=1.
+                </div>
+                <div class="dry-step">
+                    2. r=1(b): left=0. Map={'a':0, 'b':1}. max_len=2.
+                </div>
+                <div class="dry-step">
+                    3. r=2(b): Duplicate! last_seen 'b' at 1. <br>
+                    <span class="var-highlight">left = max(0, 1+1) = 2.</span> Map={'a':0, 'b':2}. max_len=2.
+                </div>
+                <div class="dry-step">
+                    4. r=3(a): Duplicate! last_seen 'a' at 0. <br>
+                    <span class="var-highlight">left = max(2, 0+1) = 2.</span> (Jump prevent hua!) max_len=2.
+                </div>
+            </div>
+
+            <details open>
+                <summary>Python Solution (Optimized Sliding Window)</summary>
+                <div style="position: relative;">
+                    <button class="copy-btn" onclick="copyCode('code-ls')">Copy</button>
+                    <pre id="code-ls">
+def length_of_longest_substring(s: str) -> int:
+    last_seen_at = {}
+    left_pointer = 0
+    max_length = 0
+
+    for right_pointer, current_char in enumerate(s):
+        if current_char in last_seen_at:
+            # Jump the left pointer forward, but NEVER backward
+            left_pointer = max(left_pointer, last_seen_at[current_char] + 1)
+        
+        # Update the hash map with the latest index
+        last_seen_at[current_char] = right_pointer
+        
+        # Calculate window size: right - left + 1
+        current_window_size = right_pointer - left_pointer + 1
+        max_length = max(max_length, current_window_size)
+
+    return max_length</pre>
+                </div>
+            </details>
+        </div>
+    </div>
+
+    <div class="flashcard" id="card-9">
+        <div class="card-header">
+            <div class="q-title">
+                <i class="fas fa-palette" style="color: var(--primary);"></i>
+                <span>Sort Colors (Dutch Flag)</span>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <span class="badge" style="background: #ecfdf5; color: #059669; border: 1px solid #d1fae5;">BONUS</span>
+                <span class="tag">Three Pointers</span>
+            </div>
+        </div>
+        <div class="card-body">
+            
+            <div class="metrics">
+                <div class="metric-item" onclick="toggleExplainer('sort-time')">
+                    <i class="far fa-clock"></i> O(N) Time <i class="fas fa-info-circle" style="font-size:0.8em; margin-left:5px;"></i>
+                </div>
+                <div class="metric-item" onclick="toggleExplainer('sort-space')">
+                    <i class="fas fa-server"></i> O(1) Space <i class="fas fa-info-circle" style="font-size:0.8em; margin-left:5px;"></i>
+                </div>
+            </div>
+
+            <div id="sort-time-explainer" class="metric-explainer">
+                <strong>Why O(N)?</strong> <br>
+                We traverse the array exactly once. Each element is swapped at most once to its correct territory (left for 0s, right for 2s).
+            </div>
+            <div id="sort-space-explainer" class="metric-explainer">
+                <strong>Why O(1)?</strong> <br>
+                Sorting happens in-place by swapping elements within the input array. No extra lists or dictionaries are used.
+            </div>
+
+            <div class="visual-area">
+                
+                <br>
+                <span><strong>Visual: Three Territories</strong><br>Imagine the array split into 3 zones: <br>1. <strong>Left Zone:</strong> For 0s (Red). <br>2. <strong>Middle Zone:</strong> For 1s (White). <br>3. <strong>Right Zone:</strong> For 2s (Blue).<br>Hum elements ko unki sahi territory mein "fhek" (swap) dete hain.</span>
+            </div>
+
+            <div class="info-box logic-box">
+                <span class="box-label" style="color: var(--primary)">💡 The Crux</span>
+                Counting sort ($O(2N)$) easy hai, par interviewer **One-Pass** maangta hai. 
+                <br><strong>Strategy:</strong>
+                1. <code>low</code> pointer track karta hai boundary of 0s.
+                2. <code>high</code> pointer track karta hai boundary of 2s.
+                3. <code>current</code> pointer scan karta hai.
+                4. Agar 0 mile -> Swap with <code>low</code>, dono aage badhao.
+                5. Agar 2 mile -> Swap with <code>high</code>, sirf <code>high</code> ko piche lao (current ko check karna baki hai).
+            </div>
+
+            <div class="info-box trap-box">
+                <span class="box-label" style="color: #991b1b">⚠️ The Trap</span>
+                <strong>The "Current" Increment:</strong> Jab aap <code>high</code> ke saath swap karte ho, toh <code>current</code> pointer ko aage mat badhao. 
+                <br><strong>Fix:</strong> Kyunki <code>high</code> se jo element aaya hai, wo humne abhi tak check nahi kiya hai (wo 0 bhi ho sakta hai). Use next iteration mein check hone do.
+            </div>
+
+            <h4 style="margin: 0 0 10px 0; color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase;">Step-by-Step Dry Run</h4>
+            <div class="dry-run">
+                <div><strong>Input:</strong> nums = [2, 0, 1]</div>
+                <br>
+                <div class="dry-step">
+                    1. low=0, curr=0, high=2. nums[curr] is 2. <br>
+                    <span class="var-highlight">Swap nums[0] & nums[2].</span> [1, 0, 2]. high=1.
+                </div>
+                <div class="dry-step">
+                    2. low=0, curr=0, high=1. nums[curr] is 1. <br>
+                    <span class="var-highlight">Nothing to do.</span> curr=1.
+                </div>
+                <div class="dry-step">
+                    3. low=0, curr=1, high=1. nums[curr] is 0. <br>
+                    <span class="var-highlight">Swap nums[1] & nums[0].</span> [0, 1, 2]. low=1, curr=2.
+                </div>
+                <div><strong>Done!</strong> Array is sorted.</div>
+            </div>
+
+            <details open>
+                <summary>Python Solution (One-Pass Partitioning)</summary>
+                <div style="position: relative;">
+                    <button class="copy-btn" onclick="copyCode('code-sort')">Copy</button>
+                    <pre id="code-sort">
+def sort_colors(nums):
+    # low: boundary for 0s, high: boundary for 2s
+    low_pointer = 0
+    current_pointer = 0
+    high_pointer = len(nums) - 1
+
+    while current_pointer <= high_pointer:
+        if nums[current_pointer] == 0:
+            # Send to the left territory
+            nums[low_pointer], nums[current_pointer] = nums[current_pointer], nums[low_pointer]
+            low_pointer += 1
+            current_pointer += 1
+        elif nums[current_pointer] == 2:
+            # Send to the right territory
+            nums[high_pointer], nums[current_pointer] = nums[current_pointer], nums[high_pointer]
+            high_pointer -= 1
+            # Note: current_pointer is NOT incremented because the 
+            # swapped element from high_pointer needs validation.
+        else:
+            # It's a 1, just move forward
+            current_pointer += 1</pre>
+                </div>
+            </details>
+        </div>
+    </div>
+
+<div class="flashcard" id="card-10">
+        <div class="card-header">
+            <div class="q-title">
+                <i class="fas fa-fingerprint" style="color: var(--primary);"></i>
+                <span>Substrings with K Distinct</span>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <span class="badge" style="background: #fffbeb; color: #d97706; border: 1px solid #fef3c7;">GOOD</span>
+                <span class="tag">Sliding Window + Map</span>
+            </div>
+        </div>
+        <div class="card-body">
+            
+            <div class="metrics">
+                <div class="metric-item" onclick="toggleExplainer('dist-time')">
+                    <i class="far fa-clock"></i> O(N) Time <i class="fas fa-info-circle" style="font-size:0.8em; margin-left:5px;"></i>
+                </div>
+                <div class="metric-item" onclick="toggleExplainer('dist-space')">
+                    <i class="fas fa-server"></i> O(K) Space <i class="fas fa-info-circle" style="font-size:0.8em; margin-left:5px;"></i>
+                </div>
+            </div>
+
+            <div id="dist-time-explainer" class="metric-explainer">
+                <strong>Why O(N)?</strong> <br>
+                Both pointers (left and right) traverse the string at most once. The Hash Map operations (add/remove) are $O(1)$ on average.
+            </div>
+            <div id="dist-space-explainer" class="metric-explainer">
+                <strong>Why O(K)?</strong> <br>
+                The Hash Map stores at most $K+1$ distinct characters at any point before we trigger a shrink.
+            </div>
+
+            <div class="visual-area">
+                
+                <br>
+                <span><strong>Visual: The Character Counter</strong><br>Socho ek sliding window hai jiske paas ek <code>counter</code> hai. Jab window ke andar distinct characters <code>K</code> se zyada ho jate hain, hum <code>left_pointer</code> ko tab tak move karte hain jab tak koi ek char poori tarah bahar na nikal jaye.</span>
+            </div>
+
+            <div class="info-box logic-box">
+                <span class="box-label" style="color: var(--primary)">💡 The Crux</span>
+                Window ke size se zyada window ke <strong>content</strong> pe focus karna hai.
+                <br><strong>Strategy:</strong>
+                1. <code>frequency_map</code> use karo characters count karne ke liye.
+                2. <code>right_pointer</code> badhate jao aur char map mein dalo.
+                3. Agar <code>len(frequency_map) > k</code>, toh <code>left_pointer</code> ko move karo.
+                4. <strong>Crucial:</strong> Jab <code>left_pointer</code> char hataye, agar count 0 ho jaye, toh use <code>del</code> se map se uda do (taaki len sahi rahe).
+            </div>
+
+            <div class="info-box trap-box">
+                <span class="box-label" style="color: #991b1b">⚠️ The Trap</span>
+                <strong>Length vs Count:</strong> Python mein <code>len(map)</code> distinct keys return karta hai. Agar aap sirf <code>map[char] -= 1</code> karte ho aur 0 hone pe key delete nahi karte, toh <code>len(map)</code> hamesha wahi rahega.
+                <br><strong>Fix:</strong> <code>if frequency_map[char] == 0: del frequency_map[char]</code>.
+            </div>
+
+            <h4 style="margin: 0 0 10px 0; color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase;">Step-by-Step Dry Run</h4>
+            <div class="dry-run">
+                <div><strong>Input:</strong> s = "eceba", k = 2 (Find Longest)</div>
+                <br>
+                <div class="dry-step">
+                    1. r=0(e): Map={'e':1}. size=1 <= 2. max_len=1.
+                </div>
+                <div class="dry-step">
+                    2. r=1(c): Map={'e':1, 'c':1}. size=2 <= 2. max_len=2.
+                </div>
+                <div class="dry-step">
+                    3. r=2(e): Map={'e':2, 'c':1}. size=2 <= 2. max_len=3.
+                </div>
+                <div class="dry-step">
+                    4. r=3(b): Map={'e':2, 'c':1, 'b':1}. <span class="var-highlight">size=3 > 2!</span> <br>
+                    Move L=0(e): Map={'e':1, 'c':1, 'b':1}. <br>
+                    Move L=1(c): Map={'e':1, 'b':1}. <span class="var-highlight">c deleted.</span> max_len=3.
+                </div>
+            </div>
+
+            <details open>
+                <summary>Python Solution (Frequency Map + Window)</summary>
+                <div style="position: relative;">
+                    <button class="copy-btn" onclick="copyCode('code-dist')">Copy</button>
+                    <pre id="code-dist">
+def length_of_k_distinct(s: str, k: int) -> int:
+    if k == 0 or not s:
+        return 0
+        
+    char_frequency = {}
+    left_pointer = 0
+    max_length = 0
+    
+    for right_pointer in range(len(s)):
+        # Add current character to map
+        char = s[right_pointer]
+        char_frequency[char] = char_frequency.get(char, 0) + 1
+        
+        # Shrink window if distinct characters > k
+        while len(char_frequency) > k:
+            left_char = s[left_pointer]
+            char_frequency[left_char] -= 1
+            
+            # CRITICAL: Delete key if count becomes 0
+            if char_frequency[left_char] == 0:
+                del char_frequency[left_char]
+                
+            left_pointer += 1
+            
+        # Update max length of valid window
+        current_window_size = right_pointer - left_pointer + 1
+        max_length = max(max_length, current_window_size)
+        
+    return max_length</pre>
+                </div>
+            </details>
+        </div>
+    </div>
+
+
+
+<div class="flashcard" id="card-11">
+        <div class="card-header">
+            <div class="q-title">
+                <i class="fas fa-chart-line" style="color: var(--primary);"></i>
+                <span>Maximum Product Subarray</span>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <span class="badge" style="background: #fffbeb; color: #d97706; border: 1px solid #fef3c7;">GOOD</span>
+                <span class="tag">Dynamic Programming</span>
+            </div>
+        </div>
+        <div class="card-body">
+            
+            <div class="metrics">
+                <div class="metric-item" onclick="toggleExplainer('maxp-time')">
+                    <i class="far fa-clock"></i> O(N) Time <i class="fas fa-info-circle" style="font-size:0.8em; margin-left:5px;"></i>
+                </div>
+                <div class="metric-item" onclick="toggleExplainer('maxp-space')">
+                    <i class="fas fa-server"></i> O(1) Space <i class="fas fa-info-circle" style="font-size:0.8em; margin-left:5px;"></i>
+                </div>
+            </div>
+
+            <div id="maxp-time-explainer" class="metric-explainer">
+                <strong>Why O(N)?</strong> <br>
+                We traverse the input array exactly once. At each step, we perform a few constant-time multiplications and comparisons.
+            </div>
+            <div id="maxp-space-explainer" class="metric-explainer">
+                <strong>Why O(1)?</strong> <br>
+                We only maintain three scalar variables: <code>current_max</code>, <code>current_min</code>, and <code>global_max</code>. No extra arrays are required.
+            </div>
+
+            <div class="visual-area">
+                
+                <br>
+                <span><strong>Visual: The Seesaw Effect</strong><br>Product mein <code>min</code> (sabse chota negative) utna hi important hai jitna <code>max</code>. Ek naya negative number aate hi, aapka <code>min</code> jhatke se <code>max</code> ban sakta hai. Hum dono boundaries ko saath lekar chalte hain.</span>
+            </div>
+
+            <div class="info-box logic-box">
+                <span class="box-label" style="color: var(--primary)">💡 The Crux</span>
+                Addition mein negative hamesha bura hota hai, par multiplication mein negative "future jackpot" ho sakta hai.
+                <br><strong>Strategy:</strong>
+                1. <code>current_max</code> aur <code>current_min</code> dono track karo.
+                2. Agar current number negative hai, toh <code>current_max</code> aur <code>current_min</code> ko <strong>swap</strong> kar do (kyunki negative se multiply karne par bada chota ho jayega aur chota bada).
+                3. Har step pe compare karo: Kya main pichla product carry karun ya current number se fresh start karun?
+            </div>
+
+            <div class="info-box trap-box">
+                <span class="box-label" style="color: #991b1b">⚠️ The Trap</span>
+                <strong>Zero Handling:</strong> Agar <code>0</code> aata hai, toh product 0 ho jayega. 
+                <br><strong>Fix:</strong> Hamara logic (<code>max(n, current_max * n)</code>) ise automatically handle karta hai—ye zero ko "ditch" karke agle number se naya subarray shuru kar deta hai.
+            </div>
+
+            <h4 style="margin: 0 0 10px 0; color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase;">Step-by-Step Dry Run</h4>
+            <div class="dry-run">
+                <div><strong>Input:</strong> nums = [2, 3, -2, -4]</div>
+                <br>
+                <div class="dry-step">
+                    1. n=2: current_max=2, current_min=2, global=2.
+                </div>
+                <div class="dry-step">
+                    2. n=3: current_max=max(3, 2*3)=6, current_min=min(3, 2*3)=3, global=6.
+                </div>
+                <div class="dry-step">
+                    3. n=-2: <span class="var-highlight">Swap Max/Min</span> (Max=3, Min=6). <br>
+                    current_max=max(-2, 3*-2)=-2, current_min=min(-2, 6*-2)=-12, global=6.
+                </div>
+                <div class="dry-step">
+                    4. n=-4: <span class="var-highlight">Swap Max/Min</span> (Max=-12, Min=-2). <br>
+                    current_max=max(-4, -12*-4)=48, current_min=min(-4, -2*-4)=-4, global=48.
+                </div>
+            </div>
+
+            <details open>
+                <summary>Python Solution (The Two-Bound Approach)</summary>
+                <div style="position: relative;">
+                    <button class="copy-btn" onclick="copyCode('code-maxp')">Copy</button>
+                    <pre id="code-maxp">
+def max_product(nums):
+    if not nums:
+        return 0
+
+    # Global max tracks the best product found so far
+    global_max = nums[0]
+    
+    # Track both current max and min to handle double negatives
+    current_max = 1
+    current_min = 1
+
+    for n in nums:
+        # If number is negative, it flips max and min
+        if n < 0:
+            current_max, current_min = current_min, current_max
+        
+        # Choice: start fresh with 'n' or multiply with existing streak
+        current_max = max(n, n * current_max)
+        current_min = min(n, n * current_min)
+        
+        global_max = max(global_max, current_max)
+        
+    return global_max</pre>
+                </div>
+            </details>
+        </div>
+    </div>
+
+<div class="flashcard" id="card-12">
+        <div class="card-header">
+            <div class="q-title">
+                <i class="fas fa-microchip" style="color: var(--primary);"></i>
+                <span>Subarrays with XOR K</span>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <span class="badge" style="background: #fffbeb; color: #d97706; border: 1px solid #fef3c7;">GOOD</span>
+                <span class="tag">HashMap + Bitwise</span>
+            </div>
+        </div>
+        <div class="card-body">
+            
+            <div class="metrics">
+                <div class="metric-item" onclick="toggleExplainer('xor-time')">
+                    <i class="far fa-clock"></i> O(N) Time <i class="fas fa-info-circle" style="font-size:0.8em; margin-left:5px;"></i>
+                </div>
+                <div class="metric-item" onclick="toggleExplainer('xor-space')">
+                    <i class="fas fa-server"></i> O(N) Space <i class="fas fa-info-circle" style="font-size:0.8em; margin-left:5px;"></i>
+                </div>
+            </div>
+
+            <div id="xor-time-explainer" class="metric-explainer">
+                <strong>Why O(N)?</strong> <br>
+                We traverse the array once, performing constant-time HashMap lookups and updates at each step.
+            </div>
+            <div id="xor-space-explainer" class="metric-explainer">
+                <strong>Why O(N)?</strong> <br>
+                In the worst case (all prefix XORs are unique), the HashMap will store $N$ entries.
+            </div>
+
+            <div class="visual-area">
+                
+                <br>
+                <span><strong>Visual: The XOR Reversibility</strong><br>XOR has a magic property: If <code>A ^ B = C</code>, then <code>A ^ C = B</code>. <br>Agar humein index <code>i</code> tak ka total XOR pata hai (Prefix XOR), hum bas ye dhoond rahe hain ki peeche koi aisa Prefix XOR hai kya jo current se XOR karne par <code>K</code> de de.</span>
+            </div>
+
+            <div class="info-box logic-box">
+                <span class="box-label" style="color: var(--primary)">💡 The Crux</span>
+                Subarray <code>[i...j]</code> ka XOR hota hai: <code>prefix_xor[j] ^ prefix_xor[i-1]</code>.
+                <br>Humein chahiye: <code>prefix_xor[j] ^ prefix_xor[i-1] = K</code>.
+                <br>By XOR properties: <code>prefix_xor[j] ^ K = prefix_xor[i-1]</code>.
+                <br><strong>Strategy:</strong> Current prefix XOR nikalo, use <code>K</code> se XOR karo, aur dekho wo value HashMap mein pehle kitni baar aayi hai.
+            </div>
+
+            <div class="info-box trap-box">
+                <span class="box-label" style="color: #991b1b">⚠️ The Trap</span>
+                <strong>The Edge Case:</strong> Agar kisi index pe <code>prefix_xor</code> khud hi <code>K</code> ke barabar ho jaye, toh HashMap mein wo nahi milega (kyunki hum peeche dhoond rahe hain).
+                <br><strong>Fix:</strong> HashMap ko hamesha <code>{0: 1}</code> se initialize karo. Ye handle karta hai wo subarrays jo index 0 se shuru hote hain.
+            </div>
+
+            <h4 style="margin: 0 0 10px 0; color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase;">Step-by-Step Dry Run</h4>
+            <div class="dry-run">
+                <div><strong>Input:</strong> nums = [4, 2, 2, 6, 4], K = 6</div>
+                <br>
+                <div class="dry-step">
+                    1. Initialize: prefix_counts = {0: 1}, current_xor = 0, total = 0.
+                </div>
+                <div class="dry-step">
+                    2. n=4: current_xor=4. Look for (4^6)=2. Not in map. <br>Map={0:1, 4:1}.
+                </div>
+                <div class="dry-step">
+                    3. n=2: current_xor=6. Look for (6^6)=0. <strong>Found (0:1)!</strong> <br>total=1. Map={0:1, 4:1, 6:1}.
+                </div>
+                <div class="dry-step">
+                    4. n=2: current_xor=4. Look for (4^6)=2. Not in map. <br>Map={0:1, 4:2, 6:1}.
+                </div>
+                <div class="dry-step">
+                    5. n=6: current_xor=2. Look for (2^6)=4. <strong>Found (4:2)!</strong> <br>total=1+2=3. Map={...2:1}.
+                </div>
+            </div>
+
+            <details open>
+                <summary>Python Solution (HashMap Prefix Pattern)</summary>
+                <div style="position: relative;">
+                    <button class="copy-btn" onclick="copyCode('code-xor')">Copy</button>
+                    <pre id="code-xor">
+def count_subarrays_with_xor_k(nums, k):
+    prefix_counts = {0: 1}  # Base case: XOR sum 0 seen once
+    current_xor = 0
+    total_subarrays = 0
+    
+    for n in nums:
+        # Update running prefix XOR
+        current_xor ^= n
+        
+        # We need: current_xor ^ target_prefix = k
+        # Which is: target_prefix = current_xor ^ k
+        target_prefix = current_xor ^ k
+        
+        # Add the number of times we have seen target_prefix before
+        if target_prefix in prefix_counts:
+            total_subarrays += prefix_counts[target_prefix]
+            
+        # Store current prefix XOR in map
+        prefix_counts[current_xor] = prefix_counts.get(current_xor, 0) + 1
+        
+    return total_subarrays</pre>
+                </div>
+            </details>
+        </div>
+    </div>
+</div>
+
+<script>
+    function copyCode(id) {
+        const code = document.getElementById(id).innerText;
+        navigator.clipboard.writeText(code).then(() => {
+            alert('Code copied to clipboard!');
+        });
+    }
+</script>
+
+</body>
+</html>
