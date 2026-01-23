@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#818cf8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="manifest" href="manifest.json">
     <title>Principal Prep | Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <style>
         :root {
             /* Modern Dark Theme Palette */
@@ -14,17 +18,34 @@
             --bg-card: #1e293b;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            
+
             /* Accents */
-            --primary: #818cf8; /* Indigo */
+            --primary: #818cf8;
+            /* Indigo */
             --primary-glow: rgba(129, 140, 248, 0.5);
-            --success: #34d399; /* Emerald */
-            --game-accent: #f472b6; /* Pink */
-            
+            --success: #34d399;
+            /* Emerald */
+            --game-accent: #f472b6;
+            /* Pink */
+
             /* Glassmorphism Variables */
             --glass-bg: rgba(30, 41, 59, 0.7);
             --glass-border: rgba(255, 255, 255, 0.08);
             --glass-blur: 12px;
+        }
+
+        /* Light Theme */
+        body.light-mode {
+            --bg-dark: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --glass-bg: rgba(255, 255, 255, 0.8);
+            --glass-border: rgba(0, 0, 0, 0.08);
+        }
+
+        body.light-mode .navbar {
+            background: rgba(248, 250, 252, 0.9);
         }
 
         * {
@@ -39,7 +60,7 @@
             background-color: var(--bg-dark);
             color: var(--text-main);
             /* Subtle background gradient for depth */
-            background-image: 
+            background-image:
                 radial-gradient(circle at 15% 50%, rgba(129, 140, 248, 0.08) 0%, transparent 25%),
                 radial-gradient(circle at 85% 30%, rgba(52, 211, 153, 0.08) 0%, transparent 25%);
             min-height: 100vh;
@@ -76,7 +97,9 @@
             letter-spacing: -0.5px;
         }
 
-        .nav-logo i { color: var(--primary); }
+        .nav-logo i {
+            color: var(--primary);
+        }
 
         .nav-links {
             display: flex;
@@ -91,15 +114,18 @@
             position: relative;
         }
 
-        .nav-link:hover, .nav-link.active { color: var(--text-main); }
-        
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--text-main);
+        }
+
         .game-btn {
             color: var(--game-accent) !important;
             display: flex;
             align-items: center;
             gap: 6px;
         }
-        
+
         .game-btn:hover {
             text-shadow: 0 0 10px rgba(244, 114, 182, 0.4);
         }
@@ -125,6 +151,7 @@
             margin-bottom: 15px;
             background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
@@ -176,8 +203,13 @@
             height: 4px;
         }
 
-        .card.dsa::before { background: linear-gradient(90deg, var(--primary), #6366f1); }
-        .card.system::before { background: linear-gradient(90deg, var(--success), #10b981); }
+        .card.dsa::before {
+            background: linear-gradient(90deg, var(--primary), #6366f1);
+        }
+
+        .card.system::before {
+            background: linear-gradient(90deg, var(--success), #10b981);
+        }
 
         .card:hover {
             transform: translateY(-5px);
@@ -241,29 +273,51 @@
             opacity: 0.8;
         }
 
-        .card.system .q-link i { color: var(--success); }
+        .card.system .q-link i {
+            color: var(--success);
+        }
 
         .q-link.locked {
             opacity: 0.5;
             cursor: not-allowed;
             background: transparent;
         }
-        .q-link.locked:hover { transform: none; border-color: transparent; }
+
+        .q-link.locked:hover {
+            transform: none;
+            border-color: transparent;
+        }
 
         /* Animations */
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* Mobile Responsive */
         @media (max-width: 768px) {
-            .hero h1 { font-size: 2.5rem; }
-            .grid-2 { grid-template-columns: 1fr; }
-            .link-grid { grid-template-columns: 1fr; }
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .link-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
+
 <body>
 
     <nav class="navbar">
@@ -276,6 +330,10 @@
                 <a href="game.html" class="nav-link game-btn">
                     <i class="fas fa-gamepad"></i> Game Mode
                 </a>
+                <button id="theme-toggle" class="nav-link"
+                    style="background:none; border:none; cursor:pointer; font-size:1.1rem;" title="Toggle Theme">
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
         </div>
     </nav>
@@ -289,28 +347,69 @@
         </header>
 
         <div class="grid-2">
-    
+
             <div class="card dsa">
                 <h2><i class="fas fa-layer-group" style="color:var(--primary)"></i> DSA Patterns</h2>
                 <p class="card-desc">Master the core patterns. Don't memorize code, understand the logic.</p>
-                
+
                 <div class="link-grid">
-                    <a href="DSA/arrays.html" class="q-link"><i class="fas fa-square"></i> Arrays</a>
-                    <a href="DSA/binary_search.html" class="q-link"><i class="fas fa-search"></i> Binary Search</a>
-                    <a href="DSA/linked_list.html" class="q-link"><i class="fas fa-link"></i> Linked List</a>
-                    <a href="DSA/stack.html" class="q-link"><i class="fas fa-layer-group"></i> Stack</a>
-                    <a href="DSA/trees.html" class="q-link"><i class="fas fa-tree"></i> Trees</a>
-                    <a href="DSA/graphs.html" class="q-link"><i class="fas fa-project-diagram"></i> Graphs</a>
-                    <a href="DSA/dp.html" class="q-link"><i class="fas fa-cubes"></i> DP</a>
-                    <a href="DSA/heap_trie.html" class="q-link"><i class="fas fa-sitemap"></i> Heap & Trie</a>
-                    <a href="DSA/backtrack.html" class="q-link" style="grid-column: span 2;"><i class="fas fa-undo"></i> Backtracking</a>
+                    <a href="learn.html?topic=arrays" class="q-link"><i class="fas fa-square"></i> Arrays</a>
+                    <a href="learn.html?topic=binary_search" class="q-link"><i class="fas fa-search"></i> Binary
+                        Search</a>
+                    <a href="learn.html?topic=linked_list" class="q-link"><i class="fas fa-link"></i> Linked List</a>
+                    <a href="learn.html?topic=stack" class="q-link"><i class="fas fa-layer-group"></i> Stack</a>
+                    <a href="learn.html?topic=trees" class="q-link"><i class="fas fa-tree"></i> Trees</a>
+                    <a href="learn.html?topic=graphs" class="q-link"><i class="fas fa-project-diagram"></i> Graphs</a>
+                    <a href="learn.html?topic=dp" class="q-link"><i class="fas fa-cubes"></i> DP</a>
+                    <a href="learn.html?topic=heap_trie" class="q-link"><i class="fas fa-sitemap"></i> Heap & Trie</a>
+                    <a href="learn.html?topic=backtracking" class="q-link" style="grid-column: span 2;"><i
+                            class="fas fa-undo"></i>
+                        Backtracking</a>
                 </div>
             </div>
-            
+
+            <div class="card" style="border-color: #8b5cf6;">
+                <h2><i class="fas fa-brain" style="color:#8b5cf6"></i> Concepts & Mastery</h2>
+                <p class="card-desc">Deep dives into philosophies, patterns, and mental models.</p>
+                <div class="link-list-single">
+                    <a href="learn.html?topic=dp_concepts" class="q-link"
+                        style="background: rgba(139, 92, 246, 0.1); border-color: rgba(139, 92, 246, 0.3); color: white;">
+                        <i class="fas fa-lightbulb" style="color: #8b5cf6;"></i> DP Mastery: Lun Na Lun
+                    </a>
+                    <a href="learn.html?topic=arrays_concepts" class="q-link"
+                        style="background: rgba(99, 102, 241, 0.1); border-color: rgba(99, 102, 241, 0.3); color: white;">
+                        <i class="fas fa-layer-group" style="color: #6366f1;"></i> Arrays: Pattern Bible
+                    </a>
+                    <a href="learn.html?topic=graphs_concepts" class="q-link"
+                        style="background: rgba(192, 38, 211, 0.1); border-color: rgba(192, 38, 211, 0.3); color: white;">
+                        <i class="fas fa-project-diagram" style="color: #c026d3;"></i> Graphs: Complete Guide
+                    </a>
+                    <a href="learn.html?topic=trees_concepts" class="q-link"
+                        style="background: rgba(22, 163, 74, 0.1); border-color: rgba(22, 163, 74, 0.3); color: white;">
+                        <i class="fas fa-tree" style="color: #16a34a;"></i> Trees: Recursion Bible
+                    </a>
+                </div>
+            </div>
+
+            <div class="card" style="border-color: #f59e0b;">
+                <h2><i class="fas fa-tasks" style="color:#f59e0b"></i> Progress Tracker</h2>
+                <p class="card-desc">Track your journey through the 55 essential questions.</p>
+                <div class="link-list-single">
+                    <a href="question_list.html" class="q-link"
+                        style="background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.3); color: white;">
+                        <i class="fas fa-check-circle" style="color: #f59e0b;"></i> 55 Questions Tracker
+                    </a>
+                    <a href="stats.html" class="q-link"
+                        style="background: rgba(52, 211, 153, 0.1); border-color: rgba(52, 211, 153, 0.3); color: white;">
+                        <i class="fas fa-chart-line" style="color: #34d399;"></i> View Stats Dashboard
+                    </a>
+                </div>
+            </div>
+
             <div class="card system">
                 <h2><i class="fas fa-server" style="color:var(--success)"></i> System Design</h2>
                 <p class="card-desc">Architect scalable, resilient, and highly available systems.</p>
-                
+
                 <div class="link-list-single">
                     <a href="System_Design/index.html" class="q-link">
                         <i class="fas fa-bolt"></i> Scalability & Concepts
@@ -327,5 +426,14 @@
         </div>
     </div>
     <script src='script.js'></script>
+    <script>
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('SW registered!'))
+                .catch(err => console.log('SW failed:', err));
+        }
+    </script>
 </body>
+
 </html>

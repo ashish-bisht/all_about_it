@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0a0e27">
     <title>DSA Arena | Level Up Your Skills</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <style>
         :root {
             --bg-dark: #0a0e27;
@@ -64,8 +67,15 @@
         }
 
         @keyframes twinkle {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 1; }
+
+            0%,
+            100% {
+                opacity: 0.3;
+            }
+
+            50% {
+                opacity: 1;
+            }
         }
 
         /* Navbar with XP Bar */
@@ -77,7 +87,7 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
         .nav-content {
@@ -111,8 +121,15 @@
         }
 
         @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
         }
 
         .level-badge {
@@ -162,6 +179,52 @@
         }
 
         /* Game Modes Selection */
+        /* Shake Animation */
+        .shake {
+            animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
+            transform: translate3d(0, 0, 0);
+        }
+
+        @keyframes shake {
+
+            10%,
+            90% {
+                transform: translate3d(-1px, 0, 0);
+            }
+
+            20%,
+            80% {
+                transform: translate3d(2px, 0, 0);
+            }
+
+            30%,
+            50%,
+            70% {
+                transform: translate3d(-4px, 0, 0);
+            }
+
+            40%,
+            60% {
+                transform: translate3d(4px, 0, 0);
+            }
+        }
+
+        /* Topic Filter Dropdown */
+        #topic-filter {
+            background: rgba(15, 23, 42, 0.8);
+            color: var(--text-main);
+            border: 2px solid var(--glass-border);
+            padding: 10px 15px;
+            border-radius: 12px;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 400px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
         .game-modes {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -246,10 +309,21 @@
             height: 3px;
         }
 
-        .stat-card.streak::before { background: linear-gradient(90deg, #ef4444, #f59e0b); }
-        .stat-card.score::before { background: linear-gradient(90deg, #34d399, #10b981); }
-        .stat-card.combo::before { background: linear-gradient(90deg, #818cf8, #6366f1); }
-        .stat-card.time::before { background: linear-gradient(90deg, #f472b6, #ec4899); }
+        .stat-card.streak::before {
+            background: linear-gradient(90deg, #ef4444, #f59e0b);
+        }
+
+        .stat-card.score::before {
+            background: linear-gradient(90deg, #34d399, #10b981);
+        }
+
+        .stat-card.combo::before {
+            background: linear-gradient(90deg, #818cf8, #6366f1);
+        }
+
+        .stat-card.time::before {
+            background: linear-gradient(90deg, #f472b6, #ec4899);
+        }
 
         .stat-icon {
             font-size: 2rem;
@@ -305,8 +379,15 @@
         }
 
         @keyframes timerPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
         }
 
         .timer.danger {
@@ -315,8 +396,16 @@
         }
 
         @keyframes timerDanger {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); color: #ff6b6b; }
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+                color: #ff6b6b;
+            }
         }
 
         .difficulty-badge {
@@ -396,7 +485,7 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
             transition: left 0.5s;
         }
 
@@ -423,15 +512,36 @@
         }
 
         @keyframes correctAnim {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-10px);
+            }
+
+            75% {
+                transform: translateX(10px);
+            }
         }
 
         @keyframes wrongAnim {
-            0%, 100% { transform: translateX(0); }
-            25%, 75% { transform: translateX(-5px); }
-            50% { transform: translateX(5px); }
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25%,
+            75% {
+                transform: translateX(-5px);
+            }
+
+            50% {
+                transform: translateX(5px);
+            }
         }
 
         .answer-btn.disabled {
@@ -525,6 +635,7 @@
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -570,6 +681,7 @@
             from {
                 transform: translateX(400px);
             }
+
             to {
                 transform: translateX(0);
             }
@@ -621,10 +733,12 @@
                 transform: translate(-50%, -50%) scale(0);
                 opacity: 0;
             }
+
             50% {
                 transform: translate(-50%, -50%) scale(1.2);
                 opacity: 1;
             }
+
             100% {
                 transform: translate(-50%, -50%) scale(1);
                 opacity: 0;
@@ -731,185 +845,186 @@
 
         /* Mobile Responsive - Optimized for iPhone 16 Pro & Samsung S23 Ultra */
         @media (max-width: 768px) {
+
             /* Navbar adjustments */
             .nav-top {
                 flex-direction: row;
                 gap: 10px;
             }
-            
+
             .nav-logo {
                 font-size: 1.2rem;
             }
-            
+
             .nav-logo i {
                 font-size: 1.3rem;
             }
-            
+
             .level-badge {
                 padding: 6px 12px;
                 font-size: 0.9rem;
             }
-            
+
             .xp-text {
                 font-size: 0.7rem;
             }
-            
+
             /* Container spacing */
             .container {
                 padding: 0 15px;
                 margin: 15px auto;
             }
-            
+
             /* Game modes - single column */
             .game-modes {
                 grid-template-columns: 1fr;
                 gap: 15px;
             }
-            
+
             .mode-card {
                 padding: 20px;
             }
-            
+
             .mode-icon {
                 font-size: 2.5rem;
             }
-            
+
             .mode-title {
                 font-size: 1.15rem;
             }
-            
+
             .mode-desc {
                 font-size: 0.85rem;
             }
-            
+
             /* Stats grid - 2 columns on mobile */
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 10px;
                 margin-bottom: 20px;
             }
-            
+
             .stat-card {
                 padding: 15px 10px;
             }
-            
+
             .stat-icon {
                 font-size: 1.5rem;
                 margin-bottom: 8px;
             }
-            
+
             .stat-value {
                 font-size: 2rem;
             }
-            
+
             .stat-label {
                 font-size: 0.7rem;
             }
-            
+
             /* Power-ups */
             .powerups {
                 flex-wrap: wrap;
                 gap: 8px;
                 margin-bottom: 15px;
             }
-            
+
             .powerup-btn {
                 padding: 10px 15px;
                 font-size: 0.85rem;
                 flex: 1;
                 min-width: calc(50% - 4px);
             }
-            
+
             .powerup-count {
                 padding: 2px 6px;
                 font-size: 0.75rem;
             }
-            
+
             /* Question card */
             .question-card {
                 padding: 20px 15px;
                 min-height: auto;
                 margin-bottom: 20px;
             }
-            
+
             .question-header {
                 flex-direction: column;
                 gap: 10px;
                 align-items: flex-start;
                 margin-bottom: 20px;
             }
-            
+
             .timer {
                 font-size: 1.5rem;
                 align-self: flex-end;
             }
-            
+
             .difficulty-badge {
                 padding: 6px 12px;
                 font-size: 0.75rem;
             }
-            
+
             .question-title {
                 font-size: 1.4rem;
                 margin-bottom: 15px;
                 line-height: 1.4;
             }
-            
+
             .question-description {
                 font-size: 0.95rem;
                 line-height: 1.6;
                 margin-bottom: 20px;
             }
-            
+
             /* Answer options */
             .answer-options {
                 gap: 12px;
             }
-            
+
             .answer-btn {
                 padding: 15px 18px;
                 font-size: 0.95rem;
             }
-            
+
             .answer-btn:hover {
                 transform: translateX(5px);
             }
-            
+
             .option-letter {
                 width: 35px;
                 height: 35px;
                 font-size: 1rem;
             }
-            
+
             /* Explanation box */
             .explanation-box {
                 padding: 20px 15px;
                 margin-top: 20px;
             }
-            
+
             .explanation-title {
                 font-size: 1rem;
                 margin-bottom: 12px;
             }
-            
+
             .explanation-text {
                 font-size: 0.95rem;
                 line-height: 1.7;
             }
-            
+
             /* Action buttons */
             .action-buttons {
                 flex-direction: column;
                 gap: 10px;
             }
-            
+
             .btn {
                 padding: 14px 25px;
                 font-size: 0.95rem;
                 width: 100%;
                 justify-content: center;
             }
-            
+
             /* Achievement toast */
             .achievement-toast {
                 top: 80px;
@@ -918,89 +1033,89 @@
                 padding: 15px 20px;
                 max-width: calc(100% - 20px);
             }
-            
+
             .achievement-icon {
                 font-size: 2rem;
             }
-            
+
             .achievement-text h4 {
                 font-size: 1rem;
             }
-            
+
             .achievement-text p {
                 font-size: 0.85rem;
             }
-            
+
             /* Combo display */
             .combo-display {
                 font-size: 3rem;
             }
-            
+
             /* Leaderboard */
             .leaderboard {
                 padding: 20px 15px;
                 margin-top: 20px;
             }
-            
+
             .leaderboard-title {
                 font-size: 1.5rem;
                 margin-bottom: 15px;
             }
-            
+
             .leaderboard-entry {
                 padding: 12px 15px;
                 font-size: 0.9rem;
             }
-            
+
             .leaderboard-rank {
                 font-size: 1.2rem;
                 width: 40px;
             }
-            
+
             .leaderboard-score {
                 font-size: 1rem;
             }
         }
-        
+
         /* Extra small devices (iPhone SE, small Androids) */
         @media (max-width: 390px) {
             .nav-logo {
                 font-size: 1rem;
             }
-            
+
             .level-badge {
                 font-size: 0.8rem;
                 padding: 5px 10px;
             }
-            
+
             .question-title {
                 font-size: 1.2rem;
             }
-            
+
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
-            
+
             .stat-value {
                 font-size: 1.8rem;
             }
-            
+
             .mode-icon {
                 font-size: 2rem;
             }
-            
+
             .answer-btn {
                 padding: 12px 15px;
                 font-size: 0.9rem;
             }
-            
+
             .option-letter {
                 width: 32px;
                 height: 32px;
                 font-size: 0.9rem;
             }
         }
-        
+
         /* Landscape mode fixes */
         @media (max-height: 600px) and (orientation: landscape) {
             .question-card {
@@ -1008,66 +1123,70 @@
                 max-height: 70vh;
                 overflow-y: auto;
             }
-            
+
             .question-title {
                 font-size: 1.2rem;
             }
-            
+
             .question-description {
                 font-size: 0.9rem;
             }
-            
+
             .answer-options {
                 gap: 8px;
             }
-            
+
             .answer-btn {
                 padding: 10px 15px;
             }
-            
+
             .stats-grid {
                 grid-template-columns: repeat(4, 1fr);
                 gap: 8px;
             }
-            
+
             .stat-card {
                 padding: 10px;
             }
-            
+
             .stat-value {
                 font-size: 1.5rem;
             }
         }
-        
+
         /* Smooth scrolling for mobile */
         @media (max-width: 768px) {
             html {
                 scroll-behavior: smooth;
             }
-            
+
             body {
                 -webkit-overflow-scrolling: touch;
             }
-            
+
             /* Prevent text selection on buttons */
-            .btn, .answer-btn, .powerup-btn, .mode-card {
+            .btn,
+            .answer-btn,
+            .powerup-btn,
+            .mode-card {
                 -webkit-tap-highlight-color: transparent;
                 -webkit-touch-callout: none;
                 -webkit-user-select: none;
                 user-select: none;
             }
-            
+
             /* Better touch targets */
             .answer-btn {
                 min-height: 60px;
             }
-            
+
             .powerup-btn {
                 min-height: 48px;
             }
         }
     </style>
 </head>
+
 <body>
 
     <!-- Animated Background -->
@@ -1110,29 +1229,36 @@
 
         <!-- Game Mode Selection -->
         <div id="mode-select-screen">
-            <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 30px; background: linear-gradient(135deg, var(--game-accent), var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            <h2
+                style="text-align: center; font-size: 2.5rem; margin-bottom: 30px; background: linear-gradient(135deg, var(--game-accent), var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
                 Choose Your Battle Mode
             </h2>
-            
+
+            <select id="topic-filter" onchange="populateTopicFilter()">
+                <option value="all">Loading Topics...</option>
+            </select>
+
             <div class="game-modes">
                 <div class="mode-card" onclick="selectMode('speed')">
                     <div class="mode-icon">⚡</div>
                     <div class="mode-title">Speed Run</div>
                     <div class="mode-desc">Race against time! 30 seconds per question. +50 XP per correct answer.</div>
                 </div>
-                
+
                 <div class="mode-card" onclick="selectMode('survival')">
                     <div class="mode-icon">💀</div>
                     <div class="mode-title">Survival Mode</div>
-                    <div class="mode-desc">3 lives. One wrong answer = lose a life. How far can you go? +100 XP per question.</div>
+                    <div class="mode-desc">3 lives. One wrong answer = lose a life. How far can you go? +100 XP per
+                        question.</div>
                 </div>
-                
+
                 <div class="mode-card" onclick="selectMode('practice')">
                     <div class="mode-icon">🎯</div>
                     <div class="mode-title">Practice Mode</div>
-                    <div class="mode-desc">No pressure. Learn at your own pace. Unlimited time. +25 XP per question.</div>
+                    <div class="mode-desc">No pressure. Learn at your own pace. Unlimited time. +25 XP per question.
+                    </div>
                 </div>
-                
+
                 <div class="mode-card" onclick="selectMode('boss')">
                     <div class="mode-icon">👹</div>
                     <div class="mode-title">Boss Rush</div>
@@ -1143,7 +1269,7 @@
 
         <!-- Game Screen -->
         <div id="game-screen" style="display: none;">
-            
+
             <!-- Stats Dashboard -->
             <div class="stats-grid">
                 <div class="stat-card streak">
@@ -1170,7 +1296,8 @@
 
             <!-- Power-ups -->
             <div class="powerups">
-                <button class="powerup-btn" id="fifty-fifty-btn" onclick="usePowerup('fifty')" title="Remove 2 wrong answers">
+                <button class="powerup-btn" id="fifty-fifty-btn" onclick="usePowerup('fifty')"
+                    title="Remove 2 wrong answers">
                     <i class="fas fa-fire"></i>
                     50:50
                     <span class="powerup-count" id="fifty-count">3</span>
@@ -1180,7 +1307,8 @@
                     Skip
                     <span class="powerup-count" id="skip-count">2</span>
                 </button>
-                <button class="powerup-btn" id="time-btn" onclick="usePowerup('time')" title="Add 15 seconds" style="display: none;">
+                <button class="powerup-btn" id="time-btn" onclick="usePowerup('time')" title="Add 15 seconds"
+                    style="display: none;">
                     <i class="fas fa-clock"></i>
                     +15s
                     <span class="powerup-count" id="time-count">2</span>
@@ -1229,7 +1357,14 @@
 
     </div>
 
-    <script src="game-questions.js"></script>
+    <script src="data.js"></script>
+
+    <!-- Confetti Canvas -->
+    <canvas id="confetti-canvas"
+        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999;"></canvas>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
     <script>
         // Generate animated stars
         function createStars() {
@@ -1265,57 +1400,30 @@
                 time: 2
             },
             questionsAnswered: 0,
-            correctAnswers: 0
+            correctAnswers: 0,
+            selectedTopic: 'all', // New: Topic Filter
+            bossGauntlet: { active: false, current: 0, max: 5 } // New: Boss Tracking
         };
 
-        // XP and Leveling System
-        function getXPForLevel(level) {
-            return level * 100; // Each level requires 100 more XP
-        }
+        // Populate Topic Filter
+        function populateTopicFilter() {
+            if (typeof prepData === 'undefined') return;
+            const select = document.getElementById('topic-filter');
+            // Clear existing options except 'all'
+            select.innerHTML = '<option value="all">All Topics (Mixed)</option>';
 
-        function addXP(amount) {
-            gameState.xp += amount;
-            localStorage.setItem('totalXP', gameState.xp);
-            
-            updateXPBar();
-            
-            // Check for level up
-            const nextLevelXP = getXPForLevel(gameState.level);
-            if (gameState.xp >= nextLevelXP) {
-                levelUp();
-            }
-        }
-
-        function updateXPBar() {
-            const nextLevelXP = getXPForLevel(gameState.level);
-            const currentLevelXP = getXPForLevel(gameState.level - 1);
-            const xpInLevel = gameState.xp - currentLevelXP;
-            const xpNeeded = nextLevelXP - currentLevelXP;
-            const percentage = (xpInLevel / xpNeeded) * 100;
-            
-            document.getElementById('xp-bar').style.width = percentage + '%';
-            document.getElementById('current-xp').textContent = xpInLevel;
-            document.getElementById('next-level-xp').textContent = xpNeeded;
-        }
-
-        function levelUp() {
-            gameState.level++;
-            localStorage.setItem('playerLevel', gameState.level);
-            document.getElementById('player-level').textContent = gameState.level;
-            
-            // Reward power-ups on level up
-            gameState.powerups.fifty++;
-            gameState.powerups.skip++;
-            gameState.powerups.time++;
-            updatePowerupCounts();
-            
-            showAchievement(`Level ${gameState.level} Unlocked!`, `You've earned bonus power-ups!`);
-            updateXPBar();
+            Object.keys(prepData).forEach(key => {
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = key.replace(/_/g, ' ').toUpperCase();
+                select.appendChild(option);
+            });
         }
 
         // Initialize
         document.getElementById('player-level').textContent = gameState.level;
         updateXPBar();
+        populateTopicFilter();
 
         // Mode Selection
         function selectMode(mode) {
@@ -1326,12 +1434,14 @@
             gameState.lives = 3;
             gameState.questionsAnswered = 0;
             gameState.correctAnswers = 0;
-            
+            gameState.selectedTopic = document.getElementById('topic-filter').value;
+            gameState.bossGauntlet.active = false;
+
             document.getElementById('mode-select-screen').style.display = 'none';
             document.getElementById('game-screen').style.display = 'block';
-            
+
             // Show/hide mode-specific elements
-            if (mode === 'speed' || mode === 'boss') {
+            if (mode === 'speed') {
                 document.getElementById('timer').style.display = 'flex';
                 document.getElementById('time-btn').style.display = 'flex';
                 document.getElementById('lives-card').style.display = 'none';
@@ -1339,12 +1449,21 @@
                 document.getElementById('timer').style.display = 'none';
                 document.getElementById('time-btn').style.display = 'none';
                 document.getElementById('lives-card').style.display = 'block';
+            } else if (mode === 'boss') {
+                // BOSS GAUNTLET LOGIC
+                gameState.bossGauntlet.active = true;
+                gameState.bossGauntlet.current = 0;
+                gameState.lives = 1; // 0 mistakes allowed (displayed as 1 life)
+                document.getElementById('timer').style.display = 'flex';
+                document.getElementById('lives-card').style.display = 'block'; // Show lives (1)
+                document.getElementById('lives-value').textContent = "1 (Sudden Death)";
+                showAchievement("BOSS GAUNTLET STARTED", "5 Hard Questions. 0 Mistakes.");
             } else {
                 document.getElementById('timer').style.display = 'none';
                 document.getElementById('time-btn').style.display = 'none';
                 document.getElementById('lives-card').style.display = 'none';
             }
-            
+
             updateStats();
             nextQuestion();
         }
@@ -1353,121 +1472,92 @@
             document.getElementById('streak-value').textContent = gameState.streak;
             document.getElementById('score-value').textContent = gameState.score;
             document.getElementById('combo-value').textContent = gameState.combo + 'x';
-            document.getElementById('lives-value').textContent = gameState.lives;
-        }
-
-        function updatePowerupCounts() {
-            document.getElementById('fifty-count').textContent = gameState.powerups.fifty;
-            document.getElementById('skip-count').textContent = gameState.powerups.skip;
-            document.getElementById('time-count').textContent = gameState.powerups.time;
-            
-            // Disable buttons if no powerups left
-            document.getElementById('fifty-fifty-btn').classList.toggle('disabled', gameState.powerups.fifty === 0);
-            document.getElementById('skip-btn').classList.toggle('disabled', gameState.powerups.skip === 0);
-            document.getElementById('time-btn').classList.toggle('disabled', gameState.powerups.time === 0);
-        }
-
-        // Power-ups
-        function usePowerup(type) {
-            if (gameState.powerups[type] === 0 || gameState.answered) return;
-            
-            gameState.powerups[type]--;
-            updatePowerupCounts();
-            
-            if (type === 'fifty') {
-                // Remove 2 wrong answers
-                const options = document.querySelectorAll('.answer-btn');
-                const correctIdx = gameState.currentQuestion.correct;
-                let removed = 0;
-                
-                options.forEach((btn, idx) => {
-                    if (idx !== correctIdx && removed < 2 && !btn.style.display) {
-                        btn.style.display = 'none';
-                        removed++;
-                    }
-                });
-                
-                showAchievement('50:50 Used!', '2 wrong answers eliminated');
-            } else if (type === 'skip') {
-                nextQuestion();
-            } else if (type === 'time') {
-                gameState.timeLeft += 15;
-                document.getElementById('time-left').textContent = gameState.timeLeft;
-                showAchievement('+15 Seconds!', 'Time extended');
+            if (gameState.mode !== 'boss') {
+                document.getElementById('lives-value').textContent = gameState.lives;
             }
         }
 
-        // Timer
-        function startTimer() {
-            if (gameState.mode !== 'speed' && gameState.mode !== 'boss') return;
-            
-            gameState.timeLeft = 30;
-            document.getElementById('time-left').textContent = gameState.timeLeft;
-            document.getElementById('timer').classList.remove('danger');
-            
-            clearInterval(gameState.timer);
-            gameState.timer = setInterval(() => {
-                gameState.timeLeft--;
-                document.getElementById('time-left').textContent = gameState.timeLeft;
-                
-                if (gameState.timeLeft <= 10) {
-                    document.getElementById('timer').classList.add('danger');
-                }
-                
-                if (gameState.timeLeft <= 0) {
-                    clearInterval(gameState.timer);
-                    // Time's up - treat as wrong answer
-                    handleWrongAnswer();
-                    setTimeout(nextQuestion, 2000);
-                }
-            }, 1000);
+        // Audio Placeholder
+        function playAudio(type) {
+            // Placeholder for future sound effects
+            // console.log(`Playing audio: ${type}`);
         }
 
-        // Get random question based on mode
+        // Get random question based on mode (Hybrid: data.js + legacy)
         function getRandomQuestion() {
             let allQuestions = [];
-            const topics = Object.keys(questionBank);
-            
-            if (gameState.mode === 'boss') {
-                // Only hard questions
-                topics.forEach(topic => {
-                    questionBank[topic].forEach(q => {
-                        if (q.difficulty === 'Must Do') {
-                            allQuestions.push({...q, topic: topic});
+
+            if (typeof prepData !== 'undefined') {
+                Object.keys(prepData).forEach(topicKey => {
+                    // Filter by Topic
+                    if (gameState.selectedTopic !== 'all' && topicKey !== gameState.selectedTopic) return;
+
+                    const module = prepData[topicKey];
+                    if (!module.questions) return;
+
+                    module.questions.forEach(q => {
+                        if (!q.quiz) return;
+
+                        const gameQ = {
+                            title: q.title,
+                            difficulty: q.difficulty,
+                            description: q.quiz.description,
+                            options: q.quiz.options,
+                            correct: q.quiz.correct,
+                            explanation: q.quiz.explanation,
+                            topic: topicKey
+                        };
+
+                        if (gameState.mode === 'boss') {
+                            if (gameQ.difficulty === 'Must Do' || gameQ.difficulty === 'Hard') allQuestions.push(gameQ);
+                        } else {
+                            allQuestions.push(gameQ);
                         }
                     });
                 });
-            } else {
-                // All questions
-                topics.forEach(topic => {
-                    questionBank[topic].forEach(q => {
-                        allQuestions.push({...q, topic: topic});
-                    });
-                });
             }
-            
+
+            if (allQuestions.length === 0) return null;
             return allQuestions[Math.floor(Math.random() * allQuestions.length)];
         }
 
         function nextQuestion() {
+            // Boss Gauntlet Check
+            if (gameState.mode === 'boss' && gameState.bossGauntlet.current >= 5) {
+                gameWin(); // Boss Gauntlet Complete
+                return;
+            }
+            if (gameState.mode === 'boss') gameState.bossGauntlet.current++;
+
             gameState.currentQuestion = getRandomQuestion();
+
+            // Fallback if no questions found
+            if (!gameState.currentQuestion) {
+                alert("No questions found for this topic/mode!");
+                backToMenu();
+                return;
+            }
+
             gameState.answered = false;
             gameState.questionsAnswered++;
-            
+
             // Reset UI
+            // Reset Shake Effect
+            document.querySelector('.question-card').classList.remove('shake');
+
             document.getElementById('question-title').textContent = gameState.currentQuestion.title;
             document.getElementById('question-description').textContent = gameState.currentQuestion.description;
             document.getElementById('difficulty-badge').textContent = gameState.currentQuestion.difficulty;
-            document.getElementById('difficulty-badge').className = 'difficulty-badge ' + 
-                (gameState.currentQuestion.difficulty === 'Must Do' ? 'must-do' : 
-                 gameState.currentQuestion.difficulty === 'Good to Do' ? 'good-do' : 'bonus');
-            
+            document.getElementById('difficulty-badge').className = 'difficulty-badge ' +
+                (gameState.currentQuestion.difficulty === 'Must Do' ? 'must-do' :
+                    gameState.currentQuestion.difficulty === 'Good to Do' ? 'good-do' : 'bonus');
+
             document.getElementById('explanation').classList.remove('show');
-            
+
             // Render options
             const optionsContainer = document.getElementById('answer-options');
             optionsContainer.innerHTML = '';
-            
+
             gameState.currentQuestion.options.forEach((option, index) => {
                 const btn = document.createElement('button');
                 btn.className = 'answer-btn';
@@ -1479,35 +1569,54 @@
                 btn.onclick = () => selectAnswer(index, btn);
                 optionsContainer.appendChild(btn);
             });
-            
+
             // Start timer if needed
             startTimer();
-            
+
             // Check for achievements
             checkAchievements();
+
+            // Re-enable powerups if new question
+            document.querySelectorAll('.powerup-btn').forEach(btn => {
+                // Check logical condition again
+                const type = btn.id.split('-')[0]; // fifty, skip, time
+                if (gameState.powerups[type] > 0) btn.classList.remove('disabled');
+            });
         }
 
         function selectAnswer(index, btn) {
             if (gameState.answered) return;
-            
+
             clearInterval(gameState.timer);
             gameState.answered = true;
-            
+
             const correct = index === gameState.currentQuestion.correct;
             const allOptions = document.querySelectorAll('.answer-btn');
-            
+
             if (correct) {
                 btn.classList.add('correct');
                 handleCorrectAnswer();
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+                playAudio('correct');
             } else {
                 btn.classList.add('wrong');
                 allOptions[gameState.currentQuestion.correct].classList.add('correct');
                 handleWrongAnswer();
+
+                // Shake Effect
+                const card = document.querySelector('.question-card');
+                card.classList.add('shake');
+                setTimeout(() => card.classList.remove('shake'), 500);
+                playAudio('wrong');
             }
-            
+
             // Disable all buttons
             allOptions.forEach(b => b.classList.add('disabled'));
-            
+
             // Show explanation after 1.5 seconds
             setTimeout(() => {
                 document.getElementById('explanation-text').textContent = gameState.currentQuestion.explanation;
@@ -1518,7 +1627,7 @@
         function handleCorrectAnswer() {
             gameState.streak++;
             gameState.correctAnswers++;
-            
+
             // Combo system
             if (gameState.streak >= 5) {
                 gameState.combo = Math.min(5, Math.floor(gameState.streak / 5) + 1);
@@ -1526,50 +1635,110 @@
                     showCombo();
                 }
             }
-            
+
             // Calculate XP based on mode
             let baseXP = 25;
             if (gameState.mode === 'speed') baseXP = 50;
             else if (gameState.mode === 'survival') baseXP = 100;
-            else if (gameState.mode === 'boss') baseXP = 200;
-            
+            else if (gameState.mode === 'boss') baseXP = 200; // Massive XP
+
             const xpEarned = baseXP * gameState.combo;
             gameState.score += xpEarned;
             addXP(xpEarned);
-            
+
             updateStats();
         }
 
         function handleWrongAnswer() {
             gameState.streak = 0;
             gameState.combo = 1;
-            
-            if (gameState.mode === 'survival') {
+
+            if (gameState.mode === 'survival' || gameState.mode === 'boss') {
                 gameState.lives--;
                 if (gameState.lives <= 0) {
                     gameOver();
                     return;
                 }
             }
-            
+
             updateStats();
+        }
+
+        function gameWin() {
+            showAchievement('BOSS DEFEATED!', `You cleared the Gauntlet! +1000 XP`);
+            addXP(1000); // Boss Bonus
+            setTimeout(() => {
+                backToMenu();
+            }, 4000);
         }
 
         function showCombo() {
             const comboDisplay = document.getElementById('combo-display');
             comboDisplay.textContent = `${gameState.combo}X COMBO!`;
             comboDisplay.classList.add('show');
-            
+
             setTimeout(() => {
                 comboDisplay.classList.remove('show');
             }, 1000);
         }
 
+        // XP and Leveling System (Moved logic here for consolidation)
+        function getXPForLevel(level) { return level * 100; }
+        function addXP(amount) {
+            gameState.xp += amount;
+            localStorage.setItem('totalXP', gameState.xp);
+            updateXPBar();
+            const nextLevelXP = getXPForLevel(gameState.level);
+            if (gameState.xp >= nextLevelXP) levelUp();
+        }
+        function updateXPBar() {
+            const nextLevelXP = getXPForLevel(gameState.level);
+            const currentLevelXP = getXPForLevel(gameState.level - 1);
+            const xpInLevel = gameState.xp - currentLevelXP;
+            const xpNeeded = nextLevelXP - currentLevelXP;
+            const percentage = (xpInLevel / xpNeeded) * 100;
+            document.getElementById('xp-bar').style.width = percentage + '%';
+            document.getElementById('current-xp').textContent = xpInLevel;
+            document.getElementById('next-level-xp').textContent = xpNeeded;
+        }
+
+        function levelUp() {
+            gameState.level++;
+            localStorage.setItem('playerLevel', gameState.level);
+            document.getElementById('player-level').textContent = gameState.level;
+
+            // Reward power-ups on level up
+            gameState.powerups.fifty++;
+            gameState.powerups.skip++;
+            gameState.powerups.time++;
+            updatePowerupCounts();
+
+            showAchievement(`Level ${gameState.level} Unlocked!`, `You've earned bonus power-ups!`);
+            updateXPBar();
+            // Level Up Confetti
+            confetti({
+                particleCount: 150,
+                spread: 100,
+                origin: { y: 0.6 },
+                colors: ['#FFD700', '#FFA500'] // Gold
+            });
+        }
+
+        function updatePowerupCounts() {
+            document.getElementById('fifty-count').textContent = gameState.powerups.fifty;
+            document.getElementById('skip-count').textContent = gameState.powerups.skip;
+            document.getElementById('time-count').textContent = gameState.powerups.time;
+            document.getElementById('fifty-fifty-btn').classList.toggle('disabled', gameState.powerups.fifty === 0);
+            document.getElementById('skip-btn').classList.toggle('disabled', gameState.powerups.skip === 0);
+            document.getElementById('time-btn').classList.toggle('disabled', gameState.powerups.time === 0);
+        }
+
+
         function showAchievement(title, desc) {
             const toast = document.getElementById('achievement-toast');
             document.getElementById('achievement-title').textContent = title;
             document.getElementById('achievement-desc').textContent = desc;
-            
+
             toast.classList.add('show');
             setTimeout(() => {
                 toast.classList.remove('show');
@@ -1581,17 +1750,17 @@
             if (gameState.questionsAnswered === 1) {
                 showAchievement('Warrior Awakened!', 'You started your DSA journey');
             }
-            
+
             // 10 streak
             if (gameState.streak === 10) {
                 showAchievement('On Fire!', '10 correct answers in a row!');
             }
-            
+
             // 20 questions
             if (gameState.questionsAnswered === 20) {
                 showAchievement('Dedicated Learner!', '20 questions attempted');
             }
-            
+
             // Perfect 10
             if (gameState.questionsAnswered === 10 && gameState.correctAnswers === 10) {
                 showAchievement('Perfect Start!', '10/10 correct answers!');
@@ -1600,7 +1769,7 @@
 
         function gameOver() {
             showAchievement('Game Over!', `Score: ${gameState.score} | Streak: ${Math.max(...[gameState.streak])}`);
-            
+
             setTimeout(() => {
                 backToMenu();
             }, 3000);
@@ -1617,4 +1786,5 @@
     </script>
 
 </body>
+
 </html>

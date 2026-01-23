@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📈 LIS - Lun Na Lun Visualization</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --primary: #8b5cf6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --accent: #3b82f6;
+            --border: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text-main);
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 50px 20px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
+            border-radius: 20px;
+            margin-bottom: 30px;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            opacity: 0.95;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #7c3aed;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            background: var(--border);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Main Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1.3fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        /* Card */
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: 2px solid var(--border);
+            padding: 25px;
+        }
+
+        .card h2 {
+            color: var(--accent);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Array Display */
+        .array-container {
+            margin: 20px 0;
+        }
+
+        .array-display {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .num-box {
+            width: 70px;
+            height: 90px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 3px solid var(--border);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .num-value {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--accent);
+        }
+
+        .num-index {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .num-box.current {
+            background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+            border-color: var(--primary);
+            transform: scale(1.15);
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.5);
+        }
+
+        .num-box.current .num-value {
+            color: white;
+        }
+
+        .num-box.previous {
+            background: linear-gradient(135deg, #f59e0b, #fbbf24);
+            border-color: var(--warning);
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(245, 158, 11, 0.4);
+        }
+
+        .num-box.previous .num-value {
+            color: white;
+        }
+
+        .num-box.taken {
+            background: linear-gradient(135deg, #10b981, #34d399);
+            border-color: var(--success);
+            animation: takePulse 0.6s;
+        }
+
+        .num-box.taken .num-value {
+            color: white;
+        }
+
+        .num-box.skipped {
+            background: rgba(100, 116, 139, 0.2);
+            border-color: #475569;
+            opacity: 0.5;
+        }
+
+        @keyframes takePulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.2) rotate(5deg);
+            }
+        }
+
+        /* Current Subsequence */
+        .subsequence-display {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(59, 130, 246, 0.2));
+            border: 3px solid var(--success);
+            border-radius: 16px;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .subseq-title {
+            font-size: 1.2rem;
+            color: var(--success);
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .subseq-numbers {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+
+        .subseq-num {
+            width: 60px;
+            height: 60px;
+            background: var(--success);
+            color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: 900;
+            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .subseq-length {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--success);
+            margin-top: 15px;
+        }
+
+        /* Decision Box */
+        .decision-box {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(236, 72, 153, 0.2));
+            border: 3px solid var(--primary);
+            border-radius: 16px;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .decision-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .comparison-box {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .comp-num {
+            width: 100px;
+            height: 100px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: 900;
+            border: 3px solid;
+        }
+
+        .comp-current {
+            background: rgba(139, 92, 246, 0.3);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .comp-prev {
+            background: rgba(245, 158, 11, 0.3);
+            border-color: var(--warning);
+            color: var(--warning);
+        }
+
+        .comp-symbol {
+            font-size: 2.5rem;
+            color: var(--text-muted);
+        }
+
+        .comp-result {
+            margin-top: 15px;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .comp-result.valid {
+            color: var(--success);
+        }
+
+        .comp-result.invalid {
+            color: var(--danger);
+        }
+
+        .decision-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .decision-option {
+            background: rgba(139, 92, 246, 0.1);
+            border: 3px solid var(--border);
+            padding: 20px;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .decision-option.winner {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.2);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+            transform: scale(1.05);
+        }
+
+        .option-label {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .option-lun {
+            color: var(--success);
+        }
+
+        .option-nalun {
+            color: var(--warning);
+        }
+
+        .option-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--primary);
+            font-family: 'Consolas', monospace;
+        }
+
+        .decision-option.winner .option-value {
+            color: var(--success);
+        }
+
+        /* Call Stack */
+        .call-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 450px;
+            overflow-y: auto;
+        }
+
+        .stack-item {
+            background: rgba(59, 130, 246, 0.1);
+            border: 2px solid var(--border);
+            border-left: 4px solid var(--accent);
+            padding: 10px;
+            border-radius: 8px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .stack-item.active {
+            background: rgba(59, 130, 246, 0.3);
+            border-color: var(--accent);
+        }
+
+        .stack-item.success {
+            border-left-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        /* Memo Table */
+        .memo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(95px, 1fr));
+            gap: 8px;
+        }
+
+        .memo-item {
+            background: rgba(59, 130, 246, 0.1);
+            border: 2px solid var(--border);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .memo-item.hit {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+            animation: memoHit 0.5s;
+        }
+
+        .memo-key {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .memo-value {
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: var(--accent);
+            margin-top: 5px;
+        }
+
+        .memo-item.hit .memo-key,
+        .memo-item.hit .memo-value {
+            color: white;
+        }
+
+        @keyframes memoHit {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.15);
+            }
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .stat-box {
+            background: rgba(59, 130, 246, 0.1);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--accent);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        /* Steps Log */
+        .steps-log {
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: 2px solid var(--border);
+            padding: 25px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .step-item {
+            padding: 10px;
+            border-left: 3px solid var(--border);
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            border-radius: 4px;
+        }
+
+        .step-item.info {
+            border-left-color: var(--accent);
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .step-item.success {
+            border-left-color: var(--success);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .step-item.error {
+            border-left-color: var(--danger);
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        .step-item.warning {
+            border-left-color: var(--warning);
+            background: rgba(245, 158, 11, 0.05);
+        }
+
+        /* Code Display */
+        .code-display {
+            background: #0d1117;
+            border-radius: 12px;
+            padding: 20px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85rem;
+            line-height: 1.8;
+            overflow-x: auto;
+            border: 2px solid var(--border);
+        }
+
+        .code-line {
+            display: block;
+        }
+
+        .code-line.highlight {
+            background: rgba(59, 130, 246, 0.3);
+            border-left: 3px solid var(--accent);
+            padding-left: 10px;
+            margin-left: -10px;
+        }
+
+        .keyword {
+            color: #ff79c6;
+        }
+
+        .function {
+            color: #50fa7b;
+        }
+
+        .string {
+            color: #f1fa8c;
+        }
+
+        .comment {
+            color: #6272a4;
+        }
+
+        .number {
+            color: #bd93f9;
+        }
+
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="hero">
+            <h1>📈 Longest Increasing Subsequence</h1>
+            <p>Classic Lun Na Lun Pattern - Step by Step</p>
+        </div>
+
+        <div class="controls">
+            <button class="btn" onclick="startVisualization()">
+                <i class="fas fa-play"></i> Start
+            </button>
+            <button class="btn" onclick="nextStep()" id="nextBtn" disabled>
+                <i class="fas fa-step-forward"></i> Next Step
+            </button>
+            <button class="btn" onclick="autoPlay()" id="autoBtn" disabled>
+                <i class="fas fa-forward"></i> Auto Play
+            </button>
+            <button class="btn" onclick="resetVisualization()">
+                <i class="fas fa-redo"></i> Reset
+            </button>
+        </div>
+
+        <div class="main-grid">
+            <!-- Left Column -->
+            <div>
+                <div class="card">
+                    <h2><i class="fas fa-sort-amount-up"></i> Input Array</h2>
+                    <div class="array-container">
+                        <div class="array-display" id="arrayDisplay"></div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 20px;">
+                    <h2><i class="fas fa-balance-scale"></i> Current Decision</h2>
+                    <div class="decision-box" id="decisionBox">
+                        <div style="color: var(--text-muted);">Waiting to start...</div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 20px;">
+                    <h2><i class="fas fa-arrow-up"></i> Current Subsequence</h2>
+                    <div class="subsequence-display" id="subsequenceDisplay">
+                        <div class="subseq-title">Building LIS...</div>
+                        <div class="subseq-numbers" id="subseqNumbers">
+                            <div style="color: var(--text-muted);">No elements yet</div>
+                        </div>
+                        <div class="subseq-length" id="subseqLength">0</div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 20px;">
+                    <h2><i class="fas fa-chart-bar"></i> Statistics</h2>
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <div class="stat-number" id="statSteps">0</div>
+                            <div class="stat-label">Steps</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number" id="statCalls">0</div>
+                            <div class="stat-label">Calls</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number" id="statHits">0</div>
+                            <div class="stat-label">Memo Hits</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number" id="statTakes">0</div>
+                            <div class="stat-label">Takes</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number" id="statSkips">0</div>
+                            <div class="stat-label">Skips</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number" id="statLIS">0</div>
+                            <div class="stat-label">LIS Length</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div>
+                <div class="card">
+                    <h2><i class="fas fa-layer-group"></i> Call Stack</h2>
+                    <div class="call-stack" id="callStack">
+                        <div style="color: var(--text-muted); text-align: center;">No calls yet...</div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 20px;">
+                    <h2><i class="fas fa-save"></i> Memoization Table</h2>
+                    <div class="memo-grid" id="memoTable">
+                        <div style="color: var(--text-muted); text-align: center;">Empty memo...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="steps-log">
+            <h2 style="color: var(--accent); margin-bottom: 20px;">
+                <i class="fas fa-list"></i> Execution Log
+            </h2>
+            <div id="stepsLog">
+                <div style="color: var(--text-muted); text-align: center;">Click "Start" to begin...</div>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top: 20px;">
+            <h2><i class="fas fa-code"></i> Code Being Executed - Lun Na Lun Pattern</h2>
+            <div class="code-display">
+                <span class="code-line"><span class="keyword">def</span> <span
+                        class="function">lengthOfLIS</span>(nums):</span>
+                <span class="code-line"> memo = {}</span>
+                <span class="code-line"> </span>
+                <span class="code-line"> <span class="keyword">def</span> <span class="function">dfs</span>(i,
+                    prev):</span>
+                <span class="code-line" id="line-base"> <span class="comment"># Base case: Array khatam</span></span>
+                <span class="code-line"> <span class="keyword">if</span> i == <span
+                        class="function">len</span>(nums):</span>
+                <span class="code-line"> <span class="keyword">return</span> <span class="number">0</span></span>
+                <span class="code-line"> </span>
+                <span class="code-line" id="line-memo"> <span class="comment"># Memo check (2D state!)</span></span>
+                <span class="code-line"> <span class="keyword">if</span> (i, prev) <span class="keyword">in</span>
+                    memo:</span>
+                <span class="code-line"> <span class="keyword">return</span> memo[(i, prev)]</span>
+                <span class="code-line"> </span>
+                <span class="code-line" id="line-check"> <span class="comment"># Check if we can take current
+                        element</span></span>
+                <span class="code-line"> take = <span class="number">0</span></span>
+                <span class="code-line"> <span class="keyword">if</span> prev == -<span class="number">1</span> <span
+                        class="keyword">or</span> nums[i] > nums[prev]:</span>
+                <span class="code-line" id="line-lun"> <span class="comment"># LUN: Take current element
+                        (increasing!)</span></span>
+                <span class="code-line"> take = <span class="number">1</span> + <span
+                        class="function">dfs</span>(i+<span class="number">1</span>, i)</span>
+                <span class="code-line"> </span>
+                <span class="code-line" id="line-nalun"> <span class="comment"># NA LUN: Skip current
+                        element</span></span>
+                <span class="code-line"> skip = <span class="function">dfs</span>(i+<span class="number">1</span>,
+                    prev)</span>
+                <span class="code-line"> </span>
+                <span class="code-line" id="line-max"> <span class="comment"># Take maximum of both
+                        options</span></span>
+                <span class="code-line"> memo[(i, prev)] = <span class="function">max</span>(take, skip)</span>
+                <span class="code-line"> <span class="keyword">return</span> memo[(i, prev)]</span>
+                <span class="code-line"> </span>
+                <span class="code-line"> <span class="keyword">return</span> <span class="function">dfs</span>(<span
+                        class="number">0</span>, -<span class="number">1</span>)</span>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Configuration
+        const nums = [10, 9, 2, 5, 3, 7, 101, 18];
+
+        // State
+        let steps = [];
+        let currentStep = 0;
+        let memo = {};
+        let callStack = [];
+        let currentSubseq = [];
+        let stats = {
+            steps: 0,
+            calls: 0,
+            hits: 0,
+            takes: 0,
+            skips: 0,
+            lis: 0
+        };
+        let autoPlayInterval = null;
+
+        // Initialize
+        function initialize() {
+            const arrayDiv = document.getElementById('arrayDisplay');
+            arrayDiv.innerHTML = '';
+
+            nums.forEach((num, idx) => {
+                arrayDiv.innerHTML += `
+                <div class="num-box" id="num-${idx}">
+                    <div class="num-value">${num}</div>
+                    <div class="num-index">${idx}</div>
+                </div>
+            `;
+            });
+        }
+
+        // Generate steps
+        function generateSteps() {
+            steps = [];
+            memo = {};
+            callStack = [];
+
+            function dfs(i, prev, depth = 0, subseq = []) {
+                steps.push({
+                    type: 'call',
+                    i: i,
+                    prev: prev,
+                    depth: depth,
+                    subseq: [...subseq],
+                    message: `📞 dfs(${i}, ${prev}) - Current: ${i < nums.length ? nums[i] : 'END'}, Prev: ${prev === -1 ? 'None' : nums[prev]}`
+                });
+
+                if (i === nums.length) {
+                    steps.push({
+                        type: 'base',
+                        i: i,
+                        prev: prev,
+                        depth: depth,
+                        subseq: [...subseq],
+                        message: `✅ Base case! Array finished. Return 0`
+                    });
+                    return 0;
+                }
+
+                const state = `${i},${prev}`;
+                if (state in memo) {
+                    steps.push({
+                        type: 'memo-hit',
+                        i: i,
+                        prev: prev,
+                        value: memo[state],
+                        depth: depth,
+                        subseq: [...subseq],
+                        message: `💾 Memo hit! memo[(${i},${prev})] = ${memo[state]}`
+                    });
+                    return memo[state];
+                }
+
+                const current = nums[i];
+                const prevVal = prev === -1 ? null : nums[prev];
+
+                let take = 0;
+                const canTake = prev === -1 || nums[i] > nums[prev];
+
+                steps.push({
+                    type: 'check',
+                    i: i,
+                    prev: prev,
+                    current: current,
+                    prevVal: prevVal,
+                    canTake: canTake,
+                    depth: depth,
+                    subseq: [...subseq],
+                    message: `🔍 Check: ${current} ${prev === -1 ? '(first element)' : (canTake ? `> ${prevVal} ✅` : `<= ${prevVal} ❌`)}`
+                });
+
+                if (canTake) {
+                    steps.push({
+                        type: 'lun',
+                        i: i,
+                        prev: prev,
+                        current: current,
+                        depth: depth,
+                        subseq: [...subseq],
+                        message: `✨ LUN: Take ${current} (increasing!). Call dfs(${i + 1}, ${i})`
+                    });
+
+                    const newSubseq = [...subseq, current];
+                    take = 1 + dfs(i + 1, i, depth + 1, newSubseq);
+
+                    steps.push({
+                        type: 'lun-result',
+                        i: i,
+                        prev: prev,
+                        result: take,
+                        depth: depth,
+                        subseq: [...subseq],
+                        message: `✅ LUN result: 1 + ${take - 1} = ${take}`
+                    });
+                } else {
+                    steps.push({
+                        type: 'cannot-take',
+                        i: i,
+                        prev: prev,
+                        current: current,
+                        prevVal: prevVal,
+                        depth: depth,
+                        subseq: [...subseq],
+                        message: `❌ Cannot take ${current} (not increasing: ${current} <= ${prevVal})`
+                    });
+                }
+
+                steps.push({
+                    type: 'nalun',
+                    i: i,
+                    prev: prev,
+                    depth: depth,
+                    subseq: [...subseq],
+                    message: `⏭️ NA LUN: Skip ${current}. Call dfs(${i + 1}, ${prev})`
+                });
+
+                const skip = dfs(i + 1, prev, depth + 1, subseq);
+
+                steps.push({
+                    type: 'nalun-result',
+                    i: i,
+                    prev: prev,
+                    result: skip,
+                    depth: depth,
+                    subseq: [...subseq],
+                    message: `⏭️ NA LUN result: ${skip}`
+                });
+
+                const result = Math.max(take, skip);
+
+                steps.push({
+                    type: 'decision',
+                    i: i,
+                    prev: prev,
+                    take: take,
+                    skip: skip,
+                    result: result,
+                    depth: depth,
+                    subseq: [...subseq],
+                    message: `⚖️ Decision: max(take=${take}, skip=${skip}) = ${result}. Save to memo!`
+                });
+
+                memo[state] = result;
+                return result;
+            }
+
+            const lisLength = dfs(0, -1);
+
+            steps.push({
+                type: 'final',
+                result: lisLength,
+                message: `🏁 Final LIS Length: ${lisLength}`
+            });
+        }
+
+        // Start
+        function startVisualization() {
+            resetVisualization();
+            generateSteps();
+            document.getElementById('nextBtn').disabled = false;
+            document.getElementById('autoBtn').disabled = false;
+            addLog('info', '🚀 Visualization started!');
+            addLog('info', `Array: [${nums.join(', ')}]`);
+            addLog('info', 'Finding Longest Increasing Subsequence using Lun Na Lun pattern...');
+        }
+
+        // Reset
+        function resetVisualization() {
+            currentStep = 0;
+            memo = {};
+            callStack = [];
+            currentSubseq = [];
+            stats = { steps: 0, calls: 0, hits: 0, takes: 0, skips: 0, lis: 0 };
+            steps = [];
+
+            if (autoPlayInterval) {
+                clearInterval(autoPlayInterval);
+                autoPlayInterval = null;
+            }
+
+            document.getElementById('stepsLog').innerHTML = '';
+            document.getElementById('callStack').innerHTML = '<div style="color: var(--text-muted); text-align: center;">No calls yet...</div>';
+            document.getElementById('memoTable').innerHTML = '<div style="color: var(--text-muted); text-align: center;">Empty memo...</div>';
+            document.getElementById('decisionBox').innerHTML = '<div style="color: var(--text-muted);">Waiting to start...</div>';
+            document.getElementById('subseqNumbers').innerHTML = '<div style="color: var(--text-muted);">No elements yet</div>';
+            document.getElementById('subseqLength').textContent = '0';
+            document.getElementById('nextBtn').disabled = true;
+            document.getElementById('autoBtn').disabled = true;
+
+            updateStats();
+            initialize();
+            clearHighlights();
+        }
+
+        // Next step
+        function nextStep() {
+            if (currentStep >= steps.length) {
+                addLog('success', '✅ Visualization complete!');
+                document.getElementById('nextBtn').disabled = true;
+                document.getElementById('autoBtn').disabled = true;
+                return;
+            }
+
+            const step = steps[currentStep];
+            executeStep(step);
+            currentStep++;
+            stats.steps++;
+            updateStats();
+
+            if (currentStep >= steps.length) {
+                document.getElementById('nextBtn').disabled = true;
+                document.getElementById('autoBtn').disabled = true;
+            }
+        }
+
+        // Execute step
+        function executeStep(step) {
+            clearHighlights();
+
+            if (step.subseq) {
+                updateSubsequence(step.subseq);
+            }
+
+            switch (step.type) {
+                case 'call':
+                    highlightLine('line-base');
+                    stats.calls++;
+                    addLog('info', step.message);
+                    highlightNums(step.i, step.prev);
+                    updateCallStack(`dfs(${step.i}, ${step.prev})`, step.depth, 'active');
+                    break;
+
+                case 'base':
+                    highlightLine('line-base');
+                    addLog('success', step.message);
+                    updateCallStackResult(step.depth, 0);
+                    break;
+
+                case 'memo-hit':
+                    highlightLine('line-memo');
+                    stats.hits++;
+                    addLog('success', step.message);
+                    highlightMemo(step.i, step.prev);
+                    updateCallStackResult(step.depth, step.value);
+                    break;
+
+                case 'check':
+                    highlightLine('line-check');
+                    addLog('info', step.message);
+                    highlightNums(step.i, step.prev);
+                    showComparison(step.current, step.prevVal, step.canTake);
+                    break;
+
+                case 'lun':
+                    highlightLine('line-lun');
+                    stats.takes++;
+                    addLog('success', step.message);
+                    document.getElementById(`num-${step.i}`)?.classList.add('taken');
+                    break;
+
+                case 'lun-result':
+                    addLog('success', step.message);
+                    break;
+
+                case 'cannot-take':
+                    addLog('error', step.message);
+                    break;
+
+                case 'nalun':
+                    highlightLine('line-nalun');
+                    stats.skips++;
+                    addLog('warning', step.message);
+                    document.getElementById(`num-${step.i}`)?.classList.add('skipped');
+                    break;
+
+                case 'nalun-result':
+                    addLog('warning', step.message);
+                    break;
+
+                case 'decision':
+                    highlightLine('line-max');
+                    addLog('success', step.message);
+                    showDecision(step.take, step.skip, step.result);
+                    updateMemo(step.i, step.prev, step.result);
+                    updateCallStackResult(step.depth, step.result);
+                    stats.lis = Math.max(stats.lis, step.result);
+                    break;
+
+                case 'final':
+                    addLog('success', step.message);
+                    stats.lis = step.result;
+                    break;
+            }
+        }
+
+        // Auto play
+        function autoPlay() {
+            if (autoPlayInterval) {
+                clearInterval(autoPlayInterval);
+                autoPlayInterval = null;
+                document.getElementById('autoBtn').innerHTML = '<i class="fas fa-forward"></i> Auto Play';
+            } else {
+                autoPlayInterval = setInterval(() => {
+                    if (currentStep >= steps.length) {
+                        clearInterval(autoPlayInterval);
+                        autoPlayInterval = null;
+                        document.getElementById('autoBtn').innerHTML = '<i class="fas fa-forward"></i> Auto Play';
+                    } else {
+                        nextStep();
+                    }
+                }, 1000);
+                document.getElementById('autoBtn').innerHTML = '<i class="fas fa-pause"></i> Pause';
+            }
+        }
+
+        // Helper functions
+        function highlightNums(i, prev) {
+            if (i < nums.length) {
+                document.getElementById(`num-${i}`).classList.add('current');
+            }
+            if (prev !== -1 && prev < nums.length) {
+                document.getElementById(`num-${prev}`).classList.add('previous');
+            }
+        }
+
+        function showComparison(current, prevVal, canTake) {
+            const box = document.getElementById('decisionBox');
+
+            if (prevVal === null) {
+                box.innerHTML = `
+                <div class="decision-title">First Element</div>
+                <div class="comparison-box">
+                    <div class="comp-num comp-current">${current}</div>
+                </div>
+                <div class="comp-result valid">
+                    ✅ Can take (first element, no previous constraint)
+                </div>
+            `;
+            } else {
+                box.innerHTML = `
+                <div class="decision-title">Comparison Check</div>
+                <div class="comparison-box">
+                    <div class="comp-num comp-current">${current}</div>
+                    <div class="comp-symbol">${canTake ? '>' : '<='}</div>
+                    <div class="comp-num comp-prev">${prevVal}</div>
+                </div>
+                <div class="comp-result ${canTake ? 'valid' : 'invalid'}">
+                    ${canTake ? '✅ Increasing! Can take' : '❌ Not increasing! Cannot take'}
+                </div>
+            `;
+            }
+        }
+
+        function showDecision(take, skip, result) {
+            const box = document.getElementById('decisionBox');
+            box.innerHTML = `
+            <div class="decision-title">Lun Na Lun Decision</div>
+            <div class="decision-options">
+                <div class="decision-option ${take === result && take > 0 ? 'winner' : ''}">
+                    <div class="option-label option-lun">✨ LUN (Take)</div>
+                    <div class="option-value">${take}</div>
+                </div>
+                <div class="decision-option ${skip === result ? 'winner' : ''}">
+                    <div class="option-label option-nalun">⏭️ NA LUN (Skip)</div>
+                    <div class="option-value">${skip}</div>
+                </div>
+            </div>
+            <div style="margin-top: 15px; font-size: 1.3rem; font-weight: 700;">
+                Result: <span style="color: var(--success);">${result}</span>
+            </div>
+        `;
+        }
+
+        function updateSubsequence(subseq) {
+            currentSubseq = subseq;
+            const container = document.getElementById('subseqNumbers');
+            const lengthDiv = document.getElementById('subseqLength');
+
+            if (subseq.length === 0) {
+                container.innerHTML = '<div style="color: var(--text-muted);">No elements yet</div>';
+                lengthDiv.textContent = '0';
+            } else {
+                container.innerHTML = subseq.map(num =>
+                    `<div class="subseq-num">${num}</div>`
+                ).join('');
+                lengthDiv.textContent = subseq.length;
+            }
+        }
+
+        function updateCallStack(call, depth, status) {
+            callStack.push({ call, depth, status });
+            renderCallStack();
+        }
+
+        function updateCallStackResult(depth, result) {
+            for (let i = callStack.length - 1; i >= 0; i--) {
+                if (callStack[i].depth === depth) {
+                    callStack[i].status = 'success';
+                    callStack[i].result = result;
+                    break;
+                }
+            }
+            renderCallStack();
+
+            setTimeout(() => {
+                for (let i = callStack.length - 1; i >= 0; i--) {
+                    if (callStack[i].depth === depth) {
+                        callStack.splice(i, 1);
+                        break;
+                    }
+                }
+                renderCallStack();
+            }, 300);
+        }
+
+        function renderCallStack() {
+            const stackDiv = document.getElementById('callStack');
+            if (callStack.length === 0) {
+                stackDiv.innerHTML = '<div style="color: var(--text-muted); text-align: center;">No calls yet...</div>';
+                return;
+            }
+
+            stackDiv.innerHTML = callStack.map(item => `
+            <div class="stack-item ${item.status}">
+                ${'  '.repeat(item.depth)}${item.call}${item.result !== undefined ? ' → ' + item.result : ''}
+            </div>
+        `).join('');
+        }
+
+        function updateMemo(i, prev, value) {
+            const key = `${i},${prev}`;
+            memo[key] = value;
+            renderMemo();
+        }
+
+        function highlightMemo(i, prev) {
+            const elem = document.getElementById(`memo-${i}-${prev}`);
+            if (elem) {
+                elem.classList.add('hit');
+                setTimeout(() => elem.classList.remove('hit'), 500);
+            }
+        }
+
+        function renderMemo() {
+            const memoDiv = document.getElementById('memoTable');
+            const keys = Object.keys(memo).sort((a, b) => {
+                const [ai, ap] = a.split(',').map(Number);
+                const [bi, bp] = b.split(',').map(Number);
+                return ai === bi ? ap - bp : ai - bi;
+            });
+
+            if (keys.length === 0) {
+                memoDiv.innerHTML = '<div style="color: var(--text-muted); text-align: center;">Empty memo...</div>';
+                return;
+            }
+
+            memoDiv.innerHTML = keys.map(key => {
+                const value = memo[key];
+                return `
+                <div class="memo-item" id="memo-${key.replace(',', '-')}">
+                    <div class="memo-key">(${key})</div>
+                    <div class="memo-value">${value}</div>
+                </div>
+            `;
+            }).join('');
+        }
+
+        function addLog(type, message) {
+            const logDiv = document.getElementById('stepsLog');
+            if (logDiv.children.length === 1 && logDiv.children[0].textContent.includes('Click "Start"')) {
+                logDiv.innerHTML = '';
+            }
+
+            logDiv.innerHTML += `<div class="step-item ${type}">${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function updateStats() {
+            document.getElementById('statSteps').textContent = stats.steps;
+            document.getElementById('statCalls').textContent = stats.calls;
+            document.getElementById('statHits').textContent = stats.hits;
+            document.getElementById('statTakes').textContent = stats.takes;
+            document.getElementById('statSkips').textContent = stats.skips;
+            document.getElementById('statLIS').textContent = stats.lis;
+        }
+
+        function highlightLine(lineId) {
+            document.querySelectorAll('.code-line').forEach(line => {
+                line.classList.remove('highlight');
+            });
+            const line = document.getElementById(lineId);
+            if (line) line.classList.add('highlight');
+        }
+
+        function clearHighlights() {
+            document.querySelectorAll('.num-box').forEach(box => {
+                box.className = 'num-box';
+            });
+            document.querySelectorAll('.code-line').forEach(line => {
+                line.classList.remove('highlight');
+            });
+        }
+
+        // Initialize on load
+        window.onload = initialize;
+    </script>
+
+</body>
+
+</html>

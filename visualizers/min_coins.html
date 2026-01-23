@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💰 Coin Change - Interactive Visualization</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --primary: #8b5cf6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --accent: #22d3ee;
+            --border: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text-main);
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 50px 20px;
+            background: linear-gradient(135deg, #f59e0b, #f97316, #ef4444);
+            border-radius: 20px;
+            margin-bottom: 30px;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            opacity: 0.95;
+        }
+
+        /* Approach Selector */
+        .approach-selector {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .approach-btn {
+            background: var(--card-bg);
+            border: 3px solid var(--border);
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--text-main);
+        }
+
+        .approach-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .approach-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #7c3aed;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            background: var(--border);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Main Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        /* Card */
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: 2px solid var(--border);
+            padding: 25px;
+        }
+
+        .card h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Coins Display */
+        .coins-display {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .coin {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #f59e0b, #f97316);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: white;
+            border: 4px solid #ea580c;
+            box-shadow: 0 8px 20px rgba(245, 158, 11, 0.4);
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .coin.current {
+            transform: scale(1.2);
+            box-shadow: 0 12px 30px rgba(245, 158, 11, 0.6);
+            animation: coinPulse 0.5s infinite;
+        }
+
+        .coin.taken {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-color: #047857;
+            animation: coinTake 0.5s;
+        }
+
+        .coin.skipped {
+            background: linear-gradient(135deg, #64748b, #475569);
+            border-color: #334155;
+            opacity: 0.5;
+        }
+
+        .coin-label {
+            font-size: 0.7rem;
+            margin-top: 5px;
+            opacity: 0.9;
+        }
+
+        @keyframes coinPulse {
+
+            0%,
+            100% {
+                transform: scale(1.2);
+            }
+
+            50% {
+                transform: scale(1.25);
+            }
+        }
+
+        @keyframes coinTake {
+            0% {
+                transform: scale(1) rotate(0deg);
+            }
+
+            50% {
+                transform: scale(1.3) rotate(180deg);
+            }
+
+            100% {
+                transform: scale(1.1) rotate(360deg);
+            }
+        }
+
+        /* Amount Display */
+        .amount-display {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(217, 70, 239, 0.2));
+            border: 3px solid var(--primary);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .amount-number {
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--primary);
+            font-family: 'Consolas', monospace;
+        }
+
+        .amount-label {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-top: 10px;
+        }
+
+        .amount-progress {
+            margin-top: 20px;
+            background: rgba(139, 92, 246, 0.1);
+            height: 40px;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .amount-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), var(--accent));
+            transition: width 0.5s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+        }
+
+        /* Decision Box */
+        .decision-box {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(239, 68, 68, 0.2));
+            border: 3px solid var(--warning);
+            border-radius: 16px;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .decision-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--warning);
+            margin-bottom: 15px;
+        }
+
+        .decision-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .decision-option {
+            background: rgba(139, 92, 246, 0.1);
+            border: 2px solid var(--border);
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .decision-option.active {
+            border-color: var(--primary);
+            background: rgba(139, 92, 246, 0.3);
+        }
+
+        .decision-option.success {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.2);
+        }
+
+        .decision-option.fail {
+            border-color: var(--danger);
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        .option-label {
+            font-size: 1.5rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+        }
+
+        .option-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            font-family: 'Consolas', monospace;
+        }
+
+        /* Call Stack */
+        .call-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .stack-item {
+            background: rgba(139, 92, 246, 0.1);
+            border: 2px solid var(--border);
+            border-left: 4px solid var(--primary);
+            padding: 12px;
+            border-radius: 8px;
+            font-family: 'Consolas', monospace;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .stack-item.active {
+            background: rgba(139, 92, 246, 0.3);
+            border-color: var(--primary);
+            transform: scale(1.02);
+        }
+
+        .stack-item.success {
+            border-left-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .stack-item.failed {
+            border-left-color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        /* Memo Table */
+        .memo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+        }
+
+        .memo-item {
+            background: rgba(139, 92, 246, 0.1);
+            border: 2px solid var(--border);
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .memo-item.hit {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+            animation: memoHit 0.5s;
+        }
+
+        .memo-key {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        .memo-value {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--primary);
+            font-family: 'Consolas', monospace;
+        }
+
+        .memo-item.hit .memo-value {
+            color: white;
+        }
+
+        @keyframes memoHit {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.2);
+            }
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-box {
+            background: rgba(139, 92, 246, 0.1);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        /* Steps Log */
+        .steps-log {
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: 2px solid var(--border);
+            padding: 25px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .step-item {
+            padding: 12px;
+            border-left: 3px solid var(--border);
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            border-radius: 4px;
+        }
+
+        .step-item.info {
+            border-left-color: var(--primary);
+            background: rgba(139, 92, 246, 0.05);
+        }
+
+        .step-item.success {
+            border-left-color: var(--success);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .step-item.error {
+            border-left-color: var(--danger);
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        .step-item.warning {
+            border-left-color: var(--warning);
+            background: rgba(245, 158, 11, 0.05);
+        }
+
+        /* Code Display */
+        .code-display {
+            background: #0d1117;
+            border-radius: 12px;
+            padding: 20px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            overflow-x: auto;
+            border: 2px solid var(--border);
+        }
+
+        .code-line {
+            display: block;
+        }
+
+        .code-line.highlight {
+            background: rgba(139, 92, 246, 0.3);
+            border-left: 3px solid var(--primary);
+            padding-left: 10px;
+            margin-left: -10px;
+        }
+
+        .keyword {
+            color: #ff79c6;
+        }
+
+        .function {
+            color: #50fa7b;
+        }
+
+        .string {
+            color: #f1fa8c;
+        }
+
+        .comment {
+            color: #6272a4;
+        }
+
+        .number {
+            color: #bd93f9;
+        }
+
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="hero">
+            <h1>💰 Coin Change Visualization</h1>
+            <p>Lun Na Lun Pattern - Step by Step Animation</p>
+        </div>
+
+        <div class="approach-selector">
+            <button class="approach-btn active" onclick="selectApproach('lun')">
+                🎯 Lun Na Lun (2D State)
+            </button>
+            <button class="approach-btn" onclick="selectApproach('loop')">
+                🔄 For Loop (1D State)
+            </button>
+        </div>
+
+        <div class="controls">
+            <button class="btn" onclick="startVisualization()">
+                <i class="fas fa-play"></i> Start
+            </button>
+            <button class="btn" onclick="nextStep()" id="nextBtn" disabled>
+                <i class="fas fa-step-forward"></i> Next Step
+            </button>
+            <button class="btn" onclick="autoPlay()" id="autoBtn" disabled>
+                <i class="fas fa-forward"></i> Auto Play
+            </button>
+            <button class="btn" onclick="resetVisualization()">
+                <i class="fas fa-redo"></i> Reset
+            </button>
+        </div>
+
+        <div class="main-grid">
+            <!-- Left Column -->
+            <div>
+                <div class="card">
+                    <h2><i class="fas fa-coins"></i> Coins Available</h2>
+                    <div class="coins-display" id="coinsDisplay"></div>
+                    <div style="text-align: center; margin-top: 15px; color: var(--text-muted);">
+                        <i class="fas fa-infinity"></i> Infinite Supply!
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 20px;">
+                    <h2><i class="fas fa-bullseye"></i> Target Amount</h2>
+                    <div class="amount-display">
+                        <div class="amount-number" id="currentAmount">0</div>
+                        <div class="amount-label">Remaining Amount</div>
+                        <div class="amount-progress">
+                            <div class="amount-bar" id="progressBar" style="width: 0%">0%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 20px;" id="decisionCard">
+                    <h2><i class="fas fa-balance-scale"></i> Current Decision</h2>
+                    <div class="decision-box" id="decisionBox">
+                        <div style="color: var(--text-muted);">Waiting to start...</div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 20px;">
+                    <h2><i class="fas fa-chart-bar"></i> Statistics</h2>
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <div class="stat-number" id="statSteps">0</div>
+                            <div class="stat-label">Steps</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number" id="statCalls">0</div>
+                            <div class="stat-label">Calls</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number" id="statHits">0</div>
+                            <div class="stat-label">Memo Hits</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number" id="statCoins">0</div>
+                            <div class="stat-label">Min Coins</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div>
+                <div class="card">
+                    <h2><i class="fas fa-layer-group"></i> Call Stack</h2>
+                    <div class="call-stack" id="callStack">
+                        <div style="color: var(--text-muted); text-align: center;">No calls yet...</div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 20px;">
+                    <h2><i class="fas fa-save"></i> Memoization Table</h2>
+                    <div class="memo-grid" id="memoTable">
+                        <div style="color: var(--text-muted); text-align: center;">Empty memo...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="steps-log">
+            <h2 style="color: var(--primary); margin-bottom: 20px;">
+                <i class="fas fa-list"></i> Execution Log
+            </h2>
+            <div id="stepsLog">
+                <div style="color: var(--text-muted); text-align: center;">Click "Start" to begin...</div>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top: 20px;">
+            <h2><i class="fas fa-code"></i> Code Being Executed</h2>
+            <div class="code-display" id="codeDisplay">
+                <!-- Code will be inserted here -->
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Configuration
+        const coins = [1, 5, 10];
+        const targetAmount = 11;
+        let currentApproach = 'lun';
+
+        // State
+        let steps = [];
+        let currentStep = 0;
+        let memo = {};
+        let callStack = [];
+        let stats = {
+            steps: 0,
+            calls: 0,
+            hits: 0,
+            coins: Infinity
+        };
+        let autoPlayInterval = null;
+
+        // Code templates
+        const lunCode = `<span class="code-line"><span class="keyword">def</span> <span class="function">coinChange</span>(coins, amount):</span>
+<span class="code-line">    memo = {}</span>
+<span class="code-line">    </span>
+<span class="code-line">    <span class="keyword">def</span> <span class="function">dfs</span>(remaining, coin_idx):</span>
+<span class="code-line" id="line-base">        <span class="keyword">if</span> remaining == <span class="number">0</span>:</span>
+<span class="code-line">            <span class="keyword">return</span> <span class="number">0</span></span>
+<span class="code-line" id="line-invalid">        <span class="keyword">if</span> remaining < <span class="number">0</span> <span class="keyword">or</span> coin_idx >= <span class="function">len</span>(coins):</span>
+<span class="code-line">            <span class="keyword">return</span> <span class="function">float</span>(<span class="string">'inf'</span>)</span>
+<span class="code-line">        </span>
+<span class="code-line" id="line-memo">        <span class="keyword">if</span> (remaining, coin_idx) <span class="keyword">in</span> memo:</span>
+<span class="code-line">            <span class="keyword">return</span> memo[(remaining, coin_idx)]</span>
+<span class="code-line">        </span>
+<span class="code-line" id="line-lun">        <span class="comment"># LUN: Take current coin (stay at same index!)</span></span>
+<span class="code-line">        take = <span class="number">1</span> + <span class="function">dfs</span>(remaining - coins[coin_idx], coin_idx)</span>
+<span class="code-line">        </span>
+<span class="code-line" id="line-nalun">        <span class="comment"># NA LUN: Skip current coin (move to next)</span></span>
+<span class="code-line">        skip = <span class="function">dfs</span>(remaining, coin_idx + <span class="number">1</span>)</span>
+<span class="code-line">        </span>
+<span class="code-line" id="line-min">        memo[(remaining, coin_idx)] = <span class="function">min</span>(take, skip)</span>
+<span class="code-line">        <span class="keyword">return</span> memo[(remaining, coin_idx)]</span>
+<span class="code-line">    </span>
+<span class="code-line">    <span class="keyword">return</span> <span class="function">dfs</span>(amount, <span class="number">0</span>)</span>`;
+
+        const loopCode = `<span class="code-line"><span class="keyword">def</span> <span class="function">coinChange</span>(coins, amount):</span>
+<span class="code-line">    memo = {}</span>
+<span class="code-line">    </span>
+<span class="code-line">    <span class="keyword">def</span> <span class="function">dfs</span>(remaining):</span>
+<span class="code-line" id="line-base">        <span class="keyword">if</span> remaining == <span class="number">0</span>:</span>
+<span class="code-line">            <span class="keyword">return</span> <span class="number">0</span></span>
+<span class="code-line" id="line-invalid">        <span class="keyword">if</span> remaining < <span class="number">0</span>:</span>
+<span class="code-line">            <span class="keyword">return</span> <span class="function">float</span>(<span class="string">'inf'</span>)</span>
+<span class="code-line">        </span>
+<span class="code-line" id="line-memo">        <span class="keyword">if</span> remaining <span class="keyword">in</span> memo:</span>
+<span class="code-line">            <span class="keyword">return</span> memo[remaining]</span>
+<span class="code-line">        </span>
+<span class="code-line">        min_coins = <span class="function">float</span>(<span class="string">'inf'</span>)</span>
+<span class="code-line" id="line-loop">        <span class="keyword">for</span> coin <span class="keyword">in</span> coins:</span>
+<span class="code-line">            result = <span class="function">dfs</span>(remaining - coin)</span>
+<span class="code-line">            min_coins = <span class="function">min</span>(min_coins, <span class="number">1</span> + result)</span>
+<span class="code-line">        </span>
+<span class="code-line" id="line-save">        memo[remaining] = min_coins</span>
+<span class="code-line">        <span class="keyword">return</span> min_coins</span>
+<span class="code-line">    </span>
+<span class="code-line">    <span class="keyword">return</span> <span class="function">dfs</span>(amount)</span>`;
+
+        // Initialize
+        function initialize() {
+            const coinsDiv = document.getElementById('coinsDisplay');
+            coinsDiv.innerHTML = '';
+            coins.forEach((coin, idx) => {
+                coinsDiv.innerHTML += `
+                <div class="coin" id="coin-${idx}">
+                    ${coin}
+                    <div class="coin-label">₹${coin}</div>
+                </div>
+            `;
+            });
+
+            document.getElementById('currentAmount').textContent = targetAmount;
+            updateProgressBar(targetAmount);
+            updateCode();
+        }
+
+        function updateCode() {
+            document.getElementById('codeDisplay').innerHTML = currentApproach === 'lun' ? lunCode : loopCode;
+        }
+
+        function selectApproach(approach) {
+            currentApproach = approach;
+            document.querySelectorAll('.approach-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            updateCode();
+            resetVisualization();
+        }
+
+        // Generate steps for Lun Na Lun
+        function generateStepsLun() {
+            steps = [];
+            memo = {};
+            callStack = [];
+
+            function dfs(remaining, coinIdx, depth = 0) {
+                steps.push({
+                    type: 'call',
+                    remaining: remaining,
+                    coinIdx: coinIdx,
+                    depth: depth,
+                    message: `📞 dfs(${remaining}, ${coinIdx}) - Coin: ${coins[coinIdx] || 'None'}, Remaining: ₹${remaining}`
+                });
+
+                if (remaining === 0) {
+                    steps.push({
+                        type: 'base-zero',
+                        remaining: remaining,
+                        depth: depth,
+                        message: `✅ Base case! Remaining = 0. Return 0 coins!`
+                    });
+                    return 0;
+                }
+
+                if (remaining < 0 || coinIdx >= coins.length) {
+                    steps.push({
+                        type: 'base-invalid',
+                        remaining: remaining,
+                        coinIdx: coinIdx,
+                        depth: depth,
+                        message: `❌ Invalid! ${remaining < 0 ? 'Negative amount' : 'No more coins'}. Return ∞`
+                    });
+                    return Infinity;
+                }
+
+                const state = `${remaining},${coinIdx}`;
+                if (state in memo) {
+                    steps.push({
+                        type: 'memo-hit',
+                        remaining: remaining,
+                        coinIdx: coinIdx,
+                        value: memo[state],
+                        depth: depth,
+                        message: `💾 Memo hit! memo[${remaining},${coinIdx}] = ${memo[state]}`
+                    });
+                    return memo[state];
+                }
+
+                const currentCoin = coins[coinIdx];
+
+                steps.push({
+                    type: 'lun',
+                    remaining: remaining,
+                    coinIdx: coinIdx,
+                    coin: currentCoin,
+                    depth: depth,
+                    message: `🎯 LUN: Take coin ${currentCoin}, stay at index ${coinIdx} (infinite supply!)`
+                });
+
+                const take = 1 + dfs(remaining - currentCoin, coinIdx, depth + 1);
+
+                steps.push({
+                    type: 'nalun',
+                    remaining: remaining,
+                    coinIdx: coinIdx,
+                    coin: currentCoin,
+                    depth: depth,
+                    message: `⏭️ NA LUN: Skip coin ${currentCoin}, try next coin (index ${coinIdx + 1})`
+                });
+
+                const skip = dfs(remaining, coinIdx + 1, depth + 1);
+
+                const result = Math.min(take, skip);
+
+                steps.push({
+                    type: 'decision',
+                    remaining: remaining,
+                    coinIdx: coinIdx,
+                    take: take,
+                    skip: skip,
+                    result: result,
+                    depth: depth,
+                    message: `⚖️ Decision: min(take=${take}, skip=${skip}) = ${result}. Saving to memo!`
+                });
+
+                memo[state] = result;
+                return result;
+            }
+
+            const result = dfs(targetAmount, 0);
+
+            steps.push({
+                type: 'final',
+                result: result,
+                message: `🏁 Final Result: ${result === Infinity ? 'Impossible ❌' : result + ' coins ✅'}`
+            });
+        }
+
+        // Generate steps for For Loop
+        function generateStepsLoop() {
+            steps = [];
+            memo = {};
+            callStack = [];
+
+            function dfs(remaining, depth = 0) {
+                steps.push({
+                    type: 'call',
+                    remaining: remaining,
+                    depth: depth,
+                    message: `📞 dfs(${remaining}) - Remaining: ₹${remaining}`
+                });
+
+                if (remaining === 0) {
+                    steps.push({
+                        type: 'base-zero',
+                        remaining: remaining,
+                        depth: depth,
+                        message: `✅ Base case! Remaining = 0. Return 0 coins!`
+                    });
+                    return 0;
+                }
+
+                if (remaining < 0) {
+                    steps.push({
+                        type: 'base-invalid',
+                        remaining: remaining,
+                        depth: depth,
+                        message: `❌ Invalid! Negative amount. Return ∞`
+                    });
+                    return Infinity;
+                }
+
+                if (remaining in memo) {
+                    steps.push({
+                        type: 'memo-hit',
+                        remaining: remaining,
+                        value: memo[remaining],
+                        depth: depth,
+                        message: `💾 Memo hit! memo[${remaining}] = ${memo[remaining]}`
+                    });
+                    return memo[remaining];
+                }
+
+                let minCoins = Infinity;
+
+                steps.push({
+                    type: 'loop-start',
+                    remaining: remaining,
+                    depth: depth,
+                    message: `🔄 Starting loop: Try all coins for amount ${remaining}`
+                });
+
+                for (let i = 0; i < coins.length; i++) {
+                    const coin = coins[i];
+
+                    steps.push({
+                        type: 'loop-try',
+                        remaining: remaining,
+                        coin: coin,
+                        coinIdx: i,
+                        depth: depth,
+                        message: `💰 Trying coin ${coin}...`
+                    });
+
+                    const result = dfs(remaining - coin, depth + 1);
+                    const thisOption = result === Infinity ? Infinity : 1 + result;
+
+                    steps.push({
+                        type: 'loop-compare',
+                        remaining: remaining,
+                        coin: coin,
+                        result: thisOption,
+                        minCoins: minCoins,
+                        depth: depth,
+                        message: `⚖️ Coin ${coin}: ${thisOption} coins. Current min: ${minCoins}`
+                    });
+
+                    minCoins = Math.min(minCoins, thisOption);
+                }
+
+                steps.push({
+                    type: 'loop-end',
+                    remaining: remaining,
+                    result: minCoins,
+                    depth: depth,
+                    message: `✅ Loop done! Min coins for ${remaining}: ${minCoins}. Saving to memo!`
+                });
+
+                memo[remaining] = minCoins;
+                return minCoins;
+            }
+
+            const result = dfs(targetAmount);
+
+            steps.push({
+                type: 'final',
+                result: result,
+                message: `🏁 Final Result: ${result === Infinity ? 'Impossible ❌' : result + ' coins ✅'}`
+            });
+        }
+
+        // Start visualization
+        function startVisualization() {
+            resetVisualization();
+
+            if (currentApproach === 'lun') {
+                generateStepsLun();
+            } else {
+                generateStepsLoop();
+            }
+
+            document.getElementById('nextBtn').disabled = false;
+            document.getElementById('autoBtn').disabled = false;
+            addLog('info', `🚀 Visualization started! Approach: ${currentApproach === 'lun' ? 'Lun Na Lun' : 'For Loop'}`);
+            addLog('info', `Coins: [${coins.join(', ')}], Target: ₹${targetAmount}`);
+        }
+
+        // Reset
+        function resetVisualization() {
+            currentStep = 0;
+            memo = {};
+            callStack = [];
+            stats = { steps: 0, calls: 0, hits: 0, coins: Infinity };
+            steps = [];
+
+            if (autoPlayInterval) {
+                clearInterval(autoPlayInterval);
+                autoPlayInterval = null;
+            }
+
+            document.getElementById('stepsLog').innerHTML = '';
+            document.getElementById('callStack').innerHTML = '<div style="color: var(--text-muted); text-align: center;">No calls yet...</div>';
+            document.getElementById('memoTable').innerHTML = '<div style="color: var(--text-muted); text-align: center;">Empty memo...</div>';
+            document.getElementById('decisionBox').innerHTML = '<div style="color: var(--text-muted);">Waiting to start...</div>';
+            document.getElementById('nextBtn').disabled = true;
+            document.getElementById('autoBtn').disabled = true;
+
+            updateStats();
+            initialize();
+            clearHighlights();
+            updateProgressBar(targetAmount);
+        }
+
+        // Next step
+        function nextStep() {
+            if (currentStep >= steps.length) {
+                addLog('success', '✅ Visualization complete!');
+                document.getElementById('nextBtn').disabled = true;
+                document.getElementById('autoBtn').disabled = true;
+                return;
+            }
+
+            const step = steps[currentStep];
+            executeStep(step);
+            currentStep++;
+            stats.steps++;
+            updateStats();
+
+            if (currentStep >= steps.length) {
+                document.getElementById('nextBtn').disabled = true;
+                document.getElementById('autoBtn').disabled = true;
+            }
+        }
+
+        // Execute step
+        function executeStep(step) {
+            clearHighlights();
+
+            switch (step.type) {
+                case 'call':
+                    highlightLine('line-base');
+                    stats.calls++;
+                    addLog('info', step.message);
+                    updateAmount(step.remaining);
+                    if (currentApproach === 'lun') {
+                        highlightCoin(step.coinIdx);
+                        updateCallStack(`dfs(${step.remaining}, ${step.coinIdx})`, step.depth, 'active');
+                    } else {
+                        updateCallStack(`dfs(${step.remaining})`, step.depth, 'active');
+                    }
+                    break;
+
+                case 'base-zero':
+                    highlightLine('line-base');
+                    addLog('success', step.message);
+                    updateCallStackResult(step.depth, 0);
+                    break;
+
+                case 'base-invalid':
+                    highlightLine('line-invalid');
+                    addLog('error', step.message);
+                    updateCallStackResult(step.depth, Infinity);
+                    break;
+
+                case 'memo-hit':
+                    highlightLine('line-memo');
+                    stats.hits++;
+                    addLog('success', step.message);
+                    highlightMemo(step.remaining, step.coinIdx);
+                    updateCallStackResult(step.depth, step.value);
+                    break;
+
+                case 'lun':
+                    highlightLine('line-lun');
+                    addLog('info', step.message);
+                    highlightCoin(step.coinIdx, 'taken');
+                    showDecision('LUN', `Take ₹${step.coin}`, null, null);
+                    break;
+
+                case 'nalun':
+                    highlightLine('line-nalun');
+                    addLog('warning', step.message);
+                    highlightCoin(step.coinIdx, 'skipped');
+                    showDecision('NA LUN', `Skip ₹${step.coin}`, null, null);
+                    break;
+
+                case 'decision':
+                    highlightLine('line-min');
+                    addLog('success', step.message);
+                    showDecision('DECISION', null, step.take, step.skip);
+                    updateMemo(step.remaining, step.coinIdx, step.result);
+                    updateCallStackResult(step.depth, step.result);
+                    if (step.result !== Infinity) {
+                        stats.coins = Math.min(stats.coins, step.result);
+                    }
+                    break;
+
+                case 'loop-start':
+                    highlightLine('line-loop');
+                    addLog('info', step.message);
+                    break;
+
+                case 'loop-try':
+                    highlightLine('line-loop');
+                    addLog('warning', step.message);
+                    highlightCoin(step.coinIdx, 'taken');
+                    break;
+
+                case 'loop-compare':
+                    addLog('info', step.message);
+                    break;
+
+                case 'loop-end':
+                    highlightLine('line-save');
+                    addLog('success', step.message);
+                    updateMemo(step.remaining, null, step.result);
+                    updateCallStackResult(step.depth, step.result);
+                    if (step.result !== Infinity) {
+                        stats.coins = Math.min(stats.coins, step.result);
+                    }
+                    break;
+
+                case 'final':
+                    addLog('success', step.message);
+                    if (step.result !== Infinity) {
+                        stats.coins = step.result;
+                    }
+                    break;
+            }
+        }
+
+        // Auto play
+        function autoPlay() {
+            if (autoPlayInterval) {
+                clearInterval(autoPlayInterval);
+                autoPlayInterval = null;
+                document.getElementById('autoBtn').innerHTML = '<i class="fas fa-forward"></i> Auto Play';
+            } else {
+                autoPlayInterval = setInterval(() => {
+                    if (currentStep >= steps.length) {
+                        clearInterval(autoPlayInterval);
+                        autoPlayInterval = null;
+                        document.getElementById('autoBtn').innerHTML = '<i class="fas fa-forward"></i> Auto Play';
+                    } else {
+                        nextStep();
+                    }
+                }, 800);
+                document.getElementById('autoBtn').innerHTML = '<i class="fas fa-pause"></i> Pause';
+            }
+        }
+
+        // Helper functions
+        function updateAmount(amount) {
+            document.getElementById('currentAmount').textContent = amount;
+            updateProgressBar(amount);
+        }
+
+        function updateProgressBar(remaining) {
+            const percent = ((targetAmount - remaining) / targetAmount) * 100;
+            const bar = document.getElementById('progressBar');
+            bar.style.width = percent + '%';
+            bar.textContent = Math.round(percent) + '%';
+        }
+
+        function highlightCoin(idx, className = 'current') {
+            document.querySelectorAll('.coin').forEach(coin => {
+                coin.className = 'coin';
+            });
+            if (idx !== undefined && idx < coins.length) {
+                document.getElementById(`coin-${idx}`).classList.add(className);
+            }
+        }
+
+        function showDecision(title, subtitle, takeVal, skipVal) {
+            const box = document.getElementById('decisionBox');
+
+            if (takeVal !== null && skipVal !== null) {
+                box.innerHTML = `
+                <div class="decision-title">${title}</div>
+                <div class="decision-options">
+                    <div class="decision-option ${takeVal <= skipVal ? 'success' : ''}">
+                        <div class="option-label">🎯 LUN (Take)</div>
+                        <div class="option-value">${takeVal === Infinity ? '∞' : takeVal}</div>
+                    </div>
+                    <div class="decision-option ${skipVal < takeVal ? 'success' : ''}">
+                        <div class="option-label">⏭️ NA LUN (Skip)</div>
+                        <div class="option-value">${skipVal === Infinity ? '∞' : skipVal}</div>
+                    </div>
+                </div>
+                <div style="margin-top: 15px; font-size: 1.2rem; font-weight: 700;">
+                    Result: <span style="color: var(--success);">${Math.min(takeVal, skipVal) === Infinity ? '∞' : Math.min(takeVal, skipVal)}</span>
+                </div>
+            `;
+            } else {
+                box.innerHTML = `
+                <div class="decision-title">${title}</div>
+                <div style="font-size: 1.1rem; margin-top: 10px;">${subtitle}</div>
+            `;
+            }
+        }
+
+        function updateCallStack(call, depth, status) {
+            callStack.push({ call, depth, status });
+            renderCallStack();
+        }
+
+        function updateCallStackResult(depth, result) {
+            for (let i = callStack.length - 1; i >= 0; i--) {
+                if (callStack[i].depth === depth) {
+                    callStack[i].status = result === Infinity ? 'failed' : 'success';
+                    callStack[i].result = result;
+                    break;
+                }
+            }
+            renderCallStack();
+
+            setTimeout(() => {
+                for (let i = callStack.length - 1; i >= 0; i--) {
+                    if (callStack[i].depth === depth) {
+                        callStack.splice(i, 1);
+                        break;
+                    }
+                }
+                renderCallStack();
+            }, 300);
+        }
+
+        function renderCallStack() {
+            const stackDiv = document.getElementById('callStack');
+            if (callStack.length === 0) {
+                stackDiv.innerHTML = '<div style="color: var(--text-muted); text-align: center;">No calls yet...</div>';
+                return;
+            }
+
+            stackDiv.innerHTML = callStack.map(item => `
+            <div class="stack-item ${item.status}">
+                ${'  '.repeat(item.depth)}${item.call}${item.result !== undefined ? ' → ' + (item.result === Infinity ? '∞' : item.result) : ''}
+            </div>
+        `).join('');
+        }
+
+        function updateMemo(remaining, coinIdx, value) {
+            const key = coinIdx !== null ? `${remaining},${coinIdx}` : remaining;
+            memo[key] = value;
+            renderMemo();
+        }
+
+        function highlightMemo(remaining, coinIdx) {
+            const key = coinIdx !== undefined ? `memo-${remaining}-${coinIdx}` : `memo-${remaining}`;
+            const elem = document.getElementById(key);
+            if (elem) {
+                elem.classList.add('hit');
+                setTimeout(() => elem.classList.remove('hit'), 500);
+            }
+        }
+
+        function renderMemo() {
+            const memoDiv = document.getElementById('memoTable');
+            const keys = Object.keys(memo).sort();
+
+            if (keys.length === 0) {
+                memoDiv.innerHTML = '<div style="color: var(--text-muted); text-align: center;">Empty memo...</div>';
+                return;
+            }
+
+            memoDiv.innerHTML = keys.map(key => {
+                const value = memo[key];
+                const displayKey = currentApproach === 'lun' ? `(${key})` : key;
+                const id = currentApproach === 'lun' ? `memo-${key.replace(',', '-')}` : `memo-${key}`;
+                return `
+                <div class="memo-item" id="${id}">
+                    <div class="memo-key">memo[${displayKey}]</div>
+                    <div class="memo-value">${value === Infinity ? '∞' : value}</div>
+                </div>
+            `;
+            }).join('');
+        }
+
+        function addLog(type, message) {
+            const logDiv = document.getElementById('stepsLog');
+            if (logDiv.children.length === 1 && logDiv.children[0].textContent.includes('Click "Start"')) {
+                logDiv.innerHTML = '';
+            }
+
+            logDiv.innerHTML += `<div class="step-item ${type}">${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function updateStats() {
+            document.getElementById('statSteps').textContent = stats.steps;
+            document.getElementById('statCalls').textContent = stats.calls;
+            document.getElementById('statHits').textContent = stats.hits;
+            document.getElementById('statCoins').textContent = stats.coins === Infinity ? '∞' : stats.coins;
+        }
+
+        function highlightLine(lineId) {
+            document.querySelectorAll('.code-line').forEach(line => {
+                line.classList.remove('highlight');
+            });
+            const line = document.getElementById(lineId);
+            if (line) line.classList.add('highlight');
+        }
+
+        function clearHighlights() {
+            document.querySelectorAll('.coin').forEach(coin => {
+                coin.className = 'coin';
+            });
+            document.querySelectorAll('.code-line').forEach(line => {
+                line.classList.remove('highlight');
+            });
+        }
+
+        // Initialize on load
+        window.onload = initialize;
+    </script>
+
+</body>
+
+</html>
