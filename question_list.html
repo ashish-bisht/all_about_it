@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🔥 Principal Engineer DSA Tracker - 55 Questions</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <meta name="theme-color" content="#818cf8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="manifest" href="manifest.json">
     <style>
         :root {
             /* Modern Dark Theme Palette */
@@ -383,14 +386,36 @@
                 font-size: 2rem;
             }
 
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .container {
+                margin: 20px auto;
+            }
+
             .questions-table th,
             .questions-table td {
-                padding: 15px;
+                padding: 15px 10px;
+                /* Reduced horizontal padding */
+                font-size: 0.9rem;
             }
 
             .questions-table {
                 display: block;
                 overflow-x: auto;
+                white-space: nowrap;
+                /* Prevent wrapping for cleaner table rows */
+            }
+
+            /* Enhance scrollbar for table */
+            .questions-table::-webkit-scrollbar {
+                height: 6px;
+            }
+
+            .questions-table::-webkit-scrollbar-thumb {
+                background: var(--glass-border);
+                border-radius: 3px;
             }
 
             .nav-content {
@@ -398,10 +423,29 @@
                 gap: 15px;
             }
 
+            .nav-links {
+                flex-wrap: wrap;
+                /* Allow wrapping if needed */
+                justify-content: center;
+            }
+
             .progress-container {
-                bottom: 20px;
-                right: 20px;
+                bottom: 15px;
+                right: 15px;
+                padding: 12px 20px;
+                /* Make it slightly more compact */
+            }
+
+            .progress-number {
+                font-size: 1.5rem;
+            }
+
+            .stat-card {
                 padding: 15px;
+            }
+
+            .stat-number {
+                font-size: 2rem;
             }
         }
     </style>

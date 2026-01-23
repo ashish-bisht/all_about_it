@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Principal Prep | Learning Mode</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <meta name="theme-color" content="#818cf8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="manifest" href="manifest.json">
     <style>
         :root {
             --bg: #f8fafc;
@@ -481,22 +484,60 @@
         }
 
         @media (max-width: 768px) {
+            body {
+                padding: 15px;
+                /* Reduce global padding */
+            }
+
+            .header-section h1 {
+                font-size: 2rem;
+            }
+
+            .pattern-card {
+                padding: 20px;
+                /* More compact */
+            }
+
             .pattern-grid {
                 grid-template-columns: 1fr;
+                gap: 25px;
             }
 
             .questions-grid {
                 grid-template-columns: 1fr;
+                /* Single column for tiles */
             }
 
             .focus-header {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 15px;
+                padding: 20px;
+                /* Reduced padding */
             }
 
-            body {
-                padding: 20px 15px;
+            .focus-body {
+                padding: 20px;
+            }
+
+            .metrics {
+                flex-wrap: wrap;
+                /* Allow metrics to wrap */
+            }
+
+            .metric-item {
+                font-size: 0.9rem;
+            }
+
+            /* Ensure code blocks don't break layout */
+            pre {
+                padding: 15px;
+                font-size: 0.8rem;
+            }
+
+            .back-btn {
+                width: 100%;
+                justify-content: center;
             }
         }
     </style>
