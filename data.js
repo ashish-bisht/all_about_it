@@ -1,3746 +1,7070 @@
-const prepData = {
-    arrays: {
-        id: "arrays",
-        title: "Arrays & Sliding Window",
-        description: "Principal Engineer DSA • Day 1",
-        color: "var(--primary)", // #6366f1
-        icon: "fas fa-layer-group",
-        mentalModel: {
-            whenToApply: [
-                { label: "Sorted Data", desc: "Classic usage (Two Pointers/Binary Search)." },
-                { label: "Contiguous Subarrays", desc: "Think <span class='code-snippet'>Sliding Window</span>." },
-                { label: "Lookups", desc: "High speed? Think <span class='code-snippet'>Hash Map</span>." }
-            ],
-            safetyCheck: [
-                { label: "Edge Cases", desc: "Always handle <span class='code-snippet'>if not nums</span> first." },
-                { label: "Space Trade-off", desc: "Use <span class='code-snippet'>O(N)</span> space to get <span class='code-snippet'>O(1)</span> lookup." }
-            ]
-        },
-        questions: [
-            {
-                id: "two-sum",
-                title: "Two Sum",
-                leetcodeUrl: "https://leetcode.com/problems/two-sum/",
-                difficulty: "Must Do",
-                priority: "🔴",
-                tags: ["HashMap"],
-                quiz: {
-                    description: "Given an array and target, find two numbers that add up to target. What's the optimal approach?",
-                    options: [
-                        "Brute Force O(n²) - Check all pairs",
-                        "HashMap O(n) - Store complements as you iterate",
-                        "Two Pointers O(n log n) - Sort then scan",
-                        "Binary Search O(n log n) - Sort and search for each element"
-                    ],
-                    correct: 1,
-                    explanation: "HashMap is KING! As you iterate, check if (target - current) exists in map. If yes, found! If no, store current. One pass: O(n) time, O(n) space. Warm-up in 20% of interviews!"
-                },
-                learn: null // Not present in arrays.html, only game
-            },
-            {
-                id: "3sum",
-                title: "3Sum",
-                leetcodeUrl: "https://leetcode.com/problems/3sum/",
-                difficulty: "Must Do",
-                priority: "🔴",
-                tags: ["Two Pointers"],
-                quiz: {
-                    description: "Find all triplets that sum to zero. Best approach to avoid duplicates?",
-                    options: [
-                        "Three nested loops O(n³)",
-                        "HashMap with pair sums O(n²) space",
-                        "Sort + Two Pointers O(n²) time, O(1) space",
-                        "Backtracking O(2ⁿ)"
-                    ],
-                    correct: 2,
-                    explanation: "Sort first! Fix one element, use two pointers on rest. Skip duplicates by checking if current == previous. This is THE standard pattern for multi-pointer problems. O(n²) time!"
-                },
-                learn: {
-                    metrics: { time: "O(N²)", space: "O(1) or O(N)" },
-                    timeExplainer: "<strong>Time Breakdown:</strong><br>• Sorting: <code>O(N log N)</code><br>• Main loop: <code>N</code> iterations<br>• Each iteration: Two-pointer scan = <code>O(N)</code><br><br><strong>Total:</strong> <code>O(N log N + N²)</code> ≈ <code>O(N²)</code>",
-                    spaceExplainer: "<strong>Space Analysis:</strong><br>• In Python, sorting might use <code>O(N)</code> auxiliary space<br>• If we ignore sorting and count only variables: <code>O(1)</code><br>• Result array not counted in space complexity",
-                    visual: "<span><strong>Visual: The Anchor & Squeeze</strong><br>Array ko sort karo. Ek <code>anchor</code> fix karo, aur baaki do numbers ke liye <code>left_pointer</code> aur <code>right_pointer</code> ko tab tak squeeze karo jab tak 0 na mil jaye.</span>",
-                    crux: "Triple loop ($O(N^3)$) se bachne ke liye **Sort** zaroori hai. Sorting se duplicates handle karna aur Two-Pointer lagana easy ho jata hai.<br><strong>Strategy:</strong><br>1. <code>anchor_value</code> ko fix karo loop se.<br>2. Agar <code>anchor_value</code> pichle element jaisa hai, toh skip (Duplicate protection).<br>3. Remaining array mein <code>target = -anchor_value</code> dhoondo.",
-                    trap: "<strong>Internal Duplicates:</strong> Anchor skip karne ke baad bhi <code>left_pointer</code> same value pe land kar sakta hai.<br><strong>Fix:</strong> Jab triplet mil jaye, <code>left_pointer</code> ko tab tak badhao jab tak naya unique number na mil jaye.",
-                    dryRun: [
-                        "<strong>Input:</strong> nums = [-1, 0, 1, 2, -1, -4]",
-                        "<strong>Sorted:</strong> [-4, -1, -1, 0, 1, 2]",
-                        "1. i=0 (val=-4). Target = 4. <br>left_pointer=-1, right_pointer=2. Sum=1. <span class='var-highlight'>Small!</span> Move left_pointer.",
-                        "2. i=1 (val=-1). Target = 1. <br>left_pointer=-1, right_pointer=2. Sum=1. <span class='var-highlight'>Match!</span> Triple: [-1, -1, 2].",
-                        "3. <span class='var-highlight'>Duplicate Check:</span> left_pointer index 2 pe bhi -1 hai. Skip to index 3."
-                    ],
-                    codeTitle: "Python Solution (PEP 8 Style)",
-                    code: `def three_sum(nums):
-    triplets = []
-    nums.sort()
+// Auto-generated from data/ folder
+// Run `python3 build_data.py` to regenerate
+// DO NOT EDIT THIS FILE DIRECTLY - Edit files in data/ folder instead!
 
-    for i, anchor_value in enumerate(nums):
-        # Skip duplicate anchors
-        if i > 0 and anchor_value == nums[i - 1]:
-            continue
 
-        left_pointer = i + 1
-        right_pointer = len(nums) - 1
+// ========== data/dsa/arrays.js ==========
+// Arrays data
+// Extracted from data.js
 
-        while left_pointer < right_pointer:
-            current_sum = anchor_value + nums[left_pointer] + nums[right_pointer]
-            
-            if current_sum > 0:
-                right_pointer -= 1
-            elif current_sum < 0:
-                left_pointer += 1
-            else:
-                triplets.append([anchor_value, nums[left_pointer], nums[right_pointer]])
-                left_pointer += 1
-                
-                # Skip duplicate values for the left pointer
-                while nums[left_pointer] == nums[left_pointer - 1] and left_pointer < right_pointer:
-                    left_pointer += 1
-                    
-    return triplets`
-                }
-            },
-            {
-                id: "max-subarray",
-                title: "Kadane's Algorithm",
-                leetcodeUrl: "https://leetcode.com/problems/maximum-subarray/",
-                difficulty: "Must Do",
-                priority: "🔴",
-                tags: ["DP"],
-                quiz: {
-                    description: "Find maximum sum of contiguous subarray. What's the DP optimization?",
-                    options: [
-                        "Check all subarrays O(n³)",
-                        "Prefix sums O(n²)",
-                        "Kadane's: currSum = max(arr[i], currSum + arr[i])",
-                        "Divide and Conquer O(n log n)"
-                    ],
-                    correct: 2,
-                    explanation: "Kadane's is GENIUS! Keep running sum. If it goes negative, reset to 0 (or current element). Track global max. O(n) time, O(1) space. Foundation for many DP problems!"
-                },
-                learn: {
-                    metrics: { time: "O(N)", space: "O(1)" },
-                    timeExplainer: "Single pass through the array.",
-                    spaceExplainer: "Only two variables stored: current_sum and max_sum.",
-                    visual: "<span><strong>Visual: The Reset Button</strong><br>Jab tak <code>current_sum</code> positive hai, wo aage kaam aayega. Jaise hi wo negative hua, wo 'bojh' ban gaya. Use turant 0 karke naya safar shuru karo.</span>",
-                    crux: "Contiguous subarray dhoondna hai. Agar pichla sum negative hai, toh wo current number ki value ko kam hi karega.<br><strong>Strategy:</strong><br>1. <code>current_sum</code> ko track karo.<br>2. Agar <code>current_sum < 0</code>, toh use <code>0</code> kar do (start fresh).<br>3. Har step pe <code>max_sum</code> update karo.",
-                    trap: "<strong>All Negatives:</strong> Agar array <code>[-5, -2, -3]</code> hai aur tumne <code>max_sum = 0</code> se start kiya, toh answer 0 aayega jo galat hai.<br><strong>Fix:</strong> <code>max_sum</code> ko hamesha pehle element (<code>nums[0]</code>) se initialize karo.",
-                    dryRun: [
-                        "<strong>Input:</strong> nums = [-2, 1, -3, 4]",
-                        "1. n=-2: current_sum=-2. max_sum=-2. <br><span class='var-highlight'>current_sum < 0</span> -> current_sum = 0.",
-                        "2. n=1: current_sum=1. max_sum=max(-2, 1) = <span class='var-highlight'>1</span>.",
-                        "3. n=-3: current_sum=-2. max_sum=1. <br><span class='var-highlight'>current_sum < 0</span> -> current_sum = 0.",
-                        "4. n=4: current_sum=4. max_sum=max(1, 4) = <span class='var-highlight'>4</span>."
-                    ],
-                    codeTitle: "Python Solution",
-                    code: `def max_sub_array(nums):
-    # Initialize with first element to handle all-negative arrays
-    max_sum = nums[0]
-    current_sum = 0
-    
-    for n in nums:
-        # If running sum is a liability, drop it
-        if current_sum < 0:
-            current_sum = 0
-            
-        current_sum += n
-        
-        if current_sum > max_sum:
-            max_sum = current_sum
-            
-    return max_sum`
-                }
-            },
-            {
-                id: "product-except-self",
-                title: "Product Except Self",
-                leetcodeUrl: "https://leetcode.com/problems/product-of-array-except-self/",
-                difficulty: "Must Do",
-                priority: "🔴",
-                tags: ["Prefix & Suffix"],
-                quiz: {
-                    description: "Return array where output[i] = product of all except nums[i], WITHOUT division. How?",
-                    options: [
-                        "Divide total product by nums[i]",
-                        "Prefix product from left × Suffix product from right",
-                        "Nested loops O(n²)",
-                        "Use logarithms to convert to addition"
-                    ],
-                    correct: 1,
-                    explanation: "Prefix × Suffix magic! First pass: prefix[i] = product of all left elements. Second pass: suffix from right. Result[i] = prefix[i] × suffix[i]. O(n) time! Microsoft/Amazon favorite."
-                },
-                learn: {
-                    metrics: { time: "O(N)", space: "O(1)" },
-                    timeExplainer: "<strong>Time Analysis:</strong><br>• <code>2 passes</code> through the array<br>• First pass: Build prefix products<br>• Second pass: Multiply with suffix products<br><br><strong>Total:</strong> <code>O(2N)</code> = <code>O(N)</code>",
-                    spaceExplainer: "<strong>Space Analysis:</strong><br>• Output array not counted as extra space<br>• Only one variable <code>suffix_product</code> used<br><br><strong>Result:</strong> <code>O(1)</code> auxiliary space",
-                    visual: "<span><strong>Visual: The Sandwich Logic</strong><br>Index <code>i</code> ke liye: (Left se sabka product) × (Right se sabka product). Hum result array mein pehle left side ka maal bharte hain, phir right side se aate waqt subtract kar dete hain.</span>",
-                    crux: "Division operator banned hai.<br><strong>Strategy:</strong><br>1. <strong>Left Pass:</strong> <code>result[i]</code> mein 0 se <code>i-1</code> tak ka product store karo.<br>2. <strong>Right Pass:</strong> Ek variable <code>suffix_product</code> maintain karo aur piche se aate waqt <code>result[i]</code> ko usse multiply karo.",
-                    trap: "<strong>Zero Handling:</strong> Agar array mein ek <code>0</code> hai, toh baaki sab index zero ho jayenge except the zero's index. Fix: Prefix/Suffix logic handles this naturally.",
-                    dryRun: [
-                        "<strong>Input:</strong> nums = [1, 2, 3, 4]",
-                        "1. <strong>Prefix Pass:</strong> result = [1, 1, 2, 6] <br>(e.g., index 3 stores 1*2*3)",
-                        "2. <strong>Suffix Pass:</strong> suffix_product start = 1 <br>- i=3: res[3]*1=6. suffix=4. <br>- i=2: res[2]*4=8. suffix=12. <br>- i=1: res[1]*12=12. suffix=24. <br>- i=0: res[0]*24=24",
-                        "<strong>Final:</strong> [24, 12, 8, 6]"
-                    ],
-                    codeTitle: "Python Solution",
-                    code: `def product_except_self(nums):
-    n = len(nums)
-    result = [1] * n
-    
-    # Prefix pass
-    prefix_product = 1
-    for i in range(n):
-        result[i] = prefix_product
-        prefix_product *= nums[i]
-        
-    # Suffix pass
-    suffix_product = 1
-    for i in range(n - 1, -1, -1):
-        result[i] *= suffix_product
-        suffix_product *= nums[i]
-        
-    return result`
-                }
-            },
-            {
-                id: "trapping-rain-water",
-                title: "Trapping Rain Water",
-                leetcodeUrl: "https://leetcode.com/problems/trapping-rain-water/",
-                difficulty: "Must Do",
-                priority: "🔴",
-                tags: ["Two Pointers"],
-                quiz: {
-                    description: "Calculate water trapped between bars. What's the optimal pattern?",
-                    options: [
-                        "For each bar, find max left & right O(n²)",
-                        "Pre-compute max arrays O(n) space",
-                        "Two pointers from both ends O(1) space",
-                        "Stack-based approach O(n)"
-                    ],
-                    correct: 2,
-                    explanation: "Two pointers is ELITE! Start from both ends with left_max, right_max. Water at position = min(left_max, right_max) - height. Move smaller pointer inward. O(n) time, O(1) space!"
-                },
-                learn: {
-                    metrics: { time: "O(N)", space: "O(1)" },
-                    timeExplainer: "<strong>Time Analysis:</strong><br>• Single pass with two pointers<br>• Each element visited exactly once<br><br><strong>Total:</strong> <code>O(N)</code>",
-                    spaceExplainer: "<strong>Space Analysis:</strong><br>• Only 4 variables: <code>left, right, left_max, right_max</code><br>• No extra arrays needed<br><br><strong>Result:</strong> <code>O(1)</code>",
-                    visual: "<span><strong>Visual: The Bottle Neck</strong><br>Kisi bhi bar pe kitna paani rukega? <br><code>water = min(max_left, max_right) - current_height</code>. <br>Hum dono sides se scan karte hain aur jo side 'choti' (bottleneck) hai, wahan ka paani calculate karte hain.</span>",
-                    crux: "Paani tabhi rukega jab dono taraf deewar (boundary) ho.<br><strong>Strategy:</strong><br>1. Pointers ends pe rakho.<br>2. <code>left_max</code> aur <code>right_max</code> track karo.<br>3. Move smaller side.",
-                    trap: "<strong>Negative Water:</strong> Ensure <code>max_boundary >= current_height</code> before subtracting.",
-                    dryRun: [
-                        "<strong>Input:</strong> height = [0, 1, 0, 2, 1, 0, 1, 3]",
-                        "1. L=0(H=0), R=7(H=3). Left smaller. left_max=0. Water+=0. Move L.",
-                        "2. L=1(H=1). Left smaller. left_max=1. Water+=0. Move L.",
-                        "3. L=2(H=0). Left smaller. Water += 1-0 = 1 unit. Move L."
-                    ],
-                    codeTitle: "Python Solution",
-                    code: `def trap(height):
-    if not height: return 0
-    left, right = 0, len(height) - 1
-    left_max, right_max = height[left], height[right]
-    water = 0
-    
-    while left < right:
-        if left_max < right_max:
-            left += 1
-            left_max = max(left_max, height[left])
-            water += left_max - height[left]
-        else:
-            right -= 1
-            right_max = max(right_max, height[right])
-            water += right_max - height[right]
-    return water`
-                }
-            },
-            {
-                id: "merge-intervals",
-                title: "Merge Intervals",
-                leetcodeUrl: "https://leetcode.com/problems/merge-intervals/",
-                difficulty: "Must Do",
-                priority: "🔴",
-                tags: ["Sorting", "Greedy"],
-                quiz: {
-                    description: "Merge all overlapping intervals. What's the first critical step?",
-                    options: [
-                        "Use Union-Find",
-                        "Sort by start time, then merge linearly",
-                        "Build interval tree",
-                        "Check every pair O(n²)"
-                    ],
-                    correct: 1,
-                    explanation: "SORT FIRST by start time! Then iterate: if current.start <= last.end, they overlap - merge. Else, add current to result. O(n log n) for sort, O(n) for merge. Standard interval pattern!"
-                },
-                learn: {
-                    metrics: { time: "O(N log N)", space: "O(N)" },
-                    timeExplainer: "<strong>Time Breakdown:</strong><br>• Sorting: <code>O(N log N)</code><br>• Single pass to merge: <code>O(N)</code><br><br><strong>Total:</strong> <code>O(N log N)</code>",
-                    spaceExplainer: "<strong>Space Analysis:</strong><br>• Result array to store merged intervals<br>• Worst case: no merges = <code>O(N)</code>",
-                    visual: "<span><strong>Visual: The Number Line</strong><br>Intervals ko unke start_time se sort karo. Check overlap with previous.</span>",
-                    crux: "Bina sorting ke overlap check karna impossible hai.<br><strong>Strategy:</strong><br>1. Sort by start.<br>2. Check if <code>current_start <= last_end</code>.<br>3. Merge by taking <code>max(last_end, current_end)</code>.",
-                    trap: "<strong>The Subset Interval:</strong> [1, 10] and [2, 5]. End should stay 10. Always use max().",
-                    dryRun: [
-                        "<strong>Input:</strong> [[1, 3], [2, 6], [8, 10]]",
-                        "1. Merged = [[1, 3]]",
-                        "2. [2, 6]: 2 <= 3. Overlap! End = max(3, 6) = 6. Merged=[[1, 6]]",
-                        "3. [8, 10]: 8 > 6. No overlap. Append."
-                    ],
-                    codeTitle: "Python Solution",
-                    code: `def merge_intervals(intervals):
-    if not intervals: return []
-    intervals.sort(key=lambda x: x[0])
-    merged = [intervals[0]]
-    
-    for i in range(1, len(intervals)):
-        start, end = intervals[i]
-        last_end = merged[-1][1]
-        
-        if start <= last_end:
-            merged[-1][1] = max(last_end, end)
-        else:
-            merged.append([start, end])
-    return merged`
-                }
-            },
-            {
-                id: "meeting-rooms-ii",
-                title: "Meeting Rooms II",
-                leetcodeUrl: "https://leetcode.com/problems/meeting-rooms-ii/",
-                difficulty: "Must Do",
-                priority: "🔴",
-                tags: ["Min-Heap"],
-                quiz: {
-                    description: "Find minimum meeting rooms needed. Best data structure?",
-                    options: [
-                        "Sort by start time, count overlaps",
-                        "Min Heap of end times",
-                        "Interval tree",
-                        "Greedy with sorting both start and end arrays"
-                    ],
-                    correct: 1,
-                    explanation: "Min Heap FTW! Sort by start time. For each meeting, if heap top (earliest end) < current start, reuse room (pop heap). Always push current end time. Heap size = rooms needed. O(n log n)!"
-                },
-                learn: {
-                    metrics: { time: "O(N log N)", space: "O(N)" },
-                    timeExplainer: "<strong>Time Breakdown:</strong><br>• Sorting: <code>O(N log N)</code><br>• Heap operations: <code>O(N log N)</code><br><br><strong>Total:</strong> <code>O(N log N)</code>",
-                    spaceExplainer: "<strong>Space Analysis:</strong><br>• Min-Heap stores end times<br>• Worst case: all meetings overlap = <code>O(N)</code>",
-                    visual: "<span><strong>Visual: Room Re-use</strong><br>Heap batata hai kaunsi meeting sabse pehle khatam hogi. Agar nayi meeting uske baad shuru ho rahi hai, toh room reuse karo.</span>",
-                    crux: "Track occupied rooms.<br><strong>Strategy:</strong><br>1. Sort by Start Time.<br>2. Min-Heap stores End Times.<br>3. If <code>start >= heap[0]</code>, pop (room freed).<br>4. Push new end time.",
-                    trap: "<strong>Just Finished:</strong> [1, 5] and [5, 10]. Reuse is allowed.",
-                    dryRun: [
-                        "<strong>Input:</strong> [[0, 30], [5, 10], [15, 20]]",
-                        "1. [0, 30]: Heap=[30]",
-                        "2. [5, 10]: 5 < 30. New room. Heap=[10, 30]",
-                        "3. [15, 20]: 15 >= 10. Reuse. Pop 10, Push 20. Heap=[20, 30]",
-                        "Size=2"
-                    ],
-                    codeTitle: "Python Solution",
-                    code: `import heapq
-def min_meeting_rooms(intervals):
-    if not intervals: return 0
-    intervals.sort(key=lambda x: x[0])
-    heap = [] # Stores end times
-    heapq.heappush(heap, intervals[0][1])
-    
-    for i in range(1, len(intervals)):
-        if intervals[i][0] >= heap[0]:
-            heapq.heappop(heap)
-        heapq.heappush(heap, intervals[i][1])
-        
-    return len(heap)`
-                }
-            },
-            {
-                id: "longest-substring",
-                title: "Longest Substring Without Repeating",
-                leetcodeUrl: "https://leetcode.com/problems/longest-substring-without-repeating-characters/",
-                difficulty: "Must Do",
-                priority: "🔴",
-                tags: ["Sliding Window"],
-                quiz: {
-                    description: "Find longest substring with all unique characters. What's the sliding window logic?",
-                    options: [
-                        "Try all substrings O(n³)",
-                        "HashMap + Sliding window with left pointer jump",
-                        "Set + Two pointers expanding right",
-                        "Binary search on length"
-                    ],
-                    correct: 1,
-                    explanation: "HashMap + Sliding Window! Store char → index. When duplicate found, jump LEFT pointer to max(left, map[char] + 1). Track max length. This is THE 'Hello World' of sliding window! O(n)."
-                },
-                learn: {
-                    metrics: { time: "O(N)", space: "O(min(m,n))" },
-                    timeExplainer: "<strong>Time Analysis:</strong><br>• Single pass with sliding window<br>• Each character visited at most twice<br><br><strong>Total:</strong> <code>O(N)</code>",
-                    spaceExplainer: "<strong>Space Analysis:</strong><br>• HashMap stores char → index<br>• <code>m</code> = charset size, <code>n</code> = string length<br><br><strong>Result:</strong> <code>O(min(m, n))</code>",
-                    visual: "<span><strong>Visual: Elastic Window</strong><br>Duplicate aate hi left pointer ko 'jump' karao to exclude the previous occurrence.</span>",
-                    crux: "Uniqueness maintain karni hai.<br><strong>Strategy:</strong><br>1. <code>last_seen</code> map.<br>2. If char in map, <code>left = max(left, map[char] + 1)</code>.<br>3. Update map[char] = current_index.",
-                    trap: "<strong>Backward Jump:</strong> Never move left pointer backwards. Always use max().",
-                    dryRun: [
-                        "<strong>Input:</strong> 'abba'",
-                        "1. r=0(a): map={a:0}. len=1",
-                        "2. r=1(b): map={a:0, b:1}. len=2",
-                        "3. r=2(b): Dup! left=max(0, 1+1)=2. map={b:2}. len=2",
-                        "4. r=3(a): Dup! left=max(2, 0+1)=2. (No jump backward)"
-                    ],
-                    codeTitle: "Python Solution",
-                    code: `def length_of_longest_substring(s):
-    last_seen = {}
-    left = 0
-    max_len = 0
-    
-    for right, char in enumerate(s):
-        if char in last_seen:
-            left = max(left, last_seen[char] + 1)
-        last_seen[char] = right
-        max_len = max(max_len, right - left + 1)
-        
-    return max_len`
-                }
-            },
-            {
-                id: "sort-colors",
-                title: "Sort Colors",
-                leetcodeUrl: "https://leetcode.com/problems/sort-colors/",
-                difficulty: "Good to Do",
-                priority: "🟡",
-                tags: ["Two Pointers"],
-                quiz: {
-                    description: "Sort array of 0s, 1s, 2s in one pass. Method?",
-                    options: ["Merge Sort", "Counting Sort (2 pass)", "Dutch National Flag (1 pass)", "Quick Sort"],
-                    correct: 2,
-                    explanation: "Dutch National Flag Algorithm! 3 Pointers: Low (0 boundary), Mid (Scanner), High (2 boundary). If 0: swap(low, mid), low++, mid++. If 1: mid++. If 2: swap(mid, high), high--."
-                },
-                learn: {
-                    metrics: { time: "O(N)", space: "O(1)" },
-                    code: `def sortColors(nums):
-    l, r = 0, len(nums)-1
-    i = 0
-    while i <= r:
-        if nums[i] == 0:
-            nums[l], nums[i] = nums[i], nums[l]
-            l += 1
-            i += 1
-        elif nums[i] == 2:
-            nums[r], nums[i] = nums[i], nums[r]
-            r -= 1
-        else:
-            i += 1`
-                }
-            },
-            {
-                id: "max-product-subarray",
-                title: "Max Product Subarray",
-                leetcodeUrl: "https://leetcode.com/problems/maximum-product-subarray/",
-                difficulty: "Must Do",
-                priority: "🔴",
-                tags: ["DP"],
-                quiz: {
-                    description: "Find max product. Negatives allowed. Trick?",
-                    options: ["Kadane's normally", "Track Min and Max product", "Prefix products", "Two pointers"],
-                    correct: 1,
-                    explanation: "Track both MAX and MIN! A negative number can flip a large negative Min into a huge positive Max. cur_max = max(n, n*prev_max, n*prev_min)."
-                },
-                learn: {
-                    metrics: { time: "O(N)", space: "O(1)" },
-                    code: `def maxProduct(nums):
-    res = nums[0]
-    curMin, curMax = 1, 1
-    for n in nums:
-        tmp = curMax * n
-        curMax = max(n * curMax, n * curMin, n)
-        curMin = min(tmp, n * curMin, n)
-        res = max(res, curMax)
-    return res`
-                }
-            },
-            {
-                id: "subarray-sum-xor-k",
-                title: "Subarrays with XOR K",
-                leetcodeUrl: "https://www.interviewbit.com/problems/subarray-with-given-xor/",
-                difficulty: "Good to Do",
-                priority: "🟡",
-                tags: ["HashMap"],
-                quiz: {
-                    description: "Count subarrays with XOR = K. Pattern?",
-                    options: ["Sliding Window", "Prefix XOR + HashMap", "Trie", "DP"],
-                    correct: 1,
-                    explanation: "XR = Prefix XOR. We want subarray ending at i with XOR K. So `XR ^ K` must exist previously? Yes. like Two Sum: Check map for `XR ^ K`. Add count."
-                },
-                learn: {
-                    metrics: { time: "O(N)", space: "O(N)" },
-                    code: `def solve(A, B):
-    cnt = 0
-    xor = 0
-    map = {0: 1}
-    for n in A:
-        xor ^= n
-        if (xor ^ B) in map:
-            cnt += map[xor ^ B]
-        map[xor] = map.get(xor, 0) + 1
-    return cnt`
-                }
-            },
-            {
-                id: "longest-substring-k-distinct",
-                title: "Longest Substring K Distinct",
-                leetcodeUrl: "https://leetcode.com/problems/longest-substring-with-at-most-k-distinct-characters/",
-                difficulty: "Good to Do",
-                priority: "🟡",
-                tags: ["Sliding Window"],
-                quiz: {
-                    description: "Max substring with at most K distinct chars.",
-                    options: ["DP", "Sliding Window + HashMap", "Recursion", "Greedy"],
-                    correct: 1,
-                    explanation: "Standard variable sliding window! Expand right, add to Map. While len(Map) > K, shrink left (decrement/remove from Map). Update max_len."
-                },
-                learn: {
-                    metrics: { time: "O(N)", space: "O(K)" },
-                    code: `def lengthOfLongestSubstringKDistinct(s, k):
-    map = {}
-    l = 0
-    res = 0
-    for r, c in enumerate(s):
-        map[c] = map.get(c, 0) + 1
-        while len(map) > k:
-            map[s[l]] -= 1
-            if map[s[l]] == 0: del map[s[l]]
-            l += 1
-        res = max(res, r - l + 1)
-    return res`
-                }
-            }
+const topic_arrays = {
+    id: "arrays",
+    title: "Arrays & Sliding Window",
+    description: "Principal Engineer DSA • Day 1",
+    color: "var(--primary)", // #6366f1
+    icon: "fas fa-layer-group",
+    mentalModel: {
+        whenToApply: [
+            { label: "Sorted Data", desc: "Classic usage (Two Pointers/Binary Search)." },
+            { label: "Contiguous Subarrays", desc: "Think <span class='code-snippet'>Sliding Window</span>." },
+            { label: "Lookups", desc: "High speed? Think <span class='code-snippet'>Hash Map</span>." }
+        ],
+        safetyCheck: [
+            { label: "Edge Cases", desc: "Always handle <span class='code-snippet'>if not nums</span> first." },
+            { label: "Space Trade-off", desc: "Use <span class='code-snippet'>O(N)</span> space to get <span class='code-snippet'>O(1)</span> lookup." }
         ]
     },
-
-    binary_search: {
-        id: "binary_search",
-        title: "Binary Search Patterns",
-        description: "Principal Engineer DSA • Day 2",
-        color: "#2563eb",
-        icon: "fas fa-search",
-        mentalModel: {
-            whenToApply: [
-                { label: "Sorted Data", desc: "Classic usage (Find X)." },
-                { label: "Monotonic Functions", desc: "F(x) goes F, F, T, T. (BS on Answer)." },
-                { label: "Rotated Structures", desc: "Finding pivots/cliffs." }
-            ],
-            safetyCheck: [
-                { label: "Overflow", desc: "Never use <code>(L+R)//2</code>. Always use <span class='code-snippet'>L + (R-L)//2</span>." },
-                { label: "Infinite Loops", desc: "If <code>high = mid</code> → use <span class='code-snippet'>while L < R</span>." }
-            ]
+    questions: [
+        {
+            id: "two-sum",
+            title: "Two Sum",
+            leetcodeUrl: "https://leetcode.com/problems/two-sum/",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["HashMap"],
+            quiz: {
+                description: "Given an array and target, find two numbers that add up to target. What's the optimal approach?",
+                options: [
+                    "Brute Force O(n²) - Check all pairs",
+                    "HashMap O(n) - Store complements as you iterate",
+                    "Two Pointers O(n log n) - Sort then scan",
+                    "Binary Search O(n log n) - Sort and search for each element"
+                ],
+                correct: 1,
+                explanation: "HashMap is KING! As you iterate, check if (target - current) exists in map. If yes, found! If no, store current. One pass: O(n) time, O(n) space. Warm-up in 20% of interviews!"
+            },
+            learn: null // Not present in arrays.html, only game
         },
-        questions: [
-            {
-                id: "search-rotated-sorted-array-ii",
-                title: "Search Rotated Sorted Array II",
-                leetcodeUrl: "https://leetcode.com/problems/search-in-rotated-sorted-array-ii/",
-                difficulty: "Must Do",
-                priority: "🔴",
-                tags: ["Duplicates"],
-                quiz: {
-                    description: "Array has duplicates. What breaks normal binary search?",
-                    options: [
-                        "Nothing, works normally",
-                        "When nums[low] == nums[mid] == nums[high], can't determine sorted half",
-                        "Pivot point becomes undefined",
-                        "Multiple targets possible"
-                    ],
-                    correct: 1,
-                    explanation: "Duplicates create 'fog'! When nums[low] == nums[mid] == nums[high], we can't tell which side is sorted. Solution: Shrink window (low++, high--) until fog clears. Worst case O(n)!"
-                },
-                learn: {
-                    metrics: { time: "Avg O(log N)", space: "O(1)" },
-                    timeExplainer: "<strong>Time Analysis:</strong><br>• <strong>Best/Avg:</strong> <code>O(log N)</code> - Standard binary search<br>• <strong>Worst:</strong> <code>O(N)</code> - All duplicates<br><br><strong>Why?</strong> Duplicates create 'fog' requiring linear scan",
-                    spaceExplainer: "<strong>Space Analysis:</strong><br>• Iterative approach with 3 pointers<br>• No recursion stack<br><br><strong>Result:</strong> <code>O(1)</code>",
-                    visual: "<span><strong>Visual: The Foggy Cliff</strong><br>Imagine two slopes. When duplicates appear (1,1,1...), the slopes merge into a flat line ('fog'). You must walk blindly until the fog clears.</span>",
-                    crux: "If <code>nums[low] == nums[mid] == nums[high]</code>, we cannot determine which side is sorted.<br><strong>Strategy:</strong> Treat this as 'noise'. Shrink the window from both ends (<code>low++</code>, <code>high--</code>) until the unique numbers appear.",
-                    trap: "<strong>Worst Case O(N):</strong> If all elements are duplicates, we end up scanning the whole array linearly.",
-                    dryRun: [
-                        "<strong>Input:</strong> [1, 0, 1, 1, 1], target = 0",
-                        "1. L=0(1), R=4(1), M=2(1). <strong>Collision!</strong> 1==1==1. Action: L++, R--.",
-                        "2. L=1(0), R=3(1), M=2(1). Left sorted? Yes. Target in range? Yes. Action: R = M - 1.",
-                        "3. L=1(0), R=1(0). Match! Return True."
-                    ],
-                    codeTitle: "Python Solution (Principal Grade)",
-                    code: `def search(nums, target):
-    low, high = 0, len(nums) - 1
-    
-    while low <= high:
-        # Principal Habit: Prevent Overflow
-        mid = low + (high - low) // 2
-        
-        if nums[mid] == target: return True
-        
-        # KEY: Handle Duplicates (The Fog)
-        if nums[low] == nums[mid] == nums[high]:
-            low += 1
-            high -= 1
-            continue
-            
-        # Standard Rotated Logic
-        # Left side is sorted
-        if nums[low] <= nums[mid]:
-            if nums[low] <= target < nums[mid]:
-                high = mid - 1
-            else:
-                low = mid + 1
-        # Right side is sorted
-        else:
-            if nums[mid] < target <= nums[high]:
-                low = mid + 1
-            else:
-                high = mid - 1
-    return False`
-                }
+        {
+            id: "3sum",
+            title: "3Sum",
+            leetcodeUrl: "https://leetcode.com/problems/3sum/",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["Two Pointers"],
+            quiz: {
+                description: "Find all triplets that sum to zero. Best approach to avoid duplicates?",
+                options: [
+                    "Three nested loops O(n³)",
+                    "HashMap with pair sums O(n²) space",
+                    "Sort + Two Pointers O(n²) time, O(1) space",
+                    "Backtracking O(2ⁿ)"
+                ],
+                correct: 2,
+                explanation: "Sort first! Fix one element, use two pointers on rest. Skip duplicates by checking if current == previous. This is THE standard pattern for multi-pointer problems. O(n²) time!"
             },
-            {
-                id: "koko-eating-bananas",
-                title: "Koko Eating Bananas",
-                leetcodeUrl: "https://leetcode.com/problems/koko-eating-bananas/",
-                difficulty: "Must Do",
-                priority: "🔴",
-                tags: ["BS on Answer"],
-                quiz: {
-                    description: "Find minimum eating speed. What do we binary search on?",
-                    options: [
-                        "Binary search the piles array",
-                        "Binary search the ANSWER (speed range [1, max_pile])",
-                        "Greedy selection",
-                        "DP on remaining piles"
-                    ],
-                    correct: 1,
-                    explanation: "Binary Search on ANSWER! Search space = [1, max(piles)]. For each speed, calculate hours. If ≤ h, try slower (right = mid - 1). If > h, must go faster (left = mid + 1). Classic pattern!"
-                },
-                learn: {
-                    metrics: { time: "O(N log M)", space: "O(1)" },
-                    timeExplainer: "<strong>Time Analysis:</strong><br>• Binary search range: <code>log M</code> iterations<br>• Each check: <code>O(N)</code> to sum hours<br><br><strong>Total:</strong> <code>O(N log M)</code> where M = max(piles)",
-                    spaceExplainer: "<strong>Space Analysis:</strong><br>• Only variables for binary search<br>• No extra arrays<br><br><strong>Result:</strong> <code>O(1)</code>",
-                    visual: "<span><strong>Visual: The Inverse Curve</strong><br>As Speed (x-axis) increases, Hours (y-axis) decreases. <br>We want the <strong>Left-most</strong> point where Hours <= H.</span>",
-                    crux: "<strong>1. Search Space:</strong> We don't search the array. We search the range <code>[1, max(piles)]</code>.<br><strong>2. Decision:</strong> If Koko finishes in time, try slower (Left). If fails, go faster (Right).",
-                    trap: "<strong>Floating Point Math:</strong> Using `math.ceil` is slow. Use integer ceiling: <code>(p + s - 1) // s</code>.",
-                    dryRun: [
-                        "<strong>Input:</strong> piles=[3, 6, 7, 11], h=8. Range [1, 11].",
-                        "1. Mid=6. Hours=6. (OK). Try Slower [1-5].",
-                        "2. Mid=3. Hours=10. (Too Slow). Try Faster [4-5].",
-                        "3. Mid=4. Hours=8. (OK). Try Slower [4-3]. End."
-                    ],
-                    codeTitle: "Python Solution (Production Grade)",
-                    code: `def minEatingSpeed(piles: List[int], h: int) -> int:
-    min_speed, max_speed = 1, max(piles)
-    
-    def get_hours(speed):
-        return sum((p + speed - 1) // speed for p in piles)
-        
-    while min_speed <= max_speed:
-        mid_speed = min_speed + (max_speed - min_speed) // 2
-        
-        if get_hours(mid_speed) <= h:
-            max_speed = mid_speed - 1
-        else:
-            min_speed = mid_speed + 1
-            
-    return min_speed`
-                }
-            },
-            {
-                id: "aggressive-cows",
-                title: "Aggressive Cows",
-                leetcodeUrl: "https://www.spoj.com/problems/AGGRCOW/",
-                difficulty: "Must Do",
-                priority: "🔴",
-                tags: ["Min-Max"],
-                quiz: {
-                    description: "Maximize minimum distance between cows. What's the first step?",
-                    options: [
-                        "Greedy placement",
-                        "SORT stalls first! Then BS on distance",
-                        "DP on positions",
-                        "Try all combinations"
-                    ],
-                    correct: 1,
-                    explanation: "SORT + BS on Answer! Sort stalls. Binary search on distance [1, max-min]. For each distance, greedily try to place K cows. If successful, try larger distance (left = mid + 1). Min-Max pattern!"
-                },
-                learn: {
-                    metrics: { time: "O(N log N)", space: "O(1)" },
-                    timeExplainer: "<strong>Time Breakdown:</strong><br>• Sorting stalls: <code>O(N log N)</code><br>• Binary search × greedy check: <code>O(N log D)</code><br><br><strong>Total:</strong> <code>O(N log N)</code>",
-                    spaceExplainer: "<strong>Space Analysis:</strong><br>• In-place sorting possible<br>• Only variables for counting<br><br><strong>Result:</strong> <code>O(1)</code>",
-                    visual: "<span><strong>System Design Mapping:</strong> Load Balancing.<br>Imagine Stalls are IP Addresses and Cows are Microservices. Check max safety buffer.</span>",
-                    crux: "<strong>'Maximize the Minimum'</strong><br>1. Sort stalls.<br>2. BS on Distance.<br>3. Greedy Check: Can we place K cows with gap >= mid?",
-                    trap: "<strong>The Unsorted Array:</strong> The Greedy Check requires stalls to be sorted. Don't forget <code>stalls.sort()</code>.",
-                    dryRun: [
-                        "<strong>Input:</strong> Stalls=[1, 2, 8, 4, 9], K=3.",
-                        "Step 0: SORT -> [1, 2, 4, 8, 9].",
-                        "1. Mid=4. Place@1. Next@8. Count=2. FAIL. Gap too big.",
-                        "2. Mid=2. Place@1. Next@4. Next@8. Count=3. SUCCESS.",
-                        "3. Mid=3. Place@1. Next@4. Next@8. Count=3. SUCCESS."
-                    ],
-                    codeTitle: "Python Solution",
-                    code: `def aggressiveCows(stalls: List[int], k: int) -> int:
-    stalls.sort()
-    
-    def can_place(min_dist):
-        count = 1
-        last_pos = stalls[0]
-        for i in range(1, len(stalls)):
-            if stalls[i] - last_pos >= min_dist:
-                count += 1
-                last_pos = stalls[i]
-                if count == k: return True
-        return False
+            learn: {
+                metrics: { time: "O(N²)", space: "O(1) or O(N)" },
+                timeExplainer: "<strong>Time Breakdown:</strong><br>• Sorting: <code>O(N log N)</code><br>• Main loop: <code>N</code> iterations<br>• Each iteration: Two-pointer scan = <code>O(N)</code><br><br><strong>Total:</strong> <code>O(N log N + N²)</code> ≈ <code>O(N²)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• In Python, sorting might use <code>O(N)</code> auxiliary space<br>• If we ignore sorting and count only variables: <code>O(1)</code><br>• Result array not counted in space complexity",
+                visual: "<span><strong>Visual: The Anchor & Squeeze</strong><br>Array ko sort karo. Ek <code>anchor</code> fix karo, aur baaki do numbers ke liye <code>left_pointer</code> aur <code>right_pointer</code> ko tab tak squeeze karo jab tak 0 na mil jaye.</span>",
+                crux: "Triple loop ($O(N^3)$) se bachne ke liye **Sort** zaroori hai. Sorting se duplicates handle karna aur Two-Pointer lagana easy ho jata hai.<br><strong>Strategy:</strong><br>1. <code>anchor_value</code> ko fix karo loop se.<br>2. Agar <code>anchor_value</code> pichle element jaisa hai, toh skip (Duplicate protection).<br>3. Remaining array mein <code>target = -anchor_value</code> dhoondo.",
+                trap: "<strong>Internal Duplicates:</strong> Anchor skip karne ke baad bhi <code>left_pointer</code> same value pe land kar sakta hai.<br><strong>Fix:</strong> Jab triplet mil jaye, <code>left_pointer</code> ko tab tak badhao jab tak naya unique number na mil jaye.",
+                dryRun: [
+                    "<strong>Input:</strong> nums = [-1, 0, 1, 2, -1, -4]",
+                    "<strong>Sorted:</strong> [-4, -1, -1, 0, 1, 2]",
+                    "1. i=0 (val=-4). Target = 4. <br>left_pointer=-1, right_pointer=2. Sum=1. <span class='var-highlight'>Small!</span> Move left_pointer.",
+                    "2. i=1 (val=-1). Target = 1. <br>left_pointer=-1, right_pointer=2. Sum=1. <span class='var-highlight'>Match!</span> Triple: [-1, -1, 2].",
+                    "3. <span class='var-highlight'>Duplicate Check:</span> left_pointer index 2 pe bhi -1 hai. Skip to index 3."
+                ],
+                codeTitle: "Python Solution (PEP 8 Style)",
+                code: `def three_sum(nums):
+triplets = []
+nums.sort()
 
-    low, high = 1, stalls[-1] - stalls[0]
-    ans = 1
+for i, anchor_value in enumerate(nums):
+    # Skip duplicate anchors
+    if i > 0 and anchor_value == nums[i - 1]:
+        continue
+
+    left_pointer = i + 1
+    right_pointer = len(nums) - 1
+
+    while left_pointer < right_pointer:
+        current_sum = anchor_value + nums[left_pointer] + nums[right_pointer]
+        
+        if current_sum > 0:
+            right_pointer -= 1
+        elif current_sum < 0:
+            left_pointer += 1
+        else:
+            triplets.append([anchor_value, nums[left_pointer], nums[right_pointer]])
+            left_pointer += 1
+            
+            # Skip duplicate values for the left pointer
+            while nums[left_pointer] == nums[left_pointer - 1] and left_pointer < right_pointer:
+                left_pointer += 1
+                
+return triplets`
+            }
+        },
+        {
+            id: "max-subarray",
+            title: "Kadane's Algorithm",
+            leetcodeUrl: "https://leetcode.com/problems/maximum-subarray/",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["DP"],
+            quiz: {
+                description: "Find maximum sum of contiguous subarray. What's the DP optimization?",
+                options: [
+                    "Check all subarrays O(n³)",
+                    "Prefix sums O(n²)",
+                    "Kadane's: currSum = max(arr[i], currSum + arr[i])",
+                    "Divide and Conquer O(n log n)"
+                ],
+                correct: 2,
+                explanation: "Kadane's is GENIUS! Keep running sum. If it goes negative, reset to 0 (or current element). Track global max. O(n) time, O(1) space. Foundation for many DP problems!"
+            },
+            learn: {
+                metrics: { time: "O(N)", space: "O(1)" },
+                timeExplainer: "Single pass through the array.",
+                spaceExplainer: "Only two variables stored: current_sum and max_sum.",
+                visual: "<span><strong>Visual: The Reset Button</strong><br>Jab tak <code>current_sum</code> positive hai, wo aage kaam aayega. Jaise hi wo negative hua, wo 'bojh' ban gaya. Use turant 0 karke naya safar shuru karo.</span>",
+                crux: "Contiguous subarray dhoondna hai. Agar pichla sum negative hai, toh wo current number ki value ko kam hi karega.<br><strong>Strategy:</strong><br>1. <code>current_sum</code> ko track karo.<br>2. Agar <code>current_sum < 0</code>, toh use <code>0</code> kar do (start fresh).<br>3. Har step pe <code>max_sum</code> update karo.",
+                trap: "<strong>All Negatives:</strong> Agar array <code>[-5, -2, -3]</code> hai aur tumne <code>max_sum = 0</code> se start kiya, toh answer 0 aayega jo galat hai.<br><strong>Fix:</strong> <code>max_sum</code> ko hamesha pehle element (<code>nums[0]</code>) se initialize karo.",
+                dryRun: [
+                    "<strong>Input:</strong> nums = [-2, 1, -3, 4]",
+                    "1. n=-2: current_sum=-2. max_sum=-2. <br><span class='var-highlight'>current_sum < 0</span> -> current_sum = 0.",
+                    "2. n=1: current_sum=1. max_sum=max(-2, 1) = <span class='var-highlight'>1</span>.",
+                    "3. n=-3: current_sum=-2. max_sum=1. <br><span class='var-highlight'>current_sum < 0</span> -> current_sum = 0.",
+                    "4. n=4: current_sum=4. max_sum=max(1, 4) = <span class='var-highlight'>4</span>."
+                ],
+                codeTitle: "Python Solution",
+                code: `def max_sub_array(nums):
+# Initialize with first element to handle all-negative arrays
+max_sum = nums[0]
+current_sum = 0
+
+for n in nums:
+    # If running sum is a liability, drop it
+    if current_sum < 0:
+        current_sum = 0
+        
+    current_sum += n
     
-    while low <= high:
-        mid = low + (high - low) // 2
-        if can_place(mid):
-            ans = mid
+    if current_sum > max_sum:
+        max_sum = current_sum
+        
+return max_sum`
+            }
+        },
+        {
+            id: "product-except-self",
+            title: "Product Except Self",
+            leetcodeUrl: "https://leetcode.com/problems/product-of-array-except-self/",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["Prefix & Suffix"],
+            quiz: {
+                description: "Return array where output[i] = product of all except nums[i], WITHOUT division. How?",
+                options: [
+                    "Divide total product by nums[i]",
+                    "Prefix product from left × Suffix product from right",
+                    "Nested loops O(n²)",
+                    "Use logarithms to convert to addition"
+                ],
+                correct: 1,
+                explanation: "Prefix × Suffix magic! First pass: prefix[i] = product of all left elements. Second pass: suffix from right. Result[i] = prefix[i] × suffix[i]. O(n) time! Microsoft/Amazon favorite."
+            },
+            learn: {
+                metrics: { time: "O(N)", space: "O(1)" },
+                timeExplainer: "<strong>Time Analysis:</strong><br>• <code>2 passes</code> through the array<br>• First pass: Build prefix products<br>• Second pass: Multiply with suffix products<br><br><strong>Total:</strong> <code>O(2N)</code> = <code>O(N)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Output array not counted as extra space<br>• Only one variable <code>suffix_product</code> used<br><br><strong>Result:</strong> <code>O(1)</code> auxiliary space",
+                visual: "<span><strong>Visual: The Sandwich Logic</strong><br>Index <code>i</code> ke liye: (Left se sabka product) × (Right se sabka product). Hum result array mein pehle left side ka maal bharte hain, phir right side se aate waqt subtract kar dete hain.</span>",
+                crux: "Division operator banned hai.<br><strong>Strategy:</strong><br>1. <strong>Left Pass:</strong> <code>result[i]</code> mein 0 se <code>i-1</code> tak ka product store karo.<br>2. <strong>Right Pass:</strong> Ek variable <code>suffix_product</code> maintain karo aur piche se aate waqt <code>result[i]</code> ko usse multiply karo.",
+                trap: "<strong>Zero Handling:</strong> Agar array mein ek <code>0</code> hai, toh baaki sab index zero ho jayenge except the zero's index. Fix: Prefix/Suffix logic handles this naturally.",
+                dryRun: [
+                    "<strong>Input:</strong> nums = [1, 2, 3, 4]",
+                    "1. <strong>Prefix Pass:</strong> result = [1, 1, 2, 6] <br>(e.g., index 3 stores 1*2*3)",
+                    "2. <strong>Suffix Pass:</strong> suffix_product start = 1 <br>- i=3: res[3]*1=6. suffix=4. <br>- i=2: res[2]*4=8. suffix=12. <br>- i=1: res[1]*12=12. suffix=24. <br>- i=0: res[0]*24=24",
+                    "<strong>Final:</strong> [24, 12, 8, 6]"
+                ],
+                codeTitle: "Python Solution",
+                code: `def product_except_self(nums):
+n = len(nums)
+result = [1] * n
+
+# Prefix pass
+prefix_product = 1
+for i in range(n):
+    result[i] = prefix_product
+    prefix_product *= nums[i]
+    
+# Suffix pass
+suffix_product = 1
+for i in range(n - 1, -1, -1):
+    result[i] *= suffix_product
+    suffix_product *= nums[i]
+    
+return result`
+            }
+        },
+        {
+            id: "trapping-rain-water",
+            title: "Trapping Rain Water",
+            leetcodeUrl: "https://leetcode.com/problems/trapping-rain-water/",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["Two Pointers"],
+            quiz: {
+                description: "Calculate water trapped between bars. What's the optimal pattern?",
+                options: [
+                    "For each bar, find max left & right O(n²)",
+                    "Pre-compute max arrays O(n) space",
+                    "Two pointers from both ends O(1) space",
+                    "Stack-based approach O(n)"
+                ],
+                correct: 2,
+                explanation: "Two pointers is ELITE! Start from both ends with left_max, right_max. Water at position = min(left_max, right_max) - height. Move smaller pointer inward. O(n) time, O(1) space!"
+            },
+            learn: {
+                metrics: { time: "O(N)", space: "O(1)" },
+                timeExplainer: "<strong>Time Analysis:</strong><br>• Single pass with two pointers<br>• Each element visited exactly once<br><br><strong>Total:</strong> <code>O(N)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Only 4 variables: <code>left, right, left_max, right_max</code><br>• No extra arrays needed<br><br><strong>Result:</strong> <code>O(1)</code>",
+                visual: "<span><strong>Visual: The Bottle Neck</strong><br>Kisi bhi bar pe kitna paani rukega? <br><code>water = min(max_left, max_right) - current_height</code>. <br>Hum dono sides se scan karte hain aur jo side 'choti' (bottleneck) hai, wahan ka paani calculate karte hain.</span>",
+                crux: "Paani tabhi rukega jab dono taraf deewar (boundary) ho.<br><strong>Strategy:</strong><br>1. Pointers ends pe rakho.<br>2. <code>left_max</code> aur <code>right_max</code> track karo.<br>3. Move smaller side.",
+                trap: "<strong>Negative Water:</strong> Ensure <code>max_boundary >= current_height</code> before subtracting.",
+                dryRun: [
+                    "<strong>Input:</strong> height = [0, 1, 0, 2, 1, 0, 1, 3]",
+                    "1. L=0(H=0), R=7(H=3). Left smaller. left_max=0. Water+=0. Move L.",
+                    "2. L=1(H=1). Left smaller. left_max=1. Water+=0. Move L.",
+                    "3. L=2(H=0). Left smaller. Water += 1-0 = 1 unit. Move L."
+                ],
+                codeTitle: "Python Solution",
+                code: `def trap(height):
+if not height: return 0
+left, right = 0, len(height) - 1
+left_max, right_max = height[left], height[right]
+water = 0
+
+while left < right:
+    if left_max < right_max:
+        left += 1
+        left_max = max(left_max, height[left])
+        water += left_max - height[left]
+    else:
+        right -= 1
+        right_max = max(right_max, height[right])
+        water += right_max - height[right]
+return water`
+            }
+        },
+        {
+            id: "merge-intervals",
+            title: "Merge Intervals",
+            leetcodeUrl: "https://leetcode.com/problems/merge-intervals/",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["Sorting", "Greedy"],
+            quiz: {
+                description: "Merge all overlapping intervals. What's the first critical step?",
+                options: [
+                    "Use Union-Find",
+                    "Sort by start time, then merge linearly",
+                    "Build interval tree",
+                    "Check every pair O(n²)"
+                ],
+                correct: 1,
+                explanation: "SORT FIRST by start time! Then iterate: if current.start <= last.end, they overlap - merge. Else, add current to result. O(n log n) for sort, O(n) for merge. Standard interval pattern!"
+            },
+            learn: {
+                metrics: { time: "O(N log N)", space: "O(N)" },
+                timeExplainer: "<strong>Time Breakdown:</strong><br>• Sorting: <code>O(N log N)</code><br>• Single pass to merge: <code>O(N)</code><br><br><strong>Total:</strong> <code>O(N log N)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Result array to store merged intervals<br>• Worst case: no merges = <code>O(N)</code>",
+                visual: "<span><strong>Visual: The Number Line</strong><br>Intervals ko unke start_time se sort karo. Check overlap with previous.</span>",
+                crux: "Bina sorting ke overlap check karna impossible hai.<br><strong>Strategy:</strong><br>1. Sort by start.<br>2. Check if <code>current_start <= last_end</code>.<br>3. Merge by taking <code>max(last_end, current_end)</code>.",
+                trap: "<strong>The Subset Interval:</strong> [1, 10] and [2, 5]. End should stay 10. Always use max().",
+                dryRun: [
+                    "<strong>Input:</strong> [[1, 3], [2, 6], [8, 10]]",
+                    "1. Merged = [[1, 3]]",
+                    "2. [2, 6]: 2 <= 3. Overlap! End = max(3, 6) = 6. Merged=[[1, 6]]",
+                    "3. [8, 10]: 8 > 6. No overlap. Append."
+                ],
+                codeTitle: "Python Solution",
+                code: `def merge_intervals(intervals):
+if not intervals: return []
+intervals.sort(key=lambda x: x[0])
+merged = [intervals[0]]
+
+for i in range(1, len(intervals)):
+    start, end = intervals[i]
+    last_end = merged[-1][1]
+    
+    if start <= last_end:
+        merged[-1][1] = max(last_end, end)
+    else:
+        merged.append([start, end])
+return merged`
+            }
+        },
+        {
+            id: "meeting-rooms-ii",
+            title: "Meeting Rooms II",
+            leetcodeUrl: "https://leetcode.com/problems/meeting-rooms-ii/",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["Min-Heap"],
+            quiz: {
+                description: "Find minimum meeting rooms needed. Best data structure?",
+                options: [
+                    "Sort by start time, count overlaps",
+                    "Min Heap of end times",
+                    "Interval tree",
+                    "Greedy with sorting both start and end arrays"
+                ],
+                correct: 1,
+                explanation: "Min Heap FTW! Sort by start time. For each meeting, if heap top (earliest end) < current start, reuse room (pop heap). Always push current end time. Heap size = rooms needed. O(n log n)!"
+            },
+            learn: {
+                metrics: { time: "O(N log N)", space: "O(N)" },
+                timeExplainer: "<strong>Time Breakdown:</strong><br>• Sorting: <code>O(N log N)</code><br>• Heap operations: <code>O(N log N)</code><br><br><strong>Total:</strong> <code>O(N log N)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Min-Heap stores end times<br>• Worst case: all meetings overlap = <code>O(N)</code>",
+                visual: "<span><strong>Visual: Room Re-use</strong><br>Heap batata hai kaunsi meeting sabse pehle khatam hogi. Agar nayi meeting uske baad shuru ho rahi hai, toh room reuse karo.</span>",
+                crux: "Track occupied rooms.<br><strong>Strategy:</strong><br>1. Sort by Start Time.<br>2. Min-Heap stores End Times.<br>3. If <code>start >= heap[0]</code>, pop (room freed).<br>4. Push new end time.",
+                trap: "<strong>Just Finished:</strong> [1, 5] and [5, 10]. Reuse is allowed.",
+                dryRun: [
+                    "<strong>Input:</strong> [[0, 30], [5, 10], [15, 20]]",
+                    "1. [0, 30]: Heap=[30]",
+                    "2. [5, 10]: 5 < 30. New room. Heap=[10, 30]",
+                    "3. [15, 20]: 15 >= 10. Reuse. Pop 10, Push 20. Heap=[20, 30]",
+                    "Size=2"
+                ],
+                codeTitle: "Python Solution",
+                code: `import heapq
+def min_meeting_rooms(intervals):
+if not intervals: return 0
+intervals.sort(key=lambda x: x[0])
+heap = [] # Stores end times
+heapq.heappush(heap, intervals[0][1])
+
+for i in range(1, len(intervals)):
+    if intervals[i][0] >= heap[0]:
+        heapq.heappop(heap)
+    heapq.heappush(heap, intervals[i][1])
+    
+return len(heap)`
+            }
+        },
+        {
+            id: "longest-substring",
+            title: "Longest Substring Without Repeating",
+            leetcodeUrl: "https://leetcode.com/problems/longest-substring-without-repeating-characters/",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["Sliding Window"],
+            quiz: {
+                description: "Find longest substring with all unique characters. What's the sliding window logic?",
+                options: [
+                    "Try all substrings O(n³)",
+                    "HashMap + Sliding window with left pointer jump",
+                    "Set + Two pointers expanding right",
+                    "Binary search on length"
+                ],
+                correct: 1,
+                explanation: "HashMap + Sliding Window! Store char → index. When duplicate found, jump LEFT pointer to max(left, map[char] + 1). Track max length. This is THE 'Hello World' of sliding window! O(n)."
+            },
+            learn: {
+                metrics: { time: "O(N)", space: "O(min(m,n))" },
+                timeExplainer: "<strong>Time Analysis:</strong><br>• Single pass with sliding window<br>• Each character visited at most twice<br><br><strong>Total:</strong> <code>O(N)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• HashMap stores char → index<br>• <code>m</code> = charset size, <code>n</code> = string length<br><br><strong>Result:</strong> <code>O(min(m, n))</code>",
+                visual: "<span><strong>Visual: Elastic Window</strong><br>Duplicate aate hi left pointer ko 'jump' karao to exclude the previous occurrence.</span>",
+                crux: "Uniqueness maintain karni hai.<br><strong>Strategy:</strong><br>1. <code>last_seen</code> map.<br>2. If char in map, <code>left = max(left, map[char] + 1)</code>.<br>3. Update map[char] = current_index.",
+                trap: "<strong>Backward Jump:</strong> Never move left pointer backwards. Always use max().",
+                dryRun: [
+                    "<strong>Input:</strong> 'abba'",
+                    "1. r=0(a): map={a:0}. len=1",
+                    "2. r=1(b): map={a:0, b:1}. len=2",
+                    "3. r=2(b): Dup! left=max(0, 1+1)=2. map={b:2}. len=2",
+                    "4. r=3(a): Dup! left=max(2, 0+1)=2. (No jump backward)"
+                ],
+                codeTitle: "Python Solution",
+                code: `def length_of_longest_substring(s):
+last_seen = {}
+left = 0
+max_len = 0
+
+for right, char in enumerate(s):
+    if char in last_seen:
+        left = max(left, last_seen[char] + 1)
+    last_seen[char] = right
+    max_len = max(max_len, right - left + 1)
+    
+return max_len`
+            }
+        },
+        {
+            id: "sort-colors",
+            title: "Sort Colors",
+            leetcodeUrl: "https://leetcode.com/problems/sort-colors/",
+            difficulty: "Good to Do",
+            priority: "🟡",
+            tags: ["Two Pointers"],
+            quiz: {
+                description: "Sort array of 0s, 1s, 2s in one pass. Method?",
+                options: ["Merge Sort", "Counting Sort (2 pass)", "Dutch National Flag (1 pass)", "Quick Sort"],
+                correct: 2,
+                explanation: "Dutch National Flag Algorithm! 3 Pointers: Low (0 boundary), Mid (Scanner), High (2 boundary). If 0: swap(low, mid), low++, mid++. If 1: mid++. If 2: swap(mid, high), high--."
+            },
+            learn: {
+                metrics: { time: "O(N)", space: "O(1)" },
+                code: `def sortColors(nums):
+l, r = 0, len(nums)-1
+i = 0
+while i <= r:
+    if nums[i] == 0:
+        nums[l], nums[i] = nums[i], nums[l]
+        l += 1
+        i += 1
+    elif nums[i] == 2:
+        nums[r], nums[i] = nums[i], nums[r]
+        r -= 1
+    else:
+        i += 1`
+            }
+        },
+        {
+            id: "max-product-subarray",
+            title: "Max Product Subarray",
+            leetcodeUrl: "https://leetcode.com/problems/maximum-product-subarray/",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["DP"],
+            quiz: {
+                description: "Find max product. Negatives allowed. Trick?",
+                options: ["Kadane's normally", "Track Min and Max product", "Prefix products", "Two pointers"],
+                correct: 1,
+                explanation: "Track both MAX and MIN! A negative number can flip a large negative Min into a huge positive Max. cur_max = max(n, n*prev_max, n*prev_min)."
+            },
+            learn: {
+                metrics: { time: "O(N)", space: "O(1)" },
+                code: `def maxProduct(nums):
+res = nums[0]
+curMin, curMax = 1, 1
+for n in nums:
+    tmp = curMax * n
+    curMax = max(n * curMax, n * curMin, n)
+    curMin = min(tmp, n * curMin, n)
+    res = max(res, curMax)
+return res`
+            }
+        },
+        {
+            id: "subarray-sum-xor-k",
+            title: "Subarrays with XOR K",
+            leetcodeUrl: "https://www.interviewbit.com/problems/subarray-with-given-xor/",
+            difficulty: "Good to Do",
+            priority: "🟡",
+            tags: ["HashMap"],
+            quiz: {
+                description: "Count subarrays with XOR = K. Pattern?",
+                options: ["Sliding Window", "Prefix XOR + HashMap", "Trie", "DP"],
+                correct: 1,
+                explanation: "XR = Prefix XOR. We want subarray ending at i with XOR K. So `XR ^ K` must exist previously? Yes. like Two Sum: Check map for `XR ^ K`. Add count."
+            },
+            learn: {
+                metrics: { time: "O(N)", space: "O(N)" },
+                code: `def solve(A, B):
+cnt = 0
+xor = 0
+map = {0: 1}
+for n in A:
+    xor ^= n
+    if (xor ^ B) in map:
+        cnt += map[xor ^ B]
+    map[xor] = map.get(xor, 0) + 1
+return cnt`
+            }
+        },
+        {
+            id: "longest-substring-k-distinct",
+            title: "Longest Substring K Distinct",
+            leetcodeUrl: "https://leetcode.com/problems/longest-substring-with-at-most-k-distinct-characters/",
+            difficulty: "Good to Do",
+            priority: "🟡",
+            tags: ["Sliding Window"],
+            quiz: {
+                description: "Max substring with at most K distinct chars.",
+                options: ["DP", "Sliding Window + HashMap", "Recursion", "Greedy"],
+                correct: 1,
+                explanation: "Standard variable sliding window! Expand right, add to Map. While len(Map) > K, shrink left (decrement/remove from Map). Update max_len."
+            },
+            learn: {
+                metrics: { time: "O(N)", space: "O(K)" },
+                code: `def lengthOfLongestSubstringKDistinct(s, k):
+map = {}
+l = 0
+res = 0
+for r, c in enumerate(s):
+    map[c] = map.get(c, 0) + 1
+    while len(map) > k:
+        map[s[l]] -= 1
+        if map[s[l]] == 0: del map[s[l]]
+        l += 1
+    res = max(res, r - l + 1)
+return res`
+            }
+        }
+    ]
+}
+
+
+// ========== data/dsa/binary_search.js ==========
+// Binary Search data
+// Extracted from data.js
+
+const topic_binary_search = {
+    id: "binary_search",
+    title: "Binary Search Patterns",
+    description: "Principal Engineer DSA • Day 2",
+    color: "#2563eb",
+    icon: "fas fa-search",
+    mentalModel: {
+        whenToApply: [
+            { label: "Sorted Data", desc: "Classic usage (Find X)." },
+            { label: "Monotonic Functions", desc: "F(x) goes F, F, T, T. (BS on Answer)." },
+            { label: "Rotated Structures", desc: "Finding pivots/cliffs." }
+        ],
+        safetyCheck: [
+            { label: "Overflow", desc: "Never use <code>(L+R)//2</code>. Always use <span class='code-snippet'>L + (R-L)//2</span>." },
+            { label: "Infinite Loops", desc: "If <code>high = mid</code> → use <span class='code-snippet'>while L < R</span>." }
+        ]
+    },
+    questions: [
+        {
+            id: "search-rotated-sorted-array-ii",
+            title: "Search Rotated Sorted Array II",
+            leetcodeUrl: "https://leetcode.com/problems/search-in-rotated-sorted-array-ii/",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["Duplicates"],
+            quiz: {
+                description: "Array has duplicates. What breaks normal binary search?",
+                options: [
+                    "Nothing, works normally",
+                    "When nums[low] == nums[mid] == nums[high], can't determine sorted half",
+                    "Pivot point becomes undefined",
+                    "Multiple targets possible"
+                ],
+                correct: 1,
+                explanation: "Duplicates create 'fog'! When nums[low] == nums[mid] == nums[high], we can't tell which side is sorted. Solution: Shrink window (low++, high--) until fog clears. Worst case O(n)!"
+            },
+            learn: {
+                metrics: { time: "Avg O(log N)", space: "O(1)" },
+                timeExplainer: "<strong>Time Analysis:</strong><br>• <strong>Best/Avg:</strong> <code>O(log N)</code> - Standard binary search<br>• <strong>Worst:</strong> <code>O(N)</code> - All duplicates<br><br><strong>Why?</strong> Duplicates create 'fog' requiring linear scan",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Iterative approach with 3 pointers<br>• No recursion stack<br><br><strong>Result:</strong> <code>O(1)</code>",
+                visual: "<span><strong>Visual: The Foggy Cliff</strong><br>Imagine two slopes. When duplicates appear (1,1,1...), the slopes merge into a flat line ('fog'). You must walk blindly until the fog clears.</span>",
+                crux: "If <code>nums[low] == nums[mid] == nums[high]</code>, we cannot determine which side is sorted.<br><strong>Strategy:</strong> Treat this as 'noise'. Shrink the window from both ends (<code>low++</code>, <code>high--</code>) until the unique numbers appear.",
+                trap: "<strong>Worst Case O(N):</strong> If all elements are duplicates, we end up scanning the whole array linearly.",
+                dryRun: [
+                    "<strong>Input:</strong> [1, 0, 1, 1, 1], target = 0",
+                    "1. L=0(1), R=4(1), M=2(1). <strong>Collision!</strong> 1==1==1. Action: L++, R--.",
+                    "2. L=1(0), R=3(1), M=2(1). Left sorted? Yes. Target in range? Yes. Action: R = M - 1.",
+                    "3. L=1(0), R=1(0). Match! Return True."
+                ],
+                codeTitle: "Python Solution (Principal Grade)",
+                code: `def search(nums, target):
+low, high = 0, len(nums) - 1
+
+while low <= high:
+    # Principal Habit: Prevent Overflow
+    mid = low + (high - low) // 2
+    
+    if nums[mid] == target: return True
+    
+    # KEY: Handle Duplicates (The Fog)
+    if nums[low] == nums[mid] == nums[high]:
+        low += 1
+        high -= 1
+        continue
+        
+    # Standard Rotated Logic
+    # Left side is sorted
+    if nums[low] <= nums[mid]:
+        if nums[low] <= target < nums[mid]:
+            high = mid - 1
+        else:
+            low = mid + 1
+    # Right side is sorted
+    else:
+        if nums[mid] < target <= nums[high]:
             low = mid + 1
         else:
             high = mid - 1
-    return ans`
-                }
-            },
-            {
-                id: "median-of-two-sorted-arrays",
-                title: "Median of 2 Sorted Arrays",
-                leetcodeUrl: "https://leetcode.com/problems/median-of-two-sorted-arrays/",
-                difficulty: "HARD",
-                priority: "🟡",
-                tags: ["Partitioning"],
-                quiz: {
-                    description: "Find median in O(log(min(m,n))). What's the trick?",
-                    options: [
-                        "Merge both arrays O(m+n)",
-                        "Partition smaller array, calculate j automatically",
-                        "Binary search both arrays",
-                        "Two pointers"
-                    ],
-                    correct: 1,
-                    explanation: "Partition + Virtual Infinity! BS on smaller array (cut at i). Calculate j for larger array: j = (m+n+1)/2 - i. Valid when maxLeft_X ≤ minRight_Y and maxLeft_Y ≤ minRight_X. Handle edges with ±∞!"
-                },
-                learn: {
-                    metrics: { time: "O(log min(N,M))", space: "O(1)" },
-                    timeExplainer: "<strong>Time Analysis:</strong><br>• Binary search on smaller array<br>• Always pick smaller for partitioning<br><br><strong>Total:</strong> <code>O(log min(N, M))</code>",
-                    spaceExplainer: "<strong>Space Analysis:</strong><br>• Only partition pointers<br>• No extra arrays<br><br><strong>Result:</strong> <code>O(1)</code>",
-                    visual: "<span><strong>Mental Model: The Perfect Cut</strong><br>Slice both arrays such that elements on Left <= elements on Right.</span>",
-                    crux: "Don't merge! Partition array A at `i`. Partition B at `j` is auto-calculated.<br>Goal: `maxLeftA <= minRightB` & `maxLeftB <= minRightA`.",
-                    trap: "<strong>Edge Cases:</strong> What if cut is at 0 or N? Use <code>-∞</code> and <code>+∞</code>.",
-                    dryRun: [
-                        "<strong>Input:</strong> X=[1, 3], Y=[2].",
-                        "1. Cut X at 1 (Left: {1}, Right: {3}). Cut Y at 1 (Left: {2}, Right: {Inf}).",
-                        "Check: 1 <= Inf? OK. 2 <= 3? OK.",
-                        "Found! Median = max(1, 2) = 2."
-                    ],
-                    codeTitle: "Python Solution (Virtual Infinity)",
-                    code: `def findMedianSortedArrays(nums1, nums2):
-    if len(nums1) > len(nums2): 
-        nums1, nums2 = nums2, nums1
-    
-    m, n = len(nums1), len(nums2)
-    low, high = 0, m
-    
-    while low <= high:
-        partitionX = low + (high - low) // 2
-        partitionY = (m + n + 1) // 2 - partitionX
-        
-        maxLeftX = float('-inf') if partitionX == 0 else nums1[partitionX - 1]
-        minRightX = float('inf') if partitionX == m else nums1[partitionX]
-        
-        maxLeftY = float('-inf') if partitionY == 0 else nums2[partitionY - 1]
-        minRightY = float('inf') if partitionY == n else nums2[partitionY]
-        
-        if maxLeftX <= minRightY and maxLeftY <= minRightX:
-            if (m + n) % 2 == 0:
-                return (max(maxLeftX, maxLeftY) + min(minRightX, minRightY)) / 2
-            else:
-                return max(maxLeftX, maxLeftY)
-        elif maxLeftX > minRightY:
-            high = partitionX - 1
-        else:
-            low = partitionX + 1`
-                }
+return False`
             }
+        },
+        {
+            id: "koko-eating-bananas",
+            title: "Koko Eating Bananas",
+            leetcodeUrl: "https://leetcode.com/problems/koko-eating-bananas/",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["BS on Answer"],
+            quiz: {
+                description: "Find minimum eating speed. What do we binary search on?",
+                options: [
+                    "Binary search the piles array",
+                    "Binary search the ANSWER (speed range [1, max_pile])",
+                    "Greedy selection",
+                    "DP on remaining piles"
+                ],
+                correct: 1,
+                explanation: "Binary Search on ANSWER! Search space = [1, max(piles)]. For each speed, calculate hours. If ≤ h, try slower (right = mid - 1). If > h, must go faster (left = mid + 1). Classic pattern!"
+            },
+            learn: {
+                metrics: { time: "O(N log M)", space: "O(1)" },
+                timeExplainer: "<strong>Time Analysis:</strong><br>• Binary search range: <code>log M</code> iterations<br>• Each check: <code>O(N)</code> to sum hours<br><br><strong>Total:</strong> <code>O(N log M)</code> where M = max(piles)",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Only variables for binary search<br>• No extra arrays<br><br><strong>Result:</strong> <code>O(1)</code>",
+                visual: "<span><strong>Visual: The Inverse Curve</strong><br>As Speed (x-axis) increases, Hours (y-axis) decreases. <br>We want the <strong>Left-most</strong> point where Hours <= H.</span>",
+                crux: "<strong>1. Search Space:</strong> We don't search the array. We search the range <code>[1, max(piles)]</code>.<br><strong>2. Decision:</strong> If Koko finishes in time, try slower (Left). If fails, go faster (Right).",
+                trap: "<strong>Floating Point Math:</strong> Using `math.ceil` is slow. Use integer ceiling: <code>(p + s - 1) // s</code>.",
+                dryRun: [
+                    "<strong>Input:</strong> piles=[3, 6, 7, 11], h=8. Range [1, 11].",
+                    "1. Mid=6. Hours=6. (OK). Try Slower [1-5].",
+                    "2. Mid=3. Hours=10. (Too Slow). Try Faster [4-5].",
+                    "3. Mid=4. Hours=8. (OK). Try Slower [4-3]. End."
+                ],
+                codeTitle: "Python Solution (Production Grade)",
+                code: `def minEatingSpeed(piles: List[int], h: int) -> int:
+min_speed, max_speed = 1, max(piles)
+
+def get_hours(speed):
+    return sum((p + speed - 1) // speed for p in piles)
+    
+while min_speed <= max_speed:
+    mid_speed = min_speed + (max_speed - min_speed) // 2
+    
+    if get_hours(mid_speed) <= h:
+        max_speed = mid_speed - 1
+    else:
+        min_speed = mid_speed + 1
+        
+return min_speed`
+            }
+        },
+        {
+            id: "aggressive-cows",
+            title: "Aggressive Cows",
+            leetcodeUrl: "https://www.spoj.com/problems/AGGRCOW/",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["Min-Max"],
+            quiz: {
+                description: "Maximize minimum distance between cows. What's the first step?",
+                options: [
+                    "Greedy placement",
+                    "SORT stalls first! Then BS on distance",
+                    "DP on positions",
+                    "Try all combinations"
+                ],
+                correct: 1,
+                explanation: "SORT + BS on Answer! Sort stalls. Binary search on distance [1, max-min]. For each distance, greedily try to place K cows. If successful, try larger distance (left = mid + 1). Min-Max pattern!"
+            },
+            learn: {
+                metrics: { time: "O(N log N)", space: "O(1)" },
+                timeExplainer: "<strong>Time Breakdown:</strong><br>• Sorting stalls: <code>O(N log N)</code><br>• Binary search × greedy check: <code>O(N log D)</code><br><br><strong>Total:</strong> <code>O(N log N)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• In-place sorting possible<br>• Only variables for counting<br><br><strong>Result:</strong> <code>O(1)</code>",
+                visual: "<span><strong>System Design Mapping:</strong> Load Balancing.<br>Imagine Stalls are IP Addresses and Cows are Microservices. Check max safety buffer.</span>",
+                crux: "<strong>'Maximize the Minimum'</strong><br>1. Sort stalls.<br>2. BS on Distance.<br>3. Greedy Check: Can we place K cows with gap >= mid?",
+                trap: "<strong>The Unsorted Array:</strong> The Greedy Check requires stalls to be sorted. Don't forget <code>stalls.sort()</code>.",
+                dryRun: [
+                    "<strong>Input:</strong> Stalls=[1, 2, 8, 4, 9], K=3.",
+                    "Step 0: SORT -> [1, 2, 4, 8, 9].",
+                    "1. Mid=4. Place@1. Next@8. Count=2. FAIL. Gap too big.",
+                    "2. Mid=2. Place@1. Next@4. Next@8. Count=3. SUCCESS.",
+                    "3. Mid=3. Place@1. Next@4. Next@8. Count=3. SUCCESS."
+                ],
+                codeTitle: "Python Solution",
+                code: `def aggressiveCows(stalls: List[int], k: int) -> int:
+stalls.sort()
+
+def can_place(min_dist):
+    count = 1
+    last_pos = stalls[0]
+    for i in range(1, len(stalls)):
+        if stalls[i] - last_pos >= min_dist:
+            count += 1
+            last_pos = stalls[i]
+            if count == k: return True
+    return False
+
+low, high = 1, stalls[-1] - stalls[0]
+ans = 1
+
+while low <= high:
+    mid = low + (high - low) // 2
+    if can_place(mid):
+        ans = mid
+        low = mid + 1
+    else:
+        high = mid - 1
+return ans`
+            }
+        },
+        {
+            id: "median-of-two-sorted-arrays",
+            title: "Median of 2 Sorted Arrays",
+            leetcodeUrl: "https://leetcode.com/problems/median-of-two-sorted-arrays/",
+            difficulty: "HARD",
+            priority: "🟡",
+            tags: ["Partitioning"],
+            quiz: {
+                description: "Find median in O(log(min(m,n))). What's the trick?",
+                options: [
+                    "Merge both arrays O(m+n)",
+                    "Partition smaller array, calculate j automatically",
+                    "Binary search both arrays",
+                    "Two pointers"
+                ],
+                correct: 1,
+                explanation: "Partition + Virtual Infinity! BS on smaller array (cut at i). Calculate j for larger array: j = (m+n+1)/2 - i. Valid when maxLeft_X ≤ minRight_Y and maxLeft_Y ≤ minRight_X. Handle edges with ±∞!"
+            },
+            learn: {
+                metrics: { time: "O(log min(N,M))", space: "O(1)" },
+                timeExplainer: "<strong>Time Analysis:</strong><br>• Binary search on smaller array<br>• Always pick smaller for partitioning<br><br><strong>Total:</strong> <code>O(log min(N, M))</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Only partition pointers<br>• No extra arrays<br><br><strong>Result:</strong> <code>O(1)</code>",
+                visual: "<span><strong>Mental Model: The Perfect Cut</strong><br>Slice both arrays such that elements on Left <= elements on Right.</span>",
+                crux: "Don't merge! Partition array A at `i`. Partition B at `j` is auto-calculated.<br>Goal: `maxLeftA <= minRightB` & `maxLeftB <= minRightA`.",
+                trap: "<strong>Edge Cases:</strong> What if cut is at 0 or N? Use <code>-∞</code> and <code>+∞</code>.",
+                dryRun: [
+                    "<strong>Input:</strong> X=[1, 3], Y=[2].",
+                    "1. Cut X at 1 (Left: {1}, Right: {3}). Cut Y at 1 (Left: {2}, Right: {Inf}).",
+                    "Check: 1 <= Inf? OK. 2 <= 3? OK.",
+                    "Found! Median = max(1, 2) = 2."
+                ],
+                codeTitle: "Python Solution (Virtual Infinity)",
+                code: `def findMedianSortedArrays(nums1, nums2):
+if len(nums1) > len(nums2): 
+    nums1, nums2 = nums2, nums1
+
+m, n = len(nums1), len(nums2)
+low, high = 0, m
+
+while low <= high:
+    partitionX = low + (high - low) // 2
+    partitionY = (m + n + 1) // 2 - partitionX
+    
+    maxLeftX = float('-inf') if partitionX == 0 else nums1[partitionX - 1]
+    minRightX = float('inf') if partitionX == m else nums1[partitionX]
+    
+    maxLeftY = float('-inf') if partitionY == 0 else nums2[partitionY - 1]
+    minRightY = float('inf') if partitionY == n else nums2[partitionY]
+    
+    if maxLeftX <= minRightY and maxLeftY <= minRightX:
+        if (m + n) % 2 == 0:
+            return (max(maxLeftX, maxLeftY) + min(minRightX, minRightY)) / 2
+        else:
+            return max(maxLeftX, maxLeftY)
+    elif maxLeftX > minRightY:
+        high = partitionX - 1
+    else:
+        low = partitionX + 1`
+            }
+        }
+    ]
+}
+
+
+// ========== data/dsa/linked_list.js ==========
+// Linked List data
+// Extracted from data.js
+
+const topic_linked_list = {
+    id: "linked_list",
+    title: "Linked List Mastery",
+    description: "Principal Engineer DSA • Day 4",
+    color: "#059669",
+    icon: "fas fa-network-wired",
+    mentalModel: {
+        whenToApply: [
+            { label: "Wiring not Calculating", desc: "Don't think numbers. Think <strong>wires</strong>. Always draw pointers." }
+        ],
+        safetyCheck: [
+            { label: "Sentinel Nodes", desc: "Use <code>dummy -> head</code>. It solves 90% of edge cases like inserting at head." },
+            { label: "Runner Tech", desc: "Use Fast/Slow pointers for cycles and midpoints." }
         ]
     },
+    questions: [
+        {
+            id: "lru-cache",
+            title: "LRU Cache",
+            leetcodeUrl: "https://leetcode.com/problems/lru-cache/",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["Design #1"],
+            quiz: {
+                description: "Implement get() and put() in O(1). Which data structures?",
+                options: [
+                    "HashMap only",
+                    "Doubly Linked List + HashMap (key → node)",
+                    "Array + HashMap",
+                    "Queue + HashMap"
+                ],
+                correct: 1,
+                explanation: "Doubly LL + HashMap! HashMap for O(1) lookup. DLL for O(1) removal/insertion at head/tail. Get: move to head. Put: if full, remove tail. Add to head. #1 design question!"
+            },
+            learn: {
+                metrics: { time: "O(1)", space: "O(N)" },
+                timeExplainer: "<strong>Time Analysis:</strong><br>• <code>get()</code>: HashMap lookup = <code>O(1)</code><br>• <code>put()</code>: Map + DLL operations = <code>O(1)</code><br><br><strong>All operations:</strong> <code>O(1)</code> average",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• HashMap: <code>O(N)</code> for N key-value pairs<br>• Doubly Linked List: <code>O(N)</code> nodes<br><br><strong>Total:</strong> <code>O(N)</code>",
+                visual: "<span><strong>Visual: The Hybrid Engine</strong><br>HashMap stores <code>{Key -> Node}</code> for speed.<br>DLL stores <code>Order</code> (Head=Recent, Tail=Old).</span>",
+                crux: "<strong>The Wire-Splicing Strategy:</strong><br>Helpers: <code>_remove(node)</code> (Unplug) and <code>_add(node)</code> (Plug at front).<br>Get: Remove -> Add.<br>Put: Remove Old -> Add New. If Full: Remove Tail.",
+                trap: "<strong>Phantom Pointer:</strong> When evicting tail, you MUST delete it from the HashMap too! Often forgotten.",
+                dryRun: [
+                    "1. Put(1, 1): Map={1:N1}, List=[1].",
+                    "2. Put(2, 2): Map={1:N1, 2:N2}, List=[2, 1].",
+                    "3. Get(1): Remove 1, Add 1. List=[1, 2].",
+                    "4. Put(3, 3) Cap=2: Evict Tail(2). Map={1:N1, 3:N3}. List=[3, 1]."
+                ],
+                codeTitle: "Python Solution",
+                code: `class LRUCache:
+def __init__(self, capacity: int):
+    self.cap = capacity
+    self.cache = {} 
+    self.head, self.tail = Node(0, 0), Node(0, 0)
+    self.head.next = self.tail
+    self.tail.prev = self.head
 
-    linked_list: {
-        id: "linked_list",
-        title: "Linked List Mastery",
-        description: "Principal Engineer DSA • Day 4",
-        color: "#059669",
-        icon: "fas fa-network-wired",
-        mentalModel: {
-            whenToApply: [
-                { label: "Wiring not Calculating", desc: "Don't think numbers. Think <strong>wires</strong>. Always draw pointers." }
-            ],
-            safetyCheck: [
-                { label: "Sentinel Nodes", desc: "Use <code>dummy -> head</code>. It solves 90% of edge cases like inserting at head." },
-                { label: "Runner Tech", desc: "Use Fast/Slow pointers for cycles and midpoints." }
-            ]
+def _remove(self, node):
+    prev, nxt = node.prev, node.next
+    prev.next, nxt.prev = nxt, prev
+
+def _add(self, node):
+    node.prev, node.next = self.head, self.head.next
+    self.head.next.prev = node
+    self.head.next = node
+
+def get(self, key):
+    if key in self.cache:
+        self._remove(self.cache[key])
+        self._add(self.cache[key])
+        return self.cache[key].val
+    return -1
+
+def put(self, key, value):
+    if key in self.cache:
+        self._remove(self.cache[key])
+    new_node = Node(key, value)
+    self._add(new_node)
+    self.cache[key] = new_node
+    if len(self.cache) > self.cap:
+        lru = self.tail.prev
+        self._remove(lru)
+        del self.cache[lru.key]`
+            }
         },
-        questions: [
-            {
-                id: "lru-cache",
-                title: "LRU Cache",
-                leetcodeUrl: "https://leetcode.com/problems/lru-cache/",
-                difficulty: "Must Do",
-                priority: "🔴",
-                tags: ["Design #1"],
-                quiz: {
-                    description: "Implement get() and put() in O(1). Which data structures?",
-                    options: [
-                        "HashMap only",
-                        "Doubly Linked List + HashMap (key → node)",
-                        "Array + HashMap",
-                        "Queue + HashMap"
-                    ],
-                    correct: 1,
-                    explanation: "Doubly LL + HashMap! HashMap for O(1) lookup. DLL for O(1) removal/insertion at head/tail. Get: move to head. Put: if full, remove tail. Add to head. #1 design question!"
-                },
-                learn: {
-                    metrics: { time: "O(1)", space: "O(N)" },
-                    timeExplainer: "<strong>Time Analysis:</strong><br>• <code>get()</code>: HashMap lookup = <code>O(1)</code><br>• <code>put()</code>: Map + DLL operations = <code>O(1)</code><br><br><strong>All operations:</strong> <code>O(1)</code> average",
-                    spaceExplainer: "<strong>Space Analysis:</strong><br>• HashMap: <code>O(N)</code> for N key-value pairs<br>• Doubly Linked List: <code>O(N)</code> nodes<br><br><strong>Total:</strong> <code>O(N)</code>",
-                    visual: "<span><strong>Visual: The Hybrid Engine</strong><br>HashMap stores <code>{Key -> Node}</code> for speed.<br>DLL stores <code>Order</code> (Head=Recent, Tail=Old).</span>",
-                    crux: "<strong>The Wire-Splicing Strategy:</strong><br>Helpers: <code>_remove(node)</code> (Unplug) and <code>_add(node)</code> (Plug at front).<br>Get: Remove -> Add.<br>Put: Remove Old -> Add New. If Full: Remove Tail.",
-                    trap: "<strong>Phantom Pointer:</strong> When evicting tail, you MUST delete it from the HashMap too! Often forgotten.",
-                    dryRun: [
-                        "1. Put(1, 1): Map={1:N1}, List=[1].",
-                        "2. Put(2, 2): Map={1:N1, 2:N2}, List=[2, 1].",
-                        "3. Get(1): Remove 1, Add 1. List=[1, 2].",
-                        "4. Put(3, 3) Cap=2: Evict Tail(2). Map={1:N1, 3:N3}. List=[3, 1]."
-                    ],
-                    codeTitle: "Python Solution",
-                    code: `class LRUCache:
-    def __init__(self, capacity: int):
-        self.cap = capacity
-        self.cache = {} 
-        self.head, self.tail = Node(0, 0), Node(0, 0)
-        self.head.next = self.tail
-        self.tail.prev = self.head
-
-    def _remove(self, node):
-        prev, nxt = node.prev, node.next
-        prev.next, nxt.prev = nxt, prev
-
-    def _add(self, node):
-        node.prev, node.next = self.head, self.head.next
-        self.head.next.prev = node
-        self.head.next = node
-
-    def get(self, key):
-        if key in self.cache:
-            self._remove(self.cache[key])
-            self._add(self.cache[key])
-            return self.cache[key].val
-        return -1
-
-    def put(self, key, value):
-        if key in self.cache:
-            self._remove(self.cache[key])
-        new_node = Node(key, value)
-        self._add(new_node)
-        self.cache[key] = new_node
-        if len(self.cache) > self.cap:
-            lru = self.tail.prev
-            self._remove(lru)
-            del self.cache[lru.key]`
-                }
+        {
+            id: "reverse-linked-list-k-group",
+            title: "Reverse in K Groups",
+            leetcodeUrl: "https://leetcode.com/problems/reverse-nodes-in-k-group/",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["Pointer Mastery"],
+            quiz: {
+                description: "Reverse every K nodes. What's the challenge?",
+                options: [
+                    "Standard reversal works",
+                    "Need to track: prev_group_end, curr_group, next_group_start",
+                    "Use recursion only",
+                    "Convert to array"
+                ],
+                correct: 1,
+                explanation: "Pointer management! For each group: connect prev_group.next to new head. Connect new tail to next_group. Edge cases: < K nodes at end (don't reverse)."
             },
-            {
-                id: "reverse-linked-list-k-group",
-                title: "Reverse in K Groups",
-                leetcodeUrl: "https://leetcode.com/problems/reverse-nodes-in-k-group/",
-                difficulty: "Must Do",
-                priority: "🔴",
-                tags: ["Pointer Mastery"],
-                quiz: {
-                    description: "Reverse every K nodes. What's the challenge?",
-                    options: [
-                        "Standard reversal works",
-                        "Need to track: prev_group_end, curr_group, next_group_start",
-                        "Use recursion only",
-                        "Convert to array"
-                    ],
-                    correct: 1,
-                    explanation: "Pointer management! For each group: connect prev_group.next to new head. Connect new tail to next_group. Edge cases: < K nodes at end (don't reverse)."
-                },
-                learn: {
-                    metrics: { time: "O(N)", space: "O(1)" },
-                    timeExplainer: "<strong>Time Analysis:</strong><br>• Visit each node once<br>• Reversal within groups is O(K)<br><br><strong>Total:</strong> <code>O(N)</code>",
-                    spaceExplainer: "<strong>Space Analysis:</strong><br>• Only pointers for manipulation<br>• No extra data structures<br><br><strong>Result:</strong> <code>O(1)</code>",
-                    visual: "<span><strong>Visual: The Surgery</strong><br>1. Identify K segment.<br>2. Snip wires.<br>3. Flip.<br>4. Reconnect Anchors.</span>",
-                    crux: "<strong>Don't get lost.</strong><br>Use `get_kth` to find group end.<br>After reverse, your `groupPrev` is broken. Update it to the NEW tail.",
-                    trap: "<strong>Losing the Anchor:</strong> `groupPrev` must point to the new tail after each reversal to be ready for the next group.",
-                    dryRun: [
-                        "Input: 1->2->3->4->5, K=2",
-                        "1. Group [1,2]. Rev -> 2->1. Link dummy->2, 1->3. Prev=1.",
-                        "2. Group [3,4]. Rev -> 4->3. Link 1->4, 3->5. Prev=3.",
-                        "3. Group [5]. Len < K. Stop."
-                    ],
-                    codeTitle: "Python Solution",
-                    code: `def reverseKGroup(head, k):
-    dummy = ListNode(0, head)
-    groupPrev = dummy
+            learn: {
+                metrics: { time: "O(N)", space: "O(1)" },
+                timeExplainer: "<strong>Time Analysis:</strong><br>• Visit each node once<br>• Reversal within groups is O(K)<br><br><strong>Total:</strong> <code>O(N)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Only pointers for manipulation<br>• No extra data structures<br><br><strong>Result:</strong> <code>O(1)</code>",
+                visual: "<span><strong>Visual: The Surgery</strong><br>1. Identify K segment.<br>2. Snip wires.<br>3. Flip.<br>4. Reconnect Anchors.</span>",
+                crux: "<strong>Don't get lost.</strong><br>Use `get_kth` to find group end.<br>After reverse, your `groupPrev` is broken. Update it to the NEW tail.",
+                trap: "<strong>Losing the Anchor:</strong> `groupPrev` must point to the new tail after each reversal to be ready for the next group.",
+                dryRun: [
+                    "Input: 1->2->3->4->5, K=2",
+                    "1. Group [1,2]. Rev -> 2->1. Link dummy->2, 1->3. Prev=1.",
+                    "2. Group [3,4]. Rev -> 4->3. Link 1->4, 3->5. Prev=3.",
+                    "3. Group [5]. Len < K. Stop."
+                ],
+                codeTitle: "Python Solution",
+                code: `def reverseKGroup(head, k):
+dummy = ListNode(0, head)
+groupPrev = dummy
+
+while True:
+    kth = get_kth(groupPrev, k)
+    if not kth: break
+    groupNext = kth.next
     
-    while True:
-        kth = get_kth(groupPrev, k)
-        if not kth: break
-        groupNext = kth.next
-        
-        # Reverse inner
-        prev, curr = kth.next, groupPrev.next
-        while curr != groupNext:
-            tmp = curr.next
-            curr.next = prev
-            prev = curr
-            curr = tmp
-            
-        # Re-wire
-        tmp = groupPrev.next # Old start (new tail)
-        groupPrev.next = prev # New head
-        groupPrev = tmp # Move anchor
-        
-    return dummy.next`
-                }
-            },
-            {
-                id: "linked-list-cycle-ii",
-                title: "Detect Loop Start",
-                leetcodeUrl: "https://leetcode.com/problems/linked-list-cycle-ii/",
-                difficulty: "Must Do",
-                priority: "🔴",
-                tags: ["Floyd's Algo"],
-                quiz: {
-                    description: "Find WHERE the cycle starts. What's the math?",
-                    options: [
-                        "HashMap to find first revisited node",
-                        "Slow/Fast meet, then reset slow to head, move both by 1",
-                        "Mark nodes",
-                        "Count nodes in cycle"
-                    ],
-                    correct: 1,
-                    explanation: "Floyd's Math! After slow/fast meet, reset slow to head. Move both by 1 step. They meet AT cycle start! Proven by math."
-                },
-                learn: {
-                    metrics: { time: "O(N)", space: "O(1)" },
-                    timeExplainer: "<strong>Floyd's Algorithm:</strong><br>• Phase 1: Detect cycle = <code>O(N)</code><br>• Phase 2: Find start = <code>O(N)</code><br><br><strong>Total:</strong> <code>O(N)</code>",
-                    spaceExplainer: "<strong>Space Analysis:</strong><br>• Only 2 pointers: slow, fast<br>• No HashSet needed!<br><br><strong>Result:</strong> <code>O(1)</code>",
-                    visual: "<span><strong>Visual: The P Shape</strong><br>Distance(Head to Start) = Distance(Meeting to Start).</span>",
-                    crux: "<strong>Phase 1:</strong> Intercept (do they collide?).<br><strong>Phase 2:</strong> Reset slow to head. Move both 1 step. Collision = Start.",
-                    trap: "<strong>The False Start:</strong> `slow` and `fast` equal at head initially. Don't return true immediately!",
-                    dryRun: [
-                        "1. Slow moves 1, Fast 2.",
-                        "2. Collision! Cycle found.",
-                        "3. Slow = Head. Move both 1 step.",
-                        "4. Second Collision = Loop Entry."
-                    ],
-                    codeTitle: "Python Solution",
-                    code: `def detectCycle(head):
-    slow, fast = head, head
-    while fast and fast.next:
-        slow = slow.next
-        fast = fast.next.next
-        if slow == fast:
-            slow = head
-            while slow != fast:
-                slow = slow.next
-                fast = fast.next
-            return slow
-    return None`
-                }
-            },
-            {
-                id: "copy-list-with-random-pointer",
-                title: "Clone with Random Pointer",
-                leetcodeUrl: "https://leetcode.com/problems/copy-list-with-random-pointer/",
-                difficulty: "Must Do",
-                priority: "🔴",
-                tags: ["Deep Copy"],
-                quiz: {
-                    description: "Deep copy with random pointers. Best approach?",
-                    options: [
-                        "HashMap: old_node → new_node, then copy random",
-                        "Interleaving: insert copies between originals",
-                        "Recursion with memo",
-                        "Modify original structure"
-                    ],
-                    correct: 0,
-                    explanation: "HashMap is cleaner! Interleaving works (O(1) space) but is trickier. Both are accepted."
-                },
-                learn: {
-                    metrics: { time: "O(N)", space: "O(1) (Interleaving)" },
-                    timeExplainer: "<strong>3-Pass Algorithm:</strong><br>• Pass 1: Weave copies = <code>O(N)</code><br>• Pass 2: Link randoms = <code>O(N)</code><br>• Pass 3: Unweave = <code>O(N)</code><br><br><strong>Total:</strong> <code>O(N)</code>",
-                    spaceExplainer: "<strong>Interleaving Method:</strong><br>• Insert copies inline<br>• No HashMap needed<br><br><strong>Result:</strong> <code>O(1)</code> extra space",
-                    visual: "<span><strong>Visual: DNA Replication</strong><br>Pass 1: Weave A->A'->B->B'.<br>Pass 2: Link Randoms.<br>Pass 3: Unweave.</span>",
-                    crux: "<strong>Interleaving Strategy:</strong><br>1. Insert Copy next to Original.<br>2. `copy.random = original.random.next`.<br>3. Extract Copy list.",
-                    trap: "<strong>Null Crash:</strong> Check `if curr.random:` before accessing `next`.",
-                    dryRun: ["1. Weave: 1->1'->2->2'.", "2. Rand: 1'.rand = 1.rand.next.", "3. Split: 1->2, 1'->2'."],
-                    codeTitle: "Python Solution",
-                    code: `def copyRandomList(head):
-    if not head: return None
-    curr = head
-    while curr: # Weave
-        new_node = Node(curr.val, next=curr.next)
-        curr.next = new_node
-        curr = new_node.next
-    curr = head
-    while curr: # Random
-        if curr.random:
-            curr.next.random = curr.random.next
-        curr = curr.next.next
-    old_head = head
-    new_head = head.next
-    curr_old = old_head
-    curr_new = new_head
-    while curr_old: # Unweave
-        curr_old.next = curr_old.next.next
-        if curr_new.next:
-            curr_new.next = curr_new.next.next
-        curr_old = curr_old.next
-        curr_new = curr_new.next
-    return new_head`
-                }
-            },
-            {
-                id: "palindrome-linked-list",
-                title: "Palindrome Linked List",
-                leetcodeUrl: "https://leetcode.com/problems/palindrome-linked-list/",
-                difficulty: "Good to Do",
-                priority: "🟢",
-                tags: ["Half-Reversal"],
-                quiz: {
-                    description: "Check palindrome in O(n) time, O(1) space. How?",
-                    options: [
-                        "Convert to array O(n) space",
-                        "Find mid (slow/fast), reverse second half, compare",
-                        "Recursion O(n) stack",
-                        "Use stack O(n) space"
-                    ],
-                    correct: 1,
-                    explanation: "Find mid + Reverse! Use slow/fast to find middle. Reverse second half. Compare halves. Optional: reverse back."
-                },
-                learn: {
-                    metrics: { time: "O(N)", space: "O(1)" },
-                    timeExplainer: "<strong>Time Breakdown:</strong><br>• Find middle: <code>O(N/2)</code><br>• Reverse second half: <code>O(N/2)</code><br>• Compare: <code>O(N/2)</code><br><br><strong>Total:</strong> <code>O(N)</code>",
-                    spaceExplainer: "<strong>Space Analysis:</strong><br>• No extra array for reversal<br>• In-place manipulation<br><br><strong>Result:</strong> <code>O(1)</code>",
-                    visual: "<span><strong>Visual: The Butterfly</strong><br>1. Find Body (Mid).<br>2. Flip Right Wing.<br>3. Compare Wings.</span>",
-                    crux: "Singly lists only go forward. To read backward, we must <strong>Reverse the Second Half</strong>.",
-                    trap: "<strong>Destructive Read:</strong> You broke the list! Good engineers restore the list before returning.",
-                    dryRun: ["1. 1->2->2->1. Slow at 2nd 2.", "2. Reverse 2->1 to 1->2.", "3. Compare 1->2 with 1->2. Match."],
-                    codeTitle: "Python Solution",
-                    code: `def isPalindrome(head):
-    slow, fast = head, head
-    while fast and fast.next:
-        slow = slow.next
-        fast = fast.next.next
-    
-    prev = None
-    curr = slow
-    while curr: # Reverse 2nd half
+    # Reverse inner
+    prev, curr = kth.next, groupPrev.next
+    while curr != groupNext:
         tmp = curr.next
         curr.next = prev
         prev = curr
         curr = tmp
         
-    left, right = head, prev
-    while right:
-        if left.val != right.val: return False
-        left = left.next
-        right = right.next
-    return True`
-                }
-            }
-        ]
-    },
-
-    stack: {
-        id: "stack",
-        title: "Monotonic Stack Mastery",
-        description: "Principal Engineer DSA • Day 3",
-        color: "#7c3aed",
-        icon: "fas fa-layer-group",
-        mentalModel: {
-            whenToApply: [
-                { label: "Delayed Processing", desc: "Put it in stack, wait for trigger (Next Greater/Smaller)." }
-            ],
-            safetyCheck: [
-                { label: "Empty Stack", desc: "Always check `if stack` before peeking." },
-                { label: "Decr vs Incr", desc: "Next Greater -> Decreasing Stack. <br>Next Smaller -> Increasing Stack." }
-            ]
-        },
-        questions: [
-            {
-                id: "next-greater-element",
-                title: "Next Greater Element",
-                leetcodeUrl: "https://leetcode.com/problems/next-greater-element-i/",
-                difficulty: "Must Do",
-                priority: "🔴",
-                tags: ["Monotonic Stack"],
-                quiz: {
-                    description: "For each element, find next greater to the right. Pattern?",
-                    options: [
-                        "Nested loops O(n²)",
-                        "Monotonic Decreasing Stack (traverse right to left)",
-                        "Binary search O(n log n)",
-                        "Heap-based"
-                    ],
-                    correct: 1,
-                    explanation: "Monotonic Stack! Traverse right to left (or store indices). If current > stack.top, current is NGE for top. Stack maintains decreasing order. O(n)!"
-                },
-                learn: {
-                    metrics: { time: "O(N)", space: "O(N)" },
-                    timeExplainer: "<strong>Monotonic Stack:</strong><br>• Each element pushed once<br>• Each element popped once<br><br><strong>Total:</strong> <code>O(N)</code>",
-                    spaceExplainer: "<strong>Space Analysis:</strong><br>• Stack stores indices/values<br>• Worst: all decreasing = <code>O(N)</code>",
-                    visual: "<span><strong>Visual: The Horizon</strong><br>You can only see the first person taller than you.</span>",
-                    crux: "<strong>Decreasing Stack.</strong><br>If `current > stack.top`, pop! Current is the answer for the popped guy.",
-                    trap: "<strong>Leftovers:</strong> Elements in stack at end have NO next greater. Answer is -1.",
-                    dryRun: ["1. Stack [2]. Cur=1. 1<2. Push 1.", "2. Stack [2,1]. Cur=5. 5>1? Pop 1 (Ans 5). 5>2? Pop 2 (Ans 5).", "3. Push 5."],
-                    codeTitle: "Python Solution",
-                    code: `def nextGreaterElements(nums):
-    res = [-1] * len(nums)
-    stack = [] # Indices
-    for i, n in enumerate(nums):
-        while stack and n > nums[stack[-1]]:
-            idx = stack.pop()
-            res[idx] = n
-        stack.append(i)
-    return res`
-                }
-            },
-            {
-                id: "largest-rectangle-in-histogram",
-                title: "Largest Rectangle in Histogram",
-                leetcodeUrl: "https://leetcode.com/problems/largest-rectangle-in-histogram/",
-                difficulty: "Must Do",
-                priority: "🔴",
-                tags: ["The Boss Problem"],
-                quiz: {
-                    description: "Find max rectangle area. What's the boss-level trick?",
-                    options: [
-                        "Brute force all rectangles O(n²)",
-                        "Monotonic Increasing Stack with index tracking",
-                        "Divide and Conquer O(n log n)",
-                        "DP O(n²)"
-                    ],
-                    correct: 1,
-                    explanation: "Monotonic Stack! Maintain increasing heights. When current < stack top, pop and calc area: height[top] * (current_idx - stack.peek() - 1)."
-                },
-                learn: {
-                    metrics: { time: "O(N)", space: "O(N)" },
-                    timeExplainer: "<strong>Monotonic Increasing Stack:</strong><br>• Each bar pushed/popped once<br>• Area calculated on pop<br><br><strong>Total:</strong> <code>O(N)</code>",
-                    spaceExplainer: "<strong>Space Analysis:</strong><br>• Stack stores bar indices<br>• Worst: increasing heights = <code>O(N)</code>",
-                    visual: "<span><strong>Visual: Expansion Limits</strong><br>How far Left and Right can a bar extend?</span>",
-                    crux: "<strong>The Pop Moment:</strong><br>When `h < top`: Pop.<br>Height = Popped.<br>Width = `i - NewTop - 1`.<br>Area = H * W.",
-                    trap: "<strong>Leftovers:</strong> Add a `0` at the end of array to force-pop everything.",
-                    dryRun: ["1. [2]. Cur=1. Pop 2. Area=2*1.", "2. [1,5,6]. Cur=2. Pop 6 (Area 6). Pop 5 (Area 10).", "3. Max=10."],
-                    codeTitle: "Python Solution",
-                    code: `def largestRectangleArea(heights):
-    heights.append(0)
-    stack = [-1]
-    ans = 0
-    for i, h in enumerate(heights):
-        while stack[-1] != -1 and h < heights[stack[-1]]:
-            height = heights[stack.pop()]
-            width = i - stack[-1] - 1
-            ans = max(ans, height * width)
-        stack.append(i)
-    return ans`
-                }
-            },
-            {
-                id: "trapping-rain-water-stack",
-                title: "Trapping Rain Water (Stack)",
-                leetcodeUrl: "https://leetcode.com/problems/trapping-rain-water/",
-                difficulty: "Good to Do",
-                priority: "🟡",
-                tags: ["Horizontal Slicing"],
-                quiz: {
-                    description: "Solve using stack. How?",
-                    options: [
-                        "Monotonic decreasing stack",
-                        "Store indices, calculate water when finding taller bar",
-                        "Prefix max arrays",
-                        "Greedy"
-                    ],
-                    correct: 1,
-                    explanation: "Stack stores indices (Decreasing). When current > top, we found a right wall. Pop top (Floor). New Top is Left Wall. Water = (min(L, R) - Floor) * Dist."
-                },
-                learn: {
-                    metrics: { time: "O(N)", space: "O(N)" },
-                    timeExplainer: "<strong>Stack Approach:</strong><br>• Each index pushed/popped once<br>• Horizontal water layers<br><br><strong>Total:</strong> <code>O(N)</code>",
-                    spaceExplainer: "<strong>Space Analysis:</strong><br>• Stack for indices<br>• Worst case: <code>O(N)</code>",
-                    visual: "<span><strong>Visual: The Bowl</strong><br>We fill horizontal layers. Floor, Left Wall, Right Wall.</span>",
-                    crux: "Found a Right Wall (`cur > top`)?<br>1. Pop `Floor`.<br>2. Calc `Water = (min(Left, Right) - Floor) * Width`.",
-                    trap: "<strong>Sentinel:</strong> If stack empty after pop, no Left Wall exists. Break.",
-                    dryRun: ["Stack [3, 0]. Cur=2.", "Pop 0 (Floor). Left=3. Right=2.", "Heigth=min(3,2)-0=2. Width=1. Water+=2."],
-                    codeTitle: "Python Solution",
-                    code: `def trap(height):
-    stack = []
-    water = 0
-    for i, h in enumerate(height):
-        while stack and h > height[stack[-1]]:
-            floor = stack.pop()
-            if not stack: break
-            w = i - stack[-1] - 1
-            wd = min(height[stack[-1]], h) - height[floor]
-            water += w * wd
-        stack.append(i)
-    return water`
-                }
-            },
-            {
-                id: "asteroid-collision",
-                title: "Asteroid Collision",
-                leetcodeUrl: "https://leetcode.com/problems/asteroid-collision/",
-                difficulty: "Bonus",
-                priority: "🟢",
-                tags: ["Simulation"],
-                quiz: {
-                    description: "Asteroids collide if moving towards each other. Pattern?",
-                    options: [
-                        "Queue-based simulation",
-                        "Stack: push right-moving, check collisions with left-moving",
-                        "Greedy selection",
-                        "DP"
-                    ],
-                    correct: 1,
-                    explanation: "Stack! Push Right (->). Check Left (<-) against stack."
-                },
-                learn: {
-                    metrics: { time: "O(N)", space: "O(N)" },
-                    timeExplainer: "<strong>Simulation:</strong><br>• Each asteroid processed once<br>• Stack push/pop = O(1) each<br><br><strong>Total:</strong> <code>O(N)</code>",
-                    spaceExplainer: "<strong>Space Analysis:</strong><br>• Stack stores survivors<br>• Worst: no collisions = <code>O(N)</code>",
-                    visual: "<span><strong>Visual: One-Way Street</strong><br>Collision only if StackTop > 0 and Cur < 0.</span>",
-                    crux: "<strong>Battle:</strong><br>1. Top < |Cur|? Top dies.<br>2. Top == |Cur|? Both die.<br>3. Top > |Cur|? Cur dies.",
-                    trap: "<strong>Survivor:</strong> If Left asteroid destroys everyone, it must be pushed to stack.",
-                    dryRun: ["Stack [10]. Cur -5. 10 defeats -5.", "Stack [5]. Cur -10. -10 defeats 5. Stack [-10]."],
-                    codeTitle: "Python Solution",
-                    code: `def asteroidCollision(asteroids):
-    stack = []
-    for ast in asteroids:
-        while stack and ast < 0 and stack[-1] > 0:
-            diff = ast + stack[-1]
-            if diff < 0: stack.pop()
-            elif diff > 0: ast = 0; break
-            else: ast = 0; stack.pop(); break
-        if ast: stack.append(ast)
-    return stack`
-                }
-            }
-        ]
-    },
-
-    trees: {
-        id: "trees",
-        title: "Tree Mastery",
-        description: "Principal Engineer DSA • Day 5",
-        color: "#16a34a",
-        icon: "fas fa-tree",
-        mentalModel: {
-            whenToApply: [
-                { label: "Leap of Faith", desc: "Assume `solve(root.left)` works. Combine results." }
-            ],
-            safetyCheck: [
-                { label: "Base Cases", desc: "Always handle `if not root` first." },
-                { label: "Global vs Local", desc: "Pass down (Param) or Bubble up (Return)?" }
-            ]
-        },
-        questions: [
-            {
-                id: "lca-binary-tree",
-                title: "LCA in Binary Tree",
-                leetcodeUrl: "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/",
-                difficulty: "Must Do",
-                priority: "🔴",
-                tags: ["DFS Pattern"],
-                quiz: {
-                    description: "Find LCA in general binary tree. Best approach?",
-                    options: [
-                        "Find paths to both, compare",
-                        "Recursive: if root is p or q, return root. Combine left/right results",
-                        "Level-order",
-                        "Iterative"
-                    ],
-                    correct: 1,
-                    explanation: "Recursive DFS! Base: if root == p or q or null, return root. Recurse left/right. If both return node, I am LCA. If one, return that."
-                },
-                learn: {
-                    metrics: { time: "O(N)", space: "O(H)" },
-                    timeExplainer: "<strong>DFS Traversal:</strong><br>• Visit every node once<br>• Recurse Left and Right<br><br><strong>Total:</strong> <code>O(N)</code>",
-                    spaceExplainer: "<strong>Space Analysis:</strong><br>• Recursion Stack depth = Tree Height<br>• Skewed Tree: <code>O(N)</code><br>• Balanced Tree: <code>O(log N)</code><br><br><strong>Result:</strong> <code>O(H)</code>",
-                    visual: "<span><strong>Visual: The Meeting Point</strong><br>Paths merge at the LCA.</span>",
-                    crux: "<strong>Bubbling Up:</strong><br>1. If I am P or Q, return Me.<br>2. If Left & Right both return something, I am LCA.<br>3. Else return non-null child.",
-                    trap: "<strong>Missing Node:</strong> Standard algo assumes both nodes exist.",
-                    dryRun: ["1. Found P in Left. Return P.", "2. Found Q in Right. Return Q.", "3. Root receives P and Q. Returns Root."],
-                    codeTitle: "Python Solution",
-                    code: `def lowestCommonAncestor(root, p, q):
-    if not root or root == p or root == q: return root
-    left = lowestCommonAncestor(root.left, p, q)
-    right = lowestCommonAncestor(root.right, p, q)
-    if left and right: return root
-    return left if left else right`
-                }
-            },
-            {
-                id: "serialize-deserialize-binary-tree",
-                title: "Serialize & Deserialize",
-                leetcodeUrl: "https://leetcode.com/problems/serialize-and-deserialize-binary-tree/",
-                difficulty: "Must Do",
-                priority: "🔴",
-                tags: ["System Design Core"],
-                quiz: {
-                    description: "Convert tree to string and back. Best traversal?",
-                    options: ["Inorder", "Preorder with null markers", "Postorder", "Level-order"],
-                    correct: 1,
-                    explanation: "Preorder + null markers! Serialize: '1,2,N,N,3'. Deserialize: Iterator. If 'N' return None. Else create node, recurse."
-                },
-                learn: {
-                    metrics: { time: "O(N)", space: "O(H)" },
-                    timeExplainer: "<strong>Preorder Traversal:</strong><br>• Visit all nodes to serialize: <code>O(N)</code><br>• Deserialize visits all nodes: <code>O(N)</code><br><br><strong>Total:</strong> <code>O(N)</code>",
-                    spaceExplainer: "<strong>Space Analysis:</strong><br>• Recursion Stack: <code>O(H)</code><br>• Output String/Array: <code>O(N)</code><br><br><strong>Result:</strong> <code>O(N)</code>",
-                    visual: "<span><strong>Visual: Flat Tree</strong><br>Record Nulls to preserve structure.</span>",
-                    crux: "<strong>Preorder (Root-Left-Right):</strong><br>Ser: `vals.append(str(node.val))` or 'N'.<br>Deser: `next(iter)`. If 'N', return None.",
-                    trap: "<strong>Global Index:</strong> Don't use a global integer index. Use an <strong>Iterator</strong>.",
-                    dryRun: ["Ser: [1, 2, N, N, 3, N, N].", "Deser: 1 -> Left(2) -> Left(N), Right(N). 1 -> Right(3)."],
-                    codeTitle: "Python Solution",
-                    code: `class Codec:
-    def serialize(self, root):
-        vals = []
-        def dfs(node):
-            if not node: vals.append("N"); return
-            vals.append(str(node.val))
-            dfs(node.left)
-            dfs(node.right)
-        dfs(root)
-        return ",".join(vals)
-
-    def deserialize(self, data):
-        vals = iter(data.split(","))
-        def build():
-            val = next(vals)
-            if val == "N": return None
-            node = TreeNode(int(val))
-            node.left = build()
-            node.right = build()
-            return node
-        return build()`
-                }
-            },
-            {
-                id: "binary-tree-maximum-path-sum",
-                title: "Maximum Path Sum",
-                leetcodeUrl: "https://leetcode.com/problems/binary-tree-maximum-path-sum/",
-                difficulty: "Must Do",
-                priority: "🔴",
-                tags: ["Global vs Local"],
-                quiz: {
-                    description: "Path can start/end anywhere. What's the trick?",
-                    options: ["Try all paths", "DFS: track global max, return single-path max upward", "DP", "BFS"],
-                    correct: 1,
-                    explanation: "Global vs Local! At each node: global_max = max(global_max, node + left + right). Return upward: node + max(left, right)."
-                },
-                learn: {
-                    metrics: { time: "O(N)", space: "O(H)" },
-                    timeExplainer: "<strong>DFS Postorder:</strong><br>• Compute max path for each node<br>• Visit every node exactly once<br><br><strong>Total:</strong> <code>O(N)</code>",
-                    spaceExplainer: "<strong>Space Analysis:</strong><br>• Recursion Stack depth = Tree Height<br>• Worst case (Skewed): <code>O(N)</code><br><br><strong>Result:</strong> <code>O(H)</code>",
-                    visual: "<span><strong>Visual: The Inverted V</strong><br>Split (Arch) vs Flow (Straight).</span>",
-                    crux: "<strong>1. Split:</strong> `Root + Left + Right`. Update Global Max.<br><strong>2. Flow:</strong> `Root + max(Left, Right)`. Return to parent.<br><strong>3. Clamp:</strong> `max(gain, 0)`.",
-                    trap: "<strong>Negative Gain:</strong> If subtree sum is negative, ignore it (clamp to 0).",
-                    dryRun: ["Left gives 15. Right gives 7. Root is 20.", "Global update: 15+7+20 = 42.", "Return: 20 + 15 = 35."],
-                    codeTitle: "Python Solution",
-                    code: `class Solution:
-    def maxPathSum(self, root):
-        self.max_sum = float('-inf')
-        def get_max(node):
-            if not node: return 0
-            left = max(get_max(node.left), 0)
-            right = max(get_max(node.right), 0)
-            self.max_sum = max(self.max_sum, node.val + left + right)
-            return node.val + max(left, right)
-        get_max(root)
-        return self.max_sum`
-                }
-            },
-            {
-                id: "construct-binary-tree-preorder-inorder",
-                title: "Construct Tree (Pre+In)",
-                leetcodeUrl: "https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/",
-                difficulty: "Must Do",
-                priority: "🔴",
-                tags: ["Index Mastery"],
-                quiz: {
-                    description: "Rebuild tree from two traversals. Key insight?",
-                    options: ["Preorder gives roots, Inorder gives split", "Hash Inorder", "Stack", "Level order"],
-                    correct: 0,
-                    explanation: "Preorder[0] is Root. Find Root in Inorder. Left of it is LeftSubtree, Right is RightSubtree."
-                },
-                learn: {
-                    metrics: { time: "O(N)", space: "O(N)" },
-                    timeExplainer: "<strong>Time Breakdown:</strong><br>• HashMap construction: <code>O(N)</code><br>• Recursive Tree Building: <code>O(N)</code><br><br><strong>Total:</strong> <code>O(N)</code>",
-                    spaceExplainer: "<strong>Space Analysis:</strong><br>• HashMap stores N indices<br>• Recursion Stack: <code>O(H)</code><br><br><strong>Total:</strong> <code>O(N)</code>",
-                    visual: "<span><strong>Visual: The Knife</strong><br>Root (from Pre) slices Inorder into Left/Right.</span>",
-                    crux: "1. `root = pre.next()`<br>2. `mid = map[root]`<br>3. `size = mid - in_start`<br>4. Recurse.",
-                    trap: "<strong>Slicing:</strong> `pre[1:]` is O(N). Use indices or iterator!",
-                    dryRun: ["Pre: [3,9,20]. In: [9,3,20].", "Root=3. Mid=1. LeftSize=1.", "Left: Build([9]). Right: Build([20])."],
-                    codeTitle: "Python Solution",
-                    code: `def buildTree(preorder, inorder):
-    in_map = {v: i for i, v in enumerate(inorder)}
-    pre_iter = iter(preorder)
+    # Re-wire
+    tmp = groupPrev.next # Old start (new tail)
+    groupPrev.next = prev # New head
+    groupPrev = tmp # Move anchor
     
-    def build(l, r):
-        if l > r: return None
-        val = next(pre_iter)
-        root = TreeNode(val)
-        mid = in_map[val]
-        root.left = build(l, mid - 1)
-        root.right = build(mid + 1, r)
-        return root
-        
-    return build(0, len(inorder) - 1)`
-                }
+return dummy.next`
+            }
+        },
+        {
+            id: "linked-list-cycle-ii",
+            title: "Detect Loop Start",
+            leetcodeUrl: "https://leetcode.com/problems/linked-list-cycle-ii/",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["Floyd's Algo"],
+            quiz: {
+                description: "Find WHERE the cycle starts. What's the math?",
+                options: [
+                    "HashMap to find first revisited node",
+                    "Slow/Fast meet, then reset slow to head, move both by 1",
+                    "Mark nodes",
+                    "Count nodes in cycle"
+                ],
+                correct: 1,
+                explanation: "Floyd's Math! After slow/fast meet, reset slow to head. Move both by 1 step. They meet AT cycle start! Proven by math."
             },
-            {
-                id: "vertical-order-traversal",
-                title: "Vertical Order Traversal",
-                leetcodeUrl: "https://leetcode.com/problems/vertical-order-traversal-of-a-binary-tree/",
-                difficulty: "Good to Do",
-                priority: "🟡",
-                tags: ["Coordinates"],
-                quiz: {
-                    description: "Print nodes by vertical column. Data structure?",
-                    options: ["BFS only", "DFS with (row, col) + Sorting", "Inorder", "Level-order"],
-                    correct: 1,
-                    explanation: "Track (row, col). Store in `Map[col]`. Sort by Col, then Row, then Val."
-                },
-                learn: {
-                    metrics: { time: "O(N log N)", space: "O(N)" },
-                    timeExplainer: "<strong>BFS + Sorting:</strong><br>• BFS Traversal: <code>O(N)</code><br>• Sorting nodes in same column: <code>O(N log N)</code><br><br><strong>Total:</strong> <code>O(N log N)</code>",
-                    spaceExplainer: "<strong>Space Analysis:</strong><br>• Map stores all nodes<br>• Queue for BFS<br><br><strong>Result:</strong> <code>O(N)</code>",
-                    visual: "<span><strong>Visual: Grid Overlay</strong><br>Left: (r+1, c-1). Right: (r+1, c+1).</span>",
-                    crux: "<strong>Grouping + Sorting:</strong><br>1. BFS/DFS to collect `(c, r, val)`.<br>2. Sort.",
-                    trap: "<strong>Shadow Nodes:</strong> Nodes can land on same (r, c). Must sort by value.",
-                    dryRun: ["(0,0,1)", "(-1,1,2), (1,1,3)", "Sort -> Col -1: [2], Col 0: [1], Col 1: [3]"],
-                    codeTitle: "Python Solution",
-                    code: `def verticalTraversal(root):
-    cols = defaultdict(list)
-    q = deque([(root, 0, 0)])
-    min_c, max_c = 0, 0
-    while q:
-        node, r, c = q.popleft()
-        if node:
-            cols[c].append((r, node.val))
-            min_c = min(min_c, c)
-            max_c = max(max_c, c)
-            q.append((node.left, r+1, c-1))
-            q.append((node.right, r+1, c+1))
-    res = []
-    for c in range(min_c, max_c + 1):
-        cols[c].sort(key=lambda x: (x[0], x[1]))
-        res.append([x[1] for x in cols[c]])
-    return res`
-                }
+            learn: {
+                metrics: { time: "O(N)", space: "O(1)" },
+                timeExplainer: "<strong>Floyd's Algorithm:</strong><br>• Phase 1: Detect cycle = <code>O(N)</code><br>• Phase 2: Find start = <code>O(N)</code><br><br><strong>Total:</strong> <code>O(N)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Only 2 pointers: slow, fast<br>• No HashSet needed!<br><br><strong>Result:</strong> <code>O(1)</code>",
+                visual: "<span><strong>Visual: The P Shape</strong><br>Distance(Head to Start) = Distance(Meeting to Start).</span>",
+                crux: "<strong>Phase 1:</strong> Intercept (do they collide?).<br><strong>Phase 2:</strong> Reset slow to head. Move both 1 step. Collision = Start.",
+                trap: "<strong>The False Start:</strong> `slow` and `fast` equal at head initially. Don't return true immediately!",
+                dryRun: [
+                    "1. Slow moves 1, Fast 2.",
+                    "2. Collision! Cycle found.",
+                    "3. Slow = Head. Move both 1 step.",
+                    "4. Second Collision = Loop Entry."
+                ],
+                codeTitle: "Python Solution",
+                code: `def detectCycle(head):
+slow, fast = head, head
+while fast and fast.next:
+    slow = slow.next
+    fast = fast.next.next
+    if slow == fast:
+        slow = head
+        while slow != fast:
+            slow = slow.next
+            fast = fast.next
+        return slow
+return None`
+            }
+        },
+        {
+            id: "copy-list-with-random-pointer",
+            title: "Clone with Random Pointer",
+            leetcodeUrl: "https://leetcode.com/problems/copy-list-with-random-pointer/",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["Deep Copy"],
+            quiz: {
+                description: "Deep copy with random pointers. Best approach?",
+                options: [
+                    "HashMap: old_node → new_node, then copy random",
+                    "Interleaving: insert copies between originals",
+                    "Recursion with memo",
+                    "Modify original structure"
+                ],
+                correct: 0,
+                explanation: "HashMap is cleaner! Interleaving works (O(1) space) but is trickier. Both are accepted."
             },
-            {
-                id: "lca-bst",
-                title: "LCA in BST",
-                leetcodeUrl: "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/",
-                difficulty: "Good to Do",
-                priority: "🟢",
-                tags: ["BST Property"],
-                quiz: {
-                    description: "Find LCA in BST. Optimization?",
-                    options: ["Same as Binary Tree (DFS)", "Use BST Property: if split, that's LCA", "Inorder Traversal", "BFS"],
-                    correct: 1,
-                    explanation: "Use BST Property! If both p and q < root, go Left. If both > root, go Right. The first node where they SPLIT (one small, one big) is the LCA. O(H) time, O(1) space (iterative)."
-                },
-                learn: {
-                    metrics: { time: "O(H)", space: "O(1)" },
-                    code: `def lowestCommonAncestor(root, p, q):
-    while root:
-        if p.val < root.val and q.val < root.val:
-            root = root.left
-        elif p.val > root.val and q.val > root.val:
-            root = root.right
-        else:
-            return root`
-                }
+            learn: {
+                metrics: { time: "O(N)", space: "O(1) (Interleaving)" },
+                timeExplainer: "<strong>3-Pass Algorithm:</strong><br>• Pass 1: Weave copies = <code>O(N)</code><br>• Pass 2: Link randoms = <code>O(N)</code><br>• Pass 3: Unweave = <code>O(N)</code><br><br><strong>Total:</strong> <code>O(N)</code>",
+                spaceExplainer: "<strong>Interleaving Method:</strong><br>• Insert copies inline<br>• No HashMap needed<br><br><strong>Result:</strong> <code>O(1)</code> extra space",
+                visual: "<span><strong>Visual: DNA Replication</strong><br>Pass 1: Weave A->A'->B->B'.<br>Pass 2: Link Randoms.<br>Pass 3: Unweave.</span>",
+                crux: "<strong>Interleaving Strategy:</strong><br>1. Insert Copy next to Original.<br>2. `copy.random = original.random.next`.<br>3. Extract Copy list.",
+                trap: "<strong>Null Crash:</strong> Check `if curr.random:` before accessing `next`.",
+                dryRun: ["1. Weave: 1->1'->2->2'.", "2. Rand: 1'.rand = 1.rand.next.", "3. Split: 1->2, 1'->2'."],
+                codeTitle: "Python Solution",
+                code: `def copyRandomList(head):
+if not head: return None
+curr = head
+while curr: # Weave
+    new_node = Node(curr.val, next=curr.next)
+    curr.next = new_node
+    curr = new_node.next
+curr = head
+while curr: # Random
+    if curr.random:
+        curr.next.random = curr.random.next
+    curr = curr.next.next
+old_head = head
+new_head = head.next
+curr_old = old_head
+curr_new = new_head
+while curr_old: # Unweave
+    curr_old.next = curr_old.next.next
+    if curr_new.next:
+        curr_new.next = curr_new.next.next
+    curr_old = curr_old.next
+    curr_new = curr_new.next
+return new_head`
+            }
+        },
+        {
+            id: "palindrome-linked-list",
+            title: "Palindrome Linked List",
+            leetcodeUrl: "https://leetcode.com/problems/palindrome-linked-list/",
+            difficulty: "Good to Do",
+            priority: "🟢",
+            tags: ["Half-Reversal"],
+            quiz: {
+                description: "Check palindrome in O(n) time, O(1) space. How?",
+                options: [
+                    "Convert to array O(n) space",
+                    "Find mid (slow/fast), reverse second half, compare",
+                    "Recursion O(n) stack",
+                    "Use stack O(n) space"
+                ],
+                correct: 1,
+                explanation: "Find mid + Reverse! Use slow/fast to find middle. Reverse second half. Compare halves. Optional: reverse back."
             },
-            {
-                id: "largest-bst-in-bt",
-                title: "Largest BST in Binary Tree",
-                leetcodeUrl: "https://practice.geeksforgeeks.org/problems/largest-bst/1",
-                difficulty: "Must Do",
-                priority: "🔴",
-                tags: ["Postorder"],
-                quiz: {
-                    description: "Find size of largest BST subtree. Return type?",
-                    options: ["Boolean only", "Size only", "Generic Tuple (min, max, size, isBST)", "Void"],
-                    correct: 2,
-                    explanation: "Postorder Tuple! Each node needs from children: (Min_Val, Max_Val, Size, Is_BST). If Left is BST & Right is BST & MaxLeft < Node < MinRight -> Current is BST."
-                },
-                learn: {
-                    metrics: { time: "O(N)", space: "O(H)" },
-                    code: `def largestBST(root):
-    # Return: (min_val, max_val, size)
-    def postorder(node):
-        if not node: return (float('inf'), float('-inf'), 0)
-        
-        l_min, l_max, l_size = postorder(node.left)
-        r_min, r_max, r_size = postorder(node.right)
-        
-        if l_max < node.val < r_min:
-            return (min(l_min, node.val), max(r_max, node.val), l_size + r_size + 1)
-        
-        return (float('-inf'), float('inf'), max(l_size, r_size))
-        
-    return postorder(root)[2]`
-                }
+            learn: {
+                metrics: { time: "O(N)", space: "O(1)" },
+                timeExplainer: "<strong>Time Breakdown:</strong><br>• Find middle: <code>O(N/2)</code><br>• Reverse second half: <code>O(N/2)</code><br>• Compare: <code>O(N/2)</code><br><br><strong>Total:</strong> <code>O(N)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• No extra array for reversal<br>• In-place manipulation<br><br><strong>Result:</strong> <code>O(1)</code>",
+                visual: "<span><strong>Visual: The Butterfly</strong><br>1. Find Body (Mid).<br>2. Flip Right Wing.<br>3. Compare Wings.</span>",
+                crux: "Singly lists only go forward. To read backward, we must <strong>Reverse the Second Half</strong>.",
+                trap: "<strong>Destructive Read:</strong> You broke the list! Good engineers restore the list before returning.",
+                dryRun: ["1. 1->2->2->1. Slow at 2nd 2.", "2. Reverse 2->1 to 1->2.", "3. Compare 1->2 with 1->2. Match."],
+                codeTitle: "Python Solution",
+                code: `def isPalindrome(head):
+slow, fast = head, head
+while fast and fast.next:
+    slow = slow.next
+    fast = fast.next.next
+
+prev = None
+curr = slow
+while curr: # Reverse 2nd half
+    tmp = curr.next
+    curr.next = prev
+    prev = curr
+    curr = tmp
+    
+left, right = head, prev
+while right:
+    if left.val != right.val: return False
+    left = left.next
+    right = right.next
+return True`
+            }
+        }
+    ]
+}
+
+
+// ========== data/dsa/stack.js ==========
+// Stack data
+// Extracted from data.js
+
+const topic_stack = {
+    id: "stack",
+    title: "Monotonic Stack Mastery",
+    description: "Principal Engineer DSA • Day 3",
+    color: "#7c3aed",
+    icon: "fas fa-layer-group",
+    mentalModel: {
+        whenToApply: [
+            { label: "Delayed Processing", desc: "Put it in stack, wait for trigger (Next Greater/Smaller)." }
+        ],
+        safetyCheck: [
+            { label: "Empty Stack", desc: "Always check `if stack` before peeking." },
+            { label: "Decr vs Incr", desc: "Next Greater -> Decreasing Stack. <br>Next Smaller -> Increasing Stack." }
+        ]
+    },
+    questions: [
+        {
+            id: "next-greater-element",
+            title: "Next Greater Element",
+            leetcodeUrl: "https://leetcode.com/problems/next-greater-element-i/",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["Monotonic Stack"],
+            quiz: {
+                description: "For each element, find next greater to the right. Pattern?",
+                options: [
+                    "Nested loops O(n²)",
+                    "Monotonic Decreasing Stack (traverse right to left)",
+                    "Binary search O(n log n)",
+                    "Heap-based"
+                ],
+                correct: 1,
+                explanation: "Monotonic Stack! Traverse right to left (or store indices). If current > stack.top, current is NGE for top. Stack maintains decreasing order. O(n)!"
             },
-            {
-                id: "burn-binary-tree",
-                title: "Burn a Binary Tree",
-                leetcodeUrl: "https://leetcode.com/problems/amount-of-time-for-binary-tree-to-be-infected/",
-                difficulty: "Must Do",
-                priority: "🔴",
-                tags: ["Graph on Tree"],
-                quiz: {
-                    description: "Time to burn tree from target node. Approach?",
-                    options: ["Standard DFS", "Convert to Graph (Parent Pointers) + BFS", "Inorder", "DP"],
-                    correct: 1,
-                    explanation: "Convert to Graph! Tree nodes only point down. To burn UP, we need Parent pointers (or Adj List). Then run BFS from start node to find max distance."
-                },
-                learn: {
-                    metrics: { time: "O(N)", space: "O(N)" },
-                    code: `def amountOfTime(root, start):
-    graph = defaultdict(list)
+            learn: {
+                metrics: { time: "O(N)", space: "O(N)" },
+                timeExplainer: "<strong>Monotonic Stack:</strong><br>• Each element pushed once<br>• Each element popped once<br><br><strong>Total:</strong> <code>O(N)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Stack stores indices/values<br>• Worst: all decreasing = <code>O(N)</code>",
+                visual: "<span><strong>Visual: The Horizon</strong><br>You can only see the first person taller than you.</span>",
+                crux: "<strong>Decreasing Stack.</strong><br>If `current > stack.top`, pop! Current is the answer for the popped guy.",
+                trap: "<strong>Leftovers:</strong> Elements in stack at end have NO next greater. Answer is -1.",
+                dryRun: ["1. Stack [2]. Cur=1. 1<2. Push 1.", "2. Stack [2,1]. Cur=5. 5>1? Pop 1 (Ans 5). 5>2? Pop 2 (Ans 5).", "3. Push 5."],
+                codeTitle: "Python Solution",
+                code: `def nextGreaterElements(nums):
+res = [-1] * len(nums)
+stack = [] # Indices
+for i, n in enumerate(nums):
+    while stack and n > nums[stack[-1]]:
+        idx = stack.pop()
+        res[idx] = n
+    stack.append(i)
+return res`
+            }
+        },
+        {
+            id: "largest-rectangle-in-histogram",
+            title: "Largest Rectangle in Histogram",
+            leetcodeUrl: "https://leetcode.com/problems/largest-rectangle-in-histogram/",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["The Boss Problem"],
+            quiz: {
+                description: "Find max rectangle area. What's the boss-level trick?",
+                options: [
+                    "Brute force all rectangles O(n²)",
+                    "Monotonic Increasing Stack with index tracking",
+                    "Divide and Conquer O(n log n)",
+                    "DP O(n²)"
+                ],
+                correct: 1,
+                explanation: "Monotonic Stack! Maintain increasing heights. When current < stack top, pop and calc area: height[top] * (current_idx - stack.peek() - 1)."
+            },
+            learn: {
+                metrics: { time: "O(N)", space: "O(N)" },
+                timeExplainer: "<strong>Monotonic Increasing Stack:</strong><br>• Each bar pushed/popped once<br>• Area calculated on pop<br><br><strong>Total:</strong> <code>O(N)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Stack stores bar indices<br>• Worst: increasing heights = <code>O(N)</code>",
+                visual: "<span><strong>Visual: Expansion Limits</strong><br>How far Left and Right can a bar extend?</span>",
+                crux: "<strong>The Pop Moment:</strong><br>When `h < top`: Pop.<br>Height = Popped.<br>Width = `i - NewTop - 1`.<br>Area = H * W.",
+                trap: "<strong>Leftovers:</strong> Add a `0` at the end of array to force-pop everything.",
+                dryRun: ["1. [2]. Cur=1. Pop 2. Area=2*1.", "2. [1,5,6]. Cur=2. Pop 6 (Area 6). Pop 5 (Area 10).", "3. Max=10."],
+                codeTitle: "Python Solution",
+                code: `def largestRectangleArea(heights):
+heights.append(0)
+stack = [-1]
+ans = 0
+for i, h in enumerate(heights):
+    while stack[-1] != -1 and h < heights[stack[-1]]:
+        height = heights[stack.pop()]
+        width = i - stack[-1] - 1
+        ans = max(ans, height * width)
+    stack.append(i)
+return ans`
+            }
+        },
+        {
+            id: "trapping-rain-water-stack",
+            title: "Trapping Rain Water (Stack)",
+            leetcodeUrl: "https://leetcode.com/problems/trapping-rain-water/",
+            difficulty: "Good to Do",
+            priority: "🟡",
+            tags: ["Horizontal Slicing"],
+            quiz: {
+                description: "Solve using stack. How?",
+                options: [
+                    "Monotonic decreasing stack",
+                    "Store indices, calculate water when finding taller bar",
+                    "Prefix max arrays",
+                    "Greedy"
+                ],
+                correct: 1,
+                explanation: "Stack stores indices (Decreasing). When current > top, we found a right wall. Pop top (Floor). New Top is Left Wall. Water = (min(L, R) - Floor) * Dist."
+            },
+            learn: {
+                metrics: { time: "O(N)", space: "O(N)" },
+                timeExplainer: "<strong>Stack Approach:</strong><br>• Each index pushed/popped once<br>• Horizontal water layers<br><br><strong>Total:</strong> <code>O(N)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Stack for indices<br>• Worst case: <code>O(N)</code>",
+                visual: "<span><strong>Visual: The Bowl</strong><br>We fill horizontal layers. Floor, Left Wall, Right Wall.</span>",
+                crux: "Found a Right Wall (`cur > top`)?<br>1. Pop `Floor`.<br>2. Calc `Water = (min(Left, Right) - Floor) * Width`.",
+                trap: "<strong>Sentinel:</strong> If stack empty after pop, no Left Wall exists. Break.",
+                dryRun: ["Stack [3, 0]. Cur=2.", "Pop 0 (Floor). Left=3. Right=2.", "Heigth=min(3,2)-0=2. Width=1. Water+=2."],
+                codeTitle: "Python Solution",
+                code: `def trap(height):
+stack = []
+water = 0
+for i, h in enumerate(height):
+    while stack and h > height[stack[-1]]:
+        floor = stack.pop()
+        if not stack: break
+        w = i - stack[-1] - 1
+        wd = min(height[stack[-1]], h) - height[floor]
+        water += w * wd
+    stack.append(i)
+return water`
+            }
+        },
+        {
+            id: "asteroid-collision",
+            title: "Asteroid Collision",
+            leetcodeUrl: "https://leetcode.com/problems/asteroid-collision/",
+            difficulty: "Bonus",
+            priority: "🟢",
+            tags: ["Simulation"],
+            quiz: {
+                description: "Asteroids collide if moving towards each other. Pattern?",
+                options: [
+                    "Queue-based simulation",
+                    "Stack: push right-moving, check collisions with left-moving",
+                    "Greedy selection",
+                    "DP"
+                ],
+                correct: 1,
+                explanation: "Stack! Push Right (->). Check Left (<-) against stack."
+            },
+            learn: {
+                metrics: { time: "O(N)", space: "O(N)" },
+                timeExplainer: "<strong>Simulation:</strong><br>• Each asteroid processed once<br>• Stack push/pop = O(1) each<br><br><strong>Total:</strong> <code>O(N)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Stack stores survivors<br>• Worst: no collisions = <code>O(N)</code>",
+                visual: "<span><strong>Visual: One-Way Street</strong><br>Collision only if StackTop > 0 and Cur < 0.</span>",
+                crux: "<strong>Battle:</strong><br>1. Top < |Cur|? Top dies.<br>2. Top == |Cur|? Both die.<br>3. Top > |Cur|? Cur dies.",
+                trap: "<strong>Survivor:</strong> If Left asteroid destroys everyone, it must be pushed to stack.",
+                dryRun: ["Stack [10]. Cur -5. 10 defeats -5.", "Stack [5]. Cur -10. -10 defeats 5. Stack [-10]."],
+                codeTitle: "Python Solution",
+                code: `def asteroidCollision(asteroids):
+stack = []
+for ast in asteroids:
+    while stack and ast < 0 and stack[-1] > 0:
+        diff = ast + stack[-1]
+        if diff < 0: stack.pop()
+        elif diff > 0: ast = 0; break
+        else: ast = 0; stack.pop(); break
+    if ast: stack.append(ast)
+return stack`
+            }
+        }
+    ]
+}
+
+
+// ========== data/dsa/trees.js ==========
+// Trees data
+// Extracted from data.js
+
+const topic_trees = {
+    id: "trees",
+    title: "Tree Mastery",
+    description: "Principal Engineer DSA • Day 5",
+    color: "#16a34a",
+    icon: "fas fa-tree",
+    mentalModel: {
+        whenToApply: [
+            { label: "Leap of Faith", desc: "Assume `solve(root.left)` works. Combine results." }
+        ],
+        safetyCheck: [
+            { label: "Base Cases", desc: "Always handle `if not root` first." },
+            { label: "Global vs Local", desc: "Pass down (Param) or Bubble up (Return)?" }
+        ]
+    },
+    questions: [
+        {
+            id: "lca-binary-tree",
+            title: "LCA in Binary Tree",
+            leetcodeUrl: "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["DFS Pattern"],
+            quiz: {
+                description: "Find LCA in general binary tree. Best approach?",
+                options: [
+                    "Find paths to both, compare",
+                    "Recursive: if root is p or q, return root. Combine left/right results",
+                    "Level-order",
+                    "Iterative"
+                ],
+                correct: 1,
+                explanation: "Recursive DFS! Base: if root == p or q or null, return root. Recurse left/right. If both return node, I am LCA. If one, return that."
+            },
+            learn: {
+                metrics: { time: "O(N)", space: "O(H)" },
+                timeExplainer: "<strong>DFS Traversal:</strong><br>• Visit every node once<br>• Recurse Left and Right<br><br><strong>Total:</strong> <code>O(N)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Recursion Stack depth = Tree Height<br>• Skewed Tree: <code>O(N)</code><br>• Balanced Tree: <code>O(log N)</code><br><br><strong>Result:</strong> <code>O(H)</code>",
+                visual: "<span><strong>Visual: The Meeting Point</strong><br>Paths merge at the LCA.</span>",
+                crux: "<strong>Bubbling Up:</strong><br>1. If I am P or Q, return Me.<br>2. If Left & Right both return something, I am LCA.<br>3. Else return non-null child.",
+                trap: "<strong>Missing Node:</strong> Standard algo assumes both nodes exist.",
+                dryRun: ["1. Found P in Left. Return P.", "2. Found Q in Right. Return Q.", "3. Root receives P and Q. Returns Root."],
+                codeTitle: "Python Solution",
+                code: `def lowestCommonAncestor(root, p, q):
+if not root or root == p or root == q: return root
+left = lowestCommonAncestor(root.left, p, q)
+right = lowestCommonAncestor(root.right, p, q)
+if left and right: return root
+return left if left else right`
+            }
+        },
+        {
+            id: "serialize-deserialize-binary-tree",
+            title: "Serialize & Deserialize",
+            leetcodeUrl: "https://leetcode.com/problems/serialize-and-deserialize-binary-tree/",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["System Design Core"],
+            quiz: {
+                description: "Convert tree to string and back. Best traversal?",
+                options: ["Inorder", "Preorder with null markers", "Postorder", "Level-order"],
+                correct: 1,
+                explanation: "Preorder + null markers! Serialize: '1,2,N,N,3'. Deserialize: Iterator. If 'N' return None. Else create node, recurse."
+            },
+            learn: {
+                metrics: { time: "O(N)", space: "O(H)" },
+                timeExplainer: "<strong>Preorder Traversal:</strong><br>• Visit all nodes to serialize: <code>O(N)</code><br>• Deserialize visits all nodes: <code>O(N)</code><br><br><strong>Total:</strong> <code>O(N)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Recursion Stack: <code>O(H)</code><br>• Output String/Array: <code>O(N)</code><br><br><strong>Result:</strong> <code>O(N)</code>",
+                visual: "<span><strong>Visual: Flat Tree</strong><br>Record Nulls to preserve structure.</span>",
+                crux: "<strong>Preorder (Root-Left-Right):</strong><br>Ser: `vals.append(str(node.val))` or 'N'.<br>Deser: `next(iter)`. If 'N', return None.",
+                trap: "<strong>Global Index:</strong> Don't use a global integer index. Use an <strong>Iterator</strong>.",
+                dryRun: ["Ser: [1, 2, N, N, 3, N, N].", "Deser: 1 -> Left(2) -> Left(N), Right(N). 1 -> Right(3)."],
+                codeTitle: "Python Solution",
+                code: `class Codec:
+def serialize(self, root):
+    vals = []
     def dfs(node):
-        if not node: return
-        if node.left:
-            graph[node.val].append(node.left.val)
-            graph[node.left.val].append(node.val)
-            dfs(node.left)
-        if node.right:
-            graph[node.val].append(node.right.val)
-            graph[node.right.val].append(node.val)
-            dfs(node.right)
+        if not node: vals.append("N"); return
+        vals.append(str(node.val))
+        dfs(node.left)
+        dfs(node.right)
     dfs(root)
-    
-    q = deque([(start, 0)])
-    visited = {start}
-    max_time = 0
-    while q:
-        node, time = q.popleft()
-        max_time = max(max_time, time)
-        for nei in graph[node]:
-            if nei not in visited:
-                visited.add(nei)
-                q.append((nei, time + 1))
-    return max_time`
-                }
+    return ",".join(vals)
+
+def deserialize(self, data):
+    vals = iter(data.split(","))
+    def build():
+        val = next(vals)
+        if val == "N": return None
+        node = TreeNode(int(val))
+        node.left = build()
+        node.right = build()
+        return node
+    return build()`
             }
+        },
+        {
+            id: "binary-tree-maximum-path-sum",
+            title: "Maximum Path Sum",
+            leetcodeUrl: "https://leetcode.com/problems/binary-tree-maximum-path-sum/",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["Global vs Local"],
+            quiz: {
+                description: "Path can start/end anywhere. What's the trick?",
+                options: ["Try all paths", "DFS: track global max, return single-path max upward", "DP", "BFS"],
+                correct: 1,
+                explanation: "Global vs Local! At each node: global_max = max(global_max, node + left + right). Return upward: node + max(left, right)."
+            },
+            learn: {
+                metrics: { time: "O(N)", space: "O(H)" },
+                timeExplainer: "<strong>DFS Postorder:</strong><br>• Compute max path for each node<br>• Visit every node exactly once<br><br><strong>Total:</strong> <code>O(N)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Recursion Stack depth = Tree Height<br>• Worst case (Skewed): <code>O(N)</code><br><br><strong>Result:</strong> <code>O(H)</code>",
+                visual: "<span><strong>Visual: The Inverted V</strong><br>Split (Arch) vs Flow (Straight).</span>",
+                crux: "<strong>1. Split:</strong> `Root + Left + Right`. Update Global Max.<br><strong>2. Flow:</strong> `Root + max(Left, Right)`. Return to parent.<br><strong>3. Clamp:</strong> `max(gain, 0)`.",
+                trap: "<strong>Negative Gain:</strong> If subtree sum is negative, ignore it (clamp to 0).",
+                dryRun: ["Left gives 15. Right gives 7. Root is 20.", "Global update: 15+7+20 = 42.", "Return: 20 + 15 = 35."],
+                codeTitle: "Python Solution",
+                code: `class Solution:
+def maxPathSum(self, root):
+    self.max_sum = float('-inf')
+    def get_max(node):
+        if not node: return 0
+        left = max(get_max(node.left), 0)
+        right = max(get_max(node.right), 0)
+        self.max_sum = max(self.max_sum, node.val + left + right)
+        return node.val + max(left, right)
+    get_max(root)
+    return self.max_sum`
+            }
+        },
+        {
+            id: "construct-binary-tree-preorder-inorder",
+            title: "Construct Tree (Pre+In)",
+            leetcodeUrl: "https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["Index Mastery"],
+            quiz: {
+                description: "Rebuild tree from two traversals. Key insight?",
+                options: ["Preorder gives roots, Inorder gives split", "Hash Inorder", "Stack", "Level order"],
+                correct: 0,
+                explanation: "Preorder[0] is Root. Find Root in Inorder. Left of it is LeftSubtree, Right is RightSubtree."
+            },
+            learn: {
+                metrics: { time: "O(N)", space: "O(N)" },
+                timeExplainer: "<strong>Time Breakdown:</strong><br>• HashMap construction: <code>O(N)</code><br>• Recursive Tree Building: <code>O(N)</code><br><br><strong>Total:</strong> <code>O(N)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• HashMap stores N indices<br>• Recursion Stack: <code>O(H)</code><br><br><strong>Total:</strong> <code>O(N)</code>",
+                visual: "<span><strong>Visual: The Knife</strong><br>Root (from Pre) slices Inorder into Left/Right.</span>",
+                crux: "1. `root = pre.next()`<br>2. `mid = map[root]`<br>3. `size = mid - in_start`<br>4. Recurse.",
+                trap: "<strong>Slicing:</strong> `pre[1:]` is O(N). Use indices or iterator!",
+                dryRun: ["Pre: [3,9,20]. In: [9,3,20].", "Root=3. Mid=1. LeftSize=1.", "Left: Build([9]). Right: Build([20])."],
+                codeTitle: "Python Solution",
+                code: `def buildTree(preorder, inorder):
+in_map = {v: i for i, v in enumerate(inorder)}
+pre_iter = iter(preorder)
+
+def build(l, r):
+    if l > r: return None
+    val = next(pre_iter)
+    root = TreeNode(val)
+    mid = in_map[val]
+    root.left = build(l, mid - 1)
+    root.right = build(mid + 1, r)
+    return root
+    
+return build(0, len(inorder) - 1)`
+            }
+        },
+        {
+            id: "vertical-order-traversal",
+            title: "Vertical Order Traversal",
+            leetcodeUrl: "https://leetcode.com/problems/vertical-order-traversal-of-a-binary-tree/",
+            difficulty: "Good to Do",
+            priority: "🟡",
+            tags: ["Coordinates"],
+            quiz: {
+                description: "Print nodes by vertical column. Data structure?",
+                options: ["BFS only", "DFS with (row, col) + Sorting", "Inorder", "Level-order"],
+                correct: 1,
+                explanation: "Track (row, col). Store in `Map[col]`. Sort by Col, then Row, then Val."
+            },
+            learn: {
+                metrics: { time: "O(N log N)", space: "O(N)" },
+                timeExplainer: "<strong>BFS + Sorting:</strong><br>• BFS Traversal: <code>O(N)</code><br>• Sorting nodes in same column: <code>O(N log N)</code><br><br><strong>Total:</strong> <code>O(N log N)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Map stores all nodes<br>• Queue for BFS<br><br><strong>Result:</strong> <code>O(N)</code>",
+                visual: "<span><strong>Visual: Grid Overlay</strong><br>Left: (r+1, c-1). Right: (r+1, c+1).</span>",
+                crux: "<strong>Grouping + Sorting:</strong><br>1. BFS/DFS to collect `(c, r, val)`.<br>2. Sort.",
+                trap: "<strong>Shadow Nodes:</strong> Nodes can land on same (r, c). Must sort by value.",
+                dryRun: ["(0,0,1)", "(-1,1,2), (1,1,3)", "Sort -> Col -1: [2], Col 0: [1], Col 1: [3]"],
+                codeTitle: "Python Solution",
+                code: `def verticalTraversal(root):
+cols = defaultdict(list)
+q = deque([(root, 0, 0)])
+min_c, max_c = 0, 0
+while q:
+    node, r, c = q.popleft()
+    if node:
+        cols[c].append((r, node.val))
+        min_c = min(min_c, c)
+        max_c = max(max_c, c)
+        q.append((node.left, r+1, c-1))
+        q.append((node.right, r+1, c+1))
+res = []
+for c in range(min_c, max_c + 1):
+    cols[c].sort(key=lambda x: (x[0], x[1]))
+    res.append([x[1] for x in cols[c]])
+return res`
+            }
+        },
+        {
+            id: "lca-bst",
+            title: "LCA in BST",
+            leetcodeUrl: "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/",
+            difficulty: "Good to Do",
+            priority: "🟢",
+            tags: ["BST Property"],
+            quiz: {
+                description: "Find LCA in BST. Optimization?",
+                options: ["Same as Binary Tree (DFS)", "Use BST Property: if split, that's LCA", "Inorder Traversal", "BFS"],
+                correct: 1,
+                explanation: "Use BST Property! If both p and q < root, go Left. If both > root, go Right. The first node where they SPLIT (one small, one big) is the LCA. O(H) time, O(1) space (iterative)."
+            },
+            learn: {
+                metrics: { time: "O(H)", space: "O(1)" },
+                code: `def lowestCommonAncestor(root, p, q):
+while root:
+    if p.val < root.val and q.val < root.val:
+        root = root.left
+    elif p.val > root.val and q.val > root.val:
+        root = root.right
+    else:
+        return root`
+            }
+        },
+        {
+            id: "largest-bst-in-bt",
+            title: "Largest BST in Binary Tree",
+            leetcodeUrl: "https://practice.geeksforgeeks.org/problems/largest-bst/1",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["Postorder"],
+            quiz: {
+                description: "Find size of largest BST subtree. Return type?",
+                options: ["Boolean only", "Size only", "Generic Tuple (min, max, size, isBST)", "Void"],
+                correct: 2,
+                explanation: "Postorder Tuple! Each node needs from children: (Min_Val, Max_Val, Size, Is_BST). If Left is BST & Right is BST & MaxLeft < Node < MinRight -> Current is BST."
+            },
+            learn: {
+                metrics: { time: "O(N)", space: "O(H)" },
+                code: `def largestBST(root):
+# Return: (min_val, max_val, size)
+def postorder(node):
+    if not node: return (float('inf'), float('-inf'), 0)
+    
+    l_min, l_max, l_size = postorder(node.left)
+    r_min, r_max, r_size = postorder(node.right)
+    
+    if l_max < node.val < r_min:
+        return (min(l_min, node.val), max(r_max, node.val), l_size + r_size + 1)
+    
+    return (float('-inf'), float('inf'), max(l_size, r_size))
+    
+return postorder(root)[2]`
+            }
+        },
+        {
+            id: "burn-binary-tree",
+            title: "Burn a Binary Tree",
+            leetcodeUrl: "https://leetcode.com/problems/amount-of-time-for-binary-tree-to-be-infected/",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["Graph on Tree"],
+            quiz: {
+                description: "Time to burn tree from target node. Approach?",
+                options: ["Standard DFS", "Convert to Graph (Parent Pointers) + BFS", "Inorder", "DP"],
+                correct: 1,
+                explanation: "Convert to Graph! Tree nodes only point down. To burn UP, we need Parent pointers (or Adj List). Then run BFS from start node to find max distance."
+            },
+            learn: {
+                metrics: { time: "O(N)", space: "O(N)" },
+                code: `def amountOfTime(root, start):
+graph = defaultdict(list)
+def dfs(node):
+    if not node: return
+    if node.left:
+        graph[node.val].append(node.left.val)
+        graph[node.left.val].append(node.val)
+        dfs(node.left)
+    if node.right:
+        graph[node.val].append(node.right.val)
+        graph[node.right.val].append(node.val)
+        dfs(node.right)
+dfs(root)
+
+q = deque([(start, 0)])
+visited = {start}
+max_time = 0
+while q:
+    node, time = q.popleft()
+    max_time = max(max_time, time)
+    for nei in graph[node]:
+        if nei not in visited:
+            visited.add(nei)
+            q.append((nei, time + 1))
+return max_time`
+            }
+        }
+    ]
+}
+
+
+// ========== data/dsa/graphs.js ==========
+// Graphs data
+// Extracted from data.js
+
+const topic_graphs = {
+    id: "graphs",
+    title: "Graph Mastery",
+    description: "Principal Engineer DSA • Day 6",
+    color: "#c026d3",
+    icon: "fas fa-project-diagram",
+    mentalModel: {
+        whenToApply: [
+            { label: "Shortest Path (No weights)", desc: "BFS (Layer by layer)." },
+            { label: "Shortest Path (Weights)", desc: "Dijkstra (Priority Queue)." },
+            { label: "Dependencies", desc: "Topo Sort (Kahn's Algo)." },
+            { label: "Connectivity", desc: "Union-Find (DSU)." },
+            { label: "Graph Traversal (DFS/BFS)", desc: "Explore all nodes/edges, useful for connectivity checks." },
+            { label: "Minimum Spanning Tree", desc: "Kruskal or Prim to connect all nodes with minimal total weight." },
+            { label: "Max Flow / Min Cut", desc: "Ford‑Fulkerson or Edmonds‑Karp for network flow problems." },
+            { label: "Cycle Detection", desc: "Union‑Find or DFS back‑edge detection." }
+        ],
+        patterns: [
+            { algo: "BFS", use: "Unweighted shortest path / level order", time: "O(V+E)", space: "O(V)" },
+            { algo: "DFS", use: "Connectivity, topological sort", time: "O(V+E)", space: "O(V)" },
+            { algo: "Dijkstra", use: "Weighted shortest path", time: "O((V+E) log V)", space: "O(V)" },
+            { algo: "Kruskal", use: "Minimum Spanning Tree", time: "O(E log E)", space: "O(V)" },
+            { algo: "Union‑Find", use: "Cycle detection / DSU problems", time: "≈ O(α(N)) per op", space: "O(N)" }
+        ],
+        safetyCheck: [
+            { label: "No BFS for Shortest Path", desc: "Use Dijkstra instead of BFS when edges have weights." },
+            { label: "Visited Tracking", desc: "Mark visited immediately upon pushing to queue to avoid duplicates." },
+            { label: "Do Not Mutate Graph During Traversal", desc: "If you need to modify, work on a copy or track changes separately." }
         ]
     },
+    questions: [
+        {
+            id: "rotting-oranges",
+            title: "Rotten Oranges",
+            leetcodeUrl: "https://leetcode.com/problems/rotting-oranges/",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["Multi-Source BFS", "Matrix"],
+            quiz: {
+                description: "Simulate rotting. Why not DFS?",
+                options: ["DFS is too slow", "DFS checks one path at a time (Simultaneous vs Sequential)", "DFS stack overflow", "DFS is hard to implement"],
+                correct: 1,
+                explanation: "The core problem is **SIMULTANEOUS** expansion. All rotten oranges affect neighbors at `t=1`. DFS goes deep on one orange (sequential) effectively calculating 'distance from ONE root', which is wrong here. We need 'min distance from ANY root' -> BFS."
+            },
+            learn: {
+                metrics: { time: "O(N×M)", space: "O(N×M)" },
+                timeExplainer: `
+                    <h4 style="color:#c026d3;">⏱️ Time Complexity: O(N×M)</h4>
+                    <div style="background:rgba(192, 38, 211, 0.1); padding:20px; border-radius:12px; margin:15px 0;">
+                        <p><strong>Compare Approaches:</strong></p>
+                        <table style="width:100%; border-collapse: collapse; margin-top:10px;">
+                            <tr style="border-bottom:1px solid rgba(255,255,255,0.1);">
+                                <th style="text-align:left; padding:10px;">Approach</th>
+                                <th style="text-align:left; padding:10px;">Complexity</th>
+                                <th style="text-align:left; padding:10px;">Outcome</th>
+                            </tr>
+                            <tr style="border-bottom:1px solid rgba(255,255,255,0.1); background:rgba(239, 68, 68, 0.1);">
+                                <td style="padding:10px;"><strong>Naive DFS</strong></td>
+                                <td style="padding:10px;">O((NM)²)</td>
+                                <td style="padding:10px;">❌ TLE / Wrong Logic (Sequential)</td>
+                            </tr>
+                            <tr style="background:rgba(16, 185, 129, 0.1);">
+                                <td style="padding:10px;"><strong>Multi-Source BFS</strong></td>
+                                <td style="padding:10px;">O(N×M)</td>
+                                <td style="padding:10px;">✅ Optimal (Simultaneous)</td>
+                            </tr>
+                        </table>
+                        
+                        <div style="margin-top:15px;">
+                            <strong>Why O(N×M)?</strong>
+                            <ul style="line-height:1.6; color:#e2e8f0;">
+                                <li>Each cell is added to Queue <strong>AT MOST ONCE</strong>.</li>
+                                <li>Each cell is processed constant times (4 neighbors).</li>
+                                <li>Total = N×M cells × O(1) operations.</li>
+                            </ul>
+                        </div>
+                    </div>
+                `,
+                spaceExplainer: `
+                    <h4 style="color:#c026d3;">📦 Space Complexity: O(N×M)</h4>
+                    <div style="background:rgba(192, 38, 211, 0.1); padding:20px; border-radius:12px; margin:15px 0;">
+                        <ul style="line-height:2;">
+                            <li><strong>Queue Size:</strong> In worst case (e.g., all rotten initially), queue holds O(N×M) cells.</li>
+                            <li><strong>Grid Modified In-Place:</strong> No extra <code>visited</code> array needed if we modify grid (1 → 2).</li>
+                        </ul>
+                    </div>
+                `,
+                visual: `
+                    <h4 style="color:#c026d3;">🌊 Simultaneous Expansion (The Wave)</h4>
+                    <div style="display:flex; flex-wrap:wrap; gap:20px; justify-content: center; margin: 20px 0;">
+                        
+                        <!-- T=0 -->
+                        <div>
+                            <div style="text-align:center; margin-bottom:5px; font-size:0.9rem; color:#94a3b8;">T = 0 (Init)</div>
+                            <div style="display:grid; grid-template-columns:repeat(3, 30px); gap:2px; background:#334155; padding:2px; border-radius:4px;">
+                                <div style="background:#1e293b; height:30px; display:flex; align-items:center; justify-content:center; color:#f87171; font-weight:bold;">2</div>
+                                <div style="background:#1e293b; height:30px; display:flex; align-items:center; justify-content:center; color:#4ade80;">1</div>
+                                <div style="background:#1e293b; height:30px; display:flex; align-items:center; justify-content:center; color:#4ade80;">1</div>
+                                
+                                <div style="background:#1e293b; height:30px; display:flex; align-items:center; justify-content:center; color:#4ade80;">1</div>
+                                <div style="background:#1e293b; height:30px; display:flex; align-items:center; justify-content:center; color:#4ade80;">1</div>
+                                <div style="background:#1e293b; height:30px; display:flex; align-items:center; justify-content:center; color:#64748b;">0</div>
+                                
+                                <div style="background:#1e293b; height:30px; display:flex; align-items:center; justify-content:center; color:#64748b;">0</div>
+                                <div style="background:#1e293b; height:30px; display:flex; align-items:center; justify-content:center; color:#4ade80;">1</div>
+                                <div style="background:#1e293b; height:30px; display:flex; align-items:center; justify-content:center; color:#4ade80;">1</div>
+                            </div>
+                            <div style="text-align:center; font-size:0.8rem; color:#64748b; margin-top:5px;">Q: [(0,0)]</div>
+                        </div>
 
-    graphs: {
-        id: "graphs",
-        title: "Graph Mastery",
-        description: "Principal Engineer DSA • Day 6",
-        color: "#c026d3",
-        icon: "fas fa-project-diagram",
-        mentalModel: {
-            whenToApply: [
-                { label: "Shortest Path (No weights)", desc: "BFS (Layer by layer)." },
-                { label: "Shortest Path (Weights)", desc: "Dijkstra (Priority Queue)." },
-                { label: "Dependencies", desc: "Topo Sort (Kahn's Algo)." },
-                { label: "Connectivity", desc: "Union-Find (DSU)." }
-            ],
-            safetyCheck: [
-                { label: "No BFS for Shortest Path", desc: "Never use DFS for shortest path." },
-                { label: "Visited Tracking", desc: "Mark visited immediately upon pushing to Queue." }
-            ]
-        },
-        questions: [
-            {
-                id: "rotting-oranges",
-                title: "Rotten Oranges",
-                leetcodeUrl: "https://leetcode.com/problems/rotting-oranges/",
-                difficulty: "Must Do",
-                priority: "🔴",
-                tags: ["Multi-Source BFS"],
-                quiz: {
-                    description: "Simulate rotting. Best approach?",
-                    options: ["DFS from each rotten orange", "Multi-Source BFS", "Iterate grid repeatedly", "Union Find"],
-                    correct: 1,
-                    explanation: "Multi-Source BFS! Put ALL rotten oranges in queue initially. Process level by level (minutes). DFS fails because rotting happens simultaneously."
-                },
-                learn: {
-                    metrics: { time: "O(N*M)", space: "O(N*M)" },
-                    timeExplainer: "<strong>Multi-Source BFS:</strong><br>• Each cell visited once<br>• Queue operations are O(1)<br><br><strong>Total:</strong> <code>O(N×M)</code>",
-                    spaceExplainer: "<strong>Space Analysis:</strong><br>• Queue stores at most boundary cells<br>• Worst case (all rotten): <code>O(N×M)</code><br><br><strong>Result:</strong> <code>O(N×M)</code>",
-                    visual: "<span><strong>Visual: Infection Wave</strong><br>All rotten oranges explode at once. Layers: 0->1->2.</span>",
-                    crux: "<strong>Simultaneous Rotting:</strong><br>1. Push ALL rotten to Q.<br>2. Loop Levels.<br>3. Check `fresh_cnt == 0` at end.",
-                    trap: "<strong>Lonely Orange:</strong> If fresh count > 0 after BFS, return -1 (Impossible).",
-                    dryRun: ["Q: [(0,0)]. Fresh: 1.", "Pop (0,0). Neighbors (0,1) -> Rot. Fresh: 0.", "Time: 1."],
-                    codeTitle: "Python Solution",
-                    code: `def orangesRotting(grid):
-    q = deque()
-    fresh = 0
+                        <!-- Arrow -->
+                        <div style="display:flex; align-items:center; color:#64748b;">➞</div>
+
+                        <!-- T=1 -->
+                        <div>
+                            <div style="text-align:center; margin-bottom:5px; font-size:0.9rem; color:#94a3b8;">T = 1 (Wave 1)</div>
+                            <div style="display:grid; grid-template-columns:repeat(3, 30px); gap:2px; background:#334155; padding:2px; border-radius:4px;">
+                                <div style="background:#1e293b; height:30px; display:flex; align-items:center; justify-content:center; color:#f87171; font-weight:bold;">2</div>
+                                <div style="background:#1e293b; height:30px; display:flex; align-items:center; justify-content:center; color:#f87171; font-weight:bold; border: 1px solid #ef4444;">2</div>
+                                <div style="background:#1e293b; height:30px; display:flex; align-items:center; justify-content:center; color:#4ade80;">1</div>
+                                
+                                <div style="background:#1e293b; height:30px; display:flex; align-items:center; justify-content:center; color:#f87171; font-weight:bold; border: 1px solid #ef4444;">2</div>
+                                <div style="background:#1e293b; height:30px; display:flex; align-items:center; justify-content:center; color:#4ade80;">1</div>
+                                <div style="background:#1e293b; height:30px; display:flex; align-items:center; justify-content:center; color:#64748b;">0</div>
+                                
+                                <div style="background:#1e293b; height:30px; display:flex; align-items:center; justify-content:center; color:#64748b;">0</div>
+                                <div style="background:#1e293b; height:30px; display:flex; align-items:center; justify-content:center; color:#4ade80;">1</div>
+                                <div style="background:#1e293b; height:30px; display:flex; align-items:center; justify-content:center; color:#4ade80;">1</div>
+                            </div>
+                            <div style="text-align:center; font-size:0.8rem; color:#64748b; margin-top:5px;">Fresh: 6 -> 4</div>
+                        </div>
+
+                        <!-- Arrow -->
+                        <div style="display:flex; align-items:center; color:#64748b;">➞</div>
+
+                        <!-- T=2 -->
+                        <div>
+                            <div style="text-align:center; margin-bottom:5px; font-size:0.9rem; color:#94a3b8;">T = 2 (Wave 2)</div>
+                             <div style="display:grid; grid-template-columns:repeat(3, 30px); gap:2px; background:#334155; padding:2px; border-radius:4px;">
+                                <div style="background:#1e293b; height:30px; display:flex; align-items:center; justify-content:center; color:#f87171; font-weight:bold;">2</div>
+                                <div style="background:#1e293b; height:30px; display:flex; align-items:center; justify-content:center; color:#f87171; font-weight:bold;">2</div>
+                                <div style="background:#1e293b; height:30px; display:flex; align-items:center; justify-content:center; color:#f87171; font-weight:bold; border: 1px solid #ef4444;">2</div>
+                                
+                                <div style="background:#1e293b; height:30px; display:flex; align-items:center; justify-content:center; color:#f87171; font-weight:bold;">2</div>
+                                <div style="background:#1e293b; height:30px; display:flex; align-items:center; justify-content:center; color:#f87171; font-weight:bold; border: 1px solid #ef4444;">2</div>
+                                <div style="background:#1e293b; height:30px; display:flex; align-items:center; justify-content:center; color:#64748b;">0</div>
+                                
+                                <div style="background:#1e293b; height:30px; display:flex; align-items:center; justify-content:center; color:#64748b;">0</div>
+                                <div style="background:#1e293b; height:30px; display:flex; align-items:center; justify-content:center; color:#f87171; font-weight:bold; border: 1px solid #ef4444;">2</div>
+                                <div style="background:#1e293b; height:30px; display:flex; align-items:center; justify-content:center; color:#4ade80;">1</div>
+                            </div>
+                            <div style="text-align:center; font-size:0.8rem; color:#64748b; margin-top:5px;">Fresh: 4 -> 1</div>
+                        </div>
+
+                    </div>
+                    
+                    <div style="background:#0f172a; padding:15px; border-radius:8px; margin-top:10px;">
+                        <ul style="margin:0; padding-left:20px; color:#cbd5e1; font-size:0.9rem;">
+                            <li><strong style="color:#f87171;">2</strong> = Rotten (Sources)</li>
+                            <li><strong style="color:#4ade80;">1</strong> = Fresh (Targets)</li>
+                            <li><span style="border: 1px solid #ef4444; padding:0 4px; border-radius:2px;">Box</span> = Newly Rotten this minute</li>
+                        </ul>
+                    </div>
+                `,
+                crux: `
+                    <h4 style="color:#10b981;">💡 The Crux: "Process Level = 1 Minute"</h4>
+                    <div style="display:grid; gap:15px; margin:15px 0;">
+                        <div style="background:rgba(16, 185, 129, 0.1); padding:15px; border-radius:8px; border-left:4px solid #10b981;">
+                            <strong>Mental Model:</strong> Think of this as a <strong>Physical Simulation</strong>.
+                            <br>Every tick of the clock, infection spreads 1 unit distance in all directions.
+                        </div>
+                        <div style="background:rgba(239, 68, 68, 0.1); padding:15px; border-radius:8px; border-left:4px solid #ef4444;">
+                            <strong>Why processing by size(Q) matters:</strong>
+                            <br>We need to know when "Minute 1" ends and "Minute 2" begins.
+                            <br><code>for _ in range(len(q)):</code> ensures we only process the CURRENT batch, not the newly infected ones!
+                        </div>
+                    </div>
+                    
+                    <h5 style="color:#a78bfa; margin-top:20px;">🕸️ Pattern: Multi-Source BFS</h5>
+                    <p style="color:#cbd5e1; font-style:italic;">Why are these problems actually the same?</p>
+                    <ul style="line-height:2;">
+                        <li>🔥 <strong>Walls and Gates</strong>: Replace "Rotten" with "Gate". Find distance to nearest Gate. SAME LOGIC.</li>
+                        <li>🌊 <strong>01 Matrix</strong>: Replace "Rotten" with "0". Find distance to nearest 0. SAME LOGIC.</li>
+                        <li>🗺️ <strong>Shortest Bridge</strong>: Expand from Island A (Multi-source) until you hit Island B.</li>
+                    </ul>
+                `,
+                trap: `
+                    <h4 style="color:#ef4444;">⚠️ Deep Traps</h4>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin:15px 0;">
+                        <div style="background:rgba(239, 68, 68, 0.1); padding:15px; border-radius:8px;">
+                            <strong style="color:#f87171;">1. The "Last Minute" Bug</strong><br>
+                            If you increment <code>time</code> at the start of the loop, you might count a minute even if NO fresh oranges rot.<br>
+                            <span style="color:#cbd5e1; font-size:0.9em;">Fix: Check <code>if fresh > 0</code> or return <code>time - 1</code> if Q not empty.</span>
+                        </div>
+                        <div style="background:rgba(245, 158, 11, 0.1); padding:15px; border-radius:8px;">
+                            <strong style="color:#fbbf24;">2. Isolated Fresh Orange</strong><br>
+                            A fresh orange surrounded by 0s can NEVER be reached.<br>
+                            <span style="color:#cbd5e1; font-size:0.9em;">Fix: Check <code>if fresh_count == 0</code> at the very end.</span>
+                        </div>
+                        <div style="background:rgba(139, 92, 246, 0.1); padding:15px; border-radius:8px; grid-column: span 2;">
+                            <strong style="color:#a78bfa;">3. Modifying Queue Size during Loop</strong><br>
+                            Classic Python trap! <code>for _ in range(len(que))</code> evaluates <code>len</code> ONCE.
+                            If you used a dynamic <code>while</code> loop without fixing the range size, you'd mix levels!
+                        </div>
+                    </div>
+                `,
+                dryRun: `
+                    <h4 style="color:#22d3ee;">🔍 Dry Run: [[2,1,1],[1,1,0],[0,1,1]]</h4>
+                    <div style="background:#0f172a; padding:20px; border-radius:12px; font-family:'Consolas', monospace;">
+                        <pre style="color:#e2e8f0; margin:0; line-height:1.8;">
+<span style="color:#f59e0b;">Init:</span> Q=[(0,0)], fresh=6, time=0
+
+<span style="color:#f59e0b;">Loop 1 (Size=1):</span>
+  • Pop (0,0). Neighbors: (0,1), (1,0)
+  • Rot (0,1) & (1,0). fresh=4.
+  • Q now has [(0,1), (1,0)] (New batch!)
+  • time → 1
+
+<span style="color:#f59e0b;">Loop 2 (Size=2):</span>
+  • Pop (0,1). Rot neighbors...
+  • Pop (1,0). Rot neighbors...
+  • time → 2
+
+<span style="color:#f59e0b;">End:</span> Q empty? No. Fresh > 0? No. 
+Break! Return time.
+                        </pre>
+                    </div>
+                `,
+                codeTitle: "Python Solution (Teacher's Voice)",
+                code: `from collections import deque
+
+def orangesRotting(grid):
     rows, cols = len(grid), len(grid[0])
-    for r in range(rows):
-        for c in range(cols):
-            if grid[r][c] == 2: q.append((r,c))
-            elif grid[r][c] == 1: fresh += 1
     
-    minutes = 0
-    while q and fresh > 0:
-        minutes += 1
-        for _ in range(len(q)):
-            r, c = q.popleft()
-            for dr, dc in [(0,1),(0,-1),(1,0),(-1,0)]:
-                nr, nc = r+dr, c+dc
-                if 0<=nr<rows and 0<=nc<cols and grid[nr][nc] == 1:
-                    grid[nr][nc] = 2
-                    fresh -= 1
-                    q.append((nr, nc))
-    return minutes if fresh == 0 else -1`
-                }
-            },
-            {
-                id: "course-schedule",
-                title: "Course Schedule",
-                leetcodeUrl: "https://leetcode.com/problems/course-schedule/",
-                difficulty: "Must Do",
-                priority: "🔴",
-                tags: ["Topo Sort"],
-                quiz: {
-                    description: "Detect if courses can be finished (dependencies). Algo?",
-                    options: ["Dijkstra", "Kahn's Algo (Topo Sort)", "Union Find", "Floyd Warshall"],
-                    correct: 1,
-                    explanation: "Topo Sort (Kahn's)! Build graph. Calculate Indegrees. Q = [Indegree 0]. Process Q, reduce neighbor indegrees. If processed count == N, true."
-                },
-                learn: {
-                    metrics: { time: "O(V+E)", space: "O(V+E)" },
-                    timeExplainer: "<strong>Kahn's Algorithm:</strong><br>• Build Graph: <code>O(E)</code><br>• Queue Logic: Process each node & edge once<br><br><strong>Total:</strong> <code>O(V + E)</code>",
-                    spaceExplainer: "<strong>Space Analysis:</strong><br>• Adjacency List: <code>O(V + E)</code><br>• Indegree Array: <code>O(V)</code><br><br><strong>Result:</strong> <code>O(V + E)</code>",
-                    visual: "<span><strong>Visual: Unlocking</strong><br>Pre -> Course. When Pre is done, Course unlocks (Indegree becomes 0).</span>",
-                    crux: "<strong>Indegree Zero:</strong><br>1. Q = Nodes with 0 prereqs.<br>2. Pop and 'relax' neighbors (`indegree -= 1`).<br>3. If neighbor becomes 0, push to Q.<br>4. Cycle if `count < N`.",
-                    trap: "<strong>The Cycle:</strong> If queue empties but nodes remain with indegree > 0, there is a cycle.",
-                    dryRun: ["0->1. Indegrees: [0, 1].", "Q: [0]. Pop 0. 1's indegree -> 0. Q: [1].", "Count: 2 == N. True."],
-                    codeTitle: "Python Solution",
-                    code: `def canFinish(n, prereqs):
-    adj = defaultdict(list)
-    indegree = [0]*n
-    for c, p in prereqs:
-        adj[p].append(c)
-        indegree[c] += 1
+    # 1. PRE-SCAN: Find all initially rotten oranges (Sources)
+    queue = deque()
+    fresh_count = 0
     
-    q = deque([i for i in range(n) if indegree[i] == 0])
-    processed = 0
-    while q:
-        node = q.popleft()
-        processed += 1
-        for nei in adj[node]:
-            indegree[nei] -= 1
-            if indegree[nei] == 0: q.append(nei)
-            
-    return processed == n`
-                }
+    for row in range(rows):
+        for col in range(cols):
+            if grid[row][col] == 2:
+                queue.append((row, col))
+            elif grid[row][col] == 1:
+                fresh_count += 1
+
+    # Edge Case: If no fresh oranges, 0 minutes needed.
+    if fresh_count == 0:
+        return 0
+    
+    # 2. BFS: Level by Level
+    minutes_elapsed = 0
+    directions = [(-1, 0), (0, 1), (1, 0), (0, -1)]
+    
+    # Trap Fix: "while queue and fresh_count > 0"
+    while queue and fresh_count > 0:
+        
+        # Process ONLY current level (snapshot of current minute)
+        for _ in range(len(queue)):
+            current_row, current_col = queue.popleft()
+
+            for row_change, col_change in directions:
+                new_row = current_row + row_change
+                new_col = current_col + col_change 
+
+                # Valid check + Fresh check
+                if 0 <= new_row < rows and 0 <= new_col < cols and grid[new_row][new_col] == 1:
+                    grid[new_row][new_col] = 2  # Rot it immediately!
+                    fresh_count -= 1
+                    queue.append((new_row, new_col)) # Add to NEXT level
+        
+        minutes_elapsed += 1
+    
+    # 3. FINAL CHECK: Did we reach everyone?
+    return minutes_elapsed if fresh_count == 0 else -1`
+            }
+        },
+
+        {
+            id: "course-schedule",
+            title: "Course Schedule",
+            leetcodeUrl: "https://leetcode.com/problems/course-schedule/",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["Topo Sort"],
+            quiz: {
+                description: "Detect if courses can be finished (dependencies). Algo?",
+                options: ["Dijkstra", "Kahn's Algo (Topo Sort)", "Union Find", "Floyd Warshall"],
+                correct: 1,
+                explanation: "Topo Sort (Kahn's)! Build graph. Calculate Indegrees. Q = [Indegree 0]. Process Q, reduce neighbor indegrees. If processed count == N, true."
             },
-            {
-                id: "network-delay-time",
-                title: "Network Delay Time",
-                leetcodeUrl: "https://leetcode.com/problems/network-delay-time/",
-                difficulty: "Must Do",
-                priority: "🔴",
-                tags: ["Dijkstra"],
-                quiz: {
-                    description: "Max time for signal to reach all nodes. Weighted edges.",
-                    options: ["BFS", "Dijkstra", "DFS", "Topo Sort"],
-                    correct: 1,
-                    explanation: "Dijkstra! Weighted edges require Priority Queue. BFS is for unweighted. Visit nodes in increasing order of cost."
-                },
-                learn: {
-                    metrics: { time: "O(E log V)", space: "O(V+E)" },
-                    visual: "<span><strong>Visual: Smart Ripple</strong><br>Greedy expansion. Always pick the cheapest node.</span>",
-                    crux: "<strong>Min-Heap:</strong> `(dist, node)`.<br>1. Pop cheapest.<br>2. If new path to neighbor is shorter, push to heap.<br>3. Track visited.",
-                    trap: "<strong>Stale Entries:</strong> Lazy Dijkstra leaves old `(cost, node)` in heap. Check `if cost > dist[node]: continue`.",
-                    dryRun: ["PQ: [(0, K)]. Pop K.", "Push neighbors with weights.", "Pop next cheapest. Update dist."],
-                    codeTitle: "Python Solution",
-                    code: `def networkDelayTime(times, n, k):
+            learn: {
+                metrics: { time: "O(V+E)", space: "O(V+E)" },
+                timeExplainer: `
+                    <h4 style="color:#c026d3;">⏱️ Time Complexity: O(V + E)</h4>
+                    <div style="background:rgba(192, 38, 211, 0.1); padding:20px; border-radius:12px; margin:15px 0;">
+                        <p><strong>Step-by-Step Breakdown:</strong></p>
+                        <ul style="line-height:1.6; color:#e2e8f0;">
+                            <li><strong>Build Graph:</strong> <code style="color:#22d3ee;">O(E)</code> - Iterate through all prerequisites.</li>
+                            <li><strong>Initialize Queue:</strong> <code style="color:#22d3ee;">O(V)</code> - Scan all in-degrees.</li>
+                            <li><strong>BFS Processing:</strong> <code style="color:#22d3ee;">O(V + E)</code> - Process each vertex once, visit each edge once.</li>
+                        </ul>
+                        <div style="margin-top:15px; background:#0f172a; padding:10px; border-radius:8px; text-align:center;">
+                            <code style="color:#34d399; font-size:1.1rem;">Total: O(E) + O(V) + O(V + E) = O(V + E)</code>
+                        </div>
+                        <p style="margin-top:10px; font-size:0.9em; color:#cbd5e1;"><em>Interview Tip:</em> "Why not V×E? Because we don't re-scan edges for every node. We visit each edge exactly once."</p>
+                    </div>
+                `,
+                spaceExplainer: `
+                    <h4 style="color:#c026d3;">💾 Space Complexity: O(V + E)</h4>
+                    <div style="background:rgba(192, 38, 211, 0.1); padding:20px; border-radius:12px; margin:15px 0;">
+                        <table style="width:100%;">
+                            <tr><td style="padding:8px;"><strong>Graph:</strong></td><td>O(E) - Adjacency list stores E edges.</td></tr>
+                            <tr><td style="padding:8px;"><strong>In-degree Array:</strong></td><td>O(V) - Size of num_courses.</td></tr>
+                            <tr><td style="padding:8px;"><strong>Queue:</strong></td><td>O(V) - Worst case all nodes (0 dependencies).</td></tr>
+                        </table>
+                        <div style="margin-top:15px; font-weight:bold; color:#e879f9; text-align:center;">
+                            Total Space ≈ O(V + E)
+                        </div>
+                    </div>
+                `,
+                visual: `
+                    <h4 style="color:#c026d3;">🔗 Topological Sort: Kahn's Algorithm</h4>
+                    <div style="display:flex; flex-direction:column; gap:20px; max-width:600px; margin:20px 0;">
+                      
+                      <!-- Graph Structure -->
+                      <div style="display:flex; justify-content:center; gap:40px; margin-bottom:10px;">
+                         <!-- Node 0 -->
+                         <div style="position:relative; text-align:center;">
+                            <div style="width:40px; height:40px; background:#10b981; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; color:white; border:2px solid #fff; margin:0 auto;">0</div>
+                            <div style="margin-top:5px; font-size:12px; color:#cbd5e1;">In: <span style="color:#10b981">0</span></div>
+                         </div>
+                         
+                         <div style="display:flex; flex-direction:column; justify-content:center; font-size:20px; color:#64748b;">
+                            <div>➔</div>
+                            <div>↘</div>
+                         </div>
+
+                         <!-- Node 1 & 2 -->
+                         <div style="display:flex; flex-direction:column; gap:20px;">
+                            <div style="position:relative; text-align:center;">
+                                <div style="width:40px; height:40px; background:#334155; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; color:white; margin:0 auto;">1</div>
+                                <div style="margin-top:5px; font-size:12px; color:#cbd5e1;">In: 1</div>
+                            </div>
+                            <div style="position:relative; text-align:center;">
+                                <div style="width:40px; height:40px; background:#334155; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; color:white; margin:0 auto;">2</div>
+                                <div style="margin-top:5px; font-size:12px; color:#cbd5e1;">In: 1</div>
+                            </div>
+                         </div>
+                         
+                         <div style="display:flex; flex-direction:column; justify-content:center; font-size:20px; color:#64748b;">
+                            <div>↘</div>
+                            <div>↗</div>
+                         </div>
+
+                         <!-- Node 3 -->
+                         <div style="position:relative; text-align:center;">
+                            <div style="width:40px; height:40px; background:#334155; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; color:white; margin:0 auto;">3</div>
+                            <div style="margin-top:5px; font-size:12px; color:#cbd5e1;">In: 2</div>
+                         </div>
+                      </div>
+
+                      <!-- Timeline Breakdown -->
+                      <div style="background:#1e293b; padding:15px; border-radius:8px;">
+                         <div style="border-left:3px solid #10b981; padding-left:15px; margin-bottom:15px;">
+                            <div style="color:#10b981; font-weight:bold; font-size:12px; margin-bottom:4px;">STEP 1: INITIALIZE</div>
+                            <div style="color:#e2e8f0; font-size:13px;">Find nodes with Indegree = 0 (Node 0)</div>
+                            <div style="margin-top:5px; background:#0f172a; padding:6px; border-radius:4px; display:inline-block; font-family:monospace; font-size:12px; border:1px solid #334155;">
+                               Queue: [ <span style="color:#10b981; font-weight:bold;">0</span> ]
+                            </div>
+                         </div>
+                         
+                         <div style="border-left:3px solid #f59e0b; padding-left:15px; margin-bottom:15px;">
+                            <div style="color:#f59e0b; font-weight:bold; font-size:12px; margin-bottom:4px;">STEP 2: PROCESS 0</div>
+                            <div style="color:#cbd5e1; font-size:13px;">Pop 0 → Decrement neighbors (1 & 2)</div>
+                            <div style="color:#e2e8f0; font-size:13px; margin-top:2px;">Indegrees become 0! Add to Q.</div>
+                            <div style="margin-top:5px; background:#0f172a; padding:6px; border-radius:4px; display:inline-block; font-family:monospace; font-size:12px; border:1px solid #334155;">
+                               Queue: [ <span style="color:#f59e0b; font-weight:bold;">1, 2</span> ]
+                            </div>
+                         </div>
+
+                         <div style="border-left:3px solid #a78bfa; padding-left:15px;">
+                            <div style="color:#a78bfa; font-weight:bold; font-size:12px; margin-bottom:4px;">STEP 3: PROCESS 1 & 2</div>
+                            <div style="color:#cbd5e1; font-size:13px;">Pop 1, 2 → Decrement 3 twice (2→1→0)</div>
+                            <div style="color:#e2e8f0; font-size:13px; margin-top:2px;">3 is now free! Add to Q.</div>
+                            <div style="margin-top:5px; background:#0f172a; padding:6px; border-radius:4px; display:inline-block; font-family:monospace; font-size:12px; border:1px solid #334155;">
+                               Queue: [ <span style="color:#a78bfa; font-weight:bold;">3</span> ]
+                            </div>
+                         </div>
+                      </div>
+                    </div>
+                `,
+                crux: `
+                    <h4 style="color:#10b981;">💡 The Crux: Kahn's Algorithm</h4>
+                    <div style="background:rgba(16, 185, 129, 0.1); padding:15px; border-radius:8px; border-left:4px solid #10b981; margin:15px 0;">
+                        <strong>Core Idea:</strong>
+                        <ul style="margin:5px 0 0 20px; color:#e2e8f0;">
+                            <li>Cycle = Impossible (Return False)</li>
+                            <li>No Cycle = Possible (Return True)</li>
+                        </ul>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                        <div style="background:#0f172a; padding:15px; border-radius:8px;">
+                            <strong style="color:#38bdf8;">1. In-Degree</strong>
+                            <p style="font-size:0.9em; color:#94a3b8;">How many courses must be done <em>before</em> this one.</p>
+                        </div>
+                        <div style="background:#0f172a; padding:15px; border-radius:8px;">
+                            <strong style="color:#38bdf8;">2. Queue</strong>
+                            <p style="font-size:0.9em; color:#94a3b8;">Courses with 0 dependencies (Ready to take).</p>
+                        </div>
+                    </div>
+                `,
+                trap: `
+                    <h4 style="color:#ef4444;">⚠️ Common Mistakes (Interview Killers)</h4>
+                    <div style="display:grid; gap:15px; margin:15px 0;">
+                        <div style="background:rgba(239, 68, 68, 0.1); padding:15px; border-radius:8px;">
+                            <strong style="color:#f87171;">1. Wrong Graph Direction ❌</strong><br>
+                            <span style="color:#cbd5e1; font-size:0.9em;">Make sure <code>pre -> course</code>. If <code>[1, 0]</code>, it means 0 -> 1.</span>
+                        </div>
+                        <div style="background:rgba(239, 68, 68, 0.1); padding:15px; border-radius:8px;">
+                            <strong style="color:#f87171;">2. Syntax Errors ❌</strong><br>
+                            <span style="color:#cbd5e1; font-size:0.9em;"><code>graph[pre].append = course</code> is WRONG. Use <code>.append(course)</code>.</span>
+                        </div>
+                        <div style="background:rgba(245, 158, 11, 0.1); padding:15px; border-radius:8px;">
+                            <strong style="color:#fbbf24;">3. Counting Neighbors vs Courses ⚠️</strong><br>
+                            <span style="color:#cbd5e1; font-size:0.9em;">Increment <code>processed</code> when popping from Queue (Course level), NOT when iterating neighbors.</span>
+                        </div>
+                        <div style="background:rgba(139, 92, 246, 0.1); padding:15px; border-radius:8px;">
+                             <strong style="color:#a78bfa;">4. Iterating Values vs Indices ⚠️</strong><br>
+                             <span style="color:#cbd5e1; font-size:0.9em;">Use <code>range(num_courses)</code> to check in-degree 0, not <code>in_degree</code> values directly.</span>
+                        </div>
+                    </div>
+                `,
+                dryRun: `
+                    <h4 style="color:#22d3ee;">🔍 Dry Run: N=5, [[1,0],[2,0],[3,1],[3,2],[4,3]]</h4>
+                    <div style="background:#0f172a; padding:20px; border-radius:12px; font-family:'Consolas', monospace;">
+                        <pre style="color:#e2e8f0; margin:0; line-height:1.8;">
+<span style="color:#f59e0b;">Init:</span> Q=[0], processed=0
+<span style="color:#64748b;">(0 is only one with in-degree 0)</span>
+
+<span style="color:#f59e0b;">Process 0:</span> processed=1
+Neighbors: 1, 2
+Indegrees: 1->0, 2->0
+Q -> [1, 2]
+
+<span style="color:#f59e0b;">Process 1:</span> processed=2
+Neighbor: 3
+Indegree: 3->1 (Still waiting on 2)
+Q -> [2]
+
+<span style="color:#f59e0b;">Process 2:</span> processed=3
+Neighbor: 3
+Indegree: 3->0 (Now 3 is free!)
+Q -> [3]
+
+<span style="color:#f59e0b;">Process 3:</span> processed=4
+Neighbor: 4
+Indegree: 4->0
+Q -> [4]
+
+<span style="color:#10b981;">Final:</span> processed(5) == num_courses(5) -> True
+                        </pre>
+                    </div>
+                `,
+                codeTitle: "Python Solution (Kahn's Algorithm)",
+                code: `from collections import defaultdict, deque
+
+def course_schedule(num_courses, prerequisites):
+    # STEP 1: Build graph and in-degree array
+    graph = defaultdict(list)
+    in_degree = [0] * num_courses
+    
+    for course, pre_course in prerequisites:
+        graph[pre_course].append(course)  # pre_course -> course
+        in_degree[course] += 1
+    
+    # STEP 2: Find all starting points (in_degree = 0)
+    que = deque()
+    for course in range(num_courses):
+        if in_degree[course] == 0:
+            que.append(course)
+    
+    # STEP 3: BFS - Process level by level
+    processed_courses = 0
+    
+    while que:
+        cur_course = que.popleft()
+        processed_courses += 1  # ✅ Count this course
+        
+        for neighbour in graph[cur_course]:
+            in_degree[neighbour] -= 1
+            if in_degree[neighbour] == 0:
+                que.append(neighbour)
+    
+    # STEP 4: Check if all courses processed
+    return processed_courses == num_courses`
+            }
+        },
+
+        {
+            id: "network-delay-time",
+            title: "Network Delay Time",
+            leetcodeUrl: "https://leetcode.com/problems/network-delay-time/",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["Dijkstra"],
+            quiz: {
+                description: "Max time for signal to reach all nodes. Weighted edges.",
+                options: ["BFS", "Dijkstra", "DFS", "Topo Sort"],
+                correct: 1,
+                explanation: "Dijkstra! Weighted edges require Priority Queue. BFS is for unweighted. Visit nodes in increasing order of cost."
+            },
+            learn: {
+                metrics: { time: "O(E log V)", space: "O(V+E)" },
+                timeExplainer: `
+                    <h4 style="color:#c026d3;">⏱️ Time Complexity: O(E log V)</h4>
+                    <div style="background:rgba(192, 38, 211, 0.1); padding:20px; border-radius:12px; margin:15px 0;">
+                        <p><strong>Dijkstra's Algorithm Breakdown:</strong></p>
+                        <table style="width:100%; margin-top:10px;">
+                            <tr style="border-bottom:1px solid rgba(255,255,255,0.1);">
+                                <td style="padding:10px;"><strong>Heap Operations:</strong></td>
+                                <td style="padding:10px;">Each edge may be pushed to heap → <code style="color:#22d3ee;">O(E)</code> pushes</td>
+                            </tr>
+                            <tr style="border-bottom:1px solid rgba(255,255,255,0.1);">
+                                <td style="padding:10px;"><strong>Each Push/Pop:</strong></td>
+                                <td style="padding:10px;">Heap has at most V nodes → <code style="color:#22d3ee;">O(log V)</code></td>
+                            </tr>
+                            <tr>
+                                <td style="padding:10px;"><strong>Total:</strong></td>
+                                <td style="padding:10px; font-weight:700; color:#34d399;">O(E × log V)</td>
+                            </tr>
+                        </table>
+                        <div style="background:rgba(139, 92, 246, 0.1); padding:15px; border-radius:8px; margin-top:15px;">
+                            <strong style="color:#a78bfa;">Why not O(V²)?</strong><br>
+                            That's the naive version without a heap. With min-heap, we get O(E log V).
+                        </div>
+                    </div>
+                `,
+                spaceExplainer: `
+                    <h4 style="color:#c026d3;">📦 Space Complexity: O(V+E)</h4>
+                    <div style="background:rgba(192, 38, 211, 0.1); padding:20px; border-radius:12px; margin:15px 0;">
+                        <table style="width:100%;">
+                            <tr><td style="padding:8px;"><strong>Graph:</strong></td><td>O(V+E) - adjacency list</td></tr>
+                            <tr><td style="padding:8px;"><strong>Dist Dict:</strong></td><td>O(V) - stores shortest distances</td></tr>
+                            <tr><td style="padding:8px;"><strong>Heap:</strong></td><td>O(E) worst case with lazy deletion</td></tr>
+                        </table>
+                    </div>
+                `,
+                visual: `
+                    <h4 style="color:#c026d3;">🎯 Dijkstra: Greedy Shortest Path</h4>
+                    <div style="display:flex; flex-direction:column; gap:20px; max-width:600px; margin:20px 0;">
+                      
+                      <!-- Graph Structure -->
+                      <div style="display:flex; justify-content:center; gap:50px; margin-bottom:15px; align-items:flex-start;">
+                         <!-- Node 1 -->
+                         <div style="text-align:center;">
+                            <div style="width:40px; height:40px; background:#10b981; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; color:white; border:2px solid #fff; margin:0 auto;">1</div>
+                            <div style="margin-top:2px; font-size:11px; color:#10b981;">Dist: 0</div>
+                         </div>
+                         
+                         <!-- Nodes 2 & 3 -->
+                         <div style="display:flex; flex-direction:column; gap:40px;">
+                            <div style="position:relative;">
+                                <div style="position:absolute; top:20px; left:-40px; border-top:2px dashed #64748b; width:40px; transform:rotate(-25deg);"></div>
+                                <div style="position:absolute; top:5px; left:-25px; font-size:10px; color:#f59e0b; background:#1e293b; padding:0 3px;">2</div>
+                                
+                                <div style="width:40px; height:40px; background:#334155; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; color:white;">2</div>
+                                <div style="margin-top:2px; font-size:11px; color:#cbd5e1;">Dist: 2</div>
+                            </div>
+                            
+                            <div style="position:relative;">
+                                <div style="position:absolute; top:20px; left:-40px; border-top:2px dashed #64748b; width:40px; transform:rotate(25deg);"></div>
+                                <div style="position:absolute; top:35px; left:-25px; font-size:10px; color:#f59e0b; background:#1e293b; padding:0 3px;">1</div>
+                                
+                                <div style="width:40px; height:40px; background:#334155; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; color:white;">3</div>
+                                <div style="margin-top:2px; font-size:11px; color:#cbd5e1;">Dist: 1</div>
+                            </div>
+                         </div>
+
+                         <!-- Node 4 -->
+                         <div style="display:flex; align-items:center;">
+                             <div style="width:40px; height:40px; background:#334155; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; color:white;">4</div>
+                         </div>
+                      </div>
+
+                      <!-- Heap Logic -->
+                      <div style="background:#1e293b; padding:15px; border-radius:8px;">
+                         <div style="margin-bottom:12px; border-bottom:1px solid #334155; padding-bottom:8px;">
+                            <strong style="color:#cbd5e1; font-size:13px;">MIN-HEAP State (Cost, Node):</strong>
+                         </div>
+
+                         <!-- Step 1 -->
+                         <div style="display:flex; gap:10px; align-items:center; margin-bottom:12px;">
+                            <div style="font-size:12px; color:#64748b; width:40px;">Step 1</div>
+                            <div style="background:#0f172a; padding:5px 10px; border-radius:4px; font-family:monospace; font-size:12px; border:1px solid #334155;">
+                               [(0, 1)]
+                            </div>
+                            <div style="font-size:12px; color:#10b981;">Pop 1, Push neighbors (2, 3)</div>
+                         </div>
+
+                         <!-- Step 2 -->
+                         <div style="display:flex; gap:10px; align-items:center; margin-bottom:12px;">
+                            <div style="font-size:12px; color:#64748b; width:40px;">Step 2</div>
+                            <div style="background:#0f172a; padding:5px 10px; border-radius:4px; font-family:monospace; font-size:12px; border:1px solid #334155;">
+                               [(1, 3), (2, 2)]
+                            </div>
+                            <div style="font-size:12px; color:#10b981;">Pop 3 (Cost 1), Push 4</div>
+                         </div>
+
+                         <!-- Step 3 -->
+                         <div style="display:flex; gap:10px; align-items:center;">
+                            <div style="font-size:12px; color:#64748b; width:40px;">Step 3</div>
+                            <div style="background:#0f172a; padding:5px 10px; border-radius:4px; font-family:monospace; font-size:12px; border:1px solid #334155;">
+                               [(2, 2), (4, 4)]
+                            </div>
+                            <div style="font-size:12px; color:#10b981;">Pop 2 (Cost 2)...</div>
+                         </div>
+
+                      </div>
+                    </div>
+                `,
+                crux: `
+                    <h4 style="color:#10b981;">💡 The Crux: Greedy + Min-Heap</h4>
+                    <div style="display:grid; gap:15px; margin:15px 0;">
+                        <div style="background:rgba(16, 185, 129, 0.1); padding:15px; border-radius:8px; border-left:4px solid #10b981;">
+                            <strong>Greedy Choice:</strong> Always process the node with smallest known distance
+                        </div>
+                        <div style="background:rgba(245, 158, 11, 0.1); padding:15px; border-radius:8px; border-left:4px solid #f59e0b;">
+                            <strong>Relaxation:</strong> If new path is shorter, update and push to heap
+                        </div>
+                        <div style="background:rgba(139, 92, 246, 0.1); padding:15px; border-radius:8px; border-left:4px solid #8b5cf6;">
+                            <strong>Lazy Deletion:</strong> Skip nodes that are already in dist (stale entries)
+                        </div>
+                    </div>
+                    <div style="background:#0f172a; padding:15px; border-radius:8px; margin:15px 0; font-family:Consolas;">
+                        <code style="color:#7dd3fc;">
+                            while heap:<br>
+                            &nbsp;&nbsp;cost, node = heappop(heap)<br>
+                            &nbsp;&nbsp;if node in dist: continue  # <span style="color:#ef4444;">CRITICAL!</span><br>
+                            &nbsp;&nbsp;dist[node] = cost<br>
+                            &nbsp;&nbsp;for neighbor, weight in graph[node]:<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;if neighbor not in dist:<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;heappush(heap, (cost + weight, neighbor))
+                        </code>
+                    </div>
+                    <h5 style="color:#a78bfa; margin-top:20px;">Same Pattern Problems:</h5>
+                    <ul style="line-height:2;">
+                        <li>🛤️ <strong>Cheapest Flights Within K Stops</strong> - Dijkstra with constraint</li>
+                        <li>🏊 <strong>Swim in Rising Water</strong> - Min-max path (modified Dijkstra)</li>
+                        <li>📍 <strong>Path with Minimum Effort</strong> - Minimize maximum edge</li>
+                        <li>🚗 <strong>Shortest Path in Binary Matrix</strong> - BFS (unweighted)</li>
+                    </ul>
+                `,
+                trap: `
+                    <h4 style="color:#ef4444;">⚠️ Common Traps</h4>
+                    <div style="display:grid; gap:15px; margin:15px 0;">
+                        <div style="background:rgba(239, 68, 68, 0.1); padding:15px; border-radius:8px;">
+                            <strong style="color:#ef4444;">Trap 1: Stale Heap Entries</strong><br>
+                            Same node can be pushed multiple times with different costs.<br>
+                            <code style="background:#0f172a; padding:4px 8px; border-radius:4px; color:#f87171;">if node in dist: continue</code>
+                        </div>
+                        <div style="background:rgba(239, 68, 68, 0.1); padding:15px; border-radius:8px;">
+                            <strong style="color:#ef4444;">Trap 2: Using BFS for Weighted</strong><br>
+                            BFS only works for unweighted graphs! Dijkstra is for weighted.
+                        </div>
+                        <div style="background:rgba(239, 68, 68, 0.1); padding:15px; border-radius:8px;">
+                            <strong style="color:#ef4444;">Trap 3: Negative Weights</strong><br>
+                            Dijkstra FAILS with negative weights! Use Bellman-Ford instead.
+                        </div>
+                        <div style="background:rgba(239, 68, 68, 0.1); padding:15px; border-radius:8px;">
+                            <strong style="color:#ef4444;">Trap 4: Node Indexing</strong><br>
+                            This problem uses 1-indexed nodes! Start from node k, not k-1.
+                        </div>
+                    </div>
+                `,
+                dryRun: `
+                    <h4 style="color:#22d3ee;">🔍 Dry Run: times=[[1,2,1],[1,3,2],[2,3,1]], n=3, k=1</h4>
+                    <div style="background:#0f172a; padding:20px; border-radius:12px; font-family:'Consolas', monospace;">
+                        <pre style="color:#e2e8f0; margin:0; line-height:1.8;">
+<span style="color:#f59e0b;">Graph:</span>
+  1 →(1)→ 2 →(1)→ 3
+  1 →(2)→ 3
+
+<span style="color:#f59e0b;">Initial:</span>
+  heap = [(0, 1)]
+  dist = {}
+
+<span style="color:#f59e0b;">Pop (0, 1):</span>
+  dist = {1: 0}
+  Push (0+1, 2) and (0+2, 3)
+  heap = [(1, 2), (2, 3)]
+
+<span style="color:#f59e0b;">Pop (1, 2):</span>
+  dist = {1: 0, 2: 1}
+  Push (1+1, 3) = (2, 3)
+  heap = [(2, 3), (2, 3)]  ← duplicate!
+
+<span style="color:#f59e0b;">Pop (2, 3):</span>
+  dist = {1: 0, 2: 1, 3: 2}
+  heap = [(2, 3)]  ← stale entry
+
+<span style="color:#f59e0b;">Pop (2, 3):</span>
+  3 in dist → SKIP!
+
+<span style="color:#10b981;">✅ len(dist) == n, return max(dist.values()) = 2</span>
+                        </pre>
+                    </div>
+                `,
+                codeTitle: "Python Solution (Dijkstra)",
+                code: `def networkDelayTime(times, n, k):
+    import heapq
+    from collections import defaultdict
+    
+    # Build adjacency list
     graph = defaultdict(list)
     for u, v, w in times:
         graph[u].append((v, w))
     
-    pq = [(0, k)]
+    # Min-heap: (distance, node)
+    heap = [(0, k)]
     dist = {}
     
-    while pq:
-        d, node = heapq.heappop(pq)
-        if node in dist: continue
-        dist[node] = d
-        for nei, w in graph[node]:
-            if nei not in dist:
-                heapq.heappush(pq, (d+w, nei))
-                
-    return max(dist.values()) if len(dist) == n else -1`
-                }
-            },
-            {
-                id: "number-of-provinces",
-                title: "Number of Provinces",
-                leetcodeUrl: "https://leetcode.com/problems/number-of-provinces/",
-                difficulty: "Must Do",
-                priority: "🔴",
-                tags: ["Union-Find"],
-                quiz: {
-                    description: "Count connected components. Efficient DS?",
-                    options: ["DFS", "BFS", "Union-Find (DSU)", "All of the above"],
-                    correct: 3,
-                    explanation: "All work! But DSU (Union-Find) is the most elegant for 'connectivity' and 'components'. Initialize N parents. Union connected nodes. Count unique parents."
-                },
-                learn: {
-                    metrics: { time: "O(α(N))", space: "O(N)" },
-                    timeExplainer: "<strong>Union-Find (DSU):</strong><br>• Initialization: <code>O(N)</code><br>• Union/Find ops: Nearly constant <code>O(α(N))</code><br><br><strong>Total:</strong> <code>O(N + E⋅α(N))</code>",
-                    spaceExplainer: "<strong>Space Analysis:</strong><br>• Parent Array: <code>O(N)</code><br>• Rank/Size Array: <code>O(N)</code><br><br><strong>Result:</strong> <code>O(N)</code>",
-                    visual: "<span><strong>Visual: Corporate Merger</strong><br>Each Union merges two companies. Count remaining CEOs.</span>",
-                    crux: "<strong>Find & Union:</strong><br>1. `Find(x)` with Path Compression.<br>2. `Union(x, y)` links roots.<br>3. `Count` decrements on successful union.",
-                    trap: "<strong>Naive Union:</strong> Always link Roots! `parent[rootX] = rootY`, not `parent[x]=y`.",
-                    dryRun: ["Init: [0, 1, 2]. Count=3.", "Union(0,1): [1, 1, 2]. Count=2.", "Total 2 provinces."],
-                    codeTitle: "Python Solution",
-                    code: `class DSU:
-    def __init__(self, n):
-        self.p = list(range(n))
-        self.cnt = n
-    def find(self, x):
-        if self.p[x] != x: self.p[x] = self.find(self.p[x])
-        return self.p[x]
-    def union(self, x, y):
-        rx, ry = self.find(x), self.find(y)
-        if rx != ry:
-            self.p[rx] = ry
-            self.cnt -= 1
+    while heap:
+        cost, node = heapq.heappop(heap)
+        
+        # Skip stale entries (already processed)
+        if node in dist:
+            continue
+        
+        # First time reaching this node = shortest path
+        dist[node] = cost
+        
+        # Relax neighbors
+        for neighbor, weight in graph[node]:
+            if neighbor not in dist:
+                heapq.heappush(heap, (cost + weight, neighbor))
+    
+    # Check if all nodes are reachable
+    if len(dist) == n:
+        return max(dist.values())
+    return -1`
+            }
+        },
 
-def findCircleNum(isConnected):
-    n = len(isConnected)
-    dsu = DSU(n)
-    for i in range(n):
-        for j in range(i+1, n):
-            if isConnected[i][j]: dsu.union(i, j)
-    return dsu.cnt`
-                }
+        {
+            id: "number-of-provinces",
+            title: "Number of Provinces",
+            leetcodeUrl: "https://leetcode.com/problems/number-of-provinces/",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["Union-Find"],
+            quiz: {
+                description: "Count connected components. Efficient DS?",
+                options: ["DFS", "BFS", "Union-Find (DSU)", "All of the above"],
+                correct: 3,
+                explanation: "All work! But DSU (Union-Find) is the most elegant for 'connectivity' and 'components'. Initialize N parents. Union connected nodes. Count unique parents."
             },
-            {
-                id: "clone-graph",
-                title: "Clone Graph",
-                leetcodeUrl: "https://leetcode.com/problems/clone-graph/",
-                difficulty: "Good to Do",
-                priority: "🟢",
-                tags: ["Deep Copy"],
-                quiz: {
-                    description: "Deep copy graph. How to handle cycles?",
-                    options: ["BFS", "DFS + HashMap", "Recursion only", "Queue"],
-                    correct: 1,
-                    explanation: "DFS + HashMap! Map stores `OldNode -> NewNode`. If node in map, return stored copy (handles cycles). Else create, add to map, recurse."
-                },
-                learn: {
-                    metrics: { time: "O(V+E)", space: "O(V)" },
-                    timeExplainer: "<strong>DFS Traversal:</strong><br>• Visit each Vertex once<br>• Traverse each Edge once<br><br><strong>Total:</strong> <code>O(V + E)</code>",
-                    spaceExplainer: "<strong>Space Analysis:</strong><br>• Map stores V nodes<br>• Recursion stack O(V)<br><br><strong>Result:</strong> <code>O(V)</code>",
-                    visual: "<span><strong>Visual: Mirror Map</strong><br>Check Map before creating. Old -> New.</span>",
-                    crux: "1. Check Map: Return if exists.<br>2. Create Copy.<br>3. Add to Map (BEFORE recursion).<br>4. Clone neighbors.",
-                    trap: "<strong>Infinite Recursion:</strong> Must register in Map *before* visiting neighbors.",
-                    dryRun: ["Q: Clone(1). Map={1:N1}. Recurse 2.", "Clone(2). Map={1:N1, 2:N2}. Recurse 1 -> Return N1.", "Link N2->N1."],
-                    codeTitle: "Python Solution",
-                    code: `def cloneGraph(node):
-    if not node: return None
+            learn: {
+                metrics: { time: "O(N²×α(N))", space: "O(N)" },
+                timeExplainer: `
+                    <h4 style="color:#c026d3;">⏱️ Time Complexity: O(N² × α(N))</h4>
+                    <div style="background:rgba(192, 38, 211, 0.1); padding:20px; border-radius:12px; margin:15px 0;">
+                        <table style="width:100%; margin-top:10px;">
+                            <tr style="border-bottom:1px solid rgba(255,255,255,0.1);">
+                                <td style="padding:10px;"><strong>Iterate Matrix:</strong></td>
+                                <td style="padding:10px;">O(N²) - check each pair</td>
+                            </tr>
+                            <tr style="border-bottom:1px solid rgba(255,255,255,0.1);">
+                                <td style="padding:10px;"><strong>Union/Find:</strong></td>
+                                <td style="padding:10px;">O(α(N)) ≈ O(1) with path compression</td>
+                            </tr>
+                        </table>
+                        <div style="background:rgba(16, 185, 129, 0.1); padding:15px; border-radius:8px; margin-top:15px;">
+                            <strong style="color:#10b981;">What is α(N)?</strong><br>
+                            Inverse Ackermann function. For any practical N (even 10^100), α(N) ≤ 5. Basically constant!
+                        </div>
+                    </div>
+                `,
+                spaceExplainer: `
+                    <h4 style="color:#c026d3;">📦 Space Complexity: O(N)</h4>
+                    <div style="background:rgba(192, 38, 211, 0.1); padding:20px; border-radius:12px; margin:15px 0;">
+                        <table style="width:100%;">
+                            <tr><td style="padding:8px;"><strong>Parent Array:</strong></td><td>O(N) - one entry per node</td></tr>
+                            <tr><td style="padding:8px;"><strong>Rank Array (optional):</strong></td><td>O(N) - for union by rank</td></tr>
+                        </table>
+                    </div>
+                `,
+                visual: `
+                    <h4 style="color:#c026d3;">🏢 Union-Find: Corporate Merger</h4>
+                    <div style="display:flex; flex-direction:column; gap:20px; max-width:600px; margin:20px 0;">
+                        
+                        <!-- Initial State -->
+                        <div style="background:#1e293b; padding:10px; border-radius:8px;">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                                <span style="color:#cbd5e1; font-size:12px;">Step 1: Initial (4 Provinces)</span>
+                                <span style="font-family:monospace; color:#e2e8f0; font-size:11px;">Parent: [0, 1, 2, 3]</span>
+                            </div>
+                            <div style="display:flex; gap:10px; justify-content:center;">
+                                <div style="width:30px; height:30px; background:#334155; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:12px;">0</div>
+                                <div style="width:30px; height:30px; background:#334155; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:12px;">1</div>
+                                <div style="width:30px; height:30px; background:#334155; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:12px;">2</div>
+                                <div style="width:30px; height:30px; background:#334155; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:12px;">3</div>
+                            </div>
+                        </div>
+
+                        <!-- Union 0-1 -->
+                        <div style="background:#1e293b; padding:10px; border-radius:8px;">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                                <span style="color:#cbd5e1; font-size:12px;">Step 2: Union(0, 1)</span>
+                                <span style="font-family:monospace; color:#e2e8f0; font-size:11px;">Parent: [1, 1, 2, 3]</span>
+                            </div>
+                            <div style="display:flex; gap:10px; justify-content:center; align-items:flex-start;">
+                                <div style="display:flex; flex-direction:column; align-items:center;">
+                                    <div style="width:30px; height:30px; background:#10b981; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:12px; border:2px solid #fff;">1</div>
+                                    <div style="height:15px; border-left:2px solid #64748b;"></div>
+                                    <div style="width:30px; height:30px; background:#334155; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:12px;">0</div>
+                                </div>
+                                <div style="width:30px; height:30px; background:#334155; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:12px;">2</div>
+                                <div style="width:30px; height:30px; background:#334155; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:12px;">3</div>
+                            </div>
+                        </div>
+
+                        <!-- Union 1-2 (Result) -->
+                        <div style="background:#1e293b; padding:10px; border-radius:8px; border:1px solid #10b981;">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                                <span style="color:#10b981; font-size:12px; font-weight:bold;">Step 3: Union(1, 2) → Final</span>
+                                <span style="font-family:monospace; color:#e2e8f0; font-size:11px;">Count: 2</span>
+                            </div>
+                            <div style="display:flex; gap:40px; justify-content:center;">
+                                <!-- Group 1 -->
+                                <div style="position:relative; width:80px; height:80px; border:2px dashed #64748b; border-radius:12px; display:flex; justify-content:center; align-items:end; padding-bottom:5px;">
+                                    <div style="position:absolute; top:-10px; background:#1e293b; color:#cbd5e1; font-size:10px; padding:0 5px;">Prov A</div>
+                                    
+                                    <!-- Tree Structure -->
+                                    <div style="position:absolute; top:10px; left:25px; width:30px; height:30px; background:#10b981; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:12px; z-index:2;">2</div>
+                                    
+                                    <svg style="position:absolute; top:25px; left:10px; width:60px; height:40px; z-index:1;">
+                                        <line x1="20" y1="0" x2="10" y2="30" stroke="#64748b" stroke-width="2" />
+                                        <line x1="20" y1="0" x2="50" y2="30" stroke="#64748b" stroke-width="2" />
+                                    </svg>
+
+                                    <div style="position:absolute; bottom:5px; left:5px; width:25px; height:25px; background:#334155; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:10px;">0</div>
+                                    <div style="position:absolute; bottom:5px; right:5px; width:25px; height:25px; background:#334155; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:10px;">1</div>
+                                </div>
+
+                                <!-- Group 2 -->
+                                <div style="position:relative; width:40px; height:80px; border:2px dashed #64748b; border-radius:12px; display:flex; justify-content:center; align-items:center;">
+                                    <div style="position:absolute; top:-10px; background:#1e293b; color:#cbd5e1; font-size:10px; padding:0 5px;">Prov B</div>
+                                    <div style="width:30px; height:30px; background:#10b981; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:12px;">3</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                `,
+                crux: `
+                    <h4 style="color:#10b981;">💡 The Crux: Find Root + Union Roots</h4>
+                    <div style="display:grid; gap:15px; margin:15px 0;">
+                        <div style="background:rgba(16, 185, 129, 0.1); padding:15px; border-radius:8px; border-left:4px solid #10b981;">
+                            <strong>Find with Path Compression:</strong><br>
+                            <code style="background:#0f172a; padding:4px 8px; border-radius:4px;">if parent[x] != x: parent[x] = find(parent[x])</code>
+                        </div>
+                        <div style="background:rgba(245, 158, 11, 0.1); padding:15px; border-radius:8px; border-left:4px solid #f59e0b;">
+                            <strong>Union by Rank/Size:</strong> Attach smaller tree under larger tree's root
+                        </div>
+                    </div>
+                    <h5 style="color:#a78bfa; margin-top:20px;">Same Pattern Problems:</h5>
+                    <ul style="line-height:2;">
+                        <li>🏝️ <strong>Number of Islands</strong> - Can use DFS or DSU</li>
+                        <li>🔗 <strong>Redundant Connection</strong> - Find the extra edge</li>
+                        <li>📊 <strong>Accounts Merge</strong> - Group by common emails</li>
+                        <li>👥 <strong>Smallest String with Swaps</strong> - Group indices by swaps</li>
+                    </ul>
+                `,
+                trap: `
+                    <h4 style="color:#ef4444;">⚠️ Common Traps</h4>
+                    <div style="display:grid; gap:15px; margin:15px 0;">
+                        <div style="background:rgba(239, 68, 68, 0.1); padding:15px; border-radius:8px;">
+                            <strong style="color:#ef4444;">Trap 1: Union Nodes, Not Roots</strong><br>
+                            <code style="color:#f87171;">parent[x] = y</code> is WRONG!<br>
+                            <code style="color:#10b981;">parent[find(x)] = find(y)</code> is CORRECT!
+                        </div>
+                        <div style="background:rgba(239, 68, 68, 0.1); padding:15px; border-radius:8px;">
+                            <strong style="color:#ef4444;">Trap 2: Counting Components</strong><br>
+                            Count unique roots, not unique parent values. Use set(find(i) for i in range(n)).
+                        </div>
+                        <div style="background:rgba(239, 68, 68, 0.1); padding:15px; border-radius:8px;">
+                            <strong style="color:#ef4444;">Trap 3: Self-Connection</strong><br>
+                            isConnected[i][i] = 1 always. Don't count it twice or union i with i.
+                        </div>
+                    </div>
+                `,
+                codeTitle: "Python Solution (Union-Find)",
+                code: `def findCircleNum(isConnected):
+    n = len(isConnected)
+    parent = list(range(n))
+    count = n  # Start with N separate provinces
+    
+    def find(x):
+        # Path compression: point directly to root
+        if parent[x] != x:
+            parent[x] = find(parent[x])
+        return parent[x]
+    
+    def union(x, y):
+        nonlocal count
+        root_x, root_y = find(x), find(y)
+        if root_x != root_y:
+            parent[root_x] = root_y  # Merge trees
+            count -= 1               # One less component
+    
+    # Check each pair (upper triangle only)
+    for i in range(n):
+        for j in range(i + 1, n):
+            if isConnected[i][j] == 1:
+                union(i, j)
+    
+    return count`
+            }
+        },
+
+        {
+            id: "clone-graph",
+            title: "Clone Graph",
+            leetcodeUrl: "https://leetcode.com/problems/clone-graph/",
+            difficulty: "Good to Do",
+            priority: "🟢",
+            tags: ["Deep Copy"],
+            quiz: {
+                description: "Deep copy graph. How to handle cycles?",
+                options: ["BFS", "DFS + HashMap", "Recursion only", "Queue"],
+                correct: 1,
+                explanation: "DFS + HashMap! Map stores `OldNode -> NewNode`. If node in map, return stored copy (handles cycles). Else create, add to map, recurse."
+            },
+            learn: {
+                metrics: { time: "O(V+E)", space: "O(V)" },
+                timeExplainer: `
+                    <h4 style="color:#c026d3;">⏱️ Time Complexity: O(V+E)</h4>
+                    <div style="background:rgba(192, 38, 211, 0.1); padding:20px; border-radius:12px; margin:15px 0;">
+                        <table style="width:100%; margin-top:10px;">
+                            <tr style="border-bottom:1px solid rgba(255,255,255,0.1);">
+                                <td style="padding:10px;"><strong>Visit Nodes:</strong></td>
+                                <td style="padding:10px;">Each node visited exactly once → O(V)</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:10px;"><strong>Process Edges:</strong></td>
+                                <td style="padding:10px;">Each edge traversed once → O(E)</td>
+                            </tr>
+                        </table>
+                    </div>
+                `,
+                spaceExplainer: `
+                    <h4 style="color:#c026d3;">📦 Space Complexity: O(V)</h4>
+                    <div style="background:rgba(192, 38, 211, 0.1); padding:20px; border-radius:12px; margin:15px 0;">
+                        <table style="width:100%;">
+                            <tr><td style="padding:8px;"><strong>HashMap:</strong></td><td>O(V) - maps old nodes to new</td></tr>
+                            <tr><td style="padding:8px;"><strong>Recursion Stack:</strong></td><td>O(V) - maximum depth</td></tr>
+                            <tr><td style="padding:8px;"><strong>New Graph:</strong></td><td>O(V+E) - the clone itself (not counted)</td></tr>
+                        </table>
+                    </div>
+                `,
+                visual: `
+                    <h4 style="color:#c026d3;">🔄 Clone with Cycle Detection</h4>
+                    <div style="display:flex; gap:10px; margin:20px 0; max-width:600px;">
+                        
+                        <!-- Original Graph (Left) -->
+                        <div style="flex:1; background:#1e293b; padding:10px; border-radius:8px;">
+                            <div style="text-align:center; color:#94a3b8; font-size:12px; margin-bottom:10px;">Original Graph</div>
+                            <div style="display:flex; justify-content:center; gap:20px;">
+                                <div style="display:flex; flex-direction:column; gap:20px;">
+                                    <div style="width:30px; height:30px; background:#334155; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white;">1</div>
+                                    <div style="width:30px; height:30px; background:#334155; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white;">4</div>
+                                </div>
+                                <div style="display:flex; flex-direction:column; gap:20px;">
+                                    <div style="width:30px; height:30px; background:#334155; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white;">2</div>
+                                    <div style="width:30px; height:30px; background:#334155; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white;">3</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Expansion Logic (Middle) -->
+                        <div style="flex:1.5; display:flex; flex-direction:column; gap:8px;">
+                            
+                            <div style="background:#0f172a; padding:8px; border-radius:6px; border-left:3px solid #f59e0b;">
+                                <div style="font-size:11px; color:#f59e0b; font-weight:bold;">1. Visit Node 1</div>
+                                <div style="font-size:10px; color:#cbd5e1;">Map: {1 -> 1'}</div>
+                            </div>
+
+                            <div style="background:#0f172a; padding:8px; border-radius:6px; border-left:3px solid #f59e0b;">
+                                <div style="font-size:11px; color:#f59e0b; font-weight:bold;">2. Visit Node 2</div>
+                                <div style="font-size:10px; color:#cbd5e1;">Map: {1->1', 2->2'}</div>
+                            </div>
+
+                            <div style="background:#0f172a; padding:8px; border-radius:6px; border-left:3px solid #10b981;">
+                                <div style="font-size:11px; color:#10b981; font-weight:bold;">3. Visit 1 (Cycle)</div>
+                                <div style="font-size:10px; color:#cbd5e1;">1 in Map? YES! Return 1'</div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                `,
+                crux: `
+                    <h4 style="color:#10b981;">💡 The Crux: HashMap = Visited + Clone Storage</h4>
+                    <div style="display:grid; gap:15px; margin:15px 0;">
+                        <div style="background:rgba(16, 185, 129, 0.1); padding:15px; border-radius:8px; border-left:4px solid #10b981;">
+                            <strong>Check Map First:</strong> If node exists in map, return existing clone (breaks cycles!)
+                        </div>
+                        <div style="background:rgba(245, 158, 11, 0.1); padding:15px; border-radius:8px; border-left:4px solid #f59e0b;">
+                            <strong>Add to Map BEFORE recursing:</strong> This is critical for cycle handling!
+                        </div>
+                    </div>
+                    <div style="background:#0f172a; padding:15px; border-radius:8px; margin:15px 0; font-family:Consolas;">
+                        <code style="color:#7dd3fc;">
+                            if node in hashmap: return hashmap[node]<br>
+                            clone = Node(node.val)<br>
+                            hashmap[node] = clone  # <span style="color:#ef4444;">ADD BEFORE RECURSING!</span><br>
+                            for neighbor in node.neighbors:<br>
+                            &nbsp;&nbsp;clone.neighbors.append(dfs(neighbor))
+                        </code>
+                    </div>
+                    <h5 style="color:#a78bfa; margin-top:20px;">Same Pattern Problems:</h5>
+                    <ul style="line-height:2;">
+                        <li>📋 <strong>Copy List with Random Pointer</strong> - Same hashmap trick</li>
+                        <li>🌳 <strong>Clone Binary Tree with Random Pointer</strong> - Tree version</li>
+                        <li>🔗 <strong>Clone N-ary Tree</strong> - Simpler, no cycles</li>
+                    </ul>
+                `,
+                trap: `
+                    <h4 style="color:#ef4444;">⚠️ Common Traps</h4>
+                    <div style="display:grid; gap:15px; margin:15px 0;">
+                        <div style="background:rgba(239, 68, 68, 0.1); padding:15px; border-radius:8px;">
+                            <strong style="color:#ef4444;">Trap 1: Infinite Recursion</strong><br>
+                            Must check map BEFORE creating new node. If you create first then check, you'll loop forever!
+                        </div>
+                        <div style="background:rgba(239, 68, 68, 0.1); padding:15px; border-radius:8px;">
+                            <strong style="color:#ef4444;">Trap 2: Late Map Entry</strong><br>
+                            Must add to map BEFORE processing neighbors, not after!
+                        </div>
+                        <div style="background:rgba(239, 68, 68, 0.1); padding:15px; border-radius:8px;">
+                            <strong style="color:#ef4444;">Trap 3: Empty Input</strong><br>
+                            <code>if not node: return None</code> - Handle null input!
+                        </div>
+                    </div>
+                `,
+                codeTitle: "Python Solution (DFS + HashMap)",
+                code: `def cloneGraph(node):
+    if not node:
+        return None
+    
+    # HashMap: original node -> cloned node
     old_to_new = {}
     
     def dfs(curr):
-        if curr in old_to_new: return old_to_new[curr]
-        copy = Node(curr.val)
-        old_to_new[curr] = copy
-        for nei in curr.neighbors:
-            copy.neighbors.append(dfs(nei))
-        return copy
+        # Already cloned? Return existing clone
+        if curr in old_to_new:
+            return old_to_new[curr]
         
+        # Create clone
+        clone = Node(curr.val)
+        
+        # Register BEFORE recursing (critical for cycles!)
+        old_to_new[curr] = clone
+        
+        # Clone all neighbors
+        for neighbor in curr.neighbors:
+            clone.neighbors.append(dfs(neighbor))
+        
+        return clone
+    
     return dfs(node)`
-                }
-            },
-            {
-                id: "is-graph-bipartite",
-                title: "Is Graph Bipartite?",
-                leetcodeUrl: "https://leetcode.com/problems/is-graph-bipartite/",
-                difficulty: "Good to Do",
-                priority: "🟡",
-                tags: ["Graph Coloring"],
-                quiz: {
-                    description: "Can graph be colored with 2 colors? Algorithm?",
-                    options: ["Dijkstra", "BFS/DFS 2-Coloring", "Topological Sort", "Union Find"],
-                    correct: 1,
-                    explanation: "2-Coloring (Bipartite Check)! Use BFS/DFS. Assign color 0/1. If neighbor has SAME color -> False. If neighbor unvisited -> Assign opposite color."
-                },
-                learn: {
-                    metrics: { time: "O(V+E)", space: "O(V)" },
-                    code: `def isBipartite(graph):
-    color = {}
-    for i in range(len(graph)):
-        if i not in color:
-            color[i] = 0
-            q = deque([i])
-            while q:
-                node = q.popleft()
-                for nei in graph[node]:
-                    if nei not in color:
-                        color[nei] = 1 - color[node]
-                        q.append(nei)
-                    elif color[nei] == color[node]:
-                        return False
-    return True`
-                }
-            },
-            {
-                id: "detect-cycle-directed",
-                title: "Detect Cycle (Directed)",
-                leetcodeUrl: "https://practice.geeksforgeeks.org/problems/detect-cycle-in-a-directed-graph/1",
-                difficulty: "Must Do",
-                priority: "🔴",
-                tags: ["DFS Recursion"],
-                quiz: {
-                    description: "Find cycle in directed graph. DFS State?",
-                    options: ["Visited Set only", "Visited + RecursionStack Sets", "BFS", "Union Find"],
-                    correct: 1,
-                    explanation: "Need 2 Sets! 1. Visited (Global), 2. RecursionStack (Current Path). If node in RecursionStack -> Cycle detected. If in Visited but not Stack -> Safe (Cross Edge)."
-                },
-                learn: {
-                    metrics: { time: "O(V+E)", space: "O(V)" },
-                    code: `def isCyclic(V, adj):
-    visited = set()
-    recStack = set()
-    
-    def dfs(node):
-        visited.add(node)
-        recStack.add(node)
-        
-        for nei in adj[node]:
-            if nei not in visited:
-                if dfs(nei): return True
-            elif nei in recStack:
-                return True
-                
-        recStack.remove(node)
-        return False
-        
-    for i in range(V):
-        if i not in visited:
-            if dfs(i): return True
-    return False`
-                }
             }
-        ]
-    },
-
-    dp: {
-        id: "dp",
-        title: "Dynamic Programming",
-        description: "Principal Engineer DSA • Day 7",
-        color: "#ec4899",
-        icon: "fas fa-braille",
-        mentalModel: {
-            whenToApply: [
-                { label: "Overlapping Subproblems", desc: "Solving the same small problem again and again? Memoize it." },
-                { label: "Optimal Substructure", desc: "Can you build the answer from answers of smaller inputs?" }
-            ],
-            safetyCheck: [
-                { label: "State Definition", desc: "Clearly define what `dp[i]` represents." },
-                { label: "Base Cases", desc: "Don't forget `dp[0]` initialization." }
-            ]
         },
-        questions: [
-            {
-                id: "house-robber",
-                title: "House Robber",
-                leetcodeUrl: "https://leetcode.com/problems/house-robber/",
-                difficulty: "Must Do",
-                priority: "🔴",
-                tags: ["1D DP"],
-                quiz: {
-                    description: "Max loot, can't rob adjacent. Recurrence?",
-                    options: ["`max(arr[i] + rob[i-2], rob[i-1])`", "`arr[i] + rob[i-1]`", "`max(arr[i], rob[i-1])`", "Greedy"],
-                    correct: 0,
-                    explanation: "Choice at house i: Either Rob (take arr[i] + result from i-2) OR Skip (take result from i-1). Max of both."
-                },
-                learn: {
-                    metrics: { time: "O(N)", space: "O(1)" },
-                    timeExplainer: "<strong>Linear Scan:</strong><br>• Single pass through houses<br>• Constant work per house<br><br><strong>Total:</strong> <code>O(N)</code>",
-                    spaceExplainer: "<strong>Space Analysis:</strong><br>• Optimized: Only store 2 vars<br>• No DP array needed<br><br><strong>Result:</strong> <code>O(1)</code>",
-                    visual: "<span><strong>Visual: The Thief's Dilemma</strong><br>Rob current? Must have skipped previous. Skip current? Keep previous loot.</span>",
-                    crux: "<strong>Space Optimization:</strong> Only need previous 2 values. `rob1, rob2`. New `rob2 = max(n + rob1, rob2)`.",
-                    trap: "<strong>Greedy fail:</strong> Robbing biggest houses might block better combinations.",
-                    dryRun: ["Input: [1,2,3,1].", "1. [1].", "2. max(2, 1) -> 2.", "3. max(3+1, 2) -> 4.", "4. max(1+2, 4) -> 4."],
-                    codeTitle: "Python Solution",
-                    code: `def rob(nums):
-    rob1, rob2 = 0, 0
-    for n in nums:
-        temp = max(n + rob1, rob2)
-        rob1 = rob2
-        rob2 = temp
-    return rob2`
-                }
+
+        {
+            id: "is-graph-bipartite",
+            title: "Is Graph Bipartite?",
+            leetcodeUrl: "https://leetcode.com/problems/is-graph-bipartite/",
+            difficulty: "Good to Do",
+            priority: "🟡",
+            tags: ["Graph Coloring"],
+            quiz: {
+                description: "Can graph be colored with 2 colors? Algorithm?",
+                options: ["Dijkstra", "BFS/DFS 2-Coloring", "Topological Sort", "Union Find"],
+                correct: 1,
+                explanation: "2-Coloring (Bipartite Check)! Use BFS/DFS. Assign color 0/1. If neighbor has SAME color -> False. If neighbor unvisited -> Assign opposite color."
             },
-            {
-                id: "longest-increasing-subsequence",
-                title: "LIS",
-                leetcodeUrl: "https://leetcode.com/problems/longest-increasing-subsequence/",
-                visualizerUrl: "visualizers/lis.html",
-                difficulty: "Must Do",
-                priority: "🔴",
-                tags: ["DP + Binary Search"],
-                quiz: {
-                    description: "Find length of LIS. O(N log N) approach?",
-                    options: ["Standard DP O(N²)", "Patience Sorting / Tails Array", "Sliding Window", "Recursion"],
-                    correct: 1,
-                    explanation: "Patience Sorting! Maintain a 'tails' array. For each x, replace the first element in tails >= x. If x is largest, append. Len(tails) is answer."
-                },
-                learn: {
-                    metrics: { time: "O(N²)", space: "O(N²)" },
-                    timeExplainer: `
-                        <div class="space-y-2">
-                            <p class="font-bold text-red-400">1. Recursion (Lun Na Lun): O(2ⁿ)</p>
-                            <ul class="list-disc pl-4 text-sm text-gray-400">
-                                <li><strong>Choices:</strong> For each element, either TAKE (if > prev) or SKIP.</li>
-                                <li>Similar to subsets logic. Exponential.</li>
-                            </ul>
-                            
-                            <p class="font-bold text-yellow-400 mt-2">2. Memoization / DP: O(N²)</p>
-                            <ul class="list-disc pl-4 text-sm text-gray-400">
-                                <li><strong>States:</strong> (Index, Previous_Index).</li>
-                                <li>Total N indices * N previous indices = N² states.</li>
-                            </ul>
-
-                             <p class="font-bold text-green-400 mt-2">3. Patience Sort: O(N log N)</p>
-                            <ul class="list-disc pl-4 text-sm text-gray-400">
-                                <li>Available in the "O(N log N)" tab (Advanced).</li>
-                            </ul>
-                        </div>`,
-                    spaceExplainer: `
-                        <div class="space-y-2">
-                            <p><strong>1. Memoization: O(N²)</strong><br>
-                            We need to cache results for every pair (i, prev_i).</p>
-                            
-                            <p><strong>2. 1D DP: O(N)</strong><br>
-                            dp[i] = Length of LIS ending at index i. Only need array of size N.</p>
-                        </div>`,
-                    visual: "<span><strong>Visual: Lun Na Lun Tree</strong><br>At index i, compare with prev.<br>If nums[i] > prev: Branch 1 (Take), Branch 2 (Skip).<br>Else: Only Branch 2 (Skip).</span>",
-                    crux: "<strong>The 'Lun na Lun' Logic:</strong><br>1. **Lun (Take):** Only if `nums[i] > nums[prev]`. Count as 1 + recurse(i+1, i).<br>2. **Na Lun (Skip):** Always allowed. recurse(i+1, prev).<br><br><strong>Note:</strong> `prev` is index, not value, to handle duplicates/indices correctly.",
-                    trap: "<strong>Prev Index -1:</strong> Initially, prev index is -1 (fictional -∞).<br><strong>Subsequence vs Subarray:</strong> Not contiguous!",
-                    dryRun: [
-                        `<details class="group bg-slate-800 rounded-lg p-2 cursor-pointer open:ring-1 open:ring-indigo-500/50 transition-all duration-300">
-                            <summary class="flex items-center gap-3 font-medium text-indigo-300 select-none list-none text-sm">
-                                <span class="bg-indigo-500/20 text-indigo-400 p-1.5 rounded-md group-open:rotate-90 transition-transform">
-                                    <i class="fas fa-chevron-right text-xs"></i>
-                                </span>
-                                <span>🔍 View Trace Execution (Hidden by Default)</span>
-                            </summary>
-                            
-                            <div class="mt-3 pl-4 border-l-2 border-indigo-500/20 space-y-3 text-sm font-mono text-gray-300 animate-in fade-in slide-in-from-top-2 duration-300">
-                                <div class="flex items-start gap-2">
-                                    <span class="text-blue-400 mt-1">1.</span>
-                                    <div>
-                                        <div class="font-bold text-white">Input: [10, 9, 2, 5, 3]</div>
-                                    </div>
+            learn: {
+                metrics: { time: "O(V+E)", space: "O(V)" },
+                timeExplainer: `
+                    <h4 style="color:#c026d3;">⏱️ Time Complexity: O(V+E)</h4>
+                    <div style="background:rgba(192, 38, 211, 0.1); padding:20px; border-radius:12px; margin:15px 0;">
+                        <ul style="line-height:2;">
+                            <li><strong>Visit each node once:</strong> O(V)</li>
+                            <li><strong>Check each edge once:</strong> O(E)</li>
+                        </ul>
+                        <p style="margin-top:15px; color:#34d399;"><strong>Total: O(V + E)</strong></p>
+                    </div>
+                `,
+                spaceExplainer: `
+                    <h4 style="color:#c026d3;">📦 Space Complexity: O(V)</h4>
+                    <div style="background:rgba(192, 38, 211, 0.1); padding:20px; border-radius:12px; margin:15px 0;">
+                        <table style="width:100%;">
+                            <tr><td style="padding:8px;"><strong>Color Array/Map:</strong></td><td>O(V)</td></tr>
+                            <tr><td style="padding:8px;"><strong>Queue/Recursion:</strong></td><td>O(V)</td></tr>
+                        </table>
+                    </div>
+                `,
+                visual: `
+                    <h4 style="color:#c026d3;">🎨 2-Coloring: Red vs Blue</h4>
+                    <div style="display:flex; flex-direction:column; gap:20px; max-width:600px; margin:20px 0;">
+                        
+                        <!-- Valid Case -->
+                        <div style="background:#1e293b; padding:15px; border-radius:8px;">
+                            <div style="text-align:center; color:#10b981; font-weight:bold; margin-bottom:15px;">✅ Bipartite (Even Cycle)</div>
+                            <div style="display:flex; justify-content:center; gap:30px; align-items:center;">
+                                <div style="display:flex; flex-direction:column; gap:30px;">
+                                    <div style="width:40px; height:40px; background:#ef4444; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; border:2px solid #fff;">R</div>
+                                    <div style="width:40px; height:40px; background:#3b82f6; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold;">B</div>
                                 </div>
-
-                                <div class="flex items-start gap-2 pl-4 border-l border-gray-700 ml-1">
-                                    <span class="text-yellow-400 mt-1">2.</span>
-                                    <div>
-                                        <div class="flex items-center gap-2">
-                                            <span>i=0 (10), prev=-1</span>
-                                        </div>
-                                        <div class="text-xs text-gray-400">Option A (Skip): dfs(1, -1)</div>
-                                        <div class="text-xs text-gray-400">Option B (Take): 1 + dfs(1, 0)</div>
-                                    </div>
+                                <div style="height:80px; width:2px; background:#64748b;"></div>
+                                <div style="display:flex; flex-direction:column; gap:30px;">
+                                    <div style="width:40px; height:40px; background:#3b82f6; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold;">B</div>
+                                    <div style="width:40px; height:40px; background:#ef4444; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold;">R</div>
                                 </div>
+                            </div>
+                            <div style="text-align:center; margin-top:10px; font-size:12px; color:#cbd5e1;">All neighbors have DIFFERENT colors</div>
+                        </div>
+
+                        <!-- Invalid Case -->
+                        <div style="background:#1e293b; padding:15px; border-radius:8px;">
+                            <div style="text-align:center; color:#f87171; font-weight:bold; margin-bottom:15px;">❌ Not Bipartite (Odd Cycle)</div>
+                            <div style="display:flex; justify-content:center; align-items:center; position:relative; height:100px;">
+                                <!-- Triangle -->
+                                <div style="position:absolute; top:0; left:50%; transform:translateX(-50%); width:40px; height:40px; background:#ef4444; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold;">R</div>
+                                <div style="position:absolute; bottom:0; left:20%; width:40px; height:40px; background:#3b82f6; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold;">B</div>
                                 
-                                <div class="flex items-start gap-2 pl-8 border-l border-gray-700 ml-1">
-                                    <span class="text-green-400 mt-1">3.</span>
-                                    <div>
-                                        <div class="flex items-center gap-2">
-                                            <span>Start sequence with 2 (Index 2)</span>
-                                        </div>
-                                        <div class="text-xs text-gray-400">Current LIS: [2]</div>
-                                    </div>
-                                </div>
-
-                                <div class="flex items-start gap-2 pl-12 border-l border-gray-700 ml-1">
-                                    <span class="text-green-400 mt-1">4.</span>
-                                    <div>
-                                        <div class="flex items-center gap-2">
-                                            <span>Take 5 (Index 3)?</span>
-                                            <span class="bg-green-500/20 text-green-400 text-xs px-1.5 rounded">YES > 2</span>
-                                        </div>
-                                        <div class="text-xs text-gray-400">Current LIS: [2, 5]</div>
-                                    </div>
-                                </div>
+                                <div style="position:absolute; bottom:0; right:20%; width:40px; height:40px; background:#ef4444; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; border:2px dashed #f59e0b;">R?</div>
                                 
-                                 <div class="flex items-start gap-2 pl-12 border-l border-gray-700 ml-1">
-                                    <span class="text-green-400 mt-1">5.</span>
-                                    <div>
-                                        <div class="flex items-center gap-2">
-                                            <span>Take 3 (Index 4)?</span>
-                                            <span class="text-red-400 text-xs">NO < 5</span>
-                                        </div>
-                                        <div class="text-xs text-gray-400">Backtrack... Try taking 3 instead of 5?</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </details>`
-                    ],
-                    codeTitle: "Evolution: Recursion -> Memo -> DP",
-                    code: `
-##### 1. Recursion (Lun Na Lun) - TLE
-def lengthOfLIS_Rec(nums):
-    def dfs(i, prev_i):
-        if i == len(nums): return 0
-        
-        # Option 1: Na Lun (Skip)
-        skip = dfs(i + 1, prev_i)
-        
-        # Option 2: Lun (Take) - Only if increasing
-        take = 0
-        if prev_i == -1 or nums[i] > nums[prev_i]:
-            take = 1 + dfs(i + 1, i)
-            
-        return max(take, skip)
-        
-    return dfs(0, -1)
-
-##### 2. Memoization (Top-Down) - O(N^2)
-def lengthOfLIS_Memo(nums):
-    memo = {} # Key: (i, prev_i)
-    
-    def dfs(i, prev_i):
-        if i == len(nums): return 0
-        if (i, prev_i) in memo: return memo[(i, prev_i)]
-        
-        skip = dfs(i + 1, prev_i)
-        
-        take = 0
-        if prev_i == -1 or nums[i] > nums[prev_i]:
-            take = 1 + dfs(i + 1, i)
-            
-        memo[(i, prev_i)] = max(take, skip)
-        return memo[(i, prev_i)]
-        
-    return dfs(0, -1)
-
-##### 3. Iterative DP (Bottom-Up) - O(N^2)
-# Standard simple approach
-def lengthOfLIS_DP(nums):
-    if not nums: return 0
-    # dp[i] = max length ending at index i
-    dp = [1] * len(nums)
-    
-    for i in range(len(nums)):
-        for j in range(i):
-            if nums[i] > nums[j]:
-                dp[i] = max(dp[i], 1 + dp[j])
-                
-    return max(dp)`
-                }
-            },
-            {
-                id: "longest-common-subsequence",
-                title: "LCS",
-                leetcodeUrl: "https://leetcode.com/problems/longest-common-subsequence/",
-                visualizerUrl: "visualizers/lcs.html",
-                difficulty: "Must Do",
-                priority: "🔴",
-                tags: ["2D DP"],
-                quiz: {
-                    description: "Longest common subsequence in two strings. Logic?",
-                    options: ["Substring matching", "If match: 1 + diag. Else: max(up, left)", "Greedy", "HashMaps"],
-                    correct: 1,
-                    explanation: "2D Grid! If chars match: `1 + dp[i-1][j-1]`. If no match: `max(dp[i-1][j], dp[i][j-1])` (carry forward best result)."
-                },
-                learn: {
-                    metrics: { time: "O(M × N)", space: "O(M × N)" },
-                    timeExplainer: `
-                        <div class="space-y-2">
-                            <p class="font-bold text-red-400">1. Recursion (Match/Skip): O(2ᵐ⁺ⁿ)</p>
-                            <ul class="list-disc pl-4 text-sm text-gray-400">
-                                <li><strong>Why?</strong> At each step (i, j), if no match, we branch twice: <code>(i+1, j)</code> and <code>(i, j+1)</code>.</li>
-                                <li>Height of tree is M+N. Total nodes ≈ 2ᵐ⁺ⁿ.</li>
-                            </ul>
-                            
-                            <p class="font-bold text-green-400 mt-2">2. DP Grid: O(M × N)</p>
-                            <ul class="list-disc pl-4 text-sm text-gray-400">
-                                <li><strong>States:</strong> Each cell (i, j) in the grid is solved once.</li>
-                                <li><strong>Work per Cell:</strong> Constant O(1) comparison and max().</li>
-                            </ul>
-                        </div>`,
-                    spaceExplainer: `
-                        <div class="space-y-2">
-                            <p><strong>1. Full Grid: O(M × N)</strong><br>
-                            Standard approach stores the entire table to reconstruct the string.</p>
-                            
-                            <p><strong>2. Space Opt: O(min(M, N))</strong><br>
-                            If we only need length, we only need the <em>previous row</em>. (Rolling array).</p>
-                        </div>`,
-                    visual: "<span><strong>Visual: Connection wires</strong><br>Draw lines between matching characters. Lines can't cross.</span>",
-                    crux: "<strong>The 'Match or Skip' Logic:</strong><br>1. **Match:** Characters equal? 1 + Diagonal Result (i+1, j+1).<br>2. **No Match:** Characters different? We can't match both. Try skipping S1's char (i+1, j) OR S2's char (i, j+1). Take MAX.",
-                    trap: "<strong>Subsequence vs Substring:</strong> Subsequence skips aren't penalized. Substring breaks on mismatch.<br><strong>Order:</strong> Text ordering must remain preserved.",
-                    dryRun: [
-                        `<details class="group bg-slate-800 rounded-lg p-2 cursor-pointer open:ring-1 open:ring-indigo-500/50 transition-all duration-300">
-                            <summary class="flex items-center gap-3 font-medium text-indigo-300 select-none list-none text-sm">
-                                <span class="bg-indigo-500/20 text-indigo-400 p-1.5 rounded-md group-open:rotate-90 transition-transform">
-                                    <i class="fas fa-chevron-right text-xs"></i>
-                                </span>
-                                <span>🔍 View Trace Execution (Hidden by Default)</span>
-                            </summary>
-                            
-                            <div class="mt-3 pl-4 border-l-2 border-indigo-500/20 space-y-3 text-sm font-mono text-gray-300 animate-in fade-in slide-in-from-top-2 duration-300">
-                                <div class="flex items-start gap-2">
-                                    <span class="text-blue-400 mt-1">1.</span>
-                                    <div>
-                                        <div class="font-bold text-white">S1="abc", S2="ac"</div>
-                                    </div>
-                                </div>
-
-                                <div class="flex items-start gap-2 pl-4 border-l border-gray-700 ml-1">
-                                    <span class="text-green-400 mt-1">2.</span>
-                                    <div>
-                                        <div class="flex items-center gap-2">
-                                            <span>Compare 'a' vs 'a'</span>
-                                            <span class="bg-green-500/20 text-green-400 text-xs px-1.5 rounded">MATCH</span>
-                                        </div>
-                                        <div class="text-xs text-gray-400">1 + dfs("bc", "c")</div>
-                                    </div>
-                                </div>
-                                
-                                <div class="flex items-start gap-2 pl-8 border-l border-gray-700 ml-1">
-                                    <span class="text-yellow-400 mt-1">3.</span>
-                                    <div>
-                                        <div class="flex items-center gap-2">
-                                            <span>Compare 'b' vs 'c'</span>
-                                            <span class="text-red-400 text-xs">NO MATCH</span>
-                                        </div>
-                                        <div class="text-xs text-gray-400">Option A: Skip 'b' -> dfs("c", "c")</div>
-                                        <div class="text-xs text-gray-400">Option B: Skip 'c' -> dfs("bc", "")</div>
-                                    </div>
-                                </div>
-
-                                <div class="flex items-start gap-2 pl-12 border-l border-gray-700 ml-1">
-                                    <span class="text-green-400 mt-1">4.</span>
-                                    <div>
-                                        <div class="flex items-center gap-2">
-                                            <span>Option A Match: 'c' vs 'c'</span>
-                                            <span class="bg-green-500/20 text-green-400 text-xs px-1.5 rounded">MATCH</span>
-                                        </div>
-                                        <div class="text-xs text-gray-400">1 + dfs("", "") -> Returns 1+0 = 1</div>
-                                    </div>
-                                </div>
-
-                                <div class="flex items-start gap-2 pl-4 border-l border-gray-700 ml-1">
-                                    <span class="text-purple-400 mt-1">5.</span>
-                                    <div>
-                                        <div class="font-bold text-purple-300">Result: 1 (from 'a') + 1 (from 'c') = 2</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </details>`
-                    ],
-                    codeTitle: "Evolution: Recursion -> Memo -> 2D Grid",
-                    code: `
-##### 1. Recursion (Match vs Skip) - TLE
-def longestCommonSubsequence_Rec(text1, text2):
-    def dfs(i, j):
-        # Base Case: Either string finished
-        if i == len(text1) or j == len(text2):
-            return 0
-            
-        # Case 1: Match! (Diagonal move)
-        if text1[i] == text2[j]:
-            return 1 + dfs(i + 1, j + 1)
-            
-        # Case 2: No Match! (Max of skipping S1 char OR skipping S2 char)
-        skip_1 = dfs(i + 1, j)
-        skip_2 = dfs(i, j + 1)
-        return max(skip_1, skip_2)
-
-    return dfs(0, 0)
-
-##### 2. Memoization (Top-Down) - Accepted
-def longestCommonSubsequence_Memo(text1, text2):
-    memo = {}
-    
-    def dfs(i, j):
-        if i == len(text1) or j == len(text2): return 0
-        if (i, j) in memo: return memo[(i, j)]
-        
-        if text1[i] == text2[j]:
-            memo[(i, j)] = 1 + dfs(i + 1, j + 1)
-        else:
-            memo[(i, j)] = max(dfs(i + 1, j), dfs(i, j + 1))
-            
-        return memo[(i, j)]
-
-    return dfs(0, 0)
-
-##### 3. Bottom-Up 2D DP - Best for visualization
-# dp[i][j] = LCS of text1[i:] and text2[j:] (or prefix based)
-def longestCommonSubsequence_DP(text1, text2):
-    m, n = len(text1), len(text2)
-    dp = [[0] * (n + 1) for _ in range(m + 1)]
-    
-    for i in range(1, m + 1):
-        for j in range(1, n + 1):
-            if text1[i - 1] == text2[j - 1]:
-                dp[i][j] = 1 + dp[i - 1][j - 1]
-            else:
-                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])
-                
-    return dp[m][n]`
-                }
-            },
-            {
-                id: "coin-change",
-                title: "Coin Change",
-                leetcodeUrl: "https://leetcode.com/problems/coin-change/",
-                visualizerUrl: "visualizers/min_coins.html",
-                difficulty: "Must Do",
-                priority: "🔴",
-                tags: ["Knapsack"],
-                quiz: {
-                    description: "Fewest coins to make amount. Trick?",
-                    options: ["Greedy (biggest coins first)", "DP: dp[a] = min(dp[a], 1 + dp[a-c])", "Backtracking", "BFS"],
-                    correct: 1,
-                    explanation: "Greedy fails (e.g., Coins [1,3,4], Target 6. Greedy 4+1+1 (3 coins). Optimal 3+3 (2 coins)). Use DP: solve for amount 1, then 2..."
-                },
-                learn: {
-                    metrics: { time: "O(A × C)", space: "O(A)" },
-                    timeExplainer: `
-                        <div class="space-y-2">
-                            <p class="font-bold text-red-400">1. Recursion (Lun Na Lun): O(2ⁿ)</p>
-                            <ul class="list-disc pl-4 text-sm text-gray-400">
-                                <li><strong>Why?</strong> At each step, either TAKE the coin (stay at index) or SKIP the coin (move to next index).</li>
-                                <li>Strictly speaking, branches are infinite if we keep taking 1s, but logically exponential.</li>
-                            </ul>
-                            
-                            <p class="font-bold text-green-400 mt-2">2. Memoization / DP: O(Amount × Coins)</p>
-                            <ul class="list-disc pl-4 text-sm text-gray-400">
-                                <li><strong>States:</strong> (Index, Amount) or just (Amount) in 1D DP.</li>
-                                <li><strong>Total:</strong> If Amount=100, Coins=3 -> 300 subproblems. Easy!</li>
-                            </ul>
-                        </div>`,
-                    spaceExplainer: `
-                        <div class="space-y-2">
-                            <p><strong>1. Recursion Stack: O(Amount)</strong><br>
-                            If we take coin '1' repeatedly, depth = Amount.</p>
-                            
-                            <p><strong>2. DP Array: O(Amount)</strong><br>
-                            We just need an array of size Amount+1 to store min coins for each value.</p>
-                        </div>`,
-                    visual: "<span><strong>Visual: Ladder</strong><br>To reach step 11, coming from step 6 (valid coin 5) costs +1 step.</span>",
-                    crux: "<strong>The 'Lun na Lun' for Unbounded Knapsack:</strong><br>1. **Lun (Take It):** Use coin[i]. Amount decreases. <strong>Stay at index i</strong> (Infinite supply logic).<br>2. **Na Lun (Skip It):** Don't use coin[i]. <strong>Move to index i+1</strong>.<br><br><strong>Optimization:</strong> Cache `(index, amount)` or just `(amount)`.",
-                    trap: "<strong>Greedy Fails:</strong> Coins=[1,3,4], Target=6. Greedy takes 4+1+1 (3 coins). DP finds 3+3 (2 coins).<br><strong>Initialization:</strong> Initialize DP with `Infinity`, not 0 or -1.",
-                    dryRun: [
-                        `<details class="group bg-slate-800 rounded-lg p-2 cursor-pointer open:ring-1 open:ring-indigo-500/50 transition-all duration-300">
-                            <summary class="flex items-center gap-3 font-medium text-indigo-300 select-none list-none text-sm">
-                                <span class="bg-indigo-500/20 text-indigo-400 p-1.5 rounded-md group-open:rotate-90 transition-transform">
-                                    <i class="fas fa-chevron-right text-xs"></i>
-                                </span>
-                                <span>🔍 View Trace Execution (Hidden by Default)</span>
-                            </summary>
-                            
-                            <div class="mt-3 pl-4 border-l-2 border-indigo-500/20 space-y-3 text-sm font-mono text-gray-300 animate-in fade-in slide-in-from-top-2 duration-300">
-                                <div class="flex items-start gap-2">
-                                    <span class="text-blue-400 mt-1">1.</span>
-                                    <div>
-                                        <div class="font-bold text-white">Target: 6, Coins: [1, 3, 4]</div>
-                                    </div>
-                                </div>
-
-                                <div class="flex items-start gap-2 pl-4 border-l border-gray-700 ml-1">
-                                    <span class="text-yellow-400 mt-1">2.</span>
-                                    <div>
-                                        <div class="flex items-center gap-2">
-                                            <span>Start Logic</span>
-                                        </div>
-                                        <div class="text-xs text-gray-400">Initialize dp = [0, inf, inf, ...]</div>
-                                    </div>
-                                </div>
-
-                                <div class="flex items-start gap-2 pl-4 border-l border-gray-700 ml-1">
-                                    <span class="text-green-400 mt-1">3.</span>
-                                    <div>
-                                        <div class="flex items-center gap-2">
-                                            <span>Solve for 3</span>
-                                        </div>
-                                        <div class="text-xs text-gray-400">Use coin 3? Left=0. 1+dp[0] = 1 coin. ✅</div>
-                                    </div>
-                                </div>
-                                
-                                <div class="flex items-start gap-2 pl-4 border-l border-gray-700 ml-1">
-                                    <span class="text-green-400 mt-1">4.</span>
-                                    <div>
-                                        <div class="flex items-center gap-2">
-                                            <span>Solve for 6</span>
-                                        </div>
-                                        <div class="text-xs text-gray-400">Option A: 6-1 = 5 (dp[5] needed)</div>
-                                        <div class="text-xs text-gray-400">Option B: 6-3 = 3 (dp[3]=1). Total 1+1 = 2 coins. ✅ Best!</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </details>`
-                    ],
-                    codeTitle: "Evolution: Recursion -> Memo -> DP",
-                    code: `
-##### 1. Recursion (Lun Na Lun) - TLE
-# Logic: Infinite supply -> If Take, stay at i. If Skip, i+1.
-def coinChange_Rec(coins, amount):
-    def dfs(amount, i):
-        if amount == 0: return 0
-        if amount < 0 or i == len(coins): return float('inf')
-        
-        # Option 1: Lun (Take coin, stay at i)
-        take = 1 + dfs(amount - coins[i], i)
-        
-        # Option 2: Na Lun (Skip coin, move to i+1)
-        skip = dfs(amount, i + 1)
-        
-        return min(take, skip)
-    
-    res = dfs(amount, 0)
-    return res if res != float('inf') else -1
-
-##### 2. Memoization (Top-Down) - Accepted
-# Time: O(Amount * Coins) | Space: O(Amount * Coins)
-def coinChange_Memo(coins, amount):
-    memo = {}
-    
-    def dfs(amount, i):
-        if amount == 0: return 0
-        if amount < 0 or i == len(coins): return float('inf')
-        
-        state = (amount, i)
-        if state in memo: return memo[state]
-        
-        take = 1 + dfs(amount - coins[i], i)
-        skip = dfs(amount, i + 1)
-        
-        memo[state] = min(take, skip)
-        return memo[state]
-        
-    res = dfs(amount, 0)
-    return res if res != float('inf') else -1
-
-##### 3. Iterative DP (1D Optimization) - Best
-# Time: O(Amount * Coins) | Space: O(Amount)
-# Logic: We don't need 'i' dimension. Just solve for amounts 0..T
-def coinChange_DP(coins, amount):
-    # dp[i] = min coins to make amount 'i'
-    dp = [float('inf')] * (amount + 1)
-    dp[0] = 0
-    
-    for a in range(1, amount + 1):
-        for c in coins:
-            if a - c >= 0:
-                # Recurrence: 1 coin (current) + best way to make remainder
-                dp[a] = min(dp[a], 1 + dp[a - c])
-                
-    return dp[amount] if dp[amount] != float('inf') else -1`
-                }
-            },
-            {
-                id: "word-break",
-                title: "Word Break",
-                leetcodeUrl: "https://leetcode.com/problems/word-break/",
-                visualizerUrl: "visualizers/word_break.html",
-                difficulty: "Good to Do",
-                priority: "🟡",
-                tags: ["String DP", "Dictionary"],
-                quiz: {
-                    description: "Can string s be segmented into dictionary words?",
-                    options: ["Greedy matching", "DP: dp[i] is true if s[:i] can be segmented", "Backtracking O(2^N)", "Trie"],
-                    correct: 1,
-                    explanation: "Brute Force is O(2^N). We need DP! dp[i] = True if dp[j] is True AND s[j:i] in dict. Iterate i from 1 to N, j from 0 to i."
-                },
-                learn: {
-                    metrics: { time: "O(N³)", space: "O(N)" },
-                    timeExplainer: `
-                        <div class="space-y-2">
-                            <p class="font-bold text-red-400">1. Brute Force (Recursion): O(2ⁿ)</p>
-                            <ul class="list-disc pl-4 text-sm text-gray-400">
-                                <li><strong>Why?</strong> At every character index <code>i</code>, we have 2 choices: Split or Don't Split.</li>
-                                <li><strong>Math:</strong> For a string of length N, there are N-1 potential gaps. 2 choices per gap = 2ᴺ⁻¹.</li>
-                                <li><strong>Example:</strong> If N=20, ops ≈ 1,000,000 (Doable). If N=50, ops ≈ 10¹⁵ (Universe Heat Death).</li>
-                            </ul>
-                            
-                            <p class="font-bold text-green-400 mt-2">2. Memoization / DP: O(N³)</p>
-                            <ul class="list-disc pl-4 text-sm text-gray-400">
-                                <li><strong>States:</strong> We only have N unique start indices (0 to N).</li>
-                                <li><strong>Work per State:</strong> Loop from <code>start</code> to <code>end</code> (O(N) iterations).</li>
-                                <li><strong>Slicing Cost:</strong> Creating substring <code>s[start:end]</code> takes O(N) time.</li>
-                                <li><strong>Total:</strong> N states × N loop × N slice = <strong>O(N³)</strong>.</li>
-                            </ul>
-                        </div>`,
-                    spaceExplainer: `
-                        <div class="space-y-2">
-                            <p><strong>1. Recursion Stack: O(N)</strong><br>
-                            Max depth of recursion tree is N (e.g., splitting every character 'a', 'a', 'a'...).</p>
-                            
-                            <p><strong>2. Memoization Cache: O(N)</strong><br>
-                            We store a boolean result for each index 0 to N. Dictionary/Array size is linear.</p>
-                            
-                            <p><strong>Total Space: O(N)</strong></p>
-                        </div>`,
-                    visual: "<span><strong>Visual: The Cut Strategy</strong><br>Imagine slicing the string. If <code>s[0:j]</code> is valid (Green) AND <code>s[j:i]</code> is in dict (Blue), then <code>s[0:i]</code> becomes Green.</span>",
-                    crux: "<strong>The 'Lun na Lun' (Cut or No Cut) Dilemma:</strong><br>Recursion chalao har index pe.<br>Agar `dictionary` mein word mila -> **Cut lagao** aur bacha hua `solve(end)` karo.<br>Agar nahi mila -> **Skip karo** (Word badhao).<br><br><strong>Optimization:</strong><br>Overlapping subproblems (same start index repeatedly solved) ko cache karo.",
-                    trap: "<strong>Complexity Trap:</strong> It feels like O(N^N) because of the loop, but it's actually O(2^N) because logically each gap has a binary choice.<br><strong>Slicing Trap:</strong> Remember `s[j:i]` takes O(K) time in Python/Java. Don't ignore it.",
-                    dryRun: [
-                        `<details class="group bg-slate-800 rounded-lg p-2 cursor-pointer open:ring-1 open:ring-indigo-500/50 transition-all duration-300">
-                            <summary class="flex items-center gap-3 font-medium text-indigo-300 select-none list-none text-sm">
-                                <span class="bg-indigo-500/20 text-indigo-400 p-1.5 rounded-md group-open:rotate-90 transition-transform">
-                                    <i class="fas fa-chevron-right text-xs"></i>
-                                </span>
-                                <span>🔍 View Trace Execution (Hidden by Default)</span>
-                            </summary>
-                            
-                            <div class="mt-3 pl-4 border-l-2 border-indigo-500/20 space-y-3 text-sm font-mono text-gray-300 animate-in fade-in slide-in-from-top-2 duration-300">
-                                <div class="flex items-start gap-2">
-                                    <span class="text-blue-400 mt-1">1.</span>
-                                    <div>
-                                        <div class="font-bold text-white">dfs(0)</div>
-                                        <div class="text-xs text-gray-500">Input "leetcode"</div>
-                                    </div>
-                                </div>
-
-                                <div class="pl-4 border-l border-gray-700 ml-1 opacity-60 hover:opacity-100 transition-opacity">
-                                    <div class="flex items-center gap-2 text-xs text-red-300">
-                                        <span>try "l"</span>
-                                        <span class="text-red-500">❌ Not in dict</span>
-                                    </div>
-                                    <div class="flex items-center gap-2 text-xs text-red-300">
-                                        <span>try "le"</span>
-                                        <span class="text-red-500">❌ Not in dict</span>
-                                    </div>
-                                    <div class="flex items-center gap-2 text-xs text-red-300">
-                                        <span>try "lee"</span>
-                                        <span class="text-red-500">❌ Not in dict</span>
-                                    </div>
-                                </div>
-
-                                <div class="flex items-start gap-2 pl-4 border-l border-gray-700 ml-1">
-                                    <span class="text-green-400 mt-1">2.</span>
-                                    <div>
-                                        <div class="flex items-center gap-2">
-                                            <span>try "leet"</span>
-                                            <span class="bg-green-500/20 text-green-400 text-xs px-1.5 rounded">FOUND</span>
-                                        </div>
-                                        <div class="text-xs text-gray-400">Match! Recurse on suffix...</div>
-                                    </div>
-                                </div>
-
-                                <div class="flex items-start gap-2 pl-4 border-l border-gray-700 ml-1">
-                                    <span class="text-blue-400 mt-1">3.</span>
-                                    <div>
-                                        <div class="font-bold text-white">dfs(4)</div>
-                                        <div class="text-xs text-gray-500">Remaining: "code"</div>
-                                    </div>
-                                </div>
-
-                                <div class="pl-8 border-l border-gray-700 ml-1 opacity-60 hover:opacity-100 transition-opacity">
-                                    <div class="flex items-center gap-2 text-xs text-red-300">
-                                        <span>try "c", "co", "cod"</span>
-                                        <span class="text-red-500">❌ Not in dict</span>
-                                    </div>
-                                </div>
-
-                                <div class="flex items-start gap-2 pl-8 border-l border-gray-700 ml-1">
-                                    <span class="text-green-400 mt-1">4.</span>
-                                    <div>
-                                        <div class="flex items-center gap-2">
-                                            <span>try "code"</span>
-                                            <span class="bg-green-500/20 text-green-400 text-xs px-1.5 rounded">FOUND</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="flex items-start gap-2 pl-8 border-l border-gray-700 ml-1">
-                                    <span class="text-purple-400 mt-1">5.</span>
-                                    <div>
-                                        <div class="font-bold text-purple-300">dfs(8) -> Returns True</div>
-                                        <div class="text-xs text-gray-500">Base Case Reached! (start == len)</div>
-                                    </div>
-                                </div>
-
-                                <div class="border-t border-gray-700 pt-2 mt-2">
-                                    <div class="flex items-center gap-2 text-green-400">
-                                        <i class="fas fa-check-circle"></i>
-                                        <span class="font-bold">Result: True</span>
-                                    </div>
-                                    <div class="text-xs text-gray-500">Backtrack: True -> True -> True</div>
-                                </div>
-                            </div>
-                        </details>`
-                    ],
-                    codeTitle: "Evolution: Recursion -> Memo -> DP",
-                    code: `
-##### 1. Brute Force Recursion (TLE)
-# Time: O(2^N) - Exponential!
-def wordBreak_Recursive(s, wordDict):
-    wordSet = set(wordDict)
-    
-    def dfs(start):
-        # Base Case: Reached end of string, valid segmentation found
-        if start == len(s): 
-            return True
-            
-        # Try every possible cut from start+1 to end
-        for end in range(start + 1, len(s) + 1):
-            curr_word = s[start:end] # Slicing takes O(N)
-            
-            # Logic: Agar current word valid hai, AND...
-            # ...baki bachi hui string bhi valid hai (Recursive leap of faith)
-            if curr_word in wordSet and dfs(end):
-                return True
-                
-        return False # No valid cut found from this start
-        
-    return dfs(0)
-
-##### 2. Memoization (Top-Down DP)
-# Time: O(N^3) | Space: O(N)
-def wordBreak_Memo(s, wordDict):
-    wordSet = set(wordDict)
-    memo = {} # Cache: {start_index: True/False}
-    
-    def dfs(start):
-        if start == len(s): return True
-        if start in memo: return memo[start] # Return cached answer
-        
-        for end in range(start + 1, len(s) + 1):
-            curr_word = s[start:end]
-            if curr_word in wordSet and dfs(end):
-                memo[start] = True # Store result before returning
-                return True
-                
-        memo[start] = False # Cache failure too
-        return False
-        
-    return dfs(0)
-
-##### 3. Iterative DP (Bottom-Up) - The Best
-# Time: O(N^3) | Space: O(N)
-# Logic: Convert Recursion 'start' to DP index.
-# dp[i] means: Is s[0...i] valid?
-def wordBreak_DP(s, wordDict):
-    wordSet = set(wordDict)
-    dp = [False] * (len(s) + 1)
-    dp[0] = True # Empty string is always valid
-    
-    # Fill table from left to right
-    for i in range(1, len(s) + 1):
-        # Try every possible partition point 'j' before 'i'
-        for j in range(i):
-            # Recurrence:
-            # 1. dp[j]: Kya 0 se j tak already valid hai? (Previous foundation)
-            # 2. s[j:i]: Kya j se i tak current chunk dictionary mein hai?
-            if dp[j] and s[j:i] in wordSet:
-                dp[i] = True
-                break # Ek bhi valid cut mil gaya toh bas, aage checking bekar hai
-                
-    return dp[len(s)]`
-                }
-            },
-            {
-                id: "partition-equal-subset-sum",
-                title: "0/1 Knapsack (Partition)",
-                leetcodeUrl: "https://leetcode.com/problems/partition-equal-subset-sum/",
-                difficulty: "Good to Do",
-                priority: "🟡",
-                tags: ["Knapsack"],
-                quiz: {
-                    description: "Can array be split into two equal sum subsets?",
-                    options: ["Greedy", "Find subset with sum = Total/2", "Sort and split", "Backtracking"],
-                    correct: 1,
-                    explanation: "If Total Sum is odd, impossible. Else, find subset with sum = Total/2. This is 0/1 Knapsack."
-                },
-                learn: {
-                    metrics: { time: "O(N * Sum)", space: "O(Sum)" },
-                    code: `def canPartition(nums):
-    total = sum(nums)
-    if total % 2 != 0: return False
-    target = total // 2
-    
-    dp = set([0])
-    for n in nums:
-        new_dp = set()
-        for t in dp:
-            if t + n == target: return True
-            new_dp.add(t + n)
-            new_dp.add(t)
-        dp = new_dp
-    return False`
-                }
-            },
-            {
-                id: "edit-distance",
-                title: "Edit Distance",
-                leetcodeUrl: "https://leetcode.com/problems/edit-distance/",
-                difficulty: "Good to Do",
-                priority: "🟡",
-                tags: ["String DP"],
-                quiz: {
-                    description: "Min ops to convert word1 to word2.",
-                    options: ["LCS variation", "Greedy", "BFS", "Two Pointers"],
-                    correct: 0,
-                    explanation: "2D DP. If match: dp[i-1][j-1]. If mismatch: 1 + min(Insert, Delete, Replace)."
-                },
-                learn: {
-                    metrics: { time: "O(M*N)", space: "O(M*N)" },
-                    code: `def minDistance(word1, word2):
-    m, n = len(word1), len(word2)
-    dp = [[0] * (n + 1) for _ in range(m + 1)]
-    
-    for i in range(m + 1):
-        for j in range(n + 1):
-            if i == 0: dp[i][j] = j
-            elif j == 0: dp[i][j] = i
-            elif word1[i-1] == word2[j-1]:
-                dp[i][j] = dp[i-1][j-1]
-            else:
-                dp[i][j] = 1 + min(dp[i-1][j],    # Delete
-                                   dp[i][j-1],    # Insert
-                                   dp[i-1][j-1])  # Replace
-    return dp[m][n]`
-                }
-            }
-        ]
-    },
-
-    heap_trie: {
-        id: "heap_trie",
-        title: "Heaps & Tries",
-        description: "Principal Engineer DSA • Day 8",
-        color: "#d97706",
-        icon: "fas fa-sitemap",
-        mentalModel: {
-            whenToApply: [
-                { label: "Top K Elements", desc: "Heap. O(N log K)." },
-                { label: "Prefix Search", desc: "Trie. O(L) lookup." }
-            ],
-            safetyCheck: [
-                { label: "K-th Largest", desc: "Use Min-Heap of size K." },
-                { label: "Trie Node", desc: "Remember `is_end` flag." }
-            ]
-        },
-        questions: [
-            {
-                id: "kth-largest-element-in-a-stream",
-                title: "Kth Largest in Stream",
-                leetcodeUrl: "https://leetcode.com/problems/kth-largest-element-in-a-stream/",
-                difficulty: "Must Do",
-                priority: "🔴",
-                tags: ["Min-Heap"],
-                quiz: {
-                    description: "Maintain Kth largest in streaming data. Data structure?",
-                    options: ["Sort list every time", "Max-Heap", "Min-Heap of size K", "BST"],
-                    correct: 2,
-                    explanation: "Min-Heap of size K! The root holds the K-th largest. If new val > root, pop root and push new val. Keep top K elements in the club; root is the 'bouncer' (smallest of the top K)."
-                },
-                learn: {
-                    metrics: { time: "O(log K)", space: "O(K)" },
-                    timeExplainer: "<strong>Min-Heap:</strong><br>• Add element: <code>O(log K)</code><br>• Maintain size K<br><br><strong>Total:</strong> <code>O(log K)</code> per add",
-                    spaceExplainer: "<strong>Space Analysis:</strong><br>• Heap stores exactly K elements<br>• Ignore infinite stream history<br><br><strong>Result:</strong> <code>O(K)</code>",
-                    visual: "<span><strong>Visual: The VIP Room</strong><br>Room capacity K. Bouncer (Root) is the poorest VIP. <br>If new guy is richer than Bouncer, kick Bouncer out.</span>",
-                    crux: "<strong>Inverse Logic:</strong> Kth Largest -> Min-Heap.<br>1. Keep size <= K.<br>2. `heapq.heappushpop` if full.",
-                    trap: "<strong>Don't Heapify All:</strong> Only store K elements.",
-                    dryRun: ["K=3. Heap [?, ?, ?].", "Add 5, 2, 8 -> [2, 5, 8]. Root 2 is 3rd largest.", "Add 10. 10 > 2. Pop 2. Push 10. [5, 8, 10]. Root 5 is 3rd largest."],
-                    codeTitle: "Python Solution",
-                    code: `class KthLargest:
-    def __init__(self, k, nums):
-        self.k = k
-        self.heap = []
-        for n in nums: self.add(n)
-        
-    def add(self, val):
-        if len(self.heap) < self.k:
-            heapq.heappush(self.heap, val)
-        elif val > self.heap[0]:
-            heapq.heapreplace(self.heap, val)
-        return self.heap[0]`
-                }
-            },
-            {
-                id: "merge-k-sorted-lists",
-                title: "Merge K Sorted Lists",
-                leetcodeUrl: "https://leetcode.com/problems/merge-k-sorted-lists/",
-                difficulty: "Must Do",
-                priority: "🔴",
-                tags: ["Heap"],
-                quiz: {
-                    description: "Merge K lists efficiently.",
-                    options: ["Comparing heads one by one", "Min-Heap with (val, node)", "Merge 2 at a time", "Concatenate and sort"],
-                    correct: 1,
-                    explanation: "Min-Heap! Put all K heads in heap. Pop min, add to result, push next node from that list. O(N log K)."
-                },
-                learn: {
-                    metrics: { time: "O(N log K)", space: "O(K)" },
-                    timeExplainer: "<strong>Heap Merge:</strong><br>• Heap size K (one per list)<br>• Process all N nodes<br>• Push/Pop is log K<br><br><strong>Total:</strong> <code>O(N log K)</code>",
-                    spaceExplainer: "<strong>Space Analysis:</strong><br>• Heap stores K nodes<br>• Output list not counted (if returning new)<br><br><strong>Result:</strong> <code>O(K)</code>",
-                    visual: "<span><strong>Visual: The Race</strong><br>K runners at start line. Move the leader forward.</span>",
-                    crux: "<strong>Tuple Trick:</strong> `(val, idx, node)`. Use `idx` to break ties because Python can't compare `ListNode` objects.",
-                    trap: "<strong>Comparsion Crash:</strong> Nodes with same value will crash heap if you don't use a tie-breaker or override `__lt__`.",
-                    dryRun: ["Heads: 1(L1), 4(L2), 2(L3). Heap: [(1, L1), (2, L3), (4, L2)].", "Pop 1. Push L1.next."],
-                    codeTitle: "Python Solution",
-                    code: `def mergeKLists(lists):
-    pq = []
-    for i, l in enumerate(lists):
-        if l: heapq.heappush(pq, (l.val, i, l))
-    
-    dummy = curr = ListNode()
-    while pq:
-        val, i, node = heapq.heappop(pq)
-        curr.next = node
-        curr = curr.next
-        if node.next:
-            heapq.heappush(pq, (node.next.val, i, node.next))
-            
-    return dummy.next`
-                }
-            },
-            {
-                id: "implement-trie-prefix-tree",
-                title: "Implement Trie",
-                leetcodeUrl: "https://leetcode.com/problems/implement-trie-prefix-tree/",
-                difficulty: "Must Do",
-                priority: "🔴",
-                tags: ["Trie"],
-                quiz: {
-                    description: "Data structure for fast prefix search.",
-                    options: ["HashMap", "Binary Search Tree", "Trie (Prefix Tree)", "Graph"],
-                    correct: 2,
-                    explanation: "Trie! Nodes represent characters. Path from root spells word. Shared prefixes share nodes (Space efficient)."
-                },
-                learn: {
-                    metrics: { time: "O(L)", space: "O(N*L)" },
-                    timeExplainer: "<strong>Prefix Tree:</strong><br>• Traversal depends only on word length L<br>• Independent of total words N<br><br><strong>Total:</strong> <code>O(L)</code>",
-                    spaceExplainer: "<strong>Space Analysis:</strong><br>• Worst: No common prefixes<br>• <code>N</code> words of length <code>L</code><br><br><strong>Total:</strong> <code>O(N×L)</code> nodes",
-                    visual: "<span><strong>Visual: Autocomplete</strong><br>APP -> 'A' -> 'P' -> 'P'. <br>APPLE -> Extends 'P' -> 'L' -> 'E'.</span>",
-                    crux: "<strong>Node Struct:</strong> `children = {}`, `is_end = False`.<br>Insert/Search: Traverse char by char.",
-                    trap: "<strong>Prefix vs Word:</strong> `startWith` returns True for 'APP'. `search` returns False for 'APP' if only 'APPLE' exists.",
-                    dryRun: ["Insert 'HI'. Root->H->I(end).", "Search 'H'. Root->H. No end. False.", "Starts 'H'. True."],
-                    codeTitle: "Python Solution",
-                    code: `class TrieNode:
-    def __init__(self):
-        self.children = {}
-        self.isEnd = False
-
-class Trie:
-    def __init__(self):
-        self.root = TrieNode()
-
-    def insert(self, word):
-        cur = self.root
-        for c in word:
-            if c not in cur.children:
-                cur.children[c] = TrieNode()
-            cur = cur.children[c]
-        cur.isEnd = True
-
-    def search(self, word):
-        cur = self.root
-        for c in word:
-            if c not in cur.children: return False
-            cur = cur.children[c]
-        return cur.isEnd
-
-    def startsWith(self, prefix):
-        cur = self.root
-        for c in prefix:
-            if c not in cur.children: return False
-            cur = cur.children[c]
-        return True`
-                }
-            },
-            {
-                id: "maximum-xor-of-two-numbers-in-an-array",
-                title: "Max XOR of Two Numbers",
-                leetcodeUrl: "https://leetcode.com/problems/maximum-xor-of-two-numbers-in-an-array/",
-                difficulty: "Good to Do",
-                priority: "🟡",
-                tags: ["Trie", "Bit Manipulation"],
-                quiz: {
-                    description: "Find max XOR of two nums in array. O(N)?",
-                    options: ["Brute Force O(N²)", "Trie", "Sort", "Heap"],
-                    correct: 1,
-                    explanation: "Insert all numbers into a Binary Trie. For each number, try to traverse the opposite bit path to maximize XOR."
-                },
-                learn: {
-                    metrics: { time: "O(N * 32)", space: "O(N * 32)" },
-                    code: `# Trie Implementation needed`
-                }
-            },
-            {
-                id: "single-number",
-                title: "Single Number",
-                leetcodeUrl: "https://leetcode.com/problems/single-number/",
-                difficulty: "Bonus",
-                priority: "🟢",
-                tags: ["Bit Manipulation"],
-                quiz: {
-                    description: "All nums appear twice except one. O(N) time, O(1) space?",
-                    options: ["HashSet", "Sorting", "XOR all numbers", "Math"],
-                    correct: 2,
-                    explanation: "A ^ A = 0. A ^ 0 = A. XORing all numbers cancels out pairs, leaving the single number."
-                },
-                learn: {
-                    metrics: { time: "O(N)", space: "O(1)" },
-                    code: `def singleNumber(nums):
-    res = 0
-    for n in nums:
-        res ^= n
-    return res`
-                }
-            },
-            {
-                id: "heapify-algorithm",
-                title: "Heapify Algorithm",
-                difficulty: "Bonus",
-                priority: "🟢",
-                tags: ["Heap"],
-                quiz: {
-                    description: "Convert array to heap. Complexity?",
-                    options: ["O(N log N)", "O(N)", "O(log N)", "O(N²)"],
-                    correct: 1,
-                    explanation: "O(N)! Sift-down from the last non-leaf node up to root. Lower levels have less work."
-                },
-                learn: {
-                    metrics: { time: "O(N)", space: "O(1)" },
-                    code: `import heapq
-def heapify(arr):
-    heapq.heapify(arr) # Linear time O(N)
-    return arr`
-                }
-            }
-        ]
-    },
-
-    backtracking: {
-        id: "backtracking",
-        title: "Backtracking Mastery",
-        description: "Principal Engineer DSA • Part 2",
-        color: "#4c1d95",
-        icon: "fas fa-chess-queen",
-        mentalModel: {
-            whenToApply: [
-                { label: "Find ALL", desc: "Combinations, Permutations, Subsets." },
-                { label: "Constraints", desc: "N is small (<= 20)." }
-            ],
-            safetyCheck: [
-                { label: "Reference Bug", desc: "Use `res.append(path[:])` (Copy)." },
-                { label: "Undo Step", desc: "Always backtrack: `path.pop()` after recursion." }
-            ]
-        },
-        questions: [
-            {
-                id: "n-queens",
-                title: "N-Queens",
-                leetcodeUrl: "https://leetcode.com/problems/n-queens/",
-                difficulty: "Must Do",
-                priority: "🔴",
-                tags: ["Classic Backtracking"],
-                quiz: {
-                    description: "Place N queens safely. Optimized check?",
-                    options: ["Loop to check attacks", "3 Sets (cols, diag+, diag-)", "Bitmasking", "Random"],
-                    correct: 1,
-                    explanation: "3 Sets! Track occupied Columns, Pos Diagonals (r+c), and Neg Diagonals (r-c). O(1) safety check."
-                },
-                learn: {
-                    metrics: { time: "O(N!)", space: "O(N)" },
-                    timeExplainer: "<strong>Backtracking:</strong><br>• 1st row: N choice<br>• 2nd row: N-2 choice...<br>• Upper bound <code>N!</code><br><br><strong>Total:</strong> <code>O(N!)</code>",
-                    spaceExplainer: "<strong>Space Analysis:</strong><br>• 3 Sets for constraints: <code>O(N)</code><br>• Recursion Stack: <code>O(N)</code><br><br><strong>Result:</strong> <code>O(N)</code>",
-                    visual: "<span><strong>Visual: Laser Beams</strong><br>Sets block vertical and diagonal lines.</span>",
-                    crux: "<strong>Pattern:</strong> Loop cols in current row.<br>1. Check safe (Sets).<br>2. Add to Sets. Recurse.<br>3. Remove from Sets (Backtrack).",
-                    trap: "<strong>Diagonal Math:</strong> PosDiag = r+c. NegDiag = r-c.",
-                    dryRun: ["Row 0, Col 0. Safe. Recurse Row 1.", "Row 1, Col 0 (Col Block). Col 1 (Diag Block)..."],
-                    codeTitle: "Python Solution",
-                    code: `def solveNQueens(n):
-    cols = set()
-    posDiag = set() # r+c
-    negDiag = set() # r-c
-    res = []
-    board = [-1]*n # row -> col mapping
-    
-    def backtrack(r):
-        if r == n:
-            # Build string board
-            temp = []
-            for i in range(n):
-                line = "." * board[i] + "Q" + "." * (n - board[i] - 1)
-                temp.append(line)
-            res.append(temp)
-            return
-
-        for c in range(n):
-            if c in cols or (r+c) in posDiag or (r-c) in negDiag:
-                continue
-            
-            cols.add(c); posDiag.add(r+c); negDiag.add(r-c)
-            board[r] = c
-            
-            backtrack(r + 1)
-            
-            cols.remove(c); posDiag.remove(r+c); negDiag.remove(r-c)
-            
-    backtrack(0)
-    return res`
-                }
-            },
-            {
-                id: "permutations",
-                title: "Permutations",
-                difficulty: "Good to Do",
-                priority: "🟢",
-                tags: ["Swapping"],
-                quiz: {
-                    description: "Generate all permutations of [1,2,3].",
-                    options: ["Iterative", "Backtracking with 'visited' set", "Backtracking with Swapping", "All"],
-                    correct: 2,
-                    explanation: "Swapping is space efficient! Swap `nums[start]` with `nums[i]`, recurse, then Swap Back (Backtrack)."
-                },
-                learn: {
-                    metrics: { time: "O(N * N!)", space: "O(N)" },
-                    timeExplainer: "<strong>Permutations:</strong><br>• <code>N!</code> permutations<br>• Each takes <code>O(N)</code> to copy<br><br><strong>Total:</strong> <code>O(N × N!)</code>",
-                    spaceExplainer: "<strong>Space Analysis:</strong><br>• Recursion Stack: <code>O(N)</code><br>• Output list size: <code>N!</code><br><br><strong>Result:</strong> <code>O(N)</code> aux",
-                    visual: "<span><strong>Visual: Shuffling Chairs</strong><br>Fix 1st pos, shuffle rest. Then swap and repeat.</span>",
-                    crux: "<strong>Swap Pattern:</strong><br>1. Loop `i` from `start` to `end`.<br>2. Swap `nums[start], nums[i]`.<br>3. Recurse `start + 1`.<br>4. Swap back.",
-                    trap: "<strong>Copy Ref:</strong> `res.append(nums[:])` is mandatory.",
-                    dryRun: ["Start=0. Swap(0,0). [1,2,3]. Recurse 1.", "Start=1. Swap(1,1). [1,2,3]. Recurse 2. Append.", "Backtrack. Swap(1,2). [1,3,2]."],
-                    codeTitle: "Python Solution",
-                    code: `def permute(nums):
-    res = []
-    def backtrack(start):
-        if start == len(nums):
-            res.append(nums[:])
-            return
-        
-        for i in range(start, len(nums)):
-            nums[start], nums[i] = nums[i], nums[start]
-            backtrack(start + 1)
-            nums[start], nums[i] = nums[i], nums[start]
-            
-    backtrack(0)
-    return res`
-                }
-            }
-        ]
-    },
-
-    dp_concepts: {
-        id: "dp_concepts",
-        title: "DP Mastery: Lun Na Lun",
-        description: "The Philosophy & Pattern Recognition Guide",
-        color: "#8b5cf6",
-        icon: "fas fa-brain",
-        type: "guide", // Special flag for the renderer
-        sections: [
-            {
-                id: "philosophy",
-                title: "Philosophy",
-                icon: "fas fa-lightbulb",
-                content: `
-                    <div class="flashcard">
-                        <div class="card-header">
-                            <div class="card-title">
-                                <i class="fas fa-lightbulb"></i>
-                                The Lun Na Lun Philosophy
-                            </div>
-                            <div class="badges">
-                                <span class="badge badge-must" style="background:#ef4444; color:white;">CORE CONCEPT</span>
+                                <div style="position:absolute; top:50%; right:10px; color:#f59e0b; font-size:12px; width:80px;">Conflict! Needs Blue but neighbor is Blue</div>
                             </div>
                         </div>
-                        <div class="card-body">
-                            <div class="big-quote" style="font-size: 1.4rem; font-weight: 600; text-align: center; padding: 30px; background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(34, 211, 238, 0.1)); border-radius: 12px; border: 2px solid var(--border); margin: 30px 0; line-height: 1.8;">
-                                "Har element pe do options: <span class="highlight" style="color:#8b5cf6">LUN</span> (include karo) ya <span class="highlight" style="color:#8b5cf6">NA LUN</span> (skip karo)"
-                            </div>
-                            
-                            <div class="info-box box-philosophy" style="background: rgba(139, 92, 246, 0.1); padding: 20px; border-radius: 12px; border-left: 4px solid #8b5cf6; margin: 20px 0;">
-                                <h4 style="margin-bottom:10px;"><i class="fas fa-star"></i> Why This Pattern is Powerful</h4>
-                                <ul class="styled-list" style="list-style:none; padding-left:0;">
-                                    <li style="padding:5px 0;"><strong>Natural Thinking:</strong> Dimag naturally "should I include this?" sochta hai</li>
-                                    <li style="padding:5px 0;"><strong>Universal Template:</strong> 80% DP problems mein same pattern</li>
-                                    <li style="padding:5px 0;"><strong>Interview-Friendly:</strong> 5 minutes mein code likh sakte ho</li>
-                                    <li style="padding:5px 0;"><strong>Consistent Complexity:</strong> States count karna easy</li>
-                                </ul>
-                            </div>
-                            
-                            <h3 style="margin: 30px 0 15px 0; color: #a78bfa;">
-                                <i class="fas fa-code"></i> Universal Template (Yaad Kar Lo!)
-                            </h3>
-                            
-                            <div class="code-block" style="background: #0f172a; border-radius: 12px; padding: 15px;">
-                                <pre style="color: #e2e8f0; font-family: 'Consolas', monospace;">def dpProblem(arr, target):
-    memo = {}
-    
-    def dfs(index, state_params):
-        # Step 1: Base case
-        if index >= len(arr):
-            return base_value
-        
-        # Step 2: Check memo (CRITICAL!)
-        state = (index, state_params)
-        if state in memo:
-            return memo[state]
-        
-        # Step 3: LUN (include current element)
-        take = calculate_with_arr[index] + dfs(index+1, new_state)
-        
-        # Step 4: NA LUN (skip current element)
-        skip = dfs(index+1, state_params)
-        
-        # Step 5: Choose best
-        result = max(take, skip)
-        
-        # Step 6: Store and return
-        memo[state] = result
-        return result
-    
-    return dfs(0, initial_state)</pre>
-                            </div>
-                        </div>
-                    </div>`
-            },
-            {
-                id: "patterns",
-                title: "Patterns",
-                icon: "fas fa-puzzle-piece",
-                content: `
-                    <div class="flashcard">
-                        <div class="card-header">
-                            <div class="card-title">
-                                <i class="fas fa-puzzle-piece"></i>
-                                Pattern Recognition Framework
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <h3 style="color: #a78bfa; margin-bottom: 20px;">
-                                <i class="fas fa-brain"></i> Decision Tree: Kaunsa Pattern Use Kare?
-                            </h3>
-                            
-                            <div class="visual-area" style="text-align:center; padding:30px; background: #1e293b; border: 2px dashed #334155; border-radius: 12px;">
-                                <i class="fas fa-sitemap" style="font-size:3rem; color:#8b5cf6; margin-bottom:15px;"></i>
-                                <h4 style="color: #22d3ee; margin: 15px 0;">Pattern Selection Flow</h4>
-                                <div style="text-align: left; max-width: 700px; margin: 20px auto; line-height: 2; font-size: 1rem;">
-                                    <strong style="color: #a78bfa;">Problem aaya ↓</strong><br><br>
-                                    <strong>Question: Multiple choices at each step?</strong><br>
-                                    &nbsp;&nbsp;<span style="color:#8b5cf6; font-weight:bold;">YES</span> → Use <strong>Lun Na Lun</strong> (Recursive + Memo)<br>
-                                    &nbsp;&nbsp;&nbsp;&nbsp;• Examples: LIS, Knapsack, Subset Sum<br>
-                                    <br>
-                                    &nbsp;&nbsp;<span style="color:#8b5cf6; font-weight:bold;">NO</span> → Check dependency type:<br>
-                                    &nbsp;&nbsp;&nbsp;&nbsp;<strong>Simple sequential?</strong> → Use <strong>For Loop DP</strong> (Fibonacci)<br>
-                                    &nbsp;&nbsp;&nbsp;&nbsp;<strong>Grid/Matrix?</strong> → Use <strong>2D DP</strong> (Unique Paths)<br>
-                                    &nbsp;&nbsp;&nbsp;&nbsp;<strong>Two strings?</strong> → Use <strong>Match/Skip</strong> (LCS)
-                                </div>
-                            </div>
-                            
-                            <h3 style="margin: 30px 0 15px 0; color: #a78bfa;">
-                                <i class="fas fa-table"></i> Pattern Comparison Table
-                            </h3>
-                            
-                            <table style="width:100%; border-collapse: collapse; margin: 20px 0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
-                                <thead>
-                                    <tr style="background: linear-gradient(135deg, #8b5cf6, #a78bfa);">
-                                        <th style="padding: 16px 20px; text-align: left; color: white; font-weight: 700; font-size: 0.95rem;">Pattern Type</th>
-                                        <th style="padding: 16px 20px; text-align: left; color: white; font-weight: 700; font-size: 0.95rem;">Approach</th>
-                                        <th style="padding: 16px 20px; text-align: left; color: white; font-weight: 700; font-size: 0.95rem;">State</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr style="background: #1e293b;">
-                                        <td style="padding: 16px 20px; color: #f1f5f9; font-weight: 600; border-bottom: 1px solid #334155;">Take/Not-Take</td>
-                                        <td style="padding: 16px 20px; color: #c4b5fd; font-weight: 600; border-bottom: 1px solid #334155;">Lun Na Lun</td>
-                                        <td style="padding: 16px 20px; border-bottom: 1px solid #334155;"><code style="background: #0f172a; color: #7dd3fc; padding: 4px 10px; border-radius: 6px; font-family: 'Consolas', monospace;">(idx, constraints)</code></td>
-                                    </tr>
-                                    <tr style="background: #1e293b;">
-                                        <td style="padding: 16px 20px; color: #f1f5f9; font-weight: 600; border-bottom: 1px solid #334155;">Match/Skip</td>
-                                        <td style="padding: 16px 20px; color: #c4b5fd; font-weight: 600; border-bottom: 1px solid #334155;">Two Indices</td>
-                                        <td style="padding: 16px 20px; border-bottom: 1px solid #334155;"><code style="background: #0f172a; color: #7dd3fc; padding: 4px 10px; border-radius: 6px; font-family: 'Consolas', monospace;">(i, j)</code></td>
-                                    </tr>
-                                    <tr style="background: #1e293b;">
-                                        <td style="padding: 16px 20px; color: #f1f5f9; font-weight: 600;">Grid</td>
-                                        <td style="padding: 16px 20px; color: #c4b5fd; font-weight: 600;">2D For Loop</td>
-                                        <td style="padding: 16px 20px;"><code style="background: #0f172a; color: #7dd3fc; padding: 4px 10px; border-radius: 6px; font-family: 'Consolas', monospace;">dp[i][j]</code></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>`
-            },
-            {
-                id: "complexity",
-                title: "Complexity",
-                icon: "fas fa-chart-line",
-                content: `
-                    <div class="flashcard">
-                        <div class="card-header">
-                            <div class="card-title">
-                                <i class="fas fa-chart-line"></i>
-                                Time Complexity: The Real Truth
-                            </div>
-                            <div class="badges">
-                                <span class="badge badge-must" style="background:#ef4444; color:white;">CRITICAL</span>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="big-quote" style="background:rgba(245, 158, 11, 0.1); border-color:#f59e0b; padding:20px; text-align:center; border-radius:12px; margin:20px 0;">
-                                <code style="font-size: 1.3em; color: #f59e0b;">Time = (Unique States) × (Work per State)</code>
-                                <br><br>
-                                <span style="font-size: 0.9em; color: gray;">NOT total recursive calls! Memoization changes everything!</span>
-                            </div>
-                            
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                                <div class="info-box" style="background: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444; padding: 15px; border-radius: 8px;">
-                                    <h4>❌ WITHOUT Memo</h4>
-                                    <p>Exponential Time (O(2^n))</p>
-                                    <p><strong>Result: TLE! ❌</strong></p>
-                                </div>
-                                <div class="info-box" style="background: rgba(16, 185, 129, 0.1); border-left: 4px solid #10b981; padding: 15px; border-radius: 8px;">
-                                    <h4>✅ WITH Memo</h4>
-                                    <p>Polynomial Time (O(N^2) or similar)</p>
-                                    <p><strong>Result: AC! ✅</strong></p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>`
-            }
-        ]
-    },
 
-    // ============================================
-    // ARRAYS MASTERY CONCEPTS
-    // ============================================
-    arrays_concepts: {
-        id: "arrays_concepts",
-        title: "Arrays Mastery: Pattern Bible",
-        description: "Sliding Window, Two Pointers, and Prefix Sum Patterns",
-        color: "#6366f1",
-        icon: "fas fa-layer-group",
-        type: "guide",
-        sections: [
-            {
-                id: "sliding-window",
-                title: "Sliding Window",
-                icon: "fas fa-window-maximize",
-                content: `
-                    <div class="flashcard">
-                        <div class="card-header">
-                            <div class="card-title">
-                                <i class="fas fa-window-maximize"></i>
-                                Sliding Window Pattern
-                            </div>
-                            <div class="badges">
-                                <span class="badge badge-must" style="background:#ef4444; color:white;">CORE PATTERN</span>
-                            </div>
+                    </div>
+                `,
+                crux: `
+                    <h4 style="color:#10b981;">💡 The Crux: Alternate Colors</h4>
+                    <div style="display:grid; gap:15px; margin:15px 0;">
+                        <div style="background:rgba(16, 185, 129, 0.1); padding:15px; border-radius:8px; border-left:4px solid #10b981;">
+                            <strong>Key Insight:</strong> Bipartite ⟺ No odd-length cycles
                         </div>
-                        <div class="card-body">
-                            <div class="big-quote" style="font-size: 1.4rem; font-weight: 600; text-align: center; padding: 30px; background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(34, 211, 238, 0.1)); border-radius: 12px; border: 2px solid var(--border); margin: 30px 0; line-height: 1.8;">
-                                "Jab <span style='color:#6366f1'>Contiguous Subarray/Substring</span> bole, Sliding Window Laga Do!"
-                            </div>
-                            
-                            <h3 style="color: #818cf8; margin: 20px 0;">When to Use</h3>
-                            <ul style="list-style: none; padding: 0; line-height: 2;">
-                                <li>✅ Find max/min subarray of size K</li>
-                                <li>✅ Longest substring with condition (unique, at most K distinct)</li>
-                                <li>✅ Sum/product of subarrays</li>
-                            </ul>
-                            
-                            <h3 style="color: #818cf8; margin: 30px 0 15px;">Fixed vs Variable Window</h3>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                                <div style="background: rgba(99, 102, 241, 0.1); padding: 20px; border-radius: 12px;">
-                                    <h4>Fixed Size (K)</h4>
-                                    <p>Max sum of K elements</p>
-                                    <code>while right < n: expand, shrink when size > K</code>
-                                </div>
-                                <div style="background: rgba(34, 211, 153, 0.1); padding: 20px; border-radius: 12px;">
-                                    <h4>Variable Size</h4>
-                                    <p>Longest valid window</p>
-                                    <code>Expand right, shrink left while invalid</code>
-                                </div>
-                            </div>
-                            
-                            <h3 style="margin: 30px 0 15px; color: #818cf8;">Universal Template</h3>
-                            <div class="code-block" style="background: #0f172a; border-radius: 12px; padding: 15px;">
-                                <pre style="color: #e2e8f0; font-family: 'Consolas', monospace;">def sliding_window(arr):
-    left = 0
-    window_state = {}  # or sum, count, etc.
-    result = 0
+                        <div style="background:rgba(245, 158, 11, 0.1); padding:15px; border-radius:8px; border-left:4px solid #f59e0b;">
+                            <strong>Algorithm:</strong> <code>neighbor_color = 1 - current_color</code>
+                        </div>
+                    </div>
+                    <h5 style="color:#a78bfa; margin-top:20px;">Same Pattern Problems:</h5>
+                    <ul style="line-height:2;">
+                        <li>👥 <strong>Possible Bipartition</strong> - Same problem, different name</li>
+                        <li>🏫 <strong>Divide into Two Groups</strong> - Graph coloring variant</li>
+                    </ul>
+                `,
+                trap: `
+                    <h4 style="color:#ef4444;">⚠️ Common Traps</h4>
+                    <div style="display:grid; gap:15px; margin:15px 0;">
+                        <div style="background:rgba(239, 68, 68, 0.1); padding:15px; border-radius:8px;">
+                            <strong style="color:#ef4444;">Trap: Disconnected Components</strong><br>
+                            Must check ALL nodes, not just starting from 0. Some nodes might not be reachable!
+                        </div>
+                    </div>
+                `,
+                codeTitle: "Python Solution (BFS 2-Coloring)",
+                code: `def isBipartite(graph):
+    from collections import deque
     
-    for right in range(len(arr)):
-        # EXPAND: Add arr[right] to window
-        window_state[arr[right]] = window_state.get(arr[right], 0) + 1
+    color = {}  # node -> 0 or 1
+    
+    # Check all components (might be disconnected)
+    for start in range(len(graph)):
+        if start in color:
+            continue  # Already colored
         
-        # SHRINK: While window is invalid
-        while invalid_condition(window_state):
-            window_state[arr[left]] -= 1
-            if window_state[arr[left]] == 0:
-                del window_state[arr[left]]
-            left += 1
+        # BFS from this node
+        color[start] = 0
+        queue = deque([start])
         
-        # UPDATE: Record result
-        result = max(result, right - left + 1)
-    
-    return result</pre>
-                            </div>
-                        </div>
-                    </div>`
-            },
-            {
-                id: "two-pointers",
-                title: "Two Pointers",
-                icon: "fas fa-arrows-alt-h",
-                content: `
-                    <div class="flashcard">
-                        <div class="card-header">
-                            <div class="card-title">
-                                <i class="fas fa-arrows-alt-h"></i>
-                                Two Pointers Pattern  
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="big-quote" style="font-size: 1.4rem; font-weight: 600; text-align: center; padding: 30px; background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(34, 211, 238, 0.1)); border-radius: 12px; margin: 30px 0;">
-                                "Sorted Array + Pair/Triplet Problem = Two Pointers"
-                            </div>
-                            
-                            <h3 style="color: #818cf8; margin: 20px 0; font-size: 1.3rem; font-weight: 700;">Types of Two Pointers</h3>
-                            <table style="width:100%; border-collapse: collapse; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
-                                <thead>
-                                    <tr style="background: linear-gradient(135deg, #6366f1, #818cf8);">
-                                        <th style="padding: 16px 20px; text-align: left; color: white; font-weight: 700; font-size: 0.95rem;">Type</th>
-                                        <th style="padding: 16px 20px; text-align: left; color: white; font-weight: 700; font-size: 0.95rem;">Use Case</th>
-                                        <th style="padding: 16px 20px; text-align: left; color: white; font-weight: 700; font-size: 0.95rem;">Example</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr style="background: #1e293b;">
-                                        <td style="padding: 16px 20px; color: #f1f5f9; font-weight: 600; border-bottom: 1px solid #334155;">Opposite Ends</td>
-                                        <td style="padding: 16px 20px; color: #a5b4fc; border-bottom: 1px solid #334155;">Sum to target</td>
-                                        <td style="padding: 16px 20px; color: #94a3b8; border-bottom: 1px solid #334155;">Two Sum II, Container with Water</td>
-                                    </tr>
-                                    <tr style="background: #1e293b;">
-                                        <td style="padding: 16px 20px; color: #f1f5f9; font-weight: 600; border-bottom: 1px solid #334155;">Same Direction</td>
-                                        <td style="padding: 16px 20px; color: #a5b4fc; border-bottom: 1px solid #334155;">Merge, remove duplicates</td>
-                                        <td style="padding: 16px 20px; color: #94a3b8; border-bottom: 1px solid #334155;">Merge Sorted Array</td>
-                                    </tr>
-                                    <tr style="background: #1e293b;">
-                                        <td style="padding: 16px 20px; color: #f1f5f9; font-weight: 600;">Fast-Slow</td>
-                                        <td style="padding: 16px 20px; color: #a5b4fc;">Cycle detection</td>
-                                        <td style="padding: 16px 20px; color: #94a3b8;">Linked List Cycle</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            
-                            <h3 style="margin: 30px 0 15px; color: #818cf8;">3Sum Template (Anchor + Squeeze)</h3>
-                            <div class="code-block" style="background: #0f172a; border-radius: 12px; padding: 15px;">
-                                <pre style="color: #e2e8f0; font-family: 'Consolas', monospace;">def three_sum(nums, target):
-    nums.sort()  # CRITICAL: Must sort first!
-    result = []
-    
-    for i in range(len(nums) - 2):
-        # Skip duplicates for anchor
-        if i > 0 and nums[i] == nums[i-1]:
-            continue
-        
-        left, right = i + 1, len(nums) - 1
-        
-        while left < right:
-            total = nums[i] + nums[left] + nums[right]
-            
-            if total < target:
-                left += 1
-            elif total > target:
-                right -= 1
-            else:
-                result.append([nums[i], nums[left], nums[right]])
-                left += 1
-                while left < right and nums[left] == nums[left-1]:
-                    left += 1
-    
-    return result</pre>
-                            </div>
-                        </div>
-                    </div>`
-            },
-            {
-                id: "prefix-sum",
-                title: "Prefix Sum",
-                icon: "fas fa-calculator",
-                content: `
-                    <div class="flashcard">
-                        <div class="card-header">
-                            <div class="card-title">
-                                <i class="fas fa-calculator"></i>
-                                Prefix Sum Pattern
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="big-quote" style="font-size: 1.4rem; font-weight: 600; text-align: center; padding: 30px; background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(244, 114, 182, 0.1)); border-radius: 12px; margin: 30px 0;">
-                                "Range Sum Query? Precompute Prefix, Answer in O(1)!"
-                            </div>
-                            
-                            <div style="background: rgba(99, 102, 241, 0.1); padding: 20px; border-radius: 12px; margin: 20px 0;">
-                                <h4 style="color: #818cf8;">Core Idea</h4>
-                                <p><code>prefix[i] = arr[0] + arr[1] + ... + arr[i]</code></p>
-                                <p><code>sum(i, j) = prefix[j] - prefix[i-1]</code></p>
-                            </div>
-                            
-                            <h3 style="color: #818cf8; margin: 20px 0;">Subarray Sum Equals K (with HashMap)</h3>
-                            <p>Count subarrays with sum = K</p>
-                            <p><strong>Trick:</strong> If <code>prefix[j] - prefix[i] = K</code>, then <code>prefix[i] = prefix[j] - K</code></p>
-                            
-                            <div class="code-block" style="background: #0f172a; border-radius: 12px; padding: 15px; margin-top: 20px;">
-                                <pre style="color: #e2e8f0; font-family: 'Consolas', monospace;">def subarray_sum(nums, k):
-    prefix_count = {0: 1}  # Base case
-    prefix_sum = 0
-    count = 0
-    
-    for num in nums:
-        prefix_sum += num
-        
-        # Check if (prefix_sum - k) exists
-        if prefix_sum - k in prefix_count:
-            count += prefix_count[prefix_sum - k]
-        
-        prefix_count[prefix_sum] = prefix_count.get(prefix_sum, 0) + 1
-    
-    return count</pre>
-                            </div>
-                        </div>
-                    </div>`
-            }
-        ]
-    },
-
-    // ============================================
-    // GRAPHS MASTERY CONCEPTS
-    // ============================================
-    graphs_concepts: {
-        id: "graphs_concepts",
-        title: "Graphs Mastery: The Complete Guide",
-        description: "BFS, DFS, Topological Sort, and Union-Find Patterns",
-        color: "#c026d3",
-        icon: "fas fa-project-diagram",
-        type: "guide",
-        sections: [
-            {
-                id: "bfs-dfs",
-                title: "BFS vs DFS",
-                icon: "fas fa-sitemap",
-                content: `
-                    <div class="flashcard">
-                        <div class="card-header">
-                            <div class="card-title">
-                                <i class="fas fa-sitemap"></i>
-                                BFS vs DFS: When to Use What
-                            </div>
-                            <div class="badges">
-                                <span class="badge badge-must" style="background:#c026d3; color:white;">CORE PATTERN</span>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="big-quote" style="font-size: 1.2rem; font-weight: 600; text-align: center; padding: 30px; background: linear-gradient(135deg, rgba(192, 38, 211, 0.1), rgba(34, 211, 238, 0.1)); border-radius: 12px; margin: 30px 0;">
-                                "<span style='color:#c026d3'>Shortest Path (Unweighted)</span> → BFS &nbsp;&nbsp;|&nbsp;&nbsp; <span style='color:#22d3ee'>Explore All</span> → DFS"
-                            </div>
-                            
-                            <table style="width:100%; border-collapse: collapse; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
-                                <thead>
-                                    <tr style="background: linear-gradient(135deg, #c026d3, #e879f9);">
-                                        <th style="padding: 16px 20px; text-align: center; color: white; font-weight: 700; font-size: 1rem;">BFS</th>
-                                        <th style="padding: 16px 20px; text-align: center; color: white; font-weight: 700; font-size: 1rem;">DFS</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr style="background: #1e293b;">
-                                        <td style="padding: 16px 20px; color: #f1f5f9; text-align: center; border-bottom: 1px solid #334155;">Uses Queue (FIFO)</td>
-                                        <td style="padding: 16px 20px; color: #f1f5f9; text-align: center; border-bottom: 1px solid #334155;">Uses Stack/Recursion</td>
-                                    </tr>
-                                    <tr style="background: #1e293b;">
-                                        <td style="padding: 16px 20px; color: #f1f5f9; text-align: center; border-bottom: 1px solid #334155;">Level by Level</td>
-                                        <td style="padding: 16px 20px; color: #f1f5f9; text-align: center; border-bottom: 1px solid #334155;">Go Deep First</td>
-                                    </tr>
-                                    <tr style="background: #1e293b;">
-                                        <td style="padding: 16px 20px; color: #34d399; text-align: center; font-weight: 600; border-bottom: 1px solid #334155;">✅ Shortest Path</td>
-                                        <td style="padding: 16px 20px; color: #34d399; text-align: center; font-weight: 600; border-bottom: 1px solid #334155;">✅ Cycle Detection</td>
-                                    </tr>
-                                    <tr style="background: #1e293b;">
-                                        <td style="padding: 16px 20px; color: #34d399; text-align: center; font-weight: 600;">✅ Multi-source spread</td>
-                                        <td style="padding: 16px 20px; color: #34d399; text-align: center; font-weight: 600;">✅ Backtracking</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            
-                            <h3 style="margin: 30px 0 15px; color: #c026d3;">BFS Template</h3>
-                            <div class="code-block" style="background: #0f172a; border-radius: 12px; padding: 15px;">
-                                <pre style="color: #e2e8f0; font-family: 'Consolas', monospace;">from collections import deque
-
-def bfs(graph, start):
-    visited = {start}
-    queue = deque([start])
-    distance = 0
-    
-    while queue:
-        # Process level by level
-        for _ in range(len(queue)):
+        while queue:
             node = queue.popleft()
             
             for neighbor in graph[node]:
-                if neighbor not in visited:
-                    visited.add(neighbor)  # Mark BEFORE pushing!
+                if neighbor not in color:
+                    # Assign opposite color
+                    color[neighbor] = 1 - color[node]
                     queue.append(neighbor)
-        distance += 1
+                elif color[neighbor] == color[node]:
+                    # Same color conflict!
+                    return False
     
-    return distance</pre>
-                            </div>
-                        </div>
-                    </div>`
-            },
-            {
-                id: "topo-sort",
-                title: "Topological Sort",
-                icon: "fas fa-sort-amount-down",
-                content: `
-                    <div class="flashcard">
-                        <div class="card-header">
-                            <div class="card-title">
-                                <i class="fas fa-sort-amount-down"></i>
-                                Topological Sort (Kahn's Algorithm)
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="big-quote" style="font-size: 1.2rem; font-weight: 600; text-align: center; padding: 30px; background: linear-gradient(135deg, rgba(192, 38, 211, 0.1), rgba(245, 158, 11, 0.1)); border-radius: 12px; margin: 30px 0;">
-                                "Dependencies? Prerequisites? <span style='color:#c026d3'>Topo Sort</span> is the Answer!"
-                            </div>
-                            
-                            <h3 style="color: #c026d3; margin: 20px 0;">When to Use</h3>
-                            <ul style="list-style: none; padding: 0; line-height: 2;">
-                                <li>✅ Course Schedule (prerequisites)</li>
-                                <li>✅ Build Order (dependencies)</li>
-                                <li>✅ Alien Dictionary</li>
-                                <li>✅ Task Scheduling</li>
-                            </ul>
-                            
-                            <h3 style="margin: 30px 0 15px; color: #c026d3;">Kahn's Algorithm Template</h3>
-                            <div class="code-block" style="background: #0f172a; border-radius: 12px; padding: 15px;">
-                                <pre style="color: #e2e8f0; font-family: 'Consolas', monospace;">from collections import deque, defaultdict
-
-def topo_sort(n, edges):
-    graph = defaultdict(list)
-    indegree = [0] * n
-    
-    # Build graph and indegrees
-    for src, dst in edges:
-        graph[src].append(dst)
-        indegree[dst] += 1
-    
-    # Start with nodes having 0 indegree
-    queue = deque([i for i in range(n) if indegree[i] == 0])
-    order = []
-    
-    while queue:
-        node = queue.popleft()
-        order.append(node)
-        
-        for neighbor in graph[node]:
-            indegree[neighbor] -= 1
-            if indegree[neighbor] == 0:
-                queue.append(neighbor)
-    
-    # Cycle check
-    return order if len(order) == n else []</pre>
-                            </div>
-                        </div>
-                    </div>`
-            },
-            {
-                id: "union-find",
-                title: "Union-Find",
-                icon: "fas fa-users",
-                content: `
-                    <div class="flashcard">
-                        <div class="card-header">
-                            <div class="card-title">
-                                <i class="fas fa-users"></i>
-                                Union-Find (Disjoint Set Union)
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="big-quote" style="font-size: 1.2rem; font-weight: 600; text-align: center; padding: 30px; background: linear-gradient(135deg, rgba(192, 38, 211, 0.1), rgba(52, 211, 153, 0.1)); border-radius: 12px; margin: 30px 0;">
-                                "Connectivity? Grouping? Components? <span style='color:#34d399'>Union-Find!</span>"
-                            </div>
-                            
-                            <h3 style="color: #c026d3; margin: 20px 0;">When to Use</h3>
-                            <ul style="list-style: none; padding: 0; line-height: 2;">
-                                <li>✅ Number of connected components</li>
-                                <li>✅ Detect cycle in undirected graph</li>
-                                <li>✅ Friends in network</li>
-                                <li>✅ Kruskal's MST</li>
-                            </ul>
-                            
-                            <h3 style="margin: 30px 0 15px; color: #c026d3;">DSU Template (with Path Compression + Rank)</h3>
-                            <div class="code-block" style="background: #0f172a; border-radius: 12px; padding: 15px;">
-                                <pre style="color: #e2e8f0; font-family: 'Consolas', monospace;">class DSU:
-    def __init__(self, n):
-        self.parent = list(range(n))
-        self.rank = [0] * n
-        self.count = n  # Number of components
-    
-    def find(self, x):
-        if self.parent[x] != x:
-            self.parent[x] = self.find(self.parent[x])  # Path compression
-        return self.parent[x]
-    
-    def union(self, x, y):
-        px, py = self.find(x), self.find(y)
-        if px == py:
-            return False  # Already connected
-        
-        # Union by rank
-        if self.rank[px] < self.rank[py]:
-            px, py = py, px
-        self.parent[py] = px
-        if self.rank[px] == self.rank[py]:
-            self.rank[px] += 1
-        
-        self.count -= 1
-        return True</pre>
-                            </div>
-                        </div>
-                    </div>`
+    return True`
             }
-        ]
-    },
+        },
 
-    // ============================================
-    // TREES MASTERY CONCEPTS
-    // ============================================
-    trees_concepts: {
-        id: "trees_concepts",
-        title: "Trees Mastery: The Recursion Bible",
-        description: "DFS, BFS, Path Problems, and Tree Construction Patterns",
-        color: "#16a34a",
-        icon: "fas fa-tree",
-        type: "guide",
-        sections: [
-            {
-                id: "recursion-patterns",
-                title: "Recursion Patterns",
-                icon: "fas fa-sync",
-                content: `
-                    <div class="flashcard">
-                        <div class="card-header">
-                            <div class="card-title">
-                                <i class="fas fa-sync"></i>
-                                Tree Recursion: The Leap of Faith
-                            </div>
-                            <div class="badges">
-                                <span class="badge badge-must" style="background:#16a34a; color:white;">CORE PATTERN</span>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="big-quote" style="font-size: 1.4rem; font-weight: 600; text-align: center; padding: 30px; background: linear-gradient(135deg, rgba(22, 163, 74, 0.1), rgba(34, 211, 238, 0.1)); border-radius: 12px; margin: 30px 0; line-height: 1.8;">
-                                "Trust that <span style='color:#16a34a'>solve(root.left)</span> and <span style='color:#16a34a'>solve(root.right)</span> work perfectly!"
-                            </div>
-                            
-                            <h3 style="color: #16a34a; margin: 20px 0;">The Pattern</h3>
-                            <ol style="line-height: 2;">
-                                <li><strong>Base Case:</strong> <code>if not root: return base_value</code></li>
-                                <li><strong>Recurse Left:</strong> <code>left_result = solve(root.left)</code></li>
-                                <li><strong>Recurse Right:</strong> <code>right_result = solve(root.right)</code></li>
-                                <li><strong>Combine:</strong> <code>return combine(root.val, left_result, right_result)</code></li>
-                            </ol>
-                            
-                            <h3 style="margin: 30px 0 15px; color: #16a34a;">Universal Template</h3>
-                            <div class="code-block" style="background: #0f172a; border-radius: 12px; padding: 15px;">
-                                <pre style="color: #e2e8f0; font-family: 'Consolas', monospace;">def solve_tree(root):
-    # 1. Base Case
-    if not root:
-        return 0  # or None, True, etc.
-    
-    # 2. LEAP OF FAITH: Trust left/right work!
-    left_result = solve_tree(root.left)
-    right_result = solve_tree(root.right)
-    
-    # 3. Combine at current node
-    return root.val + left_result + right_result</pre>
-                            </div>
-                            
-                            <h3 style="margin: 30px 0 15px; color: #16a34a; font-size: 1.3rem; font-weight: 700;">Common Examples</h3>
-                            <table style="width:100%; border-collapse: collapse; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
-                                <thead>
-                                    <tr style="background: linear-gradient(135deg, #16a34a, #22c55e);">
-                                        <th style="padding: 16px 20px; text-align: left; color: white; font-weight: 700; font-size: 0.95rem; letter-spacing: 0.5px;">Problem</th>
-                                        <th style="padding: 16px 20px; text-align: left; color: white; font-weight: 700; font-size: 0.95rem; letter-spacing: 0.5px;">Combine Logic</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr style="background: #1e293b;">
-                                        <td style="padding: 16px 20px; color: #f1f5f9; font-weight: 600; font-size: 1rem; border-bottom: 1px solid #334155;">Tree Height</td>
-                                        <td style="padding: 16px 20px; border-bottom: 1px solid #334155;"><code style="background: #0f172a; color: #7dd3fc; padding: 6px 12px; border-radius: 6px; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.95rem; font-weight: 600;">1 + max(left, right)</code></td>
-                                    </tr>
-                                    <tr style="background: #1e293b;">
-                                        <td style="padding: 16px 20px; color: #f1f5f9; font-weight: 600; font-size: 1rem; border-bottom: 1px solid #334155;">Tree Sum</td>
-                                        <td style="padding: 16px 20px; border-bottom: 1px solid #334155;"><code style="background: #0f172a; color: #7dd3fc; padding: 6px 12px; border-radius: 6px; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.95rem; font-weight: 600;">root.val + left + right</code></td>
-                                    </tr>
-                                    <tr style="background: #1e293b;">
-                                        <td style="padding: 16px 20px; color: #f1f5f9; font-weight: 600; font-size: 1rem; border-bottom: 1px solid #334155;">Count Nodes</td>
-                                        <td style="padding: 16px 20px; border-bottom: 1px solid #334155;"><code style="background: #0f172a; color: #7dd3fc; padding: 6px 12px; border-radius: 6px; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.95rem; font-weight: 600;">1 + left + right</code></td>
-                                    </tr>
-                                    <tr style="background: #1e293b;">
-                                        <td style="padding: 16px 20px; color: #f1f5f9; font-weight: 600; font-size: 1rem;">Is Balanced?</td>
-                                        <td style="padding: 16px 20px;"><code style="background: #0f172a; color: #7dd3fc; padding: 6px 12px; border-radius: 6px; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.95rem; font-weight: 600;">abs(left - right) &lt;= 1</code></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>`
+        {
+            id: "detect-cycle-directed",
+            title: "Detect Cycle (Directed)",
+            leetcodeUrl: "https://practice.geeksforgeeks.org/problems/detect-cycle-in-a-directed-graph/1",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["DFS Recursion"],
+            quiz: {
+                description: "Find cycle in directed graph. DFS State?",
+                options: ["Visited Set only", "Visited + RecursionStack Sets", "BFS", "Union Find"],
+                correct: 1,
+                explanation: "Need 2 Sets! 1. Visited (Global), 2. RecursionStack (Current Path). If node in RecursionStack -> Cycle detected. If in Visited but not Stack -> Safe (Cross Edge)."
             },
-            {
-                id: "path-problems",
-                title: "Path Problems",
-                icon: "fas fa-route",
-                content: `
-                    <div class="flashcard">
-                        <div class="card-header">
-                            <div class="card-title">
-                                <i class="fas fa-route"></i>
-                                Path Problems: Global vs Local
+            learn: {
+                metrics: { time: "O(V+E)", space: "O(V)" },
+                timeExplainer: `
+                    <h4 style="color:#c026d3;">⏱️ Time Complexity: O(V+E)</h4>
+                    <div style="background:rgba(192, 38, 211, 0.1); padding:20px; border-radius:12px; margin:15px 0;">
+                        <ul style="line-height:2;">
+                            <li><strong>Visit each node once:</strong> O(V)</li>
+                            <li><strong>Check each edge once:</strong> O(E)</li>
+                        </ul>
+                    </div>
+                `,
+                spaceExplainer: `
+                    <h4 style="color:#c026d3;">📦 Space Complexity: O(V)</h4>
+                    <div style="background:rgba(192, 38, 211, 0.1); padding:20px; border-radius:12px; margin:15px 0;">
+                        <table style="width:100%;">
+                            <tr><td style="padding:8px;"><strong>Visited Set:</strong></td><td>O(V)</td></tr>
+                            <tr><td style="padding:8px;"><strong>Recursion Stack Set:</strong></td><td>O(V)</td></tr>
+                            <tr><td style="padding:8px;"><strong>Call Stack:</strong></td><td>O(V)</td></tr>
+                        </table>
+                    </div>
+                `,
+                visual: `
+                    <h4 style="color:#c026d3;">🔄 DFS States: Visited vs Recursion Stack</h4>
+                    <div style="display:flex; gap:20px; margin:20px 0; max-width:600px;">
+                        
+                        <!-- Graph Visual -->
+                        <div style="flex:1; display:flex; flex-direction:column; align-items:center;">
+                            <div style="margin-bottom:10px; color:#cbd5e1; font-size:12px;">Graph State</div>
+                            <div style="position:relative; width:100px; height:100px;">
+                                <!-- Node 0 -->
+                                <div style="position:absolute; top:0; left:35px; width:30px; height:30px; background:#fbbf24; color:black; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold;">0</div>
+                                
+                                <!-- Node 1 -->
+                                <div style="position:absolute; top:40px; left:0; width:30px; height:30px; background:#fbbf24; color:black; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold;">1</div>
+                                
+                                <!-- Node 2 -->
+                                <div style="position:absolute; top:40px; right:0; width:30px; height:30px; background:#ef4444; color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; border:2px solid #fbbf24;">2</div>
+
+                                <!-- Node 1 -> 2 Arrow -->
+                                <div style="position:absolute; top:60px; left:30px; width:40px; height:2px; background:#64748b;"></div>
                             </div>
                         </div>
-                        <div class="card-body">
-                            <div class="big-quote" style="font-size: 1.2rem; font-weight: 600; text-align: center; padding: 30px; background: linear-gradient(135deg, rgba(22, 163, 74, 0.1), rgba(244, 114, 182, 0.1)); border-radius: 12px; margin: 30px 0;">
-                                "Split at node (root + left + right) vs Flow through node (root + max(left, right))"
-                            </div>
-                            
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
-                                <div style="background: rgba(22, 163, 74, 0.1); padding: 20px; border-radius: 12px; border-left: 4px solid #16a34a;">
-                                    <h4 style="color: #16a34a;">Global (The Arch)</h4>
-                                    <p>Path ENDS at this node</p>
-                                    <p>Used for: Max Path Sum</p>
-                                    <code>global_max = max(global, root + left + right)</code>
+
+                        <!-- Stack Visual -->
+                        <div style="flex:1; background:#1e293b; padding:15px; border-radius:8px;">
+                            <div style="margin-bottom:10px; color:#cbd5e1; font-size:12px; text-align:center;">Recursion Stack (Path)</div>
+                            <div style="display:flex; flex-direction:column; gap:5px; align-items:center;">
+                                
+                                <div style="width:80%; padding:8px; background:#fbbf24; color:black; border-radius:4px; text-align:center; font-size:12px;">
+                                    Stack: [0, 1]
                                 </div>
-                                <div style="background: rgba(99, 102, 241, 0.1); padding: 20px; border-radius: 12px; border-left: 4px solid #6366f1;">
-                                    <h4 style="color: #6366f1;">Local (The Flow)</h4>
-                                    <p>Path CONTINUES upward</p>
-                                    <p>Returned to parent</p>
-                                    <code>return root + max(left, right)</code>
+                                
+                                <div style="color:#cbd5e1;">↓</div>
+                                
+                                <div style="width:80%; padding:8px; background:#ef4444; color:white; border-radius:4px; text-align:center; font-size:12px; border:1px solid #fbbf24;">
+                                    Try Visit 2
                                 </div>
+
+                                <div style="margin-top:10px; font-size:11px; color:#f87171; text-align:center;">
+                                    ⚠️ 2 is already in Stack (Ancestry)! 
+                                    <br><strong>CYCLE DETECTED</strong>
+                                </div>
+
                             </div>
-                            
-                            <h3 style="margin: 30px 0 15px; color: #16a34a;">Max Path Sum Template</h3>
-                            <div class="code-block" style="background: #0f172a; border-radius: 12px; padding: 15px;">
-                                <pre style="color: #e2e8f0; font-family: 'Consolas', monospace;">def maxPathSum(root):
-    global_max = float('-inf')
+                        </div>
+
+                    </div>
+                `,
+                crux: `
+                    <h4 style="color:#10b981;">💡 The Crux: Two Sets with Different Meanings</h4>
+                    <div style="display:grid; gap:15px; margin:15px 0;">
+                        <div style="background:rgba(16, 185, 129, 0.1); padding:15px; border-radius:8px; border-left:4px solid #10b981;">
+                            <strong>Visited Set:</strong> "Have we processed this node in ANY path?" (Global)
+                        </div>
+                        <div style="background:rgba(245, 158, 11, 0.1); padding:15px; border-radius:8px; border-left:4px solid #f59e0b;">
+                            <strong>RecStack Set:</strong> "Is this node in our CURRENT path?" (Local to DFS call)
+                        </div>
+                        <div style="background:rgba(239, 68, 68, 0.1); padding:15px; border-radius:8px; border-left:4px solid #ef4444;">
+                            <strong>Cycle:</strong> Node is in RecStack → We're revisiting it in same path → Back edge → Cycle!
+                        </div>
+                    </div>
+                    <div style="background:#0f172a; padding:15px; border-radius:8px; margin:15px 0; font-family:Consolas;">
+                        <code style="color:#7dd3fc;">
+                            # Enter: Add to both sets<br>
+                            visited.add(node)<br>
+                            recStack.add(node)<br><br>
+                            # Check neighbor<br>
+                            if neighbor in recStack: return True  # <span style="color:#ef4444;">CYCLE!</span><br>
+                            if neighbor not in visited: dfs(neighbor)<br><br>
+                            # Exit: Remove from recStack only<br>
+                            recStack.remove(node)
+                        </code>
+                    </div>
+                    <h5 style="color:#a78bfa; margin-top:20px;">Same Pattern Problems:</h5>
+                    <ul style="line-height:2;">
+                        <li>📚 <strong>Course Schedule</strong> - Uses same DFS cycle detection</li>
+                        <li>🔗 <strong>Find Eventual Safe States</strong> - Nodes not in any cycle</li>
+                        <li>⭕ <strong>Detect Cycle in Undirected</strong> - Simpler: just track parent</li>
+                    </ul>
+                `,
+                trap: `
+                    <h4 style="color:#ef4444;">⚠️ Common Traps</h4>
+                    <div style="display:grid; gap:15px; margin:15px 0;">
+                        <div style="background:rgba(239, 68, 68, 0.1); padding:15px; border-radius:8px;">
+                            <strong style="color:#ef4444;">Trap 1: Using Only Visited</strong><br>
+                            Cross edges (visiting node from different path) will give false positives!
+                        </div>
+                        <div style="background:rgba(239, 68, 68, 0.1); padding:15px; border-radius:8px;">
+                            <strong style="color:#ef4444;">Trap 2: Forgetting to Remove from RecStack</strong><br>
+                            Must remove from recStack when backtracking!
+                        </div>
+                        <div style="background:rgba(239, 68, 68, 0.1); padding:15px; border-radius:8px;">
+                            <strong style="color:#ef4444;">Trap 3: Disconnected Graph</strong><br>
+                            Must try DFS from ALL unvisited nodes, not just node 0.
+                        </div>
+                    </div>
+                `,
+                codeTitle: "Python Solution (DFS with 2 Sets)",
+                code: `def isCyclic(V, adj):
+    visited = set()
+    recStack = set()  # Current DFS path
     
     def dfs(node):
-        nonlocal global_max
-        if not node:
-            return 0
+        visited.add(node)
+        recStack.add(node)  # Enter current path
         
-        # Get best paths from children (clamp negatives to 0)
-        left = max(dfs(node.left), 0)
-        right = max(dfs(node.right), 0)
+        for neighbor in adj[node]:
+            if neighbor not in visited:
+                if dfs(neighbor):  # Cycle found deeper
+                    return True
+            elif neighbor in recStack:
+                # Back edge! Cycle detected!
+                return True
         
-        # GLOBAL: Path that SPLITS here (arch)
-        global_max = max(global_max, node.val + left + right)
-        
-        # LOCAL: Path that FLOWS upward (return to parent)
-        return node.val + max(left, right)
+        recStack.remove(node)  # Exit current path
+        return False
     
-    dfs(root)
-    return global_max</pre>
-                            </div>
-                        </div>
-                    </div>`
-            },
-            {
-                id: "traversals",
-                title: "Traversals",
-                icon: "fas fa-stream",
-                content: `
-                    <div class="flashcard">
-                        <div class="card-header">
-                            <div class="card-title">
-                                <i class="fas fa-stream"></i>
-                                Tree Traversals: When to Use What
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <table style="width:100%; border-collapse: collapse; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.3); margin: 20px 0;">
-                                <thead>
-                                    <tr style="background: linear-gradient(135deg, #16a34a, #22c55e);">
-                                        <th style="padding: 16px 20px; text-align: left; color: white; font-weight: 700; font-size: 0.95rem;">Traversal</th>
-                                        <th style="padding: 16px 20px; text-align: left; color: white; font-weight: 700; font-size: 0.95rem;">Order</th>
-                                        <th style="padding: 16px 20px; text-align: left; color: white; font-weight: 700; font-size: 0.95rem;">Use Case</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr style="background: #1e293b;">
-                                        <td style="padding: 16px 20px; color: #4ade80; font-weight: 700; border-bottom: 1px solid #334155;">Preorder</td>
-                                        <td style="padding: 16px 20px; color: #f1f5f9; border-bottom: 1px solid #334155;">Root → Left → Right</td>
-                                        <td style="padding: 16px 20px; color: #94a3b8; border-bottom: 1px solid #334155;">Serialize tree, copy tree</td>
-                                    </tr>
-                                    <tr style="background: #1e293b;">
-                                        <td style="padding: 16px 20px; color: #4ade80; font-weight: 700; border-bottom: 1px solid #334155;">Inorder</td>
-                                        <td style="padding: 16px 20px; color: #f1f5f9; border-bottom: 1px solid #334155;">Left → Root → Right</td>
-                                        <td style="padding: 16px 20px; color: #94a3b8; border-bottom: 1px solid #334155;">BST sorted order</td>
-                                    </tr>
-                                    <tr style="background: #1e293b;">
-                                        <td style="padding: 16px 20px; color: #4ade80; font-weight: 700; border-bottom: 1px solid #334155;">Postorder</td>
-                                        <td style="padding: 16px 20px; color: #f1f5f9; border-bottom: 1px solid #334155;">Left → Right → Root</td>
-                                        <td style="padding: 16px 20px; color: #94a3b8; border-bottom: 1px solid #334155;">Delete tree, height calc</td>
-                                    </tr>
-                                    <tr style="background: #1e293b;">
-                                        <td style="padding: 16px 20px; color: #4ade80; font-weight: 700;">Level Order</td>
-                                        <td style="padding: 16px 20px; color: #f1f5f9;">BFS (Queue)</td>
-                                        <td style="padding: 16px 20px; color: #94a3b8;">Level-wise processing</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            
-                            <h3 style="margin: 30px 0 15px; color: #16a34a;">Level Order (BFS) Template</h3>
-                            <div class="code-block" style="background: #0f172a; border-radius: 12px; padding: 15px;">
-                                <pre style="color: #e2e8f0; font-family: 'Consolas', monospace;">from collections import deque
-
-def levelOrder(root):
-    if not root:
-        return []
+    # Check all components
+    for i in range(V):
+        if i not in visited:
+            if dfs(i):
+                return True
     
-    result = []
-    queue = deque([root])
-    
-    while queue:
-        level = []
-        for _ in range(len(queue)):  # Process one level
-            node = queue.popleft()
-            level.append(node.val)
-            
-            if node.left:
-                queue.append(node.left)
-            if node.right:
-                queue.append(node.right)
-        
-        result.append(level)
-    
-    return result</pre>
-                            </div>
-                        </div>
-                    </div>`
+    return False`
             }
+        }
+    ]
+}
+
+
+
+// ========== data/dsa/dp.js ==========
+// Dp data
+// Extracted from data.js
+
+const topic_dp = {
+    id: "dp",
+    title: "Dynamic Programming",
+    description: "Principal Engineer DSA • Day 7",
+    color: "#ec4899",
+    icon: "fas fa-braille",
+    mentalModel: {
+        whenToApply: [
+            { label: "Overlapping Subproblems", desc: "Solving the same small problem again and again? Memoize it." },
+            { label: "Optimal Substructure", desc: "Can you build the answer from answers of smaller inputs?" }
+        ],
+        safetyCheck: [
+            { label: "State Definition", desc: "Clearly define what `dp[i]` represents." },
+            { label: "Base Cases", desc: "Don't forget `dp[0]` initialization." }
         ]
-    }
+    },
+    questions: [
+        {
+            id: "house-robber",
+            title: "House Robber",
+            leetcodeUrl: "https://leetcode.com/problems/house-robber/",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["1D DP", "Space Optimization"],
+            quiz: {
+                description: "Max loot, can't rob adjacent houses. What's the recurrence?",
+                options: ["`max(nums[i] + dp[i-2], dp[i-1])`", "`nums[i] + dp[i-1]`", "`max(nums[i], dp[i-1])`", "Greedy (pick largest)"],
+                correct: 0,
+                explanation: "At each house: Either ROB it (take money + skip previous) OR SKIP it (keep previous max). Compare and take maximum!"
+            },
+            learn: {
+                metrics: { time: "O(N)", space: "O(1)" },
+                timeExplainer: `<strong>Time Breakdown:</strong><br>
+                    • Single pass through all N houses<br>
+                    • Constant O(1) work at each house (just max comparison)<br>
+                    <br><strong>Total:</strong> <code>O(N)</code>`,
+                spaceExplainer: `<strong>Space Optimization Journey:</strong><br>
+                    • <strong>Naive:</strong> O(N) dp array<br>
+                    • <strong>Optimized:</strong> Only 2 variables needed!<br>
+                    • Why? dp[i] only depends on dp[i-1] and dp[i-2]<br>
+                    <br><strong>Result:</strong> <code>O(1)</code> space`,
+                visual: `<div style="background: #1e293b; padding: 20px; border-radius: 12px; margin: 15px 0;">
+                    <strong style="color: #a78bfa;">🏠 The Thief's Decision Tree</strong><br><br>
+                    <code style="color: #4ade80;">
+                    At House[i]:<br>
+                    ├── ROB it  → Take nums[i] + best from 2 houses ago<br>
+                    └── SKIP it → Keep best from previous house<br><br>
+                    Answer = max(ROB, SKIP)
+                    </code>
+                </div>`,
+                crux: `<strong style="color:#f59e0b;">🔑 Key Insight:</strong><br>
+                    <strong>Adjacent constraint = "Gap of 1" pattern</strong><br><br>
+                    
+                    <div style="background: rgba(139, 92, 246, 0.1); padding: 15px; border-radius: 8px; margin: 10px 0;">
+                    <strong>The Recurrence:</strong><br>
+                    <code>max_loot_at[i] = max(nums[i] + max_loot_at[i-2], max_loot_at[i-1])</code><br><br>
+                    
+                    <strong>In Words:</strong><br>
+                    • ROB current = current money + best from 2 houses ago<br>
+                    • SKIP current = best from previous house<br>
+                    • Take maximum of both choices
+                    </div>
+                    
+                    <br><strong style="color:#22d3ee;">💡 Same Pattern Problems:</strong><br>
+                    • <strong>Climbing Stairs</strong> - ways[i] = ways[i-1] + ways[i-2]<br>
+                    • <strong>Fibonacci</strong> - fib[i] = fib[i-1] + fib[i-2]<br>
+                    • <strong>House Robber II</strong> - Same but circular array`,
+                trap: `<strong style="color:#ef4444;">⚠️ Common Traps:</strong><br><br>
+                    
+                    <strong>1. Greedy Fails:</strong><br>
+                    <code>[2, 1, 1, 2]</code> → Greedy picks 2+2=4, but optimal is 2+2=4 ✓... wait<br>
+                    <code>[1, 3, 1, 3, 100]</code> → Greedy picks 3+100=103, but optimal is 1+1+100=102... wait<br>
+                    Actually: <code>[2, 7, 9, 3, 1]</code> → Greedy might pick 9, missing 2+9+1=12<br><br>
+                    
+                    <strong>2. Edge Cases to Handle:</strong><br>
+                    • Empty array → return 0<br>
+                    • Single house → return nums[0]<br>
+                    • Two houses → return max(nums[0], nums[1])`,
+                dryRun: [
+                    `<strong>Input:</strong> nums = [1, 2, 3, 1]`,
+                    `<strong>Initialize:</strong><br>
+                    • prev_prev_max = 0 (no houses robbed yet)<br>
+                    • prev_max = 0`,
+                    `<strong>House 0 (money=1):</strong><br>
+                    • ROB: 1 + prev_prev_max = 1 + 0 = 1<br>
+                    • SKIP: prev_max = 0<br>
+                    • current_max = max(1, 0) = <span style="color:#4ade80;">1</span>`,
+                    `<strong>House 1 (money=2):</strong><br>
+                    • ROB: 2 + 0 = 2<br>
+                    • SKIP: 1<br>
+                    • current_max = max(2, 1) = <span style="color:#4ade80;">2</span>`,
+                    `<strong>House 2 (money=3):</strong><br>
+                    • ROB: 3 + 1 = 4<br>
+                    • SKIP: 2<br>
+                    • current_max = max(4, 2) = <span style="color:#4ade80;">4</span>`,
+                    `<strong>House 3 (money=1):</strong><br>
+                    • ROB: 1 + 2 = 3<br>
+                    • SKIP: 4<br>
+                    • current_max = max(3, 4) = <span style="color:#4ade80;">4</span>`,
+                    `<strong>Answer:</strong> 4 (robbed houses 0 and 2 → 1+3=4)`
+                ],
+                codeTitle: "Evolution: DP Table → Space Optimized",
+                code: `##### Approach 1: DP Table (O(n) space)
+def rob_dp_table(nums):
+if not nums:
+    return 0
+if len(nums) == 1:
+    return nums[0]
+
+# dp[i] = max loot we can get from houses 0 to i
+dp = [0] * len(nums)
+dp[0] = nums[0]
+dp[1] = max(nums[0], nums[1])
+
+for house_index in range(2, len(nums)):
+    rob_current = nums[house_index] + dp[house_index - 2]
+    skip_current = dp[house_index - 1]
+    dp[house_index] = max(rob_current, skip_current)
+
+return dp[-1]
+
+
+##### Approach 2: Space Optimized (O(1) space) ✅ BEST
+def rob(nums):
+"""
+Key insight: We only need previous 2 values!
+prev_prev_max = max loot from 2 houses ago
+prev_max = max loot from previous house
+"""
+if not nums:
+    return 0
+if len(nums) == 1:
+    return nums[0]
+
+prev_prev_max = 0  # Best loot from 2 houses back
+prev_max = 0       # Best loot from 1 house back
+
+for current_money in nums:
+    # Decision: rob current house or skip it?
+    rob_current = current_money + prev_prev_max
+    skip_current = prev_max
+    current_max = max(rob_current, skip_current)
+    
+    # Shift window forward
+    prev_prev_max = prev_max
+    prev_max = current_max
+
+return prev_max
+
+
+# Test cases
+print(rob([1,2,3,1]))     # 4 (rob house 0 + house 2)
+print(rob([2,7,9,3,1]))   # 12 (rob house 0 + house 2 + house 4)
+print(rob([]))            # 0 (edge case)
+print(rob([100]))         # 100 (single house)`
+            }
+        },
+        {
+            id: "longest-increasing-subsequence",
+            title: "LIS",
+            leetcodeUrl: "https://leetcode.com/problems/longest-increasing-subsequence/",
+            visualizerUrl: "visualizers/lis.html",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["DP + Binary Search", "Take/Skip Pattern"],
+            quiz: {
+                description: "Find length of LIS. O(N log N) approach?",
+                options: ["Standard DP O(N²)", "Patience Sorting / Tails Array", "Sliding Window", "Recursion"],
+                correct: 1,
+                explanation: "Patience Sorting! Maintain a 'tails' array. For each x, replace the first element in tails >= x. If x is largest, append. Len(tails) is answer."
+            },
+            learn: {
+                metrics: { time: "O(N²)", space: "O(N²)" },
+                timeExplainer: `<strong style="color:#f59e0b;">⏱️ Time Complexity Deep Dive</strong>
+                
+                <div style="background: rgba(239, 68, 68, 0.1); padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #ef4444;">
+                    <strong style="color:#ef4444;">1. Brute Force Recursion: O(2ⁿ)</strong><br><br>
+                    <strong>Why 2ⁿ?</strong><br>
+                    • Har element pe 2 branches: <strong>TAKE</strong> or <strong>SKIP</strong><br>
+                    • n elements = 2 × 2 × 2... (n times) = 2ⁿ<br>
+                    • Like generating all subsets!<br><br>
+                    <code style="color:#f87171;">Result: TLE for n > 20 ❌</code>
+                </div>
+                
+                <div style="background: rgba(16, 185, 129, 0.1); padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #10b981;">
+                    <strong style="color:#10b981;">2. With Memoization: O(N²)</strong><br><br>
+                    <strong>Why N²?</strong><br>
+                    • States = (curr_idx, prev_idx)<br>
+                    • curr_idx: 0 to n-1 → N possibilities<br>
+                    • prev_idx: -1 to n-1 → N possibilities<br>
+                    • Total unique states = N × N = N²<br>
+                    • Each state computed ONCE!<br><br>
+                    <code style="color:#34d399;">Result: AC! ✅</code>
+                </div>
+                
+                <div style="background: rgba(139, 92, 246, 0.1); padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #8b5cf6;">
+                    <strong style="color:#a78bfa;">3. Binary Search (Advanced): O(N log N)</strong><br><br>
+                    • Patience Sorting technique<br>
+                    • For each element, binary search in 'tails' array<br>
+                    • N elements × log N search = O(N log N)
+                </div>`,
+                spaceExplainer: `<strong style="color:#22d3ee;">📦 Space Complexity Analysis</strong>
+                
+                <div style="background: rgba(239, 68, 68, 0.1); padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #ef4444;">
+                    <strong style="color:#ef4444;">Recursion without Memo: O(N)</strong><br>
+                    • Only call stack depth = max N frames<br>
+                    • Each frame stores: curr_idx, prev_idx (constants)<br>
+                    • Total: O(N) stack space
+                </div>
+                
+                <div style="background: rgba(245, 158, 11, 0.1); padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #f59e0b;">
+                    <strong style="color:#fbbf24;">With Memoization: O(N²)</strong><br>
+                    • memo dict stores (curr_idx, prev_idx) → result<br>
+                    • Max entries = N × N = N²<br>
+                    • + Recursion stack O(N)<br>
+                    • Total: O(N²)
+                </div>
+                
+                <div style="background: rgba(16, 185, 129, 0.1); padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #10b981;">
+                    <strong style="color:#34d399;">Iterative 1D DP: O(N)</strong><br>
+                    • dp[i] = LIS length ending at index i<br>
+                    • Only 1 array of size N needed!
+                </div>`,
+                visual: `<div style="background: #1e293b; padding: 20px; border-radius: 12px; margin: 15px 0;">
+                    <strong style="color: #a78bfa;">🧠 State Design: "Prev Index Yaad Rakhna Hai!"</strong><br><br>
+                    <code style="color: #4ade80;">
+                    dfs(curr_idx, prev_idx):<br><br>
+                    
+                    ├── Can we TAKE nums[curr_idx]?<br>
+                    │   └── Only if prev_idx == -1 OR nums[curr_idx] > nums[prev_idx]<br>
+                    │       └── TAKE: 1 + dfs(curr_idx+1, curr_idx)  # prev becomes current<br>
+                    │<br>
+                    └── We can always SKIP<br>
+                        └── SKIP: dfs(curr_idx+1, prev_idx)  # prev stays same<br><br>
+                    
+                    Answer = max(TAKE, SKIP)
+                    </code>
+                </div>`,
+                crux: `<strong style="color:#f59e0b;">🔑 Key Insight: "Prev Yaad Rakhna Hai"</strong><br><br>
+                
+                <div style="background: rgba(139, 92, 246, 0.1); padding: 15px; border-radius: 8px; margin: 10px 0;">
+                    <strong>Why Two States?</strong><br>
+                    • <code>curr_idx</code>: Where we are now<br>
+                    • <code>prev_idx</code>: Last element we TOOK (for comparison)<br><br>
+                    
+                    Without prev_idx, we can't check if current > previous!
+                </div>
+                
+                <div style="background: rgba(16, 185, 129, 0.1); padding: 15px; border-radius: 8px; margin: 10px 0;">
+                    <strong>The Core Logic:</strong><br>
+                    <code>if nums[curr_idx] > nums[prev_idx]:</code><br>
+                    &nbsp;&nbsp;<code>take = 1 + dfs(curr_idx+1, curr_idx)</code><br>
+                    <code>skip = dfs(curr_idx+1, prev_idx)</code><br>
+                    <code>return max(take, skip)</code>
+                </div>
+                
+                <br><strong style="color:#22d3ee;">💡 Same Pattern Problems:</strong><br>
+                • <strong>Russian Doll Envelopes</strong> - 2D LIS (sort + LIS on heights)<br>
+                • <strong>Maximum Length of Pair Chain</strong> - LIS variant<br>
+                • <strong>Number of LIS</strong> - Count instead of length`,
+                trap: `<strong style="color:#ef4444;">⚠️ Common Traps:</strong><br><br>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div style="background: rgba(239, 68, 68, 0.1); padding: 12px; border-radius: 8px;">
+                        <strong style="color:#f87171;">❌ Forgetting prev_idx = -1</strong><br>
+                        <span style="font-size: 0.9rem;">Initial prev is -1 (fictional -∞) so first element can always be taken</span>
+                    </div>
+                    <div style="background: rgba(245, 158, 11, 0.1); padding: 12px; border-radius: 8px;">
+                        <strong style="color:#fbbf24;">❌ Subsequence ≠ Subarray</strong><br>
+                        <span style="font-size: 0.9rem;">Elements don't need to be contiguous! [10,9,2,5,3,7,101] → [2,5,7,101]</span>
+                    </div>
+                </div>
+                
+                <div style="background: rgba(139, 92, 246, 0.1); padding: 12px; border-radius: 8px; margin-top: 15px;">
+                    <strong style="color:#a78bfa;">❌ Wrong memo key</strong><br>
+                    Key must be <code>(curr_idx, prev_idx)</code> not just <code>curr_idx</code>!<br>
+                    Same curr_idx with different prev_idx gives different results.
+                </div>`,
+                dryRun: [
+                    `<strong>Input:</strong> nums = [10, 9, 2, 5, 3, 7, 101, 18]`,
+                    `<strong>Call:</strong> dfs(curr_idx=0, prev_idx=-1)<br>
+                    • prev=-1 means "no element taken yet"<br>
+                    • We can take nums[0]=10 (always allowed when prev=-1)`,
+                    `<strong>Exploring from 10:</strong><br>
+                    • TAKE 10: dfs(1, 0) → need nums[1] > 10 to take<br>
+                    • 9 < 10, 2 < 10... stuck!<br>
+                    • Better to start with smaller number`,
+                    `<strong>Better path: Start with 2 (index 2)</strong><br>
+                    • SKIP 10, SKIP 9, TAKE 2<br>
+                    • Now prev_idx = 2, nums[prev_idx] = 2`,
+                    `<strong>Continue from 2:</strong><br>
+                    • 5 > 2 ✅ → TAKE, LIS = [2, 5]<br>
+                    • 3 > 5 ❌ → Can't take<br>
+                    • 7 > 5 ✅ → TAKE, LIS = [2, 5, 7]<br>
+                    • 101 > 7 ✅ → TAKE, LIS = [2, 5, 7, 101]`,
+                    `<strong>Answer:</strong> 4<br>
+                    One valid LIS: [2, 5, 7, 101]<br>
+                    Another: [2, 3, 7, 101] (same length)`
+                ],
+                codeTitle: "Evolution: Recursion → Memo → Iterative DP",
+                code: `##### Approach 1: Brute Recursion - O(2^n) TLE!
+def lis_brute(nums):
+"""
+Two states: curr_idx (where we are) and prev_idx (last taken element)
+Key insight: "prev yaad rakhna hai" for comparison!
+"""
+def dfs(curr_idx, prev_idx):
+    # Base: no more elements
+    if curr_idx == len(nums):
+        return 0
+    
+    # Option 1: TAKE current (only if increasing)
+    take = 0
+    if prev_idx == -1 or nums[curr_idx] > nums[prev_idx]:
+        take = 1 + dfs(curr_idx + 1, curr_idx)  # curr becomes new prev
+    
+    # Option 2: SKIP current (always allowed)
+    skip = dfs(curr_idx + 1, prev_idx)  # prev stays same
+    
+    return max(take, skip)
+
+return dfs(0, -1)  # Start with prev = -1 (fictional -∞)
+
+
+##### Approach 2: Memoization - O(N²) ✅
+def lis_memo(nums):
+memo = {}  # Key: (curr_idx, prev_idx)
+
+def dfs(curr_idx, prev_idx):
+    if curr_idx == len(nums):
+        return 0
+    
+    # Check memo BEFORE computing
+    if (curr_idx, prev_idx) in memo:
+        return memo[(curr_idx, prev_idx)]
+    
+    # TAKE if increasing
+    take = 0
+    if prev_idx == -1 or nums[curr_idx] > nums[prev_idx]:
+        take = 1 + dfs(curr_idx + 1, curr_idx)
+    
+    # SKIP always allowed
+    skip = dfs(curr_idx + 1, prev_idx)
+    
+    result = max(take, skip)
+    memo[(curr_idx, prev_idx)] = result  # Store AFTER computing
+    return result
+
+return dfs(0, -1)
+
+
+##### Approach 3: Iterative DP - O(N²) time, O(N) space
+def lengthOfLIS(nums):
+if not nums:
+    return 0
+
+# dp[i] = length of LIS ENDING at index i
+dp = [1] * len(nums)  # Each element is LIS of length 1
+
+for curr_idx in range(1, len(nums)):
+    for prev_idx in range(curr_idx):
+        if nums[curr_idx] > nums[prev_idx]:
+            dp[curr_idx] = max(dp[curr_idx], 1 + dp[prev_idx])
+
+return max(dp)  # LIS can end at any index
+
+
+# Test
+print(lis_memo([10,9,2,5,3,7,101,18]))  # 4 → [2,5,7,101]
+print(lengthOfLIS([0,1,0,3,2,3]))       # 4 → [0,1,2,3]`
+            }
+        },
+        {
+            id: "longest-common-subsequence",
+            title: "LCS",
+            leetcodeUrl: "https://leetcode.com/problems/longest-common-subsequence/",
+            visualizerUrl: "visualizers/lcs.html",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["2D DP", "Two-String Pattern"],
+            quiz: {
+                description: "Longest common subsequence in two strings. Logic?",
+                options: ["Substring matching", "If match: 1 + diag. Else: max(up, left)", "Greedy", "HashMaps"],
+                correct: 1,
+                explanation: "2D Grid! If chars match: `1 + dp[i-1][j-1]`. If no match: `max(dp[i-1][j], dp[i][j-1])` (carry forward best result)."
+            },
+            learn: {
+                metrics: { time: "O(M × N)", space: "O(M × N)" },
+                timeExplainer: `<strong style="color:#f59e0b;">⏱️ Time Complexity Deep Dive</strong>
+                
+                <div style="background: rgba(239, 68, 68, 0.1); padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #ef4444;">
+                    <strong style="color:#ef4444;">1. Brute Force Recursion: O(2^(m+n))</strong><br><br>
+                    <strong>Why 2^(m+n)?</strong><br>
+                    • Worst case: NO characters match<br>
+                    • At each step, we branch into 2: skip from text1 OR skip from text2<br>
+                    • Max depth = m + n (go through both strings)<br>
+                    • Total branches = 2^(m+n)<br><br>
+                    <code style="color:#f87171;">Result: TLE for strings > 20 chars ❌</code>
+                </div>
+                
+                <div style="background: rgba(16, 185, 129, 0.1); padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #10b981;">
+                    <strong style="color:#10b981;">2. With Memoization: O(M × N)</strong><br><br>
+                    <strong>Why M × N?</strong><br>
+                    • States = (index1, index2)<br>
+                    • index1: 0 to m → M values<br>
+                    • index2: 0 to n → N values<br>
+                    • Total unique states = M × N<br>
+                    • Each state computed ONCE!<br><br>
+                    <code style="color:#34d399;">Example: "abcde" vs "ace" → 5×3 = 15 states ✅</code>
+                </div>`,
+                spaceExplainer: `<strong style="color:#22d3ee;">📦 Space Complexity Analysis</strong>
+                
+                <div style="background: rgba(239, 68, 68, 0.1); padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #ef4444;">
+                    <strong style="color:#ef4444;">Recursion Stack: O(M + N)</strong><br>
+                    • Max depth = m + n (worst case go through both)<br>
+                    • Each frame: index1, index2 (constants)
+                </div>
+                
+                <div style="background: rgba(245, 158, 11, 0.1); padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #f59e0b;">
+                    <strong style="color:#fbbf24;">With Memoization: O(M × N)</strong><br>
+                    • memo[(index1, index2)] stores result<br>
+                    • Max entries = M × N<br>
+                    • + Recursion stack O(M + N)
+                </div>
+                
+                <div style="background: rgba(16, 185, 129, 0.1); padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #10b981;">
+                    <strong style="color:#34d399;">Space Optimized: O(min(M, N))</strong><br>
+                    • If only need length (not actual LCS)<br>
+                    • Use rolling array (only previous row needed)
+                </div>`,
+                visual: `<div style="background: #1e293b; padding: 20px; border-radius: 12px; margin: 15px 0;">
+                    <strong style="color: #a78bfa;">🔑 Two Cases: Match vs No Match</strong><br><br>
+                    <code style="color: #4ade80;">
+                    def dfs(index1, index2):<br><br>
+                    
+                    &nbsp;&nbsp;# MATCH: Characters equal! Take it & move BOTH pointers<br>
+                    &nbsp;&nbsp;if text1[index1] == text2[index2]:<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;return <span style="color:#fbbf24;">1</span> + dfs(index1+1, index2+1)  <span style="color:#94a3b8;">← Only ONE choice!</span><br><br>
+                    
+                    &nbsp;&nbsp;# NO MATCH: Try skipping from EITHER string<br>
+                    &nbsp;&nbsp;skip_text1 = dfs(index1+1, index2)  <span style="color:#94a3b8;">← Skip char from text1</span><br>
+                    &nbsp;&nbsp;skip_text2 = dfs(index1, index2+1)  <span style="color:#94a3b8;">← Skip char from text2</span><br>
+                    &nbsp;&nbsp;return max(skip_text1, skip_text2)
+                    </code>
+                </div>`,
+                crux: `<strong style="color:#f59e0b;">🔑 Key Insight: "Match = No Choice, No Match = Try Both"</strong><br><br>
+                
+                <div style="background: rgba(16, 185, 129, 0.1); padding: 15px; border-radius: 8px; margin: 10px 0;">
+                    <strong style="color:#34d399;">When Characters MATCH:</strong><br>
+                    • Take the match! Move BOTH pointers forward<br>
+                    • <code>return 1 + dfs(i+1, j+1)</code><br>
+                    • No "Lun Na Lun" here - always take the match!
+                </div>
+                
+                <div style="background: rgba(239, 68, 68, 0.1); padding: 15px; border-radius: 8px; margin: 10px 0;">
+                    <strong style="color:#f87171;">When Characters DON'T Match:</strong><br>
+                    • Can't match both - try skipping from either string<br>
+                    • <code>skip1 = dfs(i+1, j)</code> ← Skip from text1<br>
+                    • <code>skip2 = dfs(i, j+1)</code> ← Skip from text2<br>
+                    • <code>return max(skip1, skip2)</code>
+                </div>
+                
+                <br><strong style="color:#22d3ee;">💡 Same Pattern Problems:</strong><br>
+                • <strong>Edit Distance</strong> - Min operations to convert (same 2-string pattern)<br>
+                • <strong>Shortest Common Supersequence</strong> - Based on LCS!<br>
+                • <strong>Longest Palindromic Subsequence</strong> - LCS(s, reverse(s))`,
+                trap: `<strong style="color:#ef4444;">⚠️ Common Traps:</strong><br><br>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div style="background: rgba(239, 68, 68, 0.1); padding: 12px; border-radius: 8px;">
+                        <strong style="color:#f87171;">❌ Subsequence ≠ Substring</strong><br>
+                        <span style="font-size: 0.9rem;">Subsequence: Can skip chars, order preserved<br>
+                        Substring: Contiguous, no skips allowed</span>
+                    </div>
+                    <div style="background: rgba(245, 158, 11, 0.1); padding: 12px; border-radius: 8px;">
+                        <strong style="color:#fbbf24;">❌ Wrong base case</strong><br>
+                        <span style="font-size: 0.9rem;">Return 0 when EITHER string ends<br>
+                        Not when both end!</span>
+                    </div>
+                </div>
+                
+                <div style="background: rgba(139, 92, 246, 0.1); padding: 12px; border-radius: 8px; margin-top: 15px;">
+                    <strong style="color:#a78bfa;">❌ Thinking it's "Lun Na Lun"</strong><br>
+                    When chars MATCH, there's NO choice to make - always take the match!<br>
+                    "Lun Na Lun" only applies when chars DON'T match.
+                </div>`,
+                dryRun: [
+                    `<strong>Input:</strong> text1 = "abcde", text2 = "ace"`,
+                    `<strong>Call:</strong> dfs(index1=0, index2=0)<br>
+                    • text1[0] = 'a', text2[0] = 'a'<br>
+                    • MATCH! → 1 + dfs(1, 1)`,
+                    `<strong>dfs(1, 1):</strong><br>
+                    • text1[1] = 'b', text2[1] = 'c'<br>
+                    • NO MATCH → try both:<br>
+                    &nbsp;&nbsp;• skip 'b': dfs(2, 1)<br>
+                    &nbsp;&nbsp;• skip 'c': dfs(1, 2)`,
+                    `<strong>dfs(2, 1):</strong> text1[2]='c', text2[1]='c'<br>
+                    • MATCH! → 1 + dfs(3, 2)<br><br>
+                    <strong>dfs(3, 2):</strong> text1[3]='d', text2[2]='e'<br>
+                    • NO MATCH → try both... eventually finds 'e' at dfs(4, 2)`,
+                    `<strong>dfs(4, 2):</strong> text1[4]='e', text2[2]='e'<br>
+                    • MATCH! → 1 + dfs(5, 3)<br>
+                    • dfs(5, 3) → index1 == len(text1) → return 0`,
+                    `<strong>Answer:</strong> 3<br>
+                    LCS = "ace" (matched at positions 0, 2, 4)`
+                ],
+                codeTitle: "Evolution: Recursion → Memo → 2D DP",
+                code: `##### Approach 1: Brute Recursion - O(2^(m+n)) TLE!
+def lcs_brute(text1, text2):
+"""
+Two pointers: index1 for text1, index2 for text2
+Key: When match, NO choice - must take it!
+"""
+def dfs(index1, index2):
+    # Base: Either string exhausted
+    if index1 == len(text1) or index2 == len(text2):
+        return 0
+    
+    # MATCH: Take it and move BOTH pointers
+    if text1[index1] == text2[index2]:
+        return 1 + dfs(index1 + 1, index2 + 1)
+    
+    # NO MATCH: Try skipping from either string
+    skip_text1 = dfs(index1 + 1, index2)
+    skip_text2 = dfs(index1, index2 + 1)
+    
+    return max(skip_text1, skip_text2)
+
+return dfs(0, 0)
+
+
+##### Approach 2: Memoization - O(M × N) ✅
+def longestCommonSubsequence(text1, text2):
+memo = {}  # Key: (index1, index2)
+
+def dfs(index1, index2):
+    # Base: Either string exhausted
+    if index1 == len(text1) or index2 == len(text2):
+        return 0
+    
+    # Check memo
+    if (index1, index2) in memo:
+        return memo[(index1, index2)]
+    
+    # MATCH: Take it!
+    if text1[index1] == text2[index2]:
+        result = 1 + dfs(index1 + 1, index2 + 1)
+    else:
+        # NO MATCH: Try both skips
+        skip_text1 = dfs(index1 + 1, index2)
+        skip_text2 = dfs(index1, index2 + 1)
+        result = max(skip_text1, skip_text2)
+    
+    memo[(index1, index2)] = result
+    return result
+
+return dfs(0, 0)
+
+
+##### Approach 3: 2D DP (Bottom-Up) ⭐️
+def longestCommonSubsequence_DP(text1, text2):
+m, n = len(text1), len(text2)
+# dp[i][j] = LCS of text1[0:i] and text2[0:j]
+dp = [[0] * (n + 1) for _ in range(m + 1)]
+
+for i in range(1, m + 1):
+    for j in range(1, n + 1):
+        if text1[i - 1] == text2[j - 1]:
+            # MATCH: 1 + diagonal
+            dp[i][j] = 1 + dp[i - 1][j - 1]
+        else:
+            # NO MATCH: max of up or left
+            dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])
+
+return dp[m][n]
+
+
+# Test
+print(longestCommonSubsequence("abcde", "ace"))  # 3 → "ace"`
+            }
+        },
+        {
+            id: "coin-change",
+            title: "Coin Change",
+            leetcodeUrl: "https://leetcode.com/problems/coin-change/",
+            visualizerUrl: "visualizers/min_coins.html",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["Unbounded Knapsack", "Infinite Supply"],
+            quiz: {
+                description: "Fewest coins to make amount. Trick?",
+                options: ["Greedy (biggest coins first)", "DP: dp[a] = min(dp[a], 1 + dp[a-c])", "Backtracking", "BFS"],
+                correct: 1,
+                explanation: "Greedy fails (e.g., Coins [1,3,4], Target 6. Greedy 4+1+1 (3 coins). Optimal 3+3 (2 coins)). Use DP: solve for amount 1, then 2..."
+            },
+            learn: {
+                metrics: { time: "O(A × C)", space: "O(A × C)" },
+                timeExplainer: `<strong style="color:#f59e0b;">⏱️ Time Complexity Deep Dive</strong>
+                
+                <div style="background: rgba(239, 68, 68, 0.1); padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #ef4444;">
+                    <strong style="color:#ef4444;">1. Brute Force Recursion: O(n^amount) or worse! 🔥</strong><br><br>
+                    <strong>Why so bad?</strong><br>
+                    • Each coin can be taken UNLIMITED times (unbounded)<br>
+                    • Worst case: coin = 1, amount = 100<br>
+                    • Depth = amount/min_coin = 100 (if smallest coin is 1)<br>
+                    • At each level, we have n coin choices<br>
+                    • Total: O(n^(amount/min_coin))<br><br>
+                    <code style="color:#f87171;">Result: TLE for amount > 20 ❌</code>
+                </div>
+                
+                <div style="background: rgba(16, 185, 129, 0.1); padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #10b981;">
+                    <strong style="color:#10b981;">2. With Memoization: O(Amount × Coins)</strong><br><br>
+                    <strong>Why Amount × Coins?</strong><br>
+                    • States = (remaining_amount, coin_index)<br>
+                    • amount: 0 to amount → A values<br>
+                    • index: 0 to n-1 → n values<br>
+                    • Total unique states = A × n<br>
+                    • Each state computed ONCE!<br><br>
+                    <code style="color:#34d399;">Example: amount=100, coins=3 → 300 states ✅</code>
+                </div>
+                
+                <div style="background: rgba(139, 92, 246, 0.1); padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #8b5cf6;">
+                    <strong style="color:#a78bfa;">3. 1D DP: O(Amount × Coins)</strong><br><br>
+                    • For each amount from 1 to A: O(A)<br>
+                    • Try each coin: O(C)<br>
+                    • Total: O(A × C)
+                </div>`,
+                spaceExplainer: `<strong style="color:#22d3ee;">📦 Space Complexity Analysis</strong>
+                
+                <div style="background: rgba(239, 68, 68, 0.1); padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #ef4444;">
+                    <strong style="color:#ef4444;">Recursion Stack: O(Amount/min_coin)</strong><br>
+                    • Worst case: taking coin=1 repeatedly<br>
+                    • Max depth = amount (if smallest coin is 1)<br>
+                    • Each frame: amount, index (constants)
+                </div>
+                
+                <div style="background: rgba(245, 158, 11, 0.1); padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #f59e0b;">
+                    <strong style="color:#fbbf24;">With Memoization: O(Amount × Coins)</strong><br>
+                    • memo[(amount, index)] stores result<br>
+                    • Max entries = A × n<br>
+                    • + Recursion stack O(A)
+                </div>
+                
+                <div style="background: rgba(16, 185, 129, 0.1); padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #10b981;">
+                    <strong style="color:#34d399;">1D DP: O(Amount) ✅ BEST</strong><br>
+                    • Only need dp array of size amount+1<br>
+                    • dp[i] = min coins to make amount i
+                </div>`,
+                visual: `<div style="background: #1e293b; padding: 20px; border-radius: 12px; margin: 15px 0;">
+                    <strong style="color: #a78bfa;">🔑 CRITICAL: UNBOUNDED vs 0/1 Knapsack</strong><br><br>
+                    <code style="color: #4ade80;">
+                    # UNBOUNDED (Coin Change) - Infinite supply<br>
+                    take = 1 + dfs(amount - coins[index], <span style="color:#f87171;">index</span>)  <span style="color:#94a3b8;">← STAY at same index!</span><br><br>
+                    
+                    # 0/1 Knapsack - Each item once<br>
+                    take = 1 + dfs(amount - items[index], <span style="color:#f87171;">index + 1</span>)  <span style="color:#94a3b8;">← MOVE to next!</span>
+                    </code><br><br>
+                    <span style="color:#fbbf24;">⚠️ This ONE difference changes everything!</span>
+                </div>`,
+                crux: `<strong style="color:#f59e0b;">🔑 Key Insight: "STAY at Same Index = Infinite Supply"</strong><br><br>
+                
+                <div style="background: rgba(139, 92, 246, 0.1); padding: 15px; border-radius: 8px; margin: 10px 0;">
+                    <strong>The Core Logic:</strong><br><br>
+                    <code>def dfs(remaining_amount, coin_index):</code><br>
+                    &nbsp;&nbsp;<code>if remaining_amount == 0: return 0  # No more coins needed</code><br>
+                    &nbsp;&nbsp;<code>if coin_index == len(coins): return inf  # No coins left</code><br><br>
+                    
+                    &nbsp;&nbsp;<code># TAKE: Use this coin, STAY at same index (can reuse!)</code><br>
+                    &nbsp;&nbsp;<code>take = 1 + dfs(amount - coins[index], index)</code><br><br>
+                    
+                    &nbsp;&nbsp;<code># SKIP: Don't use this coin, move to next</code><br>
+                    &nbsp;&nbsp;<code>skip = dfs(amount, index + 1)</code><br><br>
+                    
+                    &nbsp;&nbsp;<code>return min(take, skip)</code>
+                </div>
+                
+                <br><strong style="color:#22d3ee;">💡 Same Pattern Problems:</strong><br>
+                • <strong>Coin Change II</strong> - Count ways (not min coins)<br>
+                • <strong>Unbounded Knapsack</strong> - Max value with infinite items<br>
+                • <strong>Rod Cutting</strong> - Max profit cutting rod`,
+                trap: `<strong style="color:#ef4444;">⚠️ Common Traps:</strong><br><br>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div style="background: rgba(239, 68, 68, 0.1); padding: 12px; border-radius: 8px;">
+                        <strong style="color:#f87171;">❌ Greedy Fails!</strong><br>
+                        <span style="font-size: 0.9rem;">Coins=[1,3,4], Target=6<br>
+                        Greedy: 4+1+1 = 3 coins ❌<br>
+                        DP: 3+3 = 2 coins ✅</span>
+                    </div>
+                    <div style="background: rgba(245, 158, 11, 0.1); padding: 12px; border-radius: 8px;">
+                        <strong style="color:#fbbf24;">❌ Wrong Initialization</strong><br>
+                        <span style="font-size: 0.9rem;">dp = [0] * (amount+1) ❌<br>
+                        dp = [inf] * (amount+1) ✅<br>
+                        dp[0] = 0 (base case)</span>
+                    </div>
+                </div>
+                
+                <div style="background: rgba(139, 92, 246, 0.1); padding: 12px; border-radius: 8px; margin-top: 15px;">
+                    <strong style="color:#a78bfa;">❌ Confusing 0/1 with Unbounded</strong><br>
+                    When TAKING: <code>dfs(amt - coin, index)</code> NOT <code>dfs(amt - coin, index+1)</code>!<br>
+                    STAY at same index means we can take same coin again.
+                </div>`,
+                dryRun: [
+                    `<strong>Input:</strong> coins = [1, 2, 5], amount = 11`,
+                    `<strong>Call:</strong> dfs(remaining=11, index=0)<br>
+                    • Coins available: [1, 2, 5]<br>
+                    • Need to find MINIMUM coins to make 11`,
+                    `<strong>Key Decisions:</strong><br>
+                    • TAKE coin[0]=1: dfs(10, 0) → can take 1 again (unlimited!)<br>
+                    • SKIP coin[0]=1: dfs(11, 1) → try coin 2`,
+                    `<strong>Optimal Path Found:</strong><br>
+                    • Take 5: remaining = 6, coins = 1<br>
+                    • Take 5: remaining = 1, coins = 2<br>
+                    • Take 1: remaining = 0, coins = 3 ✅<br>
+                    • 5 + 5 + 1 = 11 with 3 coins`,
+                    `<strong>Answer:</strong> 3 coins<br>
+                    One valid combination: [5, 5, 1]<br>
+                    Another: [5, 2, 2, 2] = 4 coins (not optimal)`
+                ],
+                codeTitle: "Evolution: Recursion → Memo → 1D DP",
+                code: `##### Approach 1: Brute Recursion - O(n^amount) TLE!
+def coin_change_brute(coins, amount):
+"""
+UNBOUNDED: When taking a coin, STAY at same index!
+"""
+def dfs(remaining_amount, coin_index):
+    # Base: Exact amount made
+    if remaining_amount == 0:
+        return 0
+    
+    # Base: No coins left OR negative amount
+    if coin_index == len(coins) or remaining_amount < 0:
+        return float('inf')
+    
+    # TAKE: Use this coin, STAY at same index (unlimited supply!)
+    take = float('inf')
+    if remaining_amount >= coins[coin_index]:
+        take = 1 + dfs(remaining_amount - coins[coin_index], coin_index)
+    
+    # SKIP: Move to next coin
+    skip = dfs(remaining_amount, coin_index + 1)
+    
+    return min(take, skip)
+
+result = dfs(amount, 0)
+return result if result != float('inf') else -1
+
+
+##### Approach 2: Memoization - O(Amount × Coins) ✅
+def coinChange(coins, amount):
+memo = {}  # Key: (remaining_amount, coin_index)
+
+def dfs(remaining_amount, coin_index):
+    if remaining_amount == 0:
+        return 0
+    if coin_index == len(coins) or remaining_amount < 0:
+        return float('inf')
+    
+    state = (remaining_amount, coin_index)
+    if state in memo:
+        return memo[state]
+    
+    # TAKE (stay at index) or SKIP (move to next)
+    take = float('inf')
+    if remaining_amount >= coins[coin_index]:
+        take = 1 + dfs(remaining_amount - coins[coin_index], coin_index)
+    skip = dfs(remaining_amount, coin_index + 1)
+    
+    memo[state] = min(take, skip)
+    return memo[state]
+
+result = dfs(amount, 0)
+return result if result != float('inf') else -1
+
+
+##### Approach 3: 1D DP - O(Amount × Coins) time, O(Amount) space ⭐️
+def coinChange_DP(coins, amount):
+# dp[i] = min coins to make amount i
+dp = [float('inf')] * (amount + 1)
+dp[0] = 0  # Base: 0 coins to make 0
+
+for target_amount in range(1, amount + 1):
+    for coin in coins:
+        if target_amount - coin >= 0:
+            dp[target_amount] = min(dp[target_amount], 1 + dp[target_amount - coin])
+
+return dp[amount] if dp[amount] != float('inf') else -1
+
+
+# Test
+print(coinChange([1,2,5], 11))  # 3 → 5+5+1
+print(coinChange([2], 3))       # -1 → impossible`
+            }
+        },
+        {
+            id: "word-break",
+            title: "Word Break",
+            leetcodeUrl: "https://leetcode.com/problems/word-break/",
+            visualizerUrl: "visualizers/word_break.html",
+            difficulty: "Good to Do",
+            priority: "🟡",
+            tags: ["String DP", "Dictionary"],
+            quiz: {
+                description: "Can string s be segmented into dictionary words?",
+                options: ["Greedy matching", "DP: dp[i] is true if s[:i] can be segmented", "Backtracking O(2^N)", "Trie"],
+                correct: 1,
+                explanation: "Brute Force is O(2^N). We need DP! dp[i] = True if dp[j] is True AND s[j:i] in dict. Iterate i from 1 to N, j from 0 to i."
+            },
+            learn: {
+                metrics: { time: "O(N³)", space: "O(N)" },
+                timeExplainer: `
+                    <div class="space-y-3">
+                        <div class="bg-red-900/20 p-3 rounded-lg border border-red-500/30">
+                            <p class="font-bold text-red-400 text-base">🔴 Brute Force (Recursion): O(2ⁿ)</p>
+                            <div class="mt-2 space-y-2 text-sm text-gray-300">
+                                <p><strong>🤔 Kyun?</strong> Har character ke baad ek "cut" lag sakta hai ya nahi:</p>
+                                <div class="bg-black/30 p-2 rounded font-mono text-xs">
+                                    l|e|e|t|c|o|d|e   ← 7 potential gaps<br>
+                                    Cut? ✓ or ✗ for each gap
+                                </div>
+                                
+                                <p><strong>📊 Math Breakdown:</strong></p>
+                                <ul class="list-disc pl-4 space-y-1">
+                                    <li>String length = N</li>
+                                    <li>Potential gaps = <strong>N-1</strong> (between characters)</li>
+                                    <li>Each gap: 2 choices (cut or don't cut)</li>
+                                    <li>Total combinations = <strong>2^(N-1)</strong> ≈ O(2ⁿ)</li>
+                                </ul>
+                                
+                                <p><strong>🎯 Real Numbers:</strong></p>
+                                <table class="w-full text-xs border-collapse">
+                                    <tr class="border-b border-gray-700">
+                                        <td class="py-1">N = 10</td>
+                                        <td class="text-yellow-400">512 ops ✅ Fast</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-700">
+                                        <td class="py-1">N = 20</td>
+                                        <td class="text-yellow-400">~1 Million ops ⚠️ Borderline</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-700">
+                                        <td class="py-1">N = 30</td>
+                                        <td class="text-red-400">~1 Billion ops ❌ TLE</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-1">N = 50</td>
+                                        <td class="text-red-400">~10¹⁵ ops 💀 Universe Heat Death</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-green-900/20 p-3 rounded-lg border border-green-500/30">
+                            <p class="font-bold text-green-400 text-base">🟢 Memoization / DP: O(N³)</p>
+                            <div class="mt-2 space-y-2 text-sm text-gray-300">
+                                <p><strong>🤔 Why 2ⁿ → N³?</strong></p>
+                                
+                                <p><strong>Step 1: Count Unique States</strong></p>
+                                <div class="bg-black/30 p-2 rounded">
+                                    <div class="font-mono text-xs">dfs(<span class="text-cyan-400">start</span>)</div>
+                                    <div class="text-xs text-gray-400">Start index can only be: 0, 1, 2, ... N</div>
+                                    <div class="text-cyan-400 font-bold">Unique States = N+1 ≈ O(N)</div>
+                                </div>
+                                
+                                <p class="mt-2"><strong>Step 2: Work per State</strong></p>
+                                <div class="bg-black/30 p-2 rounded font-mono text-xs">
+for end in range(start+1, len(s)+1):  <span class="text-yellow-400">← O(N) iterations</span>
+curr_word = s[start:end]           <span class="text-orange-400">← O(N) slicing!</span>
+                                </div>
+                                
+                                <p class="mt-2"><strong>🧮 Final Calculation:</strong></p>
+                                <div class="bg-black/30 p-2 rounded text-cyan-300">
+                                    N states × N loop × N slicing = <strong class="text-green-400">O(N³)</strong>
+                                </div>
+                                
+                                <p class="mt-2"><strong>💡 Hidden Cost - Slicing:</strong></p>
+                                <div class="bg-orange-900/20 p-2 rounded border border-orange-500/20">
+                                    <div class="text-orange-400 font-bold text-xs">⚠️ DON'T FORGET!</div>
+                                    <div class="text-xs">In Python/Java: <code>s[start:end]</code> creates NEW string</div>
+                                    <div class="text-xs">This takes O(end - start) = O(N) time!</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-purple-900/20 p-3 rounded-lg border border-purple-500/30">
+                            <p class="font-bold text-purple-400 text-base">🟣 Optimization: O(N² × M)</p>
+                            <div class="mt-2 text-sm text-gray-300">
+                                <p><strong>Using Trie or Word Length Bound:</strong></p>
+                                <ul class="list-disc pl-4 text-xs space-y-1">
+                                    <li>If max word length in dict = M (usually small)</li>
+                                    <li>Instead of loop till N, loop only till M</li>
+                                    <li>Time: O(N × M × M) = O(N × M²)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>`,
+                spaceExplainer: `
+                    <div class="space-y-3">
+                        <div class="bg-slate-800 p-3 rounded-lg">
+                            <p class="font-bold text-blue-400">1. Recursion Stack: O(N)</p>
+                            <div class="text-sm text-gray-300 mt-1">
+                                <p>Worst case: All single chars are valid words</p>
+                                <div class="bg-black/30 p-2 rounded font-mono text-xs mt-1">
+s = "aaa" and dict = {"a"}<br>
+dfs(0) → dfs(1) → dfs(2) → dfs(3)<br>
+<span class="text-yellow-400">Max depth = N</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-slate-800 p-3 rounded-lg">
+                            <p class="font-bold text-green-400">2. Memoization Cache: O(N)</p>
+                            <div class="text-sm text-gray-300 mt-1">
+                                <div class="bg-black/30 p-2 rounded font-mono text-xs">
+memo = {<br>
+  0: True/False,   <span class="text-gray-500"># Can break from index 0?</span><br>
+  1: True/False,   <span class="text-gray-500"># Can break from index 1?</span><br>
+  ...<br>
+  N-1: True/False  <span class="text-gray-500"># Can break from last char?</span><br>
+}<br>
+<span class="text-cyan-400">Size = N entries</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-green-900/20 p-3 rounded-lg border border-green-500/30">
+                            <p class="font-bold text-green-400">Total Space: O(N)</p>
+                            <p class="text-sm text-gray-400">Both stack and cache are linear.</p>
+                        </div>
+                    </div>`,
+                visual: `<div class="space-y-3">
+                    <div class="text-center font-bold text-cyan-400">🔪 The Cut Strategy</div>
+                    <div class="bg-black/30 p-3 rounded font-mono text-sm">
+                        <div class="text-gray-400 mb-2">s = "leetcode", dict = ["leet", "code"]</div>
+                        <div class="flex justify-center gap-1" style="font-size:12px;">
+                            <span class="bg-green-500/30 px-2 py-1 rounded">l</span>
+                            <span class="bg-green-500/30 px-2 py-1 rounded">e</span>
+                            <span class="bg-green-500/30 px-2 py-1 rounded">e</span>
+                            <span class="bg-green-500/30 px-2 py-1 rounded">t</span>
+                            <span class="text-red-400 text-xl">|</span>
+                            <span class="bg-blue-500/30 px-2 py-1 rounded">c</span>
+                            <span class="bg-blue-500/30 px-2 py-1 rounded">o</span>
+                            <span class="bg-blue-500/30 px-2 py-1 rounded">d</span>
+                            <span class="bg-blue-500/30 px-2 py-1 rounded">e</span>
+                        </div>
+                        <div class="text-center mt-2" style="font-size:11px;">
+                            <span class="text-green-400">"leet" ✓</span> + 
+                            <span class="text-blue-400">"code" ✓</span> = 
+                            <span class="text-yellow-400 font-bold">VALID!</span>
+                        </div>
+                    </div>
+                    <div class="text-xs text-gray-400 text-center">
+                        Find ONE valid cut position where:<br>
+                        Left part is valid AND right part can be broken
+                    </div>
+                </div>`,
+                crux: `<div class="space-y-3">
+                    <div class="bg-cyan-900/20 p-3 rounded-lg border border-cyan-500/30">
+                        <div class="font-bold text-cyan-400 mb-2">🎯 The "Cut or Extend" Logic</div>
+                        <div class="bg-black/30 p-2 rounded font-mono text-xs">
+for end in range(start + 1, len(s) + 1):  <span class="text-gray-500"># Try all ends</span><br>
+word = s[start:end]<br>
+<br>
+if word in wordSet:    <span class="text-green-400"># Mila! CUT lagao</span><br>
+    if dfs(end):       <span class="text-green-400"># Baki bhi valid?</span><br>
+        return True<br>
+<span class="text-gray-500"># Else: EXTEND karo (loop continues)</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-yellow-900/20 p-3 rounded-lg border border-yellow-500/30">
+                        <div class="font-bold text-yellow-400 mb-2">💡 Key Insight</div>
+                        <p class="text-sm text-gray-300"><strong>STATE:</strong> Just the <code>start</code> index</p>
+                        <p class="text-sm text-gray-300"><strong>DECISION:</strong> Where to cut (try all ends)</p>
+                        <p class="text-sm text-gray-300"><strong>BASE CASE:</strong> start == len(s) → True</p>
+                    </div>
+                    
+                    <div class="bg-purple-900/20 p-3 rounded-lg border border-purple-500/30">
+                        <div class="font-bold text-purple-400 mb-2">🔗 Same Pattern Problems</div>
+                        <ul class="text-sm text-gray-300 space-y-1">
+                            <li>• <strong>Word Break II</strong> - Return all valid segmentations</li>
+                            <li>• <strong>Palindrome Partitioning</strong> - Cut where each part is palindrome</li>
+                            <li>• <strong>Decode Ways</strong> - Valid number → letter mappings</li>
+                        </ul>
+                    </div>
+                </div>`,
+                trap: `<div class="space-y-2">
+                    <div class="bg-red-900/20 p-2 rounded border border-red-500/30">
+                        <div class="font-bold text-red-400 text-sm">❌ Trap 1: Complexity Confusion</div>
+                        <p class="text-xs text-gray-300">Looks like O(N^N) due to nested loop, but it's O(2^N)!</p>
+                        <p class="text-xs text-gray-400">Each gap has binary choice: cut or extend.</p>
+                    </div>
+                    
+                    <div class="bg-orange-900/20 p-2 rounded border border-orange-500/30">
+                        <div class="font-bold text-orange-400 text-sm">❌ Trap 2: Slicing Cost Hidden</div>
+                        <p class="text-xs text-gray-300"><code>s[start:end]</code> is NOT O(1)!</p>
+                        <p class="text-xs text-gray-400">It's O(K) where K = substring length. Total = O(N³)</p>
+                    </div>
+                    
+                    <div class="bg-yellow-900/20 p-2 rounded border border-yellow-500/30">
+                        <div class="font-bold text-yellow-400 text-sm">❌ Trap 3: Wrong Loop Range</div>
+                        <div class="bg-black/30 p-1 rounded font-mono text-xs mt-1">
+<span class="text-red-400">❌ range(start, len(s)+1)</span>  <span class="text-gray-500"># empty substring!</span><br>
+<span class="text-green-400">✅ range(start+1, len(s)+1)</span> <span class="text-gray-500"># at least 1 char</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-blue-900/20 p-2 rounded border border-blue-500/30">
+                        <div class="font-bold text-blue-400 text-sm">❌ Trap 4: Not Using Set</div>
+                        <p class="text-xs text-gray-300">List lookup = O(N). <strong>Set lookup = O(1)!</strong></p>
+                        <p class="text-xs text-gray-400">Always convert wordDict to set first.</p>
+                    </div>
+                </div>`,
+                dryRun: [
+                    `<details class="group bg-slate-800 rounded-lg p-2 cursor-pointer open:ring-1 open:ring-indigo-500/50 transition-all duration-300">
+                        <summary class="flex items-center gap-3 font-medium text-indigo-300 select-none list-none text-sm">
+                            <span class="bg-indigo-500/20 text-indigo-400 p-1.5 rounded-md group-open:rotate-90 transition-transform">
+                                <i class="fas fa-chevron-right text-xs"></i>
+                            </span>
+                            <span>🔍 View Trace: "leetcode" (Hidden by Default)</span>
+                        </summary>
+                        
+                        <div class="mt-3 pl-4 border-l-2 border-indigo-500/20 space-y-3 text-sm font-mono text-gray-300 animate-in fade-in slide-in-from-top-2 duration-300">
+                            <div class="bg-black/30 p-2 rounded text-xs">
+                                <strong>Input:</strong> s = "leetcode"<br>
+                                <strong>Dict:</strong> {"leet", "code"}
+                            </div>
+                            
+                            <div class="flex items-start gap-2">
+                                <span class="text-blue-400 mt-1">1.</span>
+                                <div>
+                                    <div class="font-bold text-white">dfs(0)</div>
+                                    <div class="text-xs text-gray-500">Full string "leetcode"</div>
+                                </div>
+                            </div>
+
+                            <div class="pl-4 border-l border-gray-700 ml-1 opacity-60 hover:opacity-100 transition-opacity">
+                                <div class="flex items-center gap-2 text-xs text-red-300">
+                                    <span>s[0:1] = "l"</span>
+                                    <span class="text-red-500">❌ Not in dict</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-xs text-red-300">
+                                    <span>s[0:2] = "le"</span>
+                                    <span class="text-red-500">❌ Not in dict</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-xs text-red-300">
+                                    <span>s[0:3] = "lee"</span>
+                                    <span class="text-red-500">❌ Not in dict</span>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-2 pl-4 border-l border-gray-700 ml-1">
+                                <span class="text-green-400 mt-1">2.</span>
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <span>s[0:4] = "leet"</span>
+                                        <span class="bg-green-500/20 text-green-400 text-xs px-1.5 rounded">FOUND!</span>
+                                    </div>
+                                    <div class="text-xs text-gray-400">CUT lagao! → Recurse on remaining...</div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-2 pl-6 border-l border-gray-700 ml-1">
+                                <span class="text-blue-400 mt-1">3.</span>
+                                <div>
+                                    <div class="font-bold text-white">dfs(4)</div>
+                                    <div class="text-xs text-gray-500">Remaining: "code"</div>
+                                </div>
+                            </div>
+
+                            <div class="pl-10 border-l border-gray-700 ml-1 opacity-60 hover:opacity-100 transition-opacity">
+                                <div class="flex items-center gap-2 text-xs text-red-300">
+                                    <span>s[4:5] = "c", s[4:6] = "co", s[4:7] = "cod"</span>
+                                    <span class="text-red-500">❌</span>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-2 pl-10 border-l border-gray-700 ml-1">
+                                <span class="text-green-400 mt-1">4.</span>
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <span>s[4:8] = "code"</span>
+                                        <span class="bg-green-500/20 text-green-400 text-xs px-1.5 rounded">FOUND!</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-2 pl-12 border-l border-gray-700 ml-1">
+                                <span class="text-purple-400 mt-1">5.</span>
+                                <div>
+                                    <div class="font-bold text-purple-300">dfs(8) → True</div>
+                                    <div class="text-xs text-gray-500">BASE CASE: start == len(s)</div>
+                                </div>
+                            </div>
+
+                            <div class="border-t border-gray-700 pt-2 mt-2">
+                                <div class="flex items-center gap-2 text-green-400">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span class="font-bold">Backtrack: True → True → True</span>
+                                </div>
+                                <div class="text-xs text-gray-500 mt-1">"leet" + "code" = ✅ Valid!</div>
+                            </div>
+                        </div>
+                    </details>`
+                ],
+                codeTitle: "Evolution: Recursion → Memo → DP",
+                code: `
+##### 1. Brute Force Recursion (TLE - O(2^N))
+def wordBreak_Brute(s, wordDict):
+word_set = set(wordDict)  # O(1) lookup instead of O(N)!
+
+def dfs(start_index):
+    # 🎯 BASE CASE: Puri string khatam, segmentation successful!
+    if start_index == len(s):
+        return True
+    
+    # Try cutting at every possible end position
+    for end_index in range(start_index + 1, len(s) + 1):
+        current_word = s[start_index:end_index]
+        
+        # If current word is valid AND remaining is also valid
+        if current_word in word_set and dfs(end_index):
+            return True
+    
+    # No valid cut found from this position
+    return False
+
+return dfs(0)
+
+##### 2. Memoization - Top Down (O(N³) Time, O(N) Space)
+def wordBreak_Memo(s, wordDict):
+word_set = set(wordDict)
+memo = {}  # Cache: {start_index: can_break_from_here?}
+
+def dfs(start_index):
+    if start_index == len(s):
+        return True
+    
+    # 🔍 Already computed? Return cached answer!
+    if start_index in memo:
+        return memo[start_index]
+    
+    for end_index in range(start_index + 1, len(s) + 1):
+        current_word = s[start_index:end_index]
+        
+        if current_word in word_set and dfs(end_index):
+            memo[start_index] = True  # 💾 Cache success
+            return True
+    
+    memo[start_index] = False  # 💾 Cache failure too!
+    return False
+
+return dfs(0)
+
+##### 3. Iterative DP - Bottom Up (O(N³) Time, O(N) Space)
+# dp[i] = Can s[0:i] be segmented?
+def wordBreak_DP(s, wordDict):
+word_set = set(wordDict)
+n = len(s)
+
+# dp[i] means: Can s[0:i] be segmented into valid words?
+dp = [False] * (n + 1)
+dp[0] = True  # Empty string is always valid
+
+# Fill table left to right
+for end in range(1, n + 1):
+    for start in range(end):
+        # Recurrence:
+        # 1. dp[start] = True → s[0:start] is valid ✓
+        # 2. s[start:end] in dict → current chunk is valid ✓
+        if dp[start] and s[start:end] in word_set:
+            dp[end] = True
+            break  # One valid cut is enough!
+
+return dp[n]`
+            }
+        },
+        {
+            id: "partition-equal-subset-sum",
+            title: "0/1 Knapsack (Partition)",
+            leetcodeUrl: "https://leetcode.com/problems/partition-equal-subset-sum/",
+            difficulty: "Good to Do",
+            priority: "🟡",
+            tags: ["Knapsack"],
+            quiz: {
+                description: "Can array be split into two equal sum subsets?",
+                options: ["Greedy", "Find subset with sum = Total/2", "Sort and split", "Backtracking"],
+                correct: 1,
+                explanation: "If Total Sum is odd, impossible. Else, find subset with sum = Total/2. This is 0/1 Knapsack."
+            },
+            learn: {
+                metrics: { time: "O(N × Sum)", space: "O(Sum)" },
+                timeExplainer: `
+                    <div class="space-y-3">
+                        <div class="bg-red-900/20 p-3 rounded-lg border border-red-500/30">
+                            <p class="font-bold text-red-400 text-base">🔴 Brute Force (Recursion): O(2ⁿ)</p>
+                            <div class="mt-2 space-y-2 text-sm text-gray-300">
+                                <p><strong>🤔 Kyun?</strong> Har element ke liye 2 choices:</p>
+                                <div class="bg-black/30 p-2 rounded font-mono text-xs">
+                                    TAKE   → Include in subset (LUN LE)<br>
+                                    SKIP   → Don't include (MAT LE)
+                                </div>
+                                
+                                <p><strong>📊 Math Breakdown:</strong></p>
+                                <ul class="list-disc pl-4 space-y-1">
+                                    <li>N elements in array</li>
+                                    <li>Each element: 2 choices (take/skip)</li>
+                                    <li>Total subsets = <strong>2^N</strong></li>
+                                </ul>
+                                
+                                <p><strong>🎯 Real Numbers:</strong></p>
+                                <table class="w-full text-xs border-collapse">
+                                    <tr class="border-b border-gray-700">
+                                        <td class="py-1">N = 10</td>
+                                        <td class="text-yellow-400">1,024 subsets ✅ Fast</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-700">
+                                        <td class="py-1">N = 20</td>
+                                        <td class="text-yellow-400">~1 Million ⚠️ Slow</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-700">
+                                        <td class="py-1">N = 30</td>
+                                        <td class="text-red-400">~1 Billion ❌ TLE</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-1">N = 50</td>
+                                        <td class="text-red-400">~10¹⁵ 💀 Impossible</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-green-900/20 p-3 rounded-lg border border-green-500/30">
+                            <p class="font-bold text-green-400 text-base">🟢 Memoization / DP: O(N × Sum)</p>
+                            <div class="mt-2 space-y-2 text-sm text-gray-300">
+                                <p><strong>🤔 Why 2ⁿ → N × Sum?</strong></p>
+                                
+                                <p><strong>Step 1: Count Unique States</strong></p>
+                                <div class="bg-black/30 p-2 rounded">
+                                    <div class="font-mono text-xs">solve(<span class="text-cyan-400">index</span>, <span class="text-purple-400">remaining_sum</span>)</div>
+                                    <div class="text-xs text-gray-400">index: 0 to N → N values</div>
+                                    <div class="text-xs text-gray-400">remaining_sum: 0 to Target → Target+1 values</div>
+                                    <div class="text-cyan-400 font-bold">Unique States = N × Target</div>
+                                </div>
+                                
+                                <p class="mt-2"><strong>Step 2: Work per State</strong></p>
+                                <div class="bg-black/30 p-2 rounded font-mono text-xs">
+take = solve(idx + 1, rem - nums[idx])  <span class="text-green-400">← O(1)</span><br>
+skip = solve(idx + 1, rem)               <span class="text-green-400">← O(1)</span><br>
+return take or skip                      <span class="text-green-400">← O(1)</span>
+                                </div>
+                                
+                                <p class="mt-2"><strong>🧮 Final Calculation:</strong></p>
+                                <div class="bg-black/30 p-2 rounded text-cyan-300">
+                                    N × Sum states × O(1) work = <strong class="text-green-400">O(N × Sum)</strong>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-purple-900/20 p-3 rounded-lg border border-purple-500/30">
+                            <p class="font-bold text-purple-400 text-base">🟣 1D Space Optimized: O(Sum)</p>
+                            <div class="mt-2 text-sm text-gray-300">
+                                <p><strong>Key Trick:</strong> Iterate RIGHT to LEFT!</p>
+                                <div class="bg-black/30 p-2 rounded font-mono text-xs mt-1">
+for num in nums:<br>
+for s in range(target, num - 1, <span class="text-red-400">-1</span>):  <span class="text-yellow-400">← BACKWARDS!</span><br>
+    dp[s] = dp[s] or dp[s - num]
+                                </div>
+                                <p class="text-xs text-gray-400 mt-1">Backwards ensures each item used only once!</p>
+                            </div>
+                        </div>
+                    </div>`,
+                spaceExplainer: `
+                    <div class="space-y-3">
+                        <div class="bg-slate-800 p-3 rounded-lg">
+                            <p class="font-bold text-blue-400">1. Recursion Stack: O(N)</p>
+                            <div class="text-sm text-gray-300 mt-1">
+                                <p>Max depth = N (one decision per element)</p>
+                                <div class="bg-black/30 p-2 rounded font-mono text-xs mt-1">
+solve(0, target) → solve(1, ...) → ... → solve(N, ...)<br>
+<span class="text-yellow-400">Max depth = N</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-slate-800 p-3 rounded-lg">
+                            <p class="font-bold text-green-400">2. DP Table: O(N × Sum) → O(Sum)</p>
+                            <div class="text-sm text-gray-300 mt-1">
+                                <div class="bg-black/30 p-2 rounded font-mono text-xs">
+<span class="text-gray-500"># 2D Table</span><br>
+dp = [[False] * (target+1) for _ in range(N+1)]  <span class="text-yellow-400">← O(N × Sum)</span><br><br>
+<span class="text-gray-500"># Optimized 1D</span><br>
+dp = [False] * (target + 1)  <span class="text-green-400">← O(Sum)</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-green-900/20 p-3 rounded-lg border border-green-500/30">
+                            <p class="font-bold text-green-400">Optimized Space: O(Sum)</p>
+                            <p class="text-sm text-gray-400">Where Sum = Total/2 (our target)</p>
+                        </div>
+                    </div>`,
+                visual: `<div class="space-y-3">
+                    <div class="text-center font-bold text-cyan-400">🎒 0/1 Knapsack = Lun ya Mat Lun</div>
+                    <div class="bg-black/30 p-3 rounded font-mono text-xs">
+                        <div class="text-gray-400 mb-2">nums = [1, 5, 11, 5], Target = 11</div>
+                        <div class="flex items-center gap-4 justify-center">
+                            <div class="text-center">
+                                <div class="bg-green-900/30 p-2 rounded border border-green-500/30 mb-1">
+                                    <span class="text-green-400 font-bold">TAKE</span>
+                                </div>
+                                <div class="text-xs text-gray-400">Include in subset</div>
+                                <div class="text-green-400 text-xs">idx + 1, sum - num</div>
+                            </div>
+                            <div class="text-gray-500 text-2xl">OR</div>
+                            <div class="text-center">
+                                <div class="bg-red-900/30 p-2 rounded border border-red-500/30 mb-1">
+                                    <span class="text-red-400 font-bold">SKIP</span>
+                                </div>
+                                <div class="text-xs text-gray-400">Don't include</div>
+                                <div class="text-red-400 text-xs">idx + 1, sum (same)</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-xs text-gray-400 text-center">
+                        Each element: use ONCE or not at all<br>
+                        Goal: Find subset summing to Target
+                    </div>
+                </div>`,
+                crux: `<div class="space-y-3">
+                    <div class="bg-red-900/30 p-3 rounded-lg border-2 border-red-500">
+                        <div class="font-bold text-red-400 mb-2">🚨 CRITICAL: 0/1 vs Unbounded Knapsack</div>
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <div class="bg-red-900/20 p-2 rounded">
+                                <div class="text-red-400 font-bold mb-1">0/1 Knapsack</div>
+                                <div class="font-mono bg-black/30 p-1 rounded">
+                                    solve(<span class="text-yellow-400">idx + 1</span>, rem - num)
+                                </div>
+                                <div class="text-gray-400 mt-1">MOVE to next! Each item ONCE.</div>
+                            </div>
+                            <div class="bg-green-900/20 p-2 rounded">
+                                <div class="text-green-400 font-bold mb-1">Unbounded</div>
+                                <div class="font-mono bg-black/30 p-1 rounded">
+                                    solve(<span class="text-yellow-400">idx</span>, rem - num)
+                                </div>
+                                <div class="text-gray-400 mt-1">STAY at same! Infinite supply.</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-cyan-900/20 p-3 rounded-lg border border-cyan-500/30">
+                        <div class="font-bold text-cyan-400 mb-2">🎯 Problem Transformation</div>
+                        <div class="bg-black/30 p-2 rounded text-xs">
+                            <div>1. Total sum odd? → <span class="text-red-400">IMPOSSIBLE</span></div>
+                            <div>2. Target = sum / 2</div>
+                            <div>3. Find ANY subset that sums to Target</div>
+                            <div>4. If found, other subset also = Target! ✓</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-purple-900/20 p-3 rounded-lg border border-purple-500/30">
+                        <div class="font-bold text-purple-400 mb-2">🔗 Same Pattern Problems</div>
+                        <ul class="text-sm text-gray-300 space-y-1">
+                            <li>• <strong>Target Sum</strong> - Assign +/- to reach target</li>
+                            <li>• <strong>Last Stone Weight II</strong> - Minimize remaining stone</li>
+                            <li>• <strong>Subset Sum</strong> - Classic 0/1 Knapsack</li>
+                            <li>• <strong>Count Subsets with Sum K</strong> - Count instead of boolean</li>
+                        </ul>
+                    </div>
+                </div>`,
+                trap: `<div class="space-y-2">
+                    <div class="bg-red-900/20 p-2 rounded border border-red-500/30">
+                        <div class="font-bold text-red-400 text-sm">❌ Trap 1: Odd Sum</div>
+                        <p class="text-xs text-gray-300">If total sum is <strong>ODD</strong>, return False immediately!</p>
+                        <p class="text-xs text-gray-400">Can't split odd number into two equal integers.</p>
+                    </div>
+                    
+                    <div class="bg-orange-900/20 p-2 rounded border border-orange-500/30">
+                        <div class="font-bold text-orange-400 text-sm">❌ Trap 2: 1D DP Direction</div>
+                        <div class="bg-black/30 p-1 rounded font-mono text-xs mt-1">
+<span class="text-red-400">❌ for s in range(0, target+1):</span>  <span class="text-gray-500"># LEFT to RIGHT</span><br>
+<span class="text-green-400">✅ for s in range(target, num-1, -1):</span>  <span class="text-gray-500"># RIGHT to LEFT</span>
+                        </div>
+                        <p class="text-xs text-gray-400">Wrong direction = using same item multiple times!</p>
+                    </div>
+                    
+                    <div class="bg-yellow-900/20 p-2 rounded border border-yellow-500/30">
+                        <div class="font-bold text-yellow-400 text-sm">❌ Trap 3: Greedy Doesn't Work</div>
+                        <p class="text-xs text-gray-300">[3, 1, 1, 2, 2, 1]: Greedy picks 3, then stuck!</p>
+                        <p class="text-xs text-gray-400">Optimal: {3, 2} and {1, 1, 2, 1} both sum to 5.</p>
+                    </div>
+                    
+                    <div class="bg-blue-900/20 p-2 rounded border border-blue-500/30">
+                        <div class="font-bold text-blue-400 text-sm">❌ Trap 4: Confusing with Unbounded</div>
+                        <p class="text-xs text-gray-300">0/1 = <strong>idx + 1</strong> (move) | Unbounded = <strong>idx</strong> (stay)</p>
+                        <p class="text-xs text-gray-400">This single line difference changes everything!</p>
+                    </div>
+                </div>`,
+                dryRun: [
+                    `<details class="group bg-slate-800 rounded-lg p-2 cursor-pointer open:ring-1 open:ring-indigo-500/50 transition-all duration-300">
+                        <summary class="flex items-center gap-3 font-medium text-indigo-300 select-none list-none text-sm">
+                            <span class="bg-indigo-500/20 text-indigo-400 p-1.5 rounded-md group-open:rotate-90 transition-transform">
+                                <i class="fas fa-chevron-right text-xs"></i>
+                            </span>
+                            <span>🔍 View Trace: [1, 5, 11, 5] (Hidden by Default)</span>
+                        </summary>
+                        
+                        <div class="mt-3 pl-4 border-l-2 border-indigo-500/20 space-y-3 text-sm font-mono text-gray-300">
+                            <div class="bg-black/30 p-2 rounded text-xs">
+                                <strong>Input:</strong> nums = [1, 5, 11, 5]<br>
+                                <strong>Total:</strong> 22 (even ✓)<br>
+                                <strong>Target:</strong> 22 / 2 = 11
+                            </div>
+                            
+                            <div class="text-xs">
+                                <strong>Find subset summing to 11:</strong>
+                                <div class="bg-black/30 p-2 rounded mt-1 space-y-1">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-yellow-400">1.</span>
+                                        <span>Try [1]: 1 ≠ 11</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-yellow-400">2.</span>
+                                        <span>Try [1, 5]: 6 ≠ 11</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-yellow-400">3.</span>
+                                        <span>Try [1, 5, 5]: 11 = 11 ✅</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-xs">
+                                <strong>Or simpler - just take 11:</strong>
+                                <div class="bg-black/30 p-2 rounded mt-1">
+                                    <div class="flex items-center gap-2">
+                                        <span>Subset {11} sums to 11 ✅</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span>Remaining {1, 5, 5} also sums to 11 ✅</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="border-t border-gray-700 pt-2 mt-2">
+                                <div class="flex items-center gap-2 text-green-400">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span class="font-bold">Answer: True</span>
+                                </div>
+                                <div class="text-xs text-gray-500 mt-1">Partition: {11} | {1, 5, 5}</div>
+                            </div>
+                        </div>
+                    </details>`
+                ],
+                codeTitle: "Evolution: Recursion → Memo → 1D DP",
+                code: `
+##### 1. Brute Force Recursion (TLE - O(2^N))
+def canPartition_Brute(nums):
+total = sum(nums)
+if total % 2 != 0:  # Odd sum? Impossible!
+    return False
+target = total // 2
+
+def solve(index, remaining):
+    # 🎯 BASE CASES
+    if remaining == 0: return True   # Found valid subset!
+    if remaining < 0: return False   # Over budget
+    if index >= len(nums): return False  # No items left
+    
+    # TAKE or SKIP (Lun ya Mat Lun)
+    take = solve(index + 1, remaining - nums[index])  # ← idx + 1!
+    skip = solve(index + 1, remaining)
+    
+    return take or skip
+
+return solve(0, target)
+
+##### 2. Memoization - Top Down (O(N × Sum) Time & Space)
+def canPartition_Memo(nums):
+total = sum(nums)
+if total % 2 != 0:
+    return False
+target = total // 2
+
+memo = {}
+
+def solve(index, remaining):
+    if remaining == 0: return True
+    if remaining < 0 or index >= len(nums): return False
+    
+    if (index, remaining) in memo:
+        return memo[(index, remaining)]
+    
+    take = solve(index + 1, remaining - nums[index])
+    skip = solve(index + 1, remaining)
+    
+    memo[(index, remaining)] = take or skip
+    return memo[(index, remaining)]
+
+return solve(0, target)
+
+##### 3. 1D DP - Space Optimized (O(N × Sum) Time, O(Sum) Space)
+def canPartition_DP(nums):
+total = sum(nums)
+if total % 2 != 0:
+    return False
+target = total // 2
+
+# dp[s] = True if we can make sum 's' using some subset
+dp = [False] * (target + 1)
+dp[0] = True  # Empty subset = sum 0
+
+for num in nums:
+    # 🚨 CRITICAL: Iterate BACKWARDS!
+    # This ensures each num is used at most ONCE
+    for s in range(target, num - 1, -1):
+        if dp[s - num]:  # Could make (s - num) before?
+            dp[s] = True  # Now can make s!
+    
+    if dp[target]:  # Early exit optimization
+        return True
+
+return dp[target]`
+            }
+        },
+        {
+            id: "edit-distance",
+            title: "Edit Distance",
+            leetcodeUrl: "https://leetcode.com/problems/edit-distance/",
+            difficulty: "Good to Do",
+            priority: "🟡",
+            tags: ["String DP"],
+            quiz: {
+                description: "Min ops to convert word1 to word2.",
+                options: ["LCS variation", "Greedy", "BFS", "Two Pointers"],
+                correct: 0,
+                explanation: "2D DP. If match: dp[i-1][j-1]. If mismatch: 1 + min(Insert, Delete, Replace)."
+            },
+            learn: {
+                metrics: { time: "O(M×N)", space: "O(M×N)" },
+                timeExplainer: `
+                    <div class="space-y-3">
+                        <div class="bg-red-900/20 p-3 rounded-lg border border-red-500/30">
+                            <p class="font-bold text-red-400 text-base">🔴 Brute Force (Recursion): O(3^(M+N))</p>
+                            <div class="mt-2 space-y-2 text-sm text-gray-300">
+                                <p><strong>🤔 Kyun?</strong> Har mismatch pe 3 choices hain:</p>
+                                <div class="bg-black/30 p-2 rounded font-mono text-xs">
+                                    INSERT  → (i, j-1)    <span class="text-gray-500"># Add char to word1</span><br>
+                                    DELETE  → (i-1, j)    <span class="text-gray-500"># Remove char from word1</span><br>
+                                    REPLACE → (i-1, j-1)  <span class="text-gray-500"># Change char in word1</span>
+                                </div>
+                                
+                                <p><strong>📊 Math Breakdown:</strong></p>
+                                <ul class="list-disc pl-4 space-y-1">
+                                    <li>At each step: <strong>3 branches</strong> (worst case)</li>
+                                    <li>Max depth: <strong>M + N</strong> (both strings empty)</li>
+                                    <li>Total: 3^(M+N) calls!</li>
+                                </ul>
+                                
+                                <p><strong>🎯 Real Numbers:</strong></p>
+                                <table class="w-full text-xs border-collapse">
+                                    <tr class="border-b border-gray-700">
+                                        <td class="py-1">M=5, N=5</td>
+                                        <td class="text-yellow-400">3^10 ≈ 59K ops ✅</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-700">
+                                        <td class="py-1">M=10, N=10</td>
+                                        <td class="text-orange-400">3^20 ≈ 3.5 Billion ⚠️ TLE</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-1">M=20, N=20</td>
+                                        <td class="text-red-400">3^40 ≈ 10^19 💀 Impossible</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-green-900/20 p-3 rounded-lg border border-green-500/30">
+                            <p class="font-bold text-green-400 text-base">🟢 Memoization / DP: O(M × N)</p>
+                            <div class="mt-2 space-y-2 text-sm text-gray-300">
+                                <p><strong>🤔 Why 3^(M+N) → M×N?</strong></p>
+                                
+                                <p><strong>Step 1: Count Unique States</strong></p>
+                                <div class="bg-black/30 p-2 rounded">
+                                    <div class="font-mono text-xs">solve(<span class="text-cyan-400">i</span>, <span class="text-purple-400">j</span>)</div>
+                                    <div class="text-xs text-gray-400">i can be: 0 to M → (M+1) values</div>
+                                    <div class="text-xs text-gray-400">j can be: 0 to N → (N+1) values</div>
+                                    <div class="text-cyan-400 font-bold">Unique States = (M+1) × (N+1) ≈ O(M×N)</div>
+                                </div>
+                                
+                                <p class="mt-2"><strong>Step 2: Work per State</strong></p>
+                                <div class="bg-black/30 p-2 rounded font-mono text-xs">
+if word1[i-1] == word2[j-1]:  <span class="text-green-400">← O(1) compare</span><br>
+return dp[i-1][j-1]       <span class="text-green-400">← O(1) lookup</span><br>
+else:<br>
+return 1 + min(...)       <span class="text-green-400">← O(1) min of 3</span>
+                                </div>
+                                
+                                <p class="mt-2"><strong>🧮 Final Calculation:</strong></p>
+                                <div class="bg-black/30 p-2 rounded text-cyan-300">
+                                    M×N states × O(1) work = <strong class="text-green-400">O(M×N)</strong>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-purple-900/20 p-3 rounded-lg border border-purple-500/30">
+                            <p class="font-bold text-purple-400 text-base">🟣 Space Optimized: O(min(M, N))</p>
+                            <div class="mt-2 text-sm text-gray-300">
+                                <p><strong>Only need previous row!</strong></p>
+                                <ul class="list-disc pl-4 text-xs space-y-1">
+                                    <li>Current cell only depends on: top, left, diagonal</li>
+                                    <li>Keep 2 rows (previous + current)</li>
+                                    <li>Space: O(min(M, N)) if we iterate smarter</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>`,
+                spaceExplainer: `
+                    <div class="space-y-3">
+                        <div class="bg-slate-800 p-3 rounded-lg">
+                            <p class="font-bold text-blue-400">1. Recursion Stack: O(M + N)</p>
+                            <div class="text-sm text-gray-300 mt-1">
+                                <p>Max depth when both strings shrink one char at a time</p>
+                                <div class="bg-black/30 p-2 rounded font-mono text-xs mt-1">
+solve(M, N) → solve(M-1, N) → ... → solve(0, N)<br>
+     → solve(0, N-1) → ... → solve(0, 0)<br>
+<span class="text-yellow-400">Max depth = M + N</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-slate-800 p-3 rounded-lg">
+                            <p class="font-bold text-green-400">2. Memoization Cache / DP Table: O(M × N)</p>
+                            <div class="text-sm text-gray-300 mt-1">
+                                <div class="bg-black/30 p-2 rounded font-mono text-xs">
+dp = [[0] * (N+1) for _ in range(M+1)]<br>
+<span class="text-gray-500"># (M+1) rows × (N+1) columns</span><br>
+<span class="text-cyan-400">Size ≈ M × N cells</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-green-900/20 p-3 rounded-lg border border-green-500/30">
+                            <p class="font-bold text-green-400">Total Space: O(M × N)</p>
+                            <p class="text-sm text-gray-400">Can be optimized to O(min(M,N)) using 2 rows.</p>
+                        </div>
+                    </div>`,
+                visual: `<div class="space-y-3">
+                    <div class="text-center font-bold text-cyan-400">⚡ The 3 Operations</div>
+                    <div class="bg-black/30 p-3 rounded font-mono text-xs">
+                        <div class="text-gray-400 mb-2">Convert "CAT" → "CUT"</div>
+                        <div class="grid grid-cols-3 gap-2 text-center">
+                            <div class="bg-blue-900/30 p-2 rounded border border-blue-500/30">
+                                <div class="text-blue-400 font-bold">INSERT</div>
+                                <div class="text-xs">CAT → C<span class="text-green-400">U</span>AT</div>
+                                <div class="text-gray-500 text-xs">(i, j-1)</div>
+                            </div>
+                            <div class="bg-red-900/30 p-2 rounded border border-red-500/30">
+                                <div class="text-red-400 font-bold">DELETE</div>
+                                <div class="text-xs">CAT → <span class="text-red-400 line-through">C</span>AT</div>
+                                <div class="text-gray-500 text-xs">(i-1, j)</div>
+                            </div>
+                            <div class="bg-yellow-900/30 p-2 rounded border border-yellow-500/30">
+                                <div class="text-yellow-400 font-bold">REPLACE</div>
+                                <div class="text-xs">CAT → C<span class="text-yellow-400">U</span>T</div>
+                                <div class="text-gray-500 text-xs">(i-1, j-1)</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-xs text-gray-400 text-center">
+                        If chars MATCH → move diagonal (no cost)<br>
+                        If MISMATCH → pick min of 3 operations (+1 cost)
+                    </div>
+                </div>`,
+                crux: `<div class="space-y-3">
+                    <div class="bg-cyan-900/20 p-3 rounded-lg border border-cyan-500/30">
+                        <div class="font-bold text-cyan-400 mb-2">🎯 The Core Recurrence</div>
+                        <div class="bg-black/30 p-2 rounded font-mono text-xs">
+if word1[i-1] == word2[j-1]:  <span class="text-green-400"># MATCH!</span><br>
+dp[i][j] = dp[i-1][j-1]   <span class="text-green-400"># No operation needed</span><br>
+else:                         <span class="text-red-400"># MISMATCH</span><br>
+dp[i][j] = 1 + min(<br>
+    dp[i-1][j],           <span class="text-red-400"># DELETE from word1</span><br>
+    dp[i][j-1],           <span class="text-blue-400"># INSERT into word1</span><br>
+    dp[i-1][j-1]          <span class="text-yellow-400"># REPLACE in word1</span><br>
+)
+                        </div>
+                    </div>
+                    
+                    <div class="bg-yellow-900/20 p-3 rounded-lg border border-yellow-500/30">
+                        <div class="font-bold text-yellow-400 mb-2">💡 Key Insight: LCS Connection</div>
+                        <p class="text-sm text-gray-300">Edit Distance ≈ <strong>Total Length - 2×LCS</strong></p>
+                        <p class="text-xs text-gray-400">But direct DP is easier to understand and implement!</p>
+                    </div>
+                    
+                    <div class="bg-purple-900/20 p-3 rounded-lg border border-purple-500/30">
+                        <div class="font-bold text-purple-400 mb-2">🔗 Same Pattern Problems</div>
+                        <ul class="text-sm text-gray-300 space-y-1">
+                            <li>• <strong>LCS</strong> - Match = take, Mismatch = skip</li>
+                            <li>• <strong>One Edit Distance</strong> - Check if exactly 1 edit</li>
+                            <li>• <strong>Delete Operation for Two Strings</strong> - Only delete allowed</li>
+                            <li>• <strong>Minimum ASCII Delete Sum</strong> - Weighted deletions</li>
+                        </ul>
+                    </div>
+                </div>`,
+                trap: `<div class="space-y-2">
+                    <div class="bg-red-900/20 p-2 rounded border border-red-500/30">
+                        <div class="font-bold text-red-400 text-sm">❌ Trap 1: Base Case Confusion</div>
+                        <div class="bg-black/30 p-1 rounded font-mono text-xs mt-1">
+dp[i][0] = i  <span class="text-gray-500"># Delete all i chars from word1</span><br>
+dp[0][j] = j  <span class="text-gray-500"># Insert all j chars into word1</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-orange-900/20 p-2 rounded border border-orange-500/30">
+                        <div class="font-bold text-orange-400 text-sm">❌ Trap 2: Index Off-by-One</div>
+                        <p class="text-xs text-gray-300">DP uses 1-indexed! Compare <code>word1[i-1]</code> with <code>word2[j-1]</code></p>
+                        <p class="text-xs text-gray-400">dp[i][j] represents first i chars of word1 and first j chars of word2</p>
+                    </div>
+                    
+                    <div class="bg-yellow-900/20 p-2 rounded border border-yellow-500/30">
+                        <div class="font-bold text-yellow-400 text-sm">❌ Trap 3: Forgetting +1</div>
+                        <p class="text-xs text-gray-300">INSERT/DELETE/REPLACE each costs <strong>1 operation</strong></p>
+                        <p class="text-xs text-gray-400">Return value is: <code>1 + min(...)</code> not just <code>min(...)</code></p>
+                    </div>
+                    
+                    <div class="bg-blue-900/20 p-2 rounded border border-blue-500/30">
+                        <div class="font-bold text-blue-400 text-sm">❌ Trap 4: Greedy Doesn't Work</div>
+                        <p class="text-xs text-gray-300">"horse" → "ros": Greedy might replace h→r, but optimal is different!</p>
+                        <p class="text-xs text-gray-400">Must try all 3 options and take minimum.</p>
+                    </div>
+                </div>`,
+                dryRun: [
+                    `<details class="group bg-slate-800 rounded-lg p-2 cursor-pointer open:ring-1 open:ring-indigo-500/50 transition-all duration-300">
+                        <summary class="flex items-center gap-3 font-medium text-indigo-300 select-none list-none text-sm">
+                            <span class="bg-indigo-500/20 text-indigo-400 p-1.5 rounded-md group-open:rotate-90 transition-transform">
+                                <i class="fas fa-chevron-right text-xs"></i>
+                            </span>
+                            <span>🔍 View Trace: "CAT" → "CUT" (Hidden by Default)</span>
+                        </summary>
+                        
+                        <div class="mt-3 pl-4 border-l-2 border-indigo-500/20 space-y-3 text-sm font-mono text-gray-300">
+                            <div class="bg-black/30 p-2 rounded text-xs">
+                                <strong>Input:</strong> word1 = "CAT", word2 = "CUT"<br>
+                                <strong>Goal:</strong> Minimum operations to convert CAT → CUT
+                            </div>
+                            
+                            <div class="text-xs">
+                                <strong>DP Table (rows=word1, cols=word2):</strong>
+                                <pre class="bg-black/30 p-2 rounded mt-1 overflow-x-auto">
+""  C   U   T
+""   0   1   2   3  ← Insert C, U, T
+C    1  [0]  1   2  ← C==C, cost=0
+A    2   1  [1]  2  ← A≠U, min(1,1,0)+1=1
+T    3   2   2  [1] ← T==T, cost=dp[2][2]=1
+                                </pre>
+                            </div>
+                            
+                            <div class="space-y-2 text-xs">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-green-400">1.</span>
+                                    <span>dp[1][1]: C == C → dp[0][0] = <strong>0</strong></span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-yellow-400">2.</span>
+                                    <span>dp[2][2]: A ≠ U → 1 + min(dp[1][2], dp[2][1], dp[1][1])</span>
+                                </div>
+                                <div class="flex items-center gap-2 pl-4">
+                                    <span>= 1 + min(1, 1, 0) = <strong>1</strong> (REPLACE A→U)</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-green-400">3.</span>
+                                    <span>dp[3][3]: T == T → dp[2][2] = <strong>1</strong></span>
+                                </div>
+                            </div>
+
+                            <div class="border-t border-gray-700 pt-2 mt-2">
+                                <div class="flex items-center gap-2 text-green-400">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span class="font-bold">Answer: 1 (Replace 'A' with 'U')</span>
+                                </div>
+                                <div class="text-xs text-gray-500 mt-1">CAT → C<span class="text-yellow-400">U</span>T</div>
+                            </div>
+                        </div>
+                    </details>`
+                ],
+                codeTitle: "Evolution: Recursion → Memo → DP",
+                code: `
+##### 1. Brute Force Recursion (TLE - O(3^(M+N)))
+def minDistance_Brute(word1, word2):
+def solve(i, j):
+    # 🎯 BASE CASES
+    if i == 0: return j  # Insert remaining j chars
+    if j == 0: return i  # Delete remaining i chars
+    
+    # If chars MATCH - no operation needed!
+    if word1[i-1] == word2[j-1]:
+        return solve(i-1, j-1)
+    
+    # If MISMATCH - try all 3 operations, pick minimum
+    insert_op = solve(i, j-1)      # Insert word2[j-1] into word1
+    delete_op = solve(i-1, j)      # Delete word1[i-1]
+    replace_op = solve(i-1, j-1)   # Replace word1[i-1] with word2[j-1]
+    
+    return 1 + min(insert_op, delete_op, replace_op)
+
+return solve(len(word1), len(word2))
+
+##### 2. Memoization - Top Down (O(M×N) Time & Space)
+def minDistance_Memo(word1, word2):
+memo = {}
+
+def solve(i, j):
+    if i == 0: return j
+    if j == 0: return i
+    
+    if (i, j) in memo:
+        return memo[(i, j)]
+    
+    if word1[i-1] == word2[j-1]:
+        result = solve(i-1, j-1)  # Match! No cost
+    else:
+        insert_op = solve(i, j-1)
+        delete_op = solve(i-1, j)
+        replace_op = solve(i-1, j-1)
+        result = 1 + min(insert_op, delete_op, replace_op)
+    
+    memo[(i, j)] = result
+    return result
+
+return solve(len(word1), len(word2))
+
+##### 3. Iterative DP - Bottom Up (O(M×N) Time & Space)
+def minDistance_DP(word1, word2):
+m, n = len(word1), len(word2)
+
+# dp[i][j] = min ops to convert word1[0:i] → word2[0:j]
+dp = [[0] * (n + 1) for _ in range(m + 1)]
+
+# Base cases: converting empty string
+for i in range(m + 1):
+    dp[i][0] = i  # Delete all i chars
+for j in range(n + 1):
+    dp[0][j] = j  # Insert all j chars
+
+# Fill table
+for i in range(1, m + 1):
+    for j in range(1, n + 1):
+        if word1[i-1] == word2[j-1]:
+            dp[i][j] = dp[i-1][j-1]  # No operation
+        else:
+            dp[i][j] = 1 + min(
+                dp[i-1][j],    # DELETE
+                dp[i][j-1],    # INSERT
+                dp[i-1][j-1]   # REPLACE
+            )
+
+return dp[m][n]`
+            }
+        }
+    ]
+}
+
+
+// ========== data/dsa/heap_trie.js ==========
+// Heap Trie data
+// Extracted from data.js
+
+const topic_heap_trie = {
+    id: "heap_trie",
+    title: "Heaps & Tries",
+    description: "Principal Engineer DSA • Day 8",
+    color: "#d97706",
+    icon: "fas fa-sitemap",
+    mentalModel: {
+        whenToApply: [
+            { label: "Top K Elements", desc: "Heap. O(N log K)." },
+            { label: "Prefix Search", desc: "Trie. O(L) lookup." }
+        ],
+        safetyCheck: [
+            { label: "K-th Largest", desc: "Use Min-Heap of size K." },
+            { label: "Trie Node", desc: "Remember `is_end` flag." }
+        ]
+    },
+    questions: [
+        {
+            id: "kth-largest-element-in-a-stream",
+            title: "Kth Largest in Stream",
+            leetcodeUrl: "https://leetcode.com/problems/kth-largest-element-in-a-stream/",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["Min-Heap"],
+            quiz: {
+                description: "Maintain Kth largest in streaming data. Data structure?",
+                options: ["Sort list every time", "Max-Heap", "Min-Heap of size K", "BST"],
+                correct: 2,
+                explanation: "Min-Heap of size K! The root holds the K-th largest. If new val > root, pop root and push new val. Keep top K elements in the club; root is the 'bouncer' (smallest of the top K)."
+            },
+            learn: {
+                metrics: { time: "O(log K)", space: "O(K)" },
+                timeExplainer: "<strong>Min-Heap:</strong><br>• Add element: <code>O(log K)</code><br>• Maintain size K<br><br><strong>Total:</strong> <code>O(log K)</code> per add",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Heap stores exactly K elements<br>• Ignore infinite stream history<br><br><strong>Result:</strong> <code>O(K)</code>",
+                visual: "<span><strong>Visual: The VIP Room</strong><br>Room capacity K. Bouncer (Root) is the poorest VIP. <br>If new guy is richer than Bouncer, kick Bouncer out.</span>",
+                crux: "<strong>Inverse Logic:</strong> Kth Largest -> Min-Heap.<br>1. Keep size <= K.<br>2. `heapq.heappushpop` if full.",
+                trap: "<strong>Don't Heapify All:</strong> Only store K elements.",
+                dryRun: ["K=3. Heap [?, ?, ?].", "Add 5, 2, 8 -> [2, 5, 8]. Root 2 is 3rd largest.", "Add 10. 10 > 2. Pop 2. Push 10. [5, 8, 10]. Root 5 is 3rd largest."],
+                codeTitle: "Python Solution",
+                code: `class KthLargest:
+def __init__(self, k, nums):
+    self.k = k
+    self.heap = []
+    for n in nums: self.add(n)
+    
+def add(self, val):
+    if len(self.heap) < self.k:
+        heapq.heappush(self.heap, val)
+    elif val > self.heap[0]:
+        heapq.heapreplace(self.heap, val)
+    return self.heap[0]`
+            }
+        },
+        {
+            id: "merge-k-sorted-lists",
+            title: "Merge K Sorted Lists",
+            leetcodeUrl: "https://leetcode.com/problems/merge-k-sorted-lists/",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["Heap"],
+            quiz: {
+                description: "Merge K lists efficiently.",
+                options: ["Comparing heads one by one", "Min-Heap with (val, node)", "Merge 2 at a time", "Concatenate and sort"],
+                correct: 1,
+                explanation: "Min-Heap! Put all K heads in heap. Pop min, add to result, push next node from that list. O(N log K)."
+            },
+            learn: {
+                metrics: { time: "O(N log K)", space: "O(K)" },
+                timeExplainer: "<strong>Heap Merge:</strong><br>• Heap size K (one per list)<br>• Process all N nodes<br>• Push/Pop is log K<br><br><strong>Total:</strong> <code>O(N log K)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Heap stores K nodes<br>• Output list not counted (if returning new)<br><br><strong>Result:</strong> <code>O(K)</code>",
+                visual: "<span><strong>Visual: The Race</strong><br>K runners at start line. Move the leader forward.</span>",
+                crux: "<strong>Tuple Trick:</strong> `(val, idx, node)`. Use `idx` to break ties because Python can't compare `ListNode` objects.",
+                trap: "<strong>Comparsion Crash:</strong> Nodes with same value will crash heap if you don't use a tie-breaker or override `__lt__`.",
+                dryRun: ["Heads: 1(L1), 4(L2), 2(L3). Heap: [(1, L1), (2, L3), (4, L2)].", "Pop 1. Push L1.next."],
+                codeTitle: "Python Solution",
+                code: `def mergeKLists(lists):
+pq = []
+for i, l in enumerate(lists):
+    if l: heapq.heappush(pq, (l.val, i, l))
+
+dummy = curr = ListNode()
+while pq:
+    val, i, node = heapq.heappop(pq)
+    curr.next = node
+    curr = curr.next
+    if node.next:
+        heapq.heappush(pq, (node.next.val, i, node.next))
+        
+return dummy.next`
+            }
+        },
+        {
+            id: "implement-trie-prefix-tree",
+            title: "Implement Trie",
+            leetcodeUrl: "https://leetcode.com/problems/implement-trie-prefix-tree/",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["Trie"],
+            quiz: {
+                description: "Data structure for fast prefix search.",
+                options: ["HashMap", "Binary Search Tree", "Trie (Prefix Tree)", "Graph"],
+                correct: 2,
+                explanation: "Trie! Nodes represent characters. Path from root spells word. Shared prefixes share nodes (Space efficient)."
+            },
+            learn: {
+                metrics: { time: "O(L)", space: "O(N*L)" },
+                timeExplainer: "<strong>Prefix Tree:</strong><br>• Traversal depends only on word length L<br>• Independent of total words N<br><br><strong>Total:</strong> <code>O(L)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Worst: No common prefixes<br>• <code>N</code> words of length <code>L</code><br><br><strong>Total:</strong> <code>O(N×L)</code> nodes",
+                visual: "<span><strong>Visual: Autocomplete</strong><br>APP -> 'A' -> 'P' -> 'P'. <br>APPLE -> Extends 'P' -> 'L' -> 'E'.</span>",
+                crux: "<strong>Node Struct:</strong> `children = {}`, `is_end = False`.<br>Insert/Search: Traverse char by char.",
+                trap: "<strong>Prefix vs Word:</strong> `startWith` returns True for 'APP'. `search` returns False for 'APP' if only 'APPLE' exists.",
+                dryRun: ["Insert 'HI'. Root->H->I(end).", "Search 'H'. Root->H. No end. False.", "Starts 'H'. True."],
+                codeTitle: "Python Solution",
+                code: `class TrieNode:
+def __init__(self):
+    self.children = {}
+    self.isEnd = False
+
+class Trie:
+def __init__(self):
+    self.root = TrieNode()
+
+def insert(self, word):
+    cur = self.root
+    for c in word:
+        if c not in cur.children:
+            cur.children[c] = TrieNode()
+        cur = cur.children[c]
+    cur.isEnd = True
+
+def search(self, word):
+    cur = self.root
+    for c in word:
+        if c not in cur.children: return False
+        cur = cur.children[c]
+    return cur.isEnd
+
+def startsWith(self, prefix):
+    cur = self.root
+    for c in prefix:
+        if c not in cur.children: return False
+        cur = cur.children[c]
+    return True`
+            }
+        },
+        {
+            id: "maximum-xor-of-two-numbers-in-an-array",
+            title: "Max XOR of Two Numbers",
+            leetcodeUrl: "https://leetcode.com/problems/maximum-xor-of-two-numbers-in-an-array/",
+            difficulty: "Good to Do",
+            priority: "🟡",
+            tags: ["Trie", "Bit Manipulation"],
+            quiz: {
+                description: "Find max XOR of two nums in array. O(N)?",
+                options: ["Brute Force O(N²)", "Trie", "Sort", "Heap"],
+                correct: 1,
+                explanation: "Insert all numbers into a Binary Trie. For each number, try to traverse the opposite bit path to maximize XOR."
+            },
+            learn: {
+                metrics: { time: "O(N * 32)", space: "O(N * 32)" },
+                code: `# Trie Implementation needed`
+            }
+        },
+        {
+            id: "single-number",
+            title: "Single Number",
+            leetcodeUrl: "https://leetcode.com/problems/single-number/",
+            difficulty: "Bonus",
+            priority: "🟢",
+            tags: ["Bit Manipulation"],
+            quiz: {
+                description: "All nums appear twice except one. O(N) time, O(1) space?",
+                options: ["HashSet", "Sorting", "XOR all numbers", "Math"],
+                correct: 2,
+                explanation: "A ^ A = 0. A ^ 0 = A. XORing all numbers cancels out pairs, leaving the single number."
+            },
+            learn: {
+                metrics: { time: "O(N)", space: "O(1)" },
+                code: `def singleNumber(nums):
+res = 0
+for n in nums:
+    res ^= n
+return res`
+            }
+        },
+        {
+            id: "heapify-algorithm",
+            title: "Heapify Algorithm",
+            difficulty: "Bonus",
+            priority: "🟢",
+            tags: ["Heap"],
+            quiz: {
+                description: "Convert array to heap. Complexity?",
+                options: ["O(N log N)", "O(N)", "O(log N)", "O(N²)"],
+                correct: 1,
+                explanation: "O(N)! Sift-down from the last non-leaf node up to root. Lower levels have less work."
+            },
+            learn: {
+                metrics: { time: "O(N)", space: "O(1)" },
+                code: `import heapq
+def heapify(arr):
+heapq.heapify(arr) # Linear time O(N)
+return arr`
+            }
+        }
+    ]
+}
+
+
+// ========== data/dsa/backtracking.js ==========
+// Backtracking data
+// Extracted from data.js
+
+const topic_backtracking = {
+    id: "backtracking",
+    title: "Backtracking Mastery",
+    description: "Principal Engineer DSA • Part 2",
+    color: "#4c1d95",
+    icon: "fas fa-chess-queen",
+    mentalModel: {
+        whenToApply: [
+            { label: "Find ALL", desc: "Combinations, Permutations, Subsets." },
+            { label: "Constraints", desc: "N is small (<= 20)." }
+        ],
+        safetyCheck: [
+            { label: "Reference Bug", desc: "Use `res.append(path[:])` (Copy)." },
+            { label: "Undo Step", desc: "Always backtrack: `path.pop()` after recursion." }
+        ]
+    },
+    questions: [
+        {
+            id: "n-queens",
+            title: "N-Queens",
+            leetcodeUrl: "https://leetcode.com/problems/n-queens/",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["Classic Backtracking"],
+            quiz: {
+                description: "Place N queens safely. Optimized check?",
+                options: ["Loop to check attacks", "3 Sets (cols, diag+, diag-)", "Bitmasking", "Random"],
+                correct: 1,
+                explanation: "3 Sets! Track occupied Columns, Pos Diagonals (r+c), and Neg Diagonals (r-c). O(1) safety check."
+            },
+            learn: {
+                metrics: { time: "O(N!)", space: "O(N)" },
+                timeExplainer: "<strong>Backtracking:</strong><br>• 1st row: N choice<br>• 2nd row: N-2 choice...<br>• Upper bound <code>N!</code><br><br><strong>Total:</strong> <code>O(N!)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• 3 Sets for constraints: <code>O(N)</code><br>• Recursion Stack: <code>O(N)</code><br><br><strong>Result:</strong> <code>O(N)</code>",
+                visual: "<span><strong>Visual: Laser Beams</strong><br>Sets block vertical and diagonal lines.</span>",
+                crux: "<strong>Pattern:</strong> Loop cols in current row.<br>1. Check safe (Sets).<br>2. Add to Sets. Recurse.<br>3. Remove from Sets (Backtrack).",
+                trap: "<strong>Diagonal Math:</strong> PosDiag = r+c. NegDiag = r-c.",
+                dryRun: ["Row 0, Col 0. Safe. Recurse Row 1.", "Row 1, Col 0 (Col Block). Col 1 (Diag Block)..."],
+                codeTitle: "Python Solution",
+                code: `def solveNQueens(n):
+cols = set()
+posDiag = set() # r+c
+negDiag = set() # r-c
+res = []
+board = [-1]*n # row -> col mapping
+
+def backtrack(r):
+    if r == n:
+        # Build string board
+        temp = []
+        for i in range(n):
+            line = "." * board[i] + "Q" + "." * (n - board[i] - 1)
+            temp.append(line)
+        res.append(temp)
+        return
+
+    for c in range(n):
+        if c in cols or (r+c) in posDiag or (r-c) in negDiag:
+            continue
+        
+        cols.add(c); posDiag.add(r+c); negDiag.add(r-c)
+        board[r] = c
+        
+        backtrack(r + 1)
+        
+        cols.remove(c); posDiag.remove(r+c); negDiag.remove(r-c)
+        
+backtrack(0)
+return res`
+            }
+        },
+        {
+            id: "permutations",
+            title: "Permutations",
+            difficulty: "Good to Do",
+            priority: "🟢",
+            tags: ["Swapping"],
+            quiz: {
+                description: "Generate all permutations of [1,2,3].",
+                options: ["Iterative", "Backtracking with 'visited' set", "Backtracking with Swapping", "All"],
+                correct: 2,
+                explanation: "Swapping is space efficient! Swap `nums[start]` with `nums[i]`, recurse, then Swap Back (Backtrack)."
+            },
+            learn: {
+                metrics: { time: "O(N * N!)", space: "O(N)" },
+                timeExplainer: "<strong>Permutations:</strong><br>• <code>N!</code> permutations<br>• Each takes <code>O(N)</code> to copy<br><br><strong>Total:</strong> <code>O(N × N!)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Recursion Stack: <code>O(N)</code><br>• Output list size: <code>N!</code><br><br><strong>Result:</strong> <code>O(N)</code> aux",
+                visual: "<span><strong>Visual: Shuffling Chairs</strong><br>Fix 1st pos, shuffle rest. Then swap and repeat.</span>",
+                crux: "<strong>Swap Pattern:</strong><br>1. Loop `i` from `start` to `end`.<br>2. Swap `nums[start], nums[i]`.<br>3. Recurse `start + 1`.<br>4. Swap back.",
+                trap: "<strong>Copy Ref:</strong> `res.append(nums[:])` is mandatory.",
+                dryRun: ["Start=0. Swap(0,0). [1,2,3]. Recurse 1.", "Start=1. Swap(1,1). [1,2,3]. Recurse 2. Append.", "Backtrack. Swap(1,2). [1,3,2]."],
+                codeTitle: "Python Solution",
+                code: `def permute(nums):
+res = []
+def backtrack(start):
+    if start == len(nums):
+        res.append(nums[:])
+        return
+    
+    for i in range(start, len(nums)):
+        nums[start], nums[i] = nums[i], nums[start]
+        backtrack(start + 1)
+        nums[start], nums[i] = nums[i], nums[start]
+        
+backtrack(0)
+return res`
+            }
+        }
+    ]
+}
+
+
+// ========== data/concepts/dp_concepts.js ==========
+// Dp Concepts data
+// Extracted from data.js
+
+const topic_dp_concepts = {
+    id: "dp_concepts",
+    title: "DP Mastery: Complete Guide",
+    description: "From Zero to Hero - Master Every DP Pattern",
+    color: "#8b5cf6",
+    icon: "fas fa-brain",
+    type: "guide",
+    sections: [
+        {
+            id: "philosophy",
+            title: "🧠 Philosophy",
+            icon: "fas fa-lightbulb",
+            content: `
+                <div class="flashcard">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-lightbulb"></i>
+                            The "Lun Na Lun" Philosophy
+                        </div>
+                        <div class="badges">
+                            <span class="badge badge-must" style="background:#ef4444; color:white;">CORE CONCEPT</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="big-quote" style="font-size: 1.4rem; font-weight: 600; text-align: center; padding: 30px; background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(34, 211, 238, 0.1)); border-radius: 12px; border: 2px solid var(--border); margin: 30px 0; line-height: 1.8;">
+                            "Har element pe do options: <span style='color:#8b5cf6; font-weight:800;'>LUN</span> (include karo) ya <span style='color:#8b5cf6; font-weight:800;'>NA LUN</span> (skip karo)"
+                        </div>
+                        
+                        <div style="background: rgba(139, 92, 246, 0.1); padding: 25px; border-radius: 12px; border-left: 4px solid #8b5cf6; margin: 25px 0;">
+                            <h4 style="margin-bottom:15px; color:#a78bfa;"><i class="fas fa-star"></i> Why This Pattern is Powerful</h4>
+                            <ul style="list-style:none; padding-left:0; line-height:2;">
+                                <li>✅ <strong>Natural Thinking:</strong> Dimag automatically "should I include this?" sochta hai</li>
+                                <li>✅ <strong>Universal Template:</strong> 80% DP problems is pattern pe fit hote hain</li>
+                                <li>✅ <strong>Interview-Friendly:</strong> 5 min mein code likh sakte ho</li>
+                                <li>✅ <strong>Easy Complexity:</strong> States count karna simple hai</li>
+                            </ul>
+                        </div>
+                        
+                        <h3 style="margin: 30px 0 15px 0; color: #a78bfa;">
+                            <i class="fas fa-brain"></i> The 3-Step DP Approach
+                        </h3>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 20px 0;">
+                            <div style="background: rgba(239, 68, 68, 0.1); padding: 20px; border-radius: 12px; text-align:center;">
+                                <div style="font-size:2rem; margin-bottom:10px;">1️⃣</div>
+                                <strong style="color:#ef4444;">Write Recursion</strong>
+                                <p style="font-size:0.9rem; color:gray; margin-top:8px;">Sab se pehle brute force likho</p>
+                            </div>
+                            <div style="background: rgba(245, 158, 11, 0.1); padding: 20px; border-radius: 12px; text-align:center;">
+                                <div style="font-size:2rem; margin-bottom:10px;">2️⃣</div>
+                                <strong style="color:#f59e0b;">Add Memoization</strong>
+                                <p style="font-size:0.9rem; color:gray; margin-top:8px;">memo dict add karo</p>
+                            </div>
+                            <div style="background: rgba(16, 185, 129, 0.1); padding: 20px; border-radius: 12px; text-align:center;">
+                                <div style="font-size:2rem; margin-bottom:10px;">3️⃣</div>
+                                <strong style="color:#10b981;">Convert to DP</strong>
+                                <p style="font-size:0.9rem; color:gray; margin-top:8px;">Bottom-up tabulation (Optional)</p>
+                            </div>
+                        </div>
+                        
+                        <h3 style="margin: 30px 0 15px 0; color: #a78bfa;">
+                            <i class="fas fa-code"></i> Universal Template
+                        </h3>
+                        
+                        <div style="background: #0f172a; border-radius: 12px; padding: 20px;">
+                            <pre style="color: #e2e8f0; font-family: 'Consolas', monospace; font-size: 0.9rem; line-height: 1.6;">def solve(arr):
+memo = {}
+
+def dfs(index, state):
+    # 1. Base Case
+    if index >= len(arr):
+        return 0  # or appropriate base value
+    
+    # 2. Check Memo
+    if (index, state) in memo:
+        return memo[(index, state)]
+    
+    # 3. LUN (Take current element)
+    take = arr[index] + dfs(index + 1, new_state)
+    
+    # 4. NA LUN (Skip current element)
+    skip = dfs(index + 1, state)
+    
+    # 5. Choose best & store
+    memo[(index, state)] = max(take, skip)
+    return memo[(index, state)]
+
+return dfs(0, initial_state)</pre>
+                        </div>
+                    </div>
+                </div>`
+        },
+        {
+            id: "roadmap",
+            title: "🗺️ Roadmap",
+            icon: "fas fa-route",
+            content: `
+                <div class="flashcard">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-route"></i>
+                            DP Learning Roadmap
+                        </div>
+                        <div class="badges">
+                            <span class="badge" style="background:#10b981; color:white;">7 QUESTIONS</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p style="color: gray; margin-bottom: 25px;">
+                            In order practice karo. Har question ek naya pattern sikhata hai!
+                        </p>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 15px;">
+                            
+                            <a href="learn.html?topic=dp&q=house-robber" style="text-decoration: none; display: block; background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05)); padding: 20px; border-radius: 12px; border: 1px solid rgba(239, 68, 68, 0.3); transition: transform 0.2s;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                            <span style="background: #ef4444; color: white; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700;">LEVEL 1</span>
+                                            <strong style="color: white; font-size: 1.1rem;">House Robber</strong>
+                                        </div>
+                                        <p style="color: gray; font-size: 0.9rem; margin: 0;">
+                                            <strong style="color:#a78bfa;">Pattern:</strong> Simple Take/Not-Take with gap constraint
+                                        </p>
+                                    </div>
+                                    <i class="fas fa-arrow-right" style="color: #ef4444;"></i>
+                                </div>
+                            </a>
+                            
+                            <a href="learn.html?topic=dp&q=longest-increasing-subsequence" style="text-decoration: none; display: block; background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.05)); padding: 20px; border-radius: 12px; border: 1px solid rgba(245, 158, 11, 0.3);">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                            <span style="background: #f59e0b; color: white; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700;">LEVEL 2</span>
+                                            <strong style="color: white; font-size: 1.1rem;">LIS (Longest Increasing Subsequence)</strong>
+                                        </div>
+                                        <p style="color: gray; font-size: 0.9rem; margin: 0;">
+                                            <strong style="color:#a78bfa;">Pattern:</strong> Take/Not-Take with comparison constraint
+                                        </p>
+                                    </div>
+                                    <i class="fas fa-arrow-right" style="color: #f59e0b;"></i>
+                                </div>
+                            </a>
+                            
+                            <a href="learn.html?topic=dp&q=coin-change" style="text-decoration: none; display: block; background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.05)); padding: 20px; border-radius: 12px; border: 1px solid rgba(245, 158, 11, 0.3);">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                            <span style="background: #f59e0b; color: white; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700;">LEVEL 3</span>
+                                            <strong style="color: white; font-size: 1.1rem;">Coin Change</strong>
+                                        </div>
+                                        <p style="color: gray; font-size: 0.9rem; margin: 0;">
+                                            <strong style="color:#a78bfa;">Pattern:</strong> Unbounded Knapsack (infinite supply)
+                                        </p>
+                                    </div>
+                                    <i class="fas fa-arrow-right" style="color: #f59e0b;"></i>
+                                </div>
+                            </a>
+                            
+                            <a href="learn.html?topic=dp&q=partition-equal-subset-sum" style="text-decoration: none; display: block; background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.05)); padding: 20px; border-radius: 12px; border: 1px solid rgba(139, 92, 246, 0.3);">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                            <span style="background: #8b5cf6; color: white; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700;">LEVEL 4</span>
+                                            <strong style="color: white; font-size: 1.1rem;">0/1 Knapsack (Partition Equal Subset)</strong>
+                                        </div>
+                                        <p style="color: gray; font-size: 0.9rem; margin: 0;">
+                                            <strong style="color:#a78bfa;">Pattern:</strong> Classic 0/1 Knapsack with target sum
+                                        </p>
+                                    </div>
+                                    <i class="fas fa-arrow-right" style="color: #8b5cf6;"></i>
+                                </div>
+                            </a>
+                            
+                            <a href="learn.html?topic=dp&q=longest-common-subsequence" style="text-decoration: none; display: block; background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.05)); padding: 20px; border-radius: 12px; border: 1px solid rgba(139, 92, 246, 0.3);">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                            <span style="background: #8b5cf6; color: white; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700;">LEVEL 5</span>
+                                            <strong style="color: white; font-size: 1.1rem;">LCS (Longest Common Subsequence)</strong>
+                                        </div>
+                                        <p style="color: gray; font-size: 0.9rem; margin: 0;">
+                                            <strong style="color:#a78bfa;">Pattern:</strong> Two-String DP (Match or Skip)
+                                        </p>
+                                    </div>
+                                    <i class="fas fa-arrow-right" style="color: #8b5cf6;"></i>
+                                </div>
+                            </a>
+                            
+                            <a href="learn.html?topic=dp&q=word-break" style="text-decoration: none; display: block; background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05)); padding: 20px; border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.3);">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                            <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700;">LEVEL 6</span>
+                                            <strong style="color: white; font-size: 1.1rem;">Word Break</strong>
+                                        </div>
+                                        <p style="color: gray; font-size: 0.9rem; margin: 0;">
+                                            <strong style="color:#a78bfa;">Pattern:</strong> String partition + Dictionary lookup
+                                        </p>
+                                    </div>
+                                    <i class="fas fa-arrow-right" style="color: #10b981;"></i>
+                                </div>
+                            </a>
+                            
+                            <a href="learn.html?topic=dp&q=edit-distance" style="text-decoration: none; display: block; background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05)); padding: 20px; border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.3);">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                            <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700;">BOSS</span>
+                                            <strong style="color: white; font-size: 1.1rem;">Edit Distance</strong>
+                                        </div>
+                                        <p style="color: gray; font-size: 0.9rem; margin: 0;">
+                                            <strong style="color:#a78bfa;">Pattern:</strong> Two-String DP with 3 operations
+                                        </p>
+                                    </div>
+                                    <i class="fas fa-arrow-right" style="color: #10b981;"></i>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>`
+        },
+        {
+            id: "patterns",
+            title: "🧩 5 Patterns",
+            icon: "fas fa-puzzle-piece",
+            content: `
+                <div class="flashcard">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-puzzle-piece"></i>
+                            The 5 DP Patterns
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p style="color: gray; margin-bottom: 25px;">
+                            <strong>90% DP problems</strong> in 5 patterns ke andar aate hain. Pattern pehchaan lo, problem solve ho jayegi!
+                        </p>
+                        
+                        <!-- Pattern 1: Take/Not-Take -->
+                        <div style="background: rgba(139, 92, 246, 0.05); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 16px; padding: 25px; margin-bottom: 20px;">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+                                <span style="background: #8b5cf6; color: white; padding: 6px 12px; border-radius: 8px; font-weight: 700;">1</span>
+                                <h3 style="color: #a78bfa; margin: 0;">Take / Not-Take (Lun Na Lun)</h3>
+                            </div>
+                            <p style="color: gray; margin-bottom: 15px;"><strong>Pehchaan:</strong> "Maximum/Minimum value subset select karo"</p>
+                            <div style="background: #0f172a; padding: 12px; border-radius: 8px; font-family: Consolas; color: #7dd3fc; font-size: 0.9rem;">
+                                take = arr[i] + dfs(i+1, new_state)<br>
+                                skip = dfs(i+1, state)<br>
+                                return max(take, skip)
+                            </div>
+                            <p style="margin-top: 12px; color: gray; font-size: 0.9rem;">
+                                <strong>Problems:</strong> House Robber, LIS, Subset Sum
+                            </p>
+                        </div>
+                        
+                        <!-- Pattern 2: 0/1 Knapsack -->
+                        <div style="background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 16px; padding: 25px; margin-bottom: 20px;">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+                                <span style="background: #f59e0b; color: white; padding: 6px 12px; border-radius: 8px; font-weight: 700;">2</span>
+                                <h3 style="color: #fbbf24; margin: 0;">0/1 Knapsack</h3>
+                            </div>
+                            <p style="color: gray; margin-bottom: 15px;"><strong>Pehchaan:</strong> "Target sum tak pahunchna hai, items <strong>ek baar</strong> use kar sakte ho"</p>
+                            <div style="background: #0f172a; padding: 12px; border-radius: 8px; font-family: Consolas; color: #7dd3fc; font-size: 0.9rem;">
+                                # State: (index, remaining_capacity/sum)<br>
+                                take = dfs(i+1, target - arr[i])  # Move to next<br>
+                                skip = dfs(i+1, target)           # Move to next
+                            </div>
+                            <p style="margin-top: 12px; color: gray; font-size: 0.9rem;">
+                                <strong>Problems:</strong> Partition Equal Subset, Target Sum
+                            </p>
+                        </div>
+                        
+                        <!-- Pattern 3: Unbounded Knapsack -->
+                        <div style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 16px; padding: 25px; margin-bottom: 20px;">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+                                <span style="background: #ef4444; color: white; padding: 6px 12px; border-radius: 8px; font-weight: 700;">3</span>
+                                <h3 style="color: #f87171; margin: 0;">Unbounded Knapsack</h3>
+                            </div>
+                            <p style="color: gray; margin-bottom: 15px;"><strong>Pehchaan:</strong> "Target sum tak pahunchna hai, items <strong>baar baar</strong> use kar sakte ho"</p>
+                            <div style="background: #0f172a; padding: 12px; border-radius: 8px; font-family: Consolas; color: #7dd3fc; font-size: 0.9rem;">
+                                # Key difference: STAY at same index when taking!<br>
+                                take = 1 + dfs(i, target - coins[i])  # Stay at i<br>
+                                skip = dfs(i+1, target)               # Move to next
+                            </div>
+                            <p style="margin-top: 12px; color: gray; font-size: 0.9rem;">
+                                <strong>Problems:</strong> Coin Change, Rod Cutting, Coin Change II
+                            </p>
+                        </div>
+                        
+                        <!-- Pattern 4: Two-String DP -->
+                        <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 16px; padding: 25px; margin-bottom: 20px;">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+                                <span style="background: #10b981; color: white; padding: 6px 12px; border-radius: 8px; font-weight: 700;">4</span>
+                                <h3 style="color: #34d399; margin: 0;">Two-String DP (Match/Skip)</h3>
+                            </div>
+                            <p style="color: gray; margin-bottom: 15px;"><strong>Pehchaan:</strong> "Do strings compare karna hai"</p>
+                            <div style="background: #0f172a; padding: 12px; border-radius: 8px; font-family: Consolas; color: #7dd3fc; font-size: 0.9rem;">
+                                if s1[i] == s2[j]:  # MATCH<br>
+                                &nbsp;&nbsp;return 1 + dfs(i+1, j+1)  # Diagonal<br>
+                                else:  # NO MATCH<br>
+                                &nbsp;&nbsp;return max(dfs(i+1, j), dfs(i, j+1))  # Skip one
+                            </div>
+                            <p style="margin-top: 12px; color: gray; font-size: 0.9rem;">
+                                <strong>Problems:</strong> LCS, Edit Distance, Longest Palindromic Subseq
+                            </p>
+                        </div>
+                        
+                        <!-- Pattern 5: String Partition -->
+                        <div style="background: rgba(34, 211, 238, 0.05); border: 1px solid rgba(34, 211, 238, 0.2); border-radius: 16px; padding: 25px;">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+                                <span style="background: #22d3ee; color: black; padding: 6px 12px; border-radius: 8px; font-weight: 700;">5</span>
+                                <h3 style="color: #22d3ee; margin: 0;">String Partition</h3>
+                            </div>
+                            <p style="color: gray; margin-bottom: 15px;"><strong>Pehchaan:</strong> "String ko valid parts mein todna hai"</p>
+                            <div style="background: #0f172a; padding: 12px; border-radius: 8px; font-family: Consolas; color: #7dd3fc; font-size: 0.9rem;">
+                                for end in range(start, len(s)):<br>
+                                &nbsp;&nbsp;if s[start:end+1] in wordDict:<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;if dfs(end + 1): return True<br>
+                                return False
+                            </div>
+                            <p style="margin-top: 12px; color: gray; font-size: 0.9rem;">
+                                <strong>Problems:</strong> Word Break, Palindrome Partitioning
+                            </p>
+                        </div>
+                    </div>
+                </div>`
+        },
+        {
+            id: "complexity",
+            title: "⏱️ Complexity",
+            icon: "fas fa-clock",
+            content: `
+                <div class="flashcard">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-clock"></i>
+                            Time Complexity: The Truth
+                        </div>
+                        <div class="badges">
+                            <span class="badge badge-must" style="background:#ef4444; color:white;">CRITICAL</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div style="background:rgba(245, 158, 11, 0.1); padding:25px; text-align:center; border-radius:12px; margin:20px 0; border: 2px solid rgba(245, 158, 11, 0.3);">
+                            <code style="font-size: 1.5em; color: #f59e0b; font-weight: 700;">Time = (Unique States) × (Work per State)</code>
+                            <br><br>
+                            <span style="color: gray;">NOT total recursive calls! Memoization changes everything!</span>
+                        </div>
+                        
+                        <h3 style="color: #a78bfa; margin: 25px 0 15px;">Complexity by Problem</h3>
+                        
+                        <table style="width:100%; border-collapse: collapse; border-radius: 12px; overflow: hidden;">
+                            <thead>
+                                <tr style="background: linear-gradient(135deg, #8b5cf6, #a78bfa);">
+                                    <th style="padding: 15px; text-align: left; color: white;">Problem</th>
+                                    <th style="padding: 15px; text-align: left; color: white;">States</th>
+                                    <th style="padding: 15px; text-align: left; color: white;">Time</th>
+                                    <th style="padding: 15px; text-align: left; color: white;">Space</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155;">House Robber</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155; color: #7dd3fc; font-family: Consolas;">(i)</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155; color: #34d399;">O(N)</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155; color: #34d399;">O(1)*</td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155;">LIS</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155; color: #7dd3fc; font-family: Consolas;">(i, prev_i)</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155; color: #f59e0b;">O(N²)</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155; color: #f59e0b;">O(N²)</td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155;">Coin Change</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155; color: #7dd3fc; font-family: Consolas;">(amt) or (i, amt)</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155; color: #f59e0b;">O(A × C)</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155; color: #34d399;">O(A)</td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155;">LCS</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155; color: #7dd3fc; font-family: Consolas;">(i, j)</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155; color: #f59e0b;">O(M × N)</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155; color: #f59e0b;">O(M × N)</td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 12px;">Edit Distance</td>
+                                    <td style="padding: 12px; color: #7dd3fc; font-family: Consolas;">(i, j)</td>
+                                    <td style="padding: 12px; color: #f59e0b;">O(M × N)</td>
+                                    <td style="padding: 12px; color: #f59e0b;">O(M × N)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <p style="color: gray; font-size: 0.85rem; margin-top: 10px;">* Space optimized using rolling variables</p>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 25px;">
+                            <div style="background: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444; padding: 20px; border-radius: 8px;">
+                                <h4 style="color: #ef4444;">❌ WITHOUT Memo</h4>
+                                <p>Exponential: O(2ⁿ)</p>
+                                <p><strong>Result: TLE! ❌</strong></p>
+                            </div>
+                            <div style="background: rgba(16, 185, 129, 0.1); border-left: 4px solid #10b981; padding: 20px; border-radius: 8px;">
+                                <h4 style="color: #10b981;">✅ WITH Memo</h4>
+                                <p>Polynomial: O(N²) etc.</p>
+                                <p><strong>Result: AC! ✅</strong></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>`
+        },
+        {
+            id: "mistakes",
+            title: "⚠️ Mistakes",
+            icon: "fas fa-exclamation-triangle",
+            content: `
+                <div class="flashcard">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Common DP Mistakes (Must Avoid!)
+                        </div>
+                        <div class="badges">
+                            <span class="badge" style="background:#ef4444; color:white;">TRAPS</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        
+                        <!-- Mistake 1 -->
+                        <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                <span style="background: #ef4444; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">1</span>
+                                <strong style="color: #f87171; font-size: 1.1rem;">Memo Key Galat Liya</strong>
+                            </div>
+                            <p style="color: gray; margin-bottom: 12px;">Agar tumne state mein kuch parameter miss kiya, multiple calls same key pe store honge → Wrong Answer!</p>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div style="background: #0f172a; padding: 12px; border-radius: 8px;">
+                                    <p style="color: #ef4444; margin-bottom: 8px; font-size: 0.85rem;">❌ WRONG</p>
+                                    <code style="color: #f87171; font-family: Consolas; font-size: 0.85rem;">memo[index] = result</code>
+                                </div>
+                                <div style="background: #0f172a; padding: 12px; border-radius: 8px;">
+                                    <p style="color: #10b981; margin-bottom: 8px; font-size: 0.85rem;">✅ RIGHT</p>
+                                    <code style="color: #34d399; font-family: Consolas; font-size: 0.85rem;">memo[(index, remaining)] = result</code>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Mistake 2 -->
+                        <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                <span style="background: #f59e0b; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">2</span>
+                                <strong style="color: #fbbf24; font-size: 1.1rem;">Base Case Wrong Value</strong>
+                            </div>
+                            <p style="color: gray; margin-bottom: 12px;">Min problem mein 0 return karna ya Max problem mein infinity use karna → Wrong Answer!</p>
+                            <div style="background: #0f172a; padding: 12px; border-radius: 8px;">
+                                <code style="color: #f59e0b; font-family: Consolas; font-size: 0.85rem;">
+                                    # For MIN problems (Coin Change)<br>
+                                    if target == 0: return 0  # Valid<br>
+                                    if target < 0: return float('inf')  # Invalid<br><br>
+                                    # For MAX problems (House Robber)<br>
+                                    if index >= len(arr): return 0  # No more to take
+                                </code>
+                            </div>
+                        </div>
+                        
+                        <!-- Mistake 3 -->
+                        <div style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                <span style="background: #8b5cf6; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">3</span>
+                                <strong style="color: #a78bfa; font-size: 1.1rem;">0/1 vs Unbounded Confusion</strong>
+                            </div>
+                            <p style="color: gray; margin-bottom: 12px;">Jab item baar baar use kar sakte ho, index SAME rehna chahiye!</p>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div style="background: #0f172a; padding: 12px; border-radius: 8px;">
+                                    <p style="color: #a78bfa; margin-bottom: 8px; font-size: 0.85rem;">0/1 Knapsack (Use once)</p>
+                                    <code style="color: #c4b5fd; font-family: Consolas; font-size: 0.85rem;">take = dfs(i<strong>+1</strong>, ...)</code>
+                                </div>
+                                <div style="background: #0f172a; padding: 12px; border-radius: 8px;">
+                                    <p style="color: #22d3ee; margin-bottom: 8px; font-size: 0.85rem;">Unbounded (Use infinite)</p>
+                                    <code style="color: #67e8f9; font-family: Consolas; font-size: 0.85rem;">take = dfs(<strong>i</strong>, ...)  # Stay!</code>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Mistake 4 -->
+                        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 20px;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                <span style="background: #10b981; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">4</span>
+                                <strong style="color: #34d399; font-size: 1.1rem;">State Design Galat</strong>
+                            </div>
+                            <p style="color: gray; margin-bottom: 12px;">LIS mein prev_index track karna bhool gaye → Can't compare correctly!</p>
+                            <div style="background: #0f172a; padding: 12px; border-radius: 8px;">
+                                <code style="color: #34d399; font-family: Consolas; font-size: 0.85rem;">
+                                    # LIS needs TWO parameters:<br>
+                                    def dfs(curr_idx, prev_idx):  # ✅<br>
+                                    &nbsp;&nbsp;if nums[curr_idx] > nums[prev_idx]:  # Compare<br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;take = 1 + dfs(curr_idx+1, curr_idx)
+                                </code>
+                            </div>
+                        </div>
+                    </div>
+                </div>`
+        },
+        {
+            id: "visualizers",
+            title: "🎮 Visualizers",
+            icon: "fas fa-play-circle",
+            content: `
+                <div class="flashcard">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-play-circle"></i>
+                            Interactive DP Visualizers
+                        </div>
+                        <div class="badges">
+                            <span class="badge" style="background:#10b981; color:white;">LEARN BY DOING</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p style="color: gray; margin-bottom: 25px;">
+                            Step-by-step dekho ki DP table kaise bharta hai. Best way to understand!
+                        </p>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <a href="visualizers/lcs.html" style="text-decoration: none; display: block; background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(139, 92, 246, 0.05)); padding: 30px; border-radius: 16px; border: 1px solid rgba(139, 92, 246, 0.3); text-align: center; transition: transform 0.2s;">
+                                <i class="fas fa-th" style="font-size: 2.5rem; color: #a78bfa; margin-bottom: 15px;"></i>
+                                <h4 style="color: white; margin-bottom: 8px;">LCS Visualizer</h4>
+                                <p style="color: gray; font-size: 0.9rem; margin: 0;">See 2D grid fill up</p>
+                            </a>
+                            
+                            <a href="visualizers/lis.html" style="text-decoration: none; display: block; background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(245, 158, 11, 0.05)); padding: 30px; border-radius: 16px; border: 1px solid rgba(245, 158, 11, 0.3); text-align: center;">
+                                <i class="fas fa-chart-line" style="font-size: 2.5rem; color: #fbbf24; margin-bottom: 15px;"></i>
+                                <h4 style="color: white; margin-bottom: 8px;">LIS Visualizer</h4>
+                                <p style="color: gray; font-size: 0.9rem; margin: 0;">Watch sequence build</p>
+                            </a>
+                            
+                            <a href="visualizers/min_coins.html" style="text-decoration: none; display: block; background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.05)); padding: 30px; border-radius: 16px; border: 1px solid rgba(16, 185, 129, 0.3); text-align: center;">
+                                <i class="fas fa-coins" style="font-size: 2.5rem; color: #34d399; margin-bottom: 15px;"></i>
+                                <h4 style="color: white; margin-bottom: 8px;">Coin Change Visualizer</h4>
+                                <p style="color: gray; font-size: 0.9rem; margin: 0;">Unbounded knapsack in action</p>
+                            </a>
+                            
+                            <a href="visualizers/word_break.html" style="text-decoration: none; display: block; background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.05)); padding: 30px; border-radius: 16px; border: 1px solid rgba(239, 68, 68, 0.3); text-align: center;">
+                                <i class="fas fa-font" style="font-size: 2.5rem; color: #f87171; margin-bottom: 15px;"></i>
+                                <h4 style="color: white; margin-bottom: 8px;">Word Break Visualizer</h4>
+                                <p style="color: gray; font-size: 0.9rem; margin: 0;">String partition demo</p>
+                            </a>
+                        </div>
+                    </div>
+                </div>`
+        }
+    ]
 };
 
-if (typeof module !== 'undefined') {
-    module.exports = prepData;
+
+// ========== data/concepts/arrays_concepts.js ==========
+// Arrays Concepts data
+// Extracted from data.js
+
+const topic_arrays_concepts = {
+    id: "arrays_concepts",
+    title: "Arrays Mastery: Pattern Bible",
+    description: "Sliding Window, Two Pointers, and Prefix Sum Patterns",
+    color: "#6366f1",
+    icon: "fas fa-layer-group",
+    type: "guide",
+    sections: [
+        {
+            id: "sliding-window",
+            title: "Sliding Window",
+            icon: "fas fa-window-maximize",
+            content: `
+                <div class="flashcard">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-window-maximize"></i>
+                            Sliding Window Pattern
+                        </div>
+                        <div class="badges">
+                            <span class="badge badge-must" style="background:#ef4444; color:white;">CORE PATTERN</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="big-quote" style="font-size: 1.4rem; font-weight: 600; text-align: center; padding: 30px; background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(34, 211, 238, 0.1)); border-radius: 12px; border: 2px solid var(--border); margin: 30px 0; line-height: 1.8;">
+                            "Jab <span style='color:#6366f1'>Contiguous Subarray/Substring</span> bole, Sliding Window Laga Do!"
+                        </div>
+                        
+                        <h3 style="color: #818cf8; margin: 20px 0;">When to Use</h3>
+                        <ul style="list-style: none; padding: 0; line-height: 2;">
+                            <li>✅ Find max/min subarray of size K</li>
+                            <li>✅ Longest substring with condition (unique, at most K distinct)</li>
+                            <li>✅ Sum/product of subarrays</li>
+                        </ul>
+                        
+                        <h3 style="color: #818cf8; margin: 30px 0 15px;">Fixed vs Variable Window</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div style="background: rgba(99, 102, 241, 0.1); padding: 20px; border-radius: 12px;">
+                                <h4>Fixed Size (K)</h4>
+                                <p>Max sum of K elements</p>
+                                <code>while right < n: expand, shrink when size > K</code>
+                            </div>
+                            <div style="background: rgba(34, 211, 153, 0.1); padding: 20px; border-radius: 12px;">
+                                <h4>Variable Size</h4>
+                                <p>Longest valid window</p>
+                                <code>Expand right, shrink left while invalid</code>
+                            </div>
+                        </div>
+                        
+                        <h3 style="margin: 30px 0 15px; color: #818cf8;">Universal Template</h3>
+                        <div class="code-block" style="background: #0f172a; border-radius: 12px; padding: 15px;">
+                            <pre style="color: #e2e8f0; font-family: 'Consolas', monospace;">def sliding_window(arr):
+left = 0
+window_state = {}  # or sum, count, etc.
+result = 0
+
+for right in range(len(arr)):
+    # EXPAND: Add arr[right] to window
+    window_state[arr[right]] = window_state.get(arr[right], 0) + 1
+    
+    # SHRINK: While window is invalid
+    while invalid_condition(window_state):
+        window_state[arr[left]] -= 1
+        if window_state[arr[left]] == 0:
+            del window_state[arr[left]]
+        left += 1
+    
+    # UPDATE: Record result
+    result = max(result, right - left + 1)
+
+return result</pre>
+                        </div>
+                    </div>
+                </div>`
+        },
+        {
+            id: "two-pointers",
+            title: "Two Pointers",
+            icon: "fas fa-arrows-alt-h",
+            content: `
+                <div class="flashcard">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-arrows-alt-h"></i>
+                            Two Pointers Pattern  
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="big-quote" style="font-size: 1.4rem; font-weight: 600; text-align: center; padding: 30px; background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(34, 211, 238, 0.1)); border-radius: 12px; margin: 30px 0;">
+                            "Sorted Array + Pair/Triplet Problem = Two Pointers"
+                        </div>
+                        
+                        <h3 style="color: #818cf8; margin: 20px 0; font-size: 1.3rem; font-weight: 700;">Types of Two Pointers</h3>
+                        <table style="width:100%; border-collapse: collapse; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+                            <thead>
+                                <tr style="background: linear-gradient(135deg, #6366f1, #818cf8);">
+                                    <th style="padding: 16px 20px; text-align: left; color: white; font-weight: 700; font-size: 0.95rem;">Type</th>
+                                    <th style="padding: 16px 20px; text-align: left; color: white; font-weight: 700; font-size: 0.95rem;">Use Case</th>
+                                    <th style="padding: 16px 20px; text-align: left; color: white; font-weight: 700; font-size: 0.95rem;">Example</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 16px 20px; color: #f1f5f9; font-weight: 600; border-bottom: 1px solid #334155;">Opposite Ends</td>
+                                    <td style="padding: 16px 20px; color: #a5b4fc; border-bottom: 1px solid #334155;">Sum to target</td>
+                                    <td style="padding: 16px 20px; color: #94a3b8; border-bottom: 1px solid #334155;">Two Sum II, Container with Water</td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 16px 20px; color: #f1f5f9; font-weight: 600; border-bottom: 1px solid #334155;">Same Direction</td>
+                                    <td style="padding: 16px 20px; color: #a5b4fc; border-bottom: 1px solid #334155;">Merge, remove duplicates</td>
+                                    <td style="padding: 16px 20px; color: #94a3b8; border-bottom: 1px solid #334155;">Merge Sorted Array</td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 16px 20px; color: #f1f5f9; font-weight: 600;">Fast-Slow</td>
+                                    <td style="padding: 16px 20px; color: #a5b4fc;">Cycle detection</td>
+                                    <td style="padding: 16px 20px; color: #94a3b8;">Linked List Cycle</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <h3 style="margin: 30px 0 15px; color: #818cf8;">3Sum Template (Anchor + Squeeze)</h3>
+                        <div class="code-block" style="background: #0f172a; border-radius: 12px; padding: 15px;">
+                            <pre style="color: #e2e8f0; font-family: 'Consolas', monospace;">def three_sum(nums, target):
+nums.sort()  # CRITICAL: Must sort first!
+result = []
+
+for i in range(len(nums) - 2):
+    # Skip duplicates for anchor
+    if i > 0 and nums[i] == nums[i-1]:
+        continue
+    
+    left, right = i + 1, len(nums) - 1
+    
+    while left < right:
+        total = nums[i] + nums[left] + nums[right]
+        
+        if total < target:
+            left += 1
+        elif total > target:
+            right -= 1
+        else:
+            result.append([nums[i], nums[left], nums[right]])
+            left += 1
+            while left < right and nums[left] == nums[left-1]:
+                left += 1
+
+return result</pre>
+                        </div>
+                    </div>
+                </div>`
+        },
+        {
+            id: "prefix-sum",
+            title: "Prefix Sum",
+            icon: "fas fa-calculator",
+            content: `
+                <div class="flashcard">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-calculator"></i>
+                            Prefix Sum Pattern
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="big-quote" style="font-size: 1.4rem; font-weight: 600; text-align: center; padding: 30px; background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(244, 114, 182, 0.1)); border-radius: 12px; margin: 30px 0;">
+                            "Range Sum Query? Precompute Prefix, Answer in O(1)!"
+                        </div>
+                        
+                        <div style="background: rgba(99, 102, 241, 0.1); padding: 20px; border-radius: 12px; margin: 20px 0;">
+                            <h4 style="color: #818cf8;">Core Idea</h4>
+                            <p><code>prefix[i] = arr[0] + arr[1] + ... + arr[i]</code></p>
+                            <p><code>sum(i, j) = prefix[j] - prefix[i-1]</code></p>
+                        </div>
+                        
+                        <h3 style="color: #818cf8; margin: 20px 0;">Subarray Sum Equals K (with HashMap)</h3>
+                        <p>Count subarrays with sum = K</p>
+                        <p><strong>Trick:</strong> If <code>prefix[j] - prefix[i] = K</code>, then <code>prefix[i] = prefix[j] - K</code></p>
+                        
+                        <div class="code-block" style="background: #0f172a; border-radius: 12px; padding: 15px; margin-top: 20px;">
+                            <pre style="color: #e2e8f0; font-family: 'Consolas', monospace;">def subarray_sum(nums, k):
+prefix_count = {0: 1}  # Base case
+prefix_sum = 0
+count = 0
+
+for num in nums:
+    prefix_sum += num
+    
+    # Check if (prefix_sum - k) exists
+    if prefix_sum - k in prefix_count:
+        count += prefix_count[prefix_sum - k]
+    
+    prefix_count[prefix_sum] = prefix_count.get(prefix_sum, 0) + 1
+
+return count</pre>
+                        </div>
+                    </div>
+                </div>`
+        }
+    ]
+};
+
+
+// ========== data/concepts/graphs_concepts.js ==========
+// Graphs Concepts data
+// Extracted from data.js
+
+const topic_graphs_concepts = {
+    id: "graphs_concepts",
+    title: "Graphs Mastery: The Complete Guide",
+    description: "BFS, DFS, Topological Sort, and Union-Find Patterns",
+    color: "#c026d3",
+    icon: "fas fa-project-diagram",
+    type: "guide",
+    sections: [
+        {
+            id: "bfs-dfs",
+            title: "BFS vs DFS",
+            icon: "fas fa-sitemap",
+            content: `
+                <div class="flashcard">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-sitemap"></i>
+                            BFS vs DFS: When to Use What
+                        </div>
+                        <div class="badges">
+                            <span class="badge badge-must" style="background:#c026d3; color:white;">CORE PATTERN</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="big-quote" style="font-size: 1.2rem; font-weight: 600; text-align: center; padding: 30px; background: linear-gradient(135deg, rgba(192, 38, 211, 0.1), rgba(34, 211, 238, 0.1)); border-radius: 12px; margin: 30px 0;">
+                            "<span style='color:#c026d3'>Shortest Path (Unweighted)</span> → BFS &nbsp;&nbsp;|&nbsp;&nbsp; <span style='color:#22d3ee'>Explore All</span> → DFS"
+                        </div>
+                        
+                        <table style="width:100%; border-collapse: collapse; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+                            <thead>
+                                <tr style="background: linear-gradient(135deg, #c026d3, #e879f9);">
+                                    <th style="padding: 16px 20px; text-align: center; color: white; font-weight: 700; font-size: 1rem;">BFS</th>
+                                    <th style="padding: 16px 20px; text-align: center; color: white; font-weight: 700; font-size: 1rem;">DFS</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 16px 20px; color: #f1f5f9; text-align: center; border-bottom: 1px solid #334155;">Uses Queue (FIFO)</td>
+                                    <td style="padding: 16px 20px; color: #f1f5f9; text-align: center; border-bottom: 1px solid #334155;">Uses Stack/Recursion</td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 16px 20px; color: #f1f5f9; text-align: center; border-bottom: 1px solid #334155;">Level by Level</td>
+                                    <td style="padding: 16px 20px; color: #f1f5f9; text-align: center; border-bottom: 1px solid #334155;">Go Deep First</td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 16px 20px; color: #34d399; text-align: center; font-weight: 600; border-bottom: 1px solid #334155;">✅ Shortest Path</td>
+                                    <td style="padding: 16px 20px; color: #34d399; text-align: center; font-weight: 600; border-bottom: 1px solid #334155;">✅ Cycle Detection</td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 16px 20px; color: #34d399; text-align: center; font-weight: 600;">✅ Multi-source spread</td>
+                                    <td style="padding: 16px 20px; color: #34d399; text-align: center; font-weight: 600;">✅ Backtracking</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <h3 style="margin: 30px 0 15px; color: #c026d3;">BFS Template</h3>
+                        <div class="code-block" style="background: #0f172a; border-radius: 12px; padding: 15px;">
+                            <pre style="color: #e2e8f0; font-family: 'Consolas', monospace;">from collections import deque
+
+def bfs(graph, start):
+visited = {start}
+queue = deque([start])
+distance = 0
+
+while queue:
+    # Process level by level
+    for _ in range(len(queue)):
+        node = queue.popleft()
+        
+        for neighbor in graph[node]:
+            if neighbor not in visited:
+                visited.add(neighbor)  # Mark BEFORE pushing!
+                queue.append(neighbor)
+    distance += 1
+
+return distance</pre>
+                        </div>
+                    </div>
+                </div>`
+        },
+        {
+            id: "topo-sort",
+            title: "Topological Sort",
+            icon: "fas fa-sort-amount-down",
+            content: `
+                <div class="flashcard">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-sort-amount-down"></i>
+                            Topological Sort (Kahn's Algorithm)
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="big-quote" style="font-size: 1.2rem; font-weight: 600; text-align: center; padding: 30px; background: linear-gradient(135deg, rgba(192, 38, 211, 0.1), rgba(245, 158, 11, 0.1)); border-radius: 12px; margin: 30px 0;">
+                            "Dependencies? Prerequisites? <span style='color:#c026d3'>Topo Sort</span> is the Answer!"
+                        </div>
+                        
+                        <h3 style="color: #c026d3; margin: 20px 0;">When to Use</h3>
+                        <ul style="list-style: none; padding: 0; line-height: 2;">
+                            <li>✅ Course Schedule (prerequisites)</li>
+                            <li>✅ Build Order (dependencies)</li>
+                            <li>✅ Alien Dictionary</li>
+                            <li>✅ Task Scheduling</li>
+                        </ul>
+                        
+                        <h3 style="margin: 30px 0 15px; color: #c026d3;">Kahn's Algorithm Template</h3>
+                        <div class="code-block" style="background: #0f172a; border-radius: 12px; padding: 15px;">
+                            <pre style="color: #e2e8f0; font-family: 'Consolas', monospace;">from collections import deque, defaultdict
+
+def topo_sort(n, edges):
+graph = defaultdict(list)
+indegree = [0] * n
+
+# Build graph and indegrees
+for src, dst in edges:
+    graph[src].append(dst)
+    indegree[dst] += 1
+
+# Start with nodes having 0 indegree
+queue = deque([i for i in range(n) if indegree[i] == 0])
+order = []
+
+while queue:
+    node = queue.popleft()
+    order.append(node)
+    
+    for neighbor in graph[node]:
+        indegree[neighbor] -= 1
+        if indegree[neighbor] == 0:
+            queue.append(neighbor)
+
+# Cycle check
+return order if len(order) == n else []</pre>
+                        </div>
+                    </div>
+                </div>`
+        },
+        {
+            id: "union-find",
+            title: "Union-Find",
+            icon: "fas fa-users",
+            content: `
+                <div class="flashcard">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-users"></i>
+                            Union-Find (Disjoint Set Union)
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="big-quote" style="font-size: 1.2rem; font-weight: 600; text-align: center; padding: 30px; background: linear-gradient(135deg, rgba(192, 38, 211, 0.1), rgba(52, 211, 153, 0.1)); border-radius: 12px; margin: 30px 0;">
+                            "Connectivity? Grouping? Components? <span style='color:#34d399'>Union-Find!</span>"
+                        </div>
+                        
+                        <h3 style="color: #c026d3; margin: 20px 0;">When to Use</h3>
+                        <ul style="list-style: none; padding: 0; line-height: 2;">
+                            <li>✅ Number of connected components</li>
+                            <li>✅ Detect cycle in undirected graph</li>
+                            <li>✅ Friends in network</li>
+                            <li>✅ Kruskal's MST</li>
+                        </ul>
+                        
+                        <h3 style="margin: 30px 0 15px; color: #c026d3;">DSU Template (with Path Compression + Rank)</h3>
+                        <div class="code-block" style="background: #0f172a; border-radius: 12px; padding: 15px;">
+                            <pre style="color: #e2e8f0; font-family: 'Consolas', monospace;">class DSU:
+def __init__(self, n):
+    self.parent = list(range(n))
+    self.rank = [0] * n
+    self.count = n  # Number of components
+
+def find(self, x):
+    if self.parent[x] != x:
+        self.parent[x] = self.find(self.parent[x])  # Path compression
+    return self.parent[x]
+
+def union(self, x, y):
+    px, py = self.find(x), self.find(y)
+    if px == py:
+        return False  # Already connected
+    
+    # Union by rank
+    if self.rank[px] < self.rank[py]:
+        px, py = py, px
+    self.parent[py] = px
+    if self.rank[px] == self.rank[py]:
+        self.rank[px] += 1
+    
+    self.count -= 1
+    return True</pre>
+                        </div>
+                    </div>
+                </div>`
+        }
+    ]
+};
+
+
+
+// ========== data/concepts/trees_concepts.js ==========
+// Trees Concepts data
+// Extracted from data.js
+
+const topic_trees_concepts = {
+    id: "trees_concepts",
+    title: "Trees Mastery: The Recursion Bible",
+    description: "DFS, BFS, Path Problems, and Tree Construction Patterns",
+    color: "#16a34a",
+    icon: "fas fa-tree",
+    type: "guide",
+    sections: [
+        {
+            id: "recursion-patterns",
+            title: "Recursion Patterns",
+            icon: "fas fa-sync",
+            content: `
+                <div class="flashcard">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-sync"></i>
+                            Tree Recursion: The Leap of Faith
+                        </div>
+                        <div class="badges">
+                            <span class="badge badge-must" style="background:#16a34a; color:white;">CORE PATTERN</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="big-quote" style="font-size: 1.4rem; font-weight: 600; text-align: center; padding: 30px; background: linear-gradient(135deg, rgba(22, 163, 74, 0.1), rgba(34, 211, 238, 0.1)); border-radius: 12px; margin: 30px 0; line-height: 1.8;">
+                            "Trust that <span style='color:#16a34a'>solve(root.left)</span> and <span style='color:#16a34a'>solve(root.right)</span> work perfectly!"
+                        </div>
+                        
+                        <h3 style="color: #16a34a; margin: 20px 0;">The Pattern</h3>
+                        <ol style="line-height: 2;">
+                            <li><strong>Base Case:</strong> <code>if not root: return base_value</code></li>
+                            <li><strong>Recurse Left:</strong> <code>left_result = solve(root.left)</code></li>
+                            <li><strong>Recurse Right:</strong> <code>right_result = solve(root.right)</code></li>
+                            <li><strong>Combine:</strong> <code>return combine(root.val, left_result, right_result)</code></li>
+                        </ol>
+                        
+                        <h3 style="margin: 30px 0 15px; color: #16a34a;">Universal Template</h3>
+                        <div class="code-block" style="background: #0f172a; border-radius: 12px; padding: 15px;">
+                            <pre style="color: #e2e8f0; font-family: 'Consolas', monospace;">def solve_tree(root):
+# 1. Base Case
+if not root:
+    return 0  # or None, True, etc.
+
+# 2. LEAP OF FAITH: Trust left/right work!
+left_result = solve_tree(root.left)
+right_result = solve_tree(root.right)
+
+# 3. Combine at current node
+return root.val + left_result + right_result</pre>
+                        </div>
+                        
+                        <h3 style="margin: 30px 0 15px; color: #16a34a; font-size: 1.3rem; font-weight: 700;">Common Examples</h3>
+                        <table style="width:100%; border-collapse: collapse; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+                            <thead>
+                                <tr style="background: linear-gradient(135deg, #16a34a, #22c55e);">
+                                    <th style="padding: 16px 20px; text-align: left; color: white; font-weight: 700; font-size: 0.95rem; letter-spacing: 0.5px;">Problem</th>
+                                    <th style="padding: 16px 20px; text-align: left; color: white; font-weight: 700; font-size: 0.95rem; letter-spacing: 0.5px;">Combine Logic</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 16px 20px; color: #f1f5f9; font-weight: 600; font-size: 1rem; border-bottom: 1px solid #334155;">Tree Height</td>
+                                    <td style="padding: 16px 20px; border-bottom: 1px solid #334155;"><code style="background: #0f172a; color: #7dd3fc; padding: 6px 12px; border-radius: 6px; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.95rem; font-weight: 600;">1 + max(left, right)</code></td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 16px 20px; color: #f1f5f9; font-weight: 600; font-size: 1rem; border-bottom: 1px solid #334155;">Tree Sum</td>
+                                    <td style="padding: 16px 20px; border-bottom: 1px solid #334155;"><code style="background: #0f172a; color: #7dd3fc; padding: 6px 12px; border-radius: 6px; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.95rem; font-weight: 600;">root.val + left + right</code></td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 16px 20px; color: #f1f5f9; font-weight: 600; font-size: 1rem; border-bottom: 1px solid #334155;">Count Nodes</td>
+                                    <td style="padding: 16px 20px; border-bottom: 1px solid #334155;"><code style="background: #0f172a; color: #7dd3fc; padding: 6px 12px; border-radius: 6px; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.95rem; font-weight: 600;">1 + left + right</code></td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 16px 20px; color: #f1f5f9; font-weight: 600; font-size: 1rem;">Is Balanced?</td>
+                                    <td style="padding: 16px 20px;"><code style="background: #0f172a; color: #7dd3fc; padding: 6px 12px; border-radius: 6px; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.95rem; font-weight: 600;">abs(left - right) &lt;= 1</code></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>`
+        },
+        {
+            id: "path-problems",
+            title: "Path Problems",
+            icon: "fas fa-route",
+            content: `
+                <div class="flashcard">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-route"></i>
+                            Path Problems: Global vs Local
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="big-quote" style="font-size: 1.2rem; font-weight: 600; text-align: center; padding: 30px; background: linear-gradient(135deg, rgba(22, 163, 74, 0.1), rgba(244, 114, 182, 0.1)); border-radius: 12px; margin: 30px 0;">
+                            "Split at node (root + left + right) vs Flow through node (root + max(left, right))"
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+                            <div style="background: rgba(22, 163, 74, 0.1); padding: 20px; border-radius: 12px; border-left: 4px solid #16a34a;">
+                                <h4 style="color: #16a34a;">Global (The Arch)</h4>
+                                <p>Path ENDS at this node</p>
+                                <p>Used for: Max Path Sum</p>
+                                <code>global_max = max(global, root + left + right)</code>
+                            </div>
+                            <div style="background: rgba(99, 102, 241, 0.1); padding: 20px; border-radius: 12px; border-left: 4px solid #6366f1;">
+                                <h4 style="color: #6366f1;">Local (The Flow)</h4>
+                                <p>Path CONTINUES upward</p>
+                                <p>Returned to parent</p>
+                                <code>return root + max(left, right)</code>
+                            </div>
+                        </div>
+                        
+                        <h3 style="margin: 30px 0 15px; color: #16a34a;">Max Path Sum Template</h3>
+                        <div class="code-block" style="background: #0f172a; border-radius: 12px; padding: 15px;">
+                            <pre style="color: #e2e8f0; font-family: 'Consolas', monospace;">def maxPathSum(root):
+global_max = float('-inf')
+
+def dfs(node):
+    nonlocal global_max
+    if not node:
+        return 0
+    
+    # Get best paths from children (clamp negatives to 0)
+    left = max(dfs(node.left), 0)
+    right = max(dfs(node.right), 0)
+    
+    # GLOBAL: Path that SPLITS here (arch)
+    global_max = max(global_max, node.val + left + right)
+    
+    # LOCAL: Path that FLOWS upward (return to parent)
+    return node.val + max(left, right)
+
+dfs(root)
+return global_max</pre>
+                        </div>
+                    </div>
+                </div>`
+        },
+        {
+            id: "traversals",
+            title: "Traversals",
+            icon: "fas fa-stream",
+            content: `
+                <div class="flashcard">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-stream"></i>
+                            Tree Traversals: When to Use What
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <table style="width:100%; border-collapse: collapse; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.3); margin: 20px 0;">
+                            <thead>
+                                <tr style="background: linear-gradient(135deg, #16a34a, #22c55e);">
+                                    <th style="padding: 16px 20px; text-align: left; color: white; font-weight: 700; font-size: 0.95rem;">Traversal</th>
+                                    <th style="padding: 16px 20px; text-align: left; color: white; font-weight: 700; font-size: 0.95rem;">Order</th>
+                                    <th style="padding: 16px 20px; text-align: left; color: white; font-weight: 700; font-size: 0.95rem;">Use Case</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 16px 20px; color: #4ade80; font-weight: 700; border-bottom: 1px solid #334155;">Preorder</td>
+                                    <td style="padding: 16px 20px; color: #f1f5f9; border-bottom: 1px solid #334155;">Root → Left → Right</td>
+                                    <td style="padding: 16px 20px; color: #94a3b8; border-bottom: 1px solid #334155;">Serialize tree, copy tree</td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 16px 20px; color: #4ade80; font-weight: 700; border-bottom: 1px solid #334155;">Inorder</td>
+                                    <td style="padding: 16px 20px; color: #f1f5f9; border-bottom: 1px solid #334155;">Left → Root → Right</td>
+                                    <td style="padding: 16px 20px; color: #94a3b8; border-bottom: 1px solid #334155;">BST sorted order</td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 16px 20px; color: #4ade80; font-weight: 700; border-bottom: 1px solid #334155;">Postorder</td>
+                                    <td style="padding: 16px 20px; color: #f1f5f9; border-bottom: 1px solid #334155;">Left → Right → Root</td>
+                                    <td style="padding: 16px 20px; color: #94a3b8; border-bottom: 1px solid #334155;">Delete tree, height calc</td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 16px 20px; color: #4ade80; font-weight: 700;">Level Order</td>
+                                    <td style="padding: 16px 20px; color: #f1f5f9;">BFS (Queue)</td>
+                                    <td style="padding: 16px 20px; color: #94a3b8;">Level-wise processing</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <h3 style="margin: 30px 0 15px; color: #16a34a;">Level Order (BFS) Template</h3>
+                        <div class="code-block" style="background: #0f172a; border-radius: 12px; padding: 15px;">
+                            <pre style="color: #e2e8f0; font-family: 'Consolas', monospace;">from collections import deque
+
+def levelOrder(root):
+if not root:
+    return []
+
+result = []
+queue = deque([root])
+
+while queue:
+    level = []
+    for _ in range(len(queue)):  # Process one level
+        node = queue.popleft()
+        level.append(node.val)
+        
+        if node.left:
+            queue.append(node.left)
+        if node.right:
+            queue.append(node.right)
+    
+    result.append(level)
+
+return result</pre>
+                        </div>
+                    </div>
+                </div>`
+        }
+    ]
 }
+
+
+// ========== data/concepts/complexity_concepts.js ==========
+// Time & Space Complexity Mastery Guide
+// The complete guide to understanding complexity analysis
+
+const topic_complexity_concepts = {
+    id: "complexity_concepts",
+    title: "Time & Space Mastery: The Complete Guide",
+    description: "Recursion Trees, Memoization Magic, and Real Number Analysis",
+    color: "#f59e0b",
+    icon: "fas fa-clock",
+    type: "guide",
+    sections: [
+        {
+            id: "philosophy",
+            title: "🧠 Philosophy",
+            icon: "fas fa-lightbulb",
+            content: `
+                <div class="flashcard">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-lightbulb"></i>
+                            The Golden Formula
+                        </div>
+                        <div class="badges">
+                            <span class="badge badge-must" style="background:#ef4444; color:white;">CORE CONCEPT</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="big-quote" style="font-size: 1.6rem; font-weight: 700; text-align: center; padding: 40px; background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(239, 68, 68, 0.1)); border-radius: 16px; border: 2px solid rgba(245, 158, 11, 0.4); margin: 30px 0; line-height: 1.6;">
+                            Time = <span style="color:#f59e0b;">(Unique States)</span> × <span style="color:#22d3ee;">(Work per State)</span>
+                        </div>
+                        
+                        <div style="background: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444; padding: 20px; border-radius: 8px; margin: 25px 0;">
+                            <h4 style="color: #f87171; margin-bottom: 10px;">⚠️ Common Misconception</h4>
+                            <p style="color: #fca5a5;">Time complexity ≠ Total recursive calls!</p>
+                            <p style="color: gray;">Many students count all recursive calls, but with memoization, we only count <strong>unique states</strong>.</p>
+                        </div>
+                        
+                        <h3 style="color: #fbbf24; margin: 30px 0 15px;">The Two Questions</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div style="background: rgba(245, 158, 11, 0.1); padding: 25px; border-radius: 12px; text-align: center;">
+                                <div style="font-size: 2.5rem; margin-bottom: 15px;">1️⃣</div>
+                                <h4 style="color: #fbbf24;">How many UNIQUE states?</h4>
+                                <p style="color: gray; font-size: 0.9rem; margin-top: 10px;">Count the possible combinations of your memo key parameters</p>
+                            </div>
+                            <div style="background: rgba(34, 211, 238, 0.1); padding: 25px; border-radius: 12px; text-align: center;">
+                                <div style="font-size: 2.5rem; margin-bottom: 15px;">2️⃣</div>
+                                <h4 style="color: #22d3ee;">How much WORK per state?</h4>
+                                <p style="color: gray; font-size: 0.9rem; margin-top: 10px;">What happens inside each recursive call (loops, string ops, etc.)</p>
+                            </div>
+                        </div>
+                        
+                        <h3 style="color: #fbbf24; margin: 30px 0 15px;">Quick Examples</h3>
+                        <table style="width:100%; border-collapse: collapse; border-radius: 12px; overflow: hidden;">
+                            <thead>
+                                <tr style="background: linear-gradient(135deg, #f59e0b, #fbbf24);">
+                                    <th style="padding: 15px; text-align: left; color: black;">Problem</th>
+                                    <th style="padding: 15px; text-align: left; color: black;">States</th>
+                                    <th style="padding: 15px; text-align: left; color: black;">Work/State</th>
+                                    <th style="padding: 15px; text-align: left; color: black;">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155;">House Robber</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155; color: #7dd3fc;">N indices</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155; color: #22d3ee;">O(1)</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155; color: #34d399; font-weight: 700;">O(N)</td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155;">LCS</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155; color: #7dd3fc;">M × N pairs</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155; color: #22d3ee;">O(1)</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155; color: #f59e0b; font-weight: 700;">O(M×N)</td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 12px;">Word Break</td>
+                                    <td style="padding: 12px; color: #7dd3fc;">N positions</td>
+                                    <td style="padding: 12px; color: #22d3ee;">O(N²) loop + slice</td>
+                                    <td style="padding: 12px; color: #ef4444; font-weight: 700;">O(N³)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>`
+        },
+        {
+            id: "recursion-trees",
+            title: "🌳 Recursion Trees",
+            icon: "fas fa-tree",
+            content: `
+                <div class="flashcard">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-tree"></i>
+                            Visualizing Recursion: The Tree
+                        </div>
+                        <div class="badges">
+                            <span class="badge" style="background:#10b981; color:white;">VISUAL GUIDE</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="big-quote" style="font-size: 1.3rem; font-weight: 600; text-align: center; padding: 25px; background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(245, 158, 11, 0.1)); border-radius: 12px; margin: 20px 0;">
+                            "Every recursive call = A node in the tree"
+                        </div>
+                        
+                        <!-- Fibonacci Tree -->
+                        <h3 style="color: #ef4444; margin: 30px 0 15px;">
+                            <i class="fas fa-fire"></i> Fibonacci WITHOUT Memo: O(2^N)
+                        </h3>
+                        <p style="color: gray; margin-bottom: 15px;">Each call splits into 2 more calls = Exponential explosion!</p>
+                        
+                        <div style="background: #0f172a; padding: 25px; border-radius: 12px; font-family: 'Consolas', monospace; overflow-x: auto;">
+                            <pre style="color: #e2e8f0; margin: 0; line-height: 1.4;">
+                         fib(5)
+                        /      \\
+                   fib(4)        fib(3)
+                   /    \\        /    \\
+              fib(3)  fib(2)  fib(2)  fib(1)
+              /   \\    /  \\    /  \\      |
+          fib(2) fib(1) ...  ...  ...    1
+           / \\      |
+        fib(1) fib(0)
+           |      |
+           1      0
+           
+    Total Nodes: 2^5 - 1 = 31 calls for fib(5)!
+    For fib(50): 2^50 = 1,125,899,906,842,624 calls 💀</pre>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 25px 0;">
+                            <div style="background: rgba(239, 68, 68, 0.1); padding: 20px; border-radius: 12px; border: 1px solid rgba(239, 68, 68, 0.3);">
+                                <h4 style="color: #ef4444;">❌ Without Memo</h4>
+                                <p style="color: #fca5a5; font-size: 1.5rem; font-weight: 700; margin: 10px 0;">O(2^N)</p>
+                                <p style="color: gray; font-size: 0.9rem;">fib(3) is called 3 times!</p>
+                                <p style="color: gray; font-size: 0.9rem;">fib(2) is called 5 times!</p>
+                            </div>
+                            <div style="background: rgba(16, 185, 129, 0.1); padding: 20px; border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.3);">
+                                <h4 style="color: #10b981;">✅ With Memo</h4>
+                                <p style="color: #34d399; font-size: 1.5rem; font-weight: 700; margin: 10px 0;">O(N)</p>
+                                <p style="color: gray; font-size: 0.9rem;">Each fib(k) computed only ONCE!</p>
+                                <p style="color: gray; font-size: 0.9rem;">Stored and reused instantly</p>
+                            </div>
+                        </div>
+                        
+                        <!-- LIS Recursion Tree -->
+                        <h3 style="color: #f59e0b; margin: 30px 0 15px;">
+                            <i class="fas fa-chart-line"></i> LIS: Why O(2^N) Without Memo
+                        </h3>
+                        
+                        <div style="background: #0f172a; padding: 25px; border-radius: 12px; font-family: 'Consolas', monospace; overflow-x: auto;">
+                            <pre style="color: #e2e8f0; margin: 0; line-height: 1.4;">
+    Array: [3, 1, 2, 4]     Starting from index 0, prev = -1
+
+                      lis(0, -1)
+                     /          \\
+               TAKE 3          SKIP 3
+              lis(1, 0)        lis(1, -1)
+              /      \\         /       \\
+         SKIP 1    [X]      TAKE 1    SKIP 1
+        lis(2, 0)  can't   lis(2, 1)  lis(2, -1)
+         /    \\   (1<3)     /    \\     /     \\
+      SKIP   TAKE        TAKE  SKIP  TAKE   SKIP
+        ...    ...         ...   ...   ...    ...
+
+    Every element: 2 choices (take/skip)
+    = 2 × 2 × 2 × 2 = 2^N possibilities</pre>
+                        </div>
+                        
+                        <h3 style="color: #22d3ee; margin: 30px 0 15px;">
+                            <i class="fas fa-lightbulb"></i> Why Memo Makes It O(N²)
+                        </h3>
+                        <div style="background: rgba(34, 211, 238, 0.1); padding: 20px; border-radius: 12px; border-left: 4px solid #22d3ee;">
+                            <p style="margin-bottom: 15px;"><strong>Memo Key:</strong> <code style="background: #0f172a; padding: 4px 8px; border-radius: 4px; color: #7dd3fc;">(current_index, prev_index)</code></p>
+                            <p style="margin-bottom: 10px;"><strong>How many unique pairs?</strong></p>
+                            <ul style="list-style: none; padding-left: 0; line-height: 2;">
+                                <li>• current_index: 0 to N-1 → <strong>N</strong> values</li>
+                                <li>• prev_index: -1 to N-1 → <strong>N+1</strong> values</li>
+                                <li>• Total states: <strong style="color: #22d3ee;">N × (N+1) ≈ O(N²)</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>`
+        },
+        {
+            id: "memo-magic",
+            title: "⚡ Memo Magic",
+            icon: "fas fa-magic",
+            content: `
+                <div class="flashcard">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-magic"></i>
+                            Before vs After Memoization
+                        </div>
+                        <div class="badges">
+                            <span class="badge" style="background:#8b5cf6; color:white;">TRANSFORMATIVE</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="big-quote" style="font-size: 1.3rem; font-weight: 600; text-align: center; padding: 25px; background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(16, 185, 129, 0.1)); border-radius: 12px; margin: 20px 0;">
+                            "Memoization converts EXPONENTIAL → POLYNOMIAL"
+                        </div>
+                        
+                        <h3 style="color: #a78bfa; margin: 25px 0 15px;">The Transformation Table</h3>
+                        <table style="width:100%; border-collapse: collapse; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+                            <thead>
+                                <tr style="background: linear-gradient(135deg, #8b5cf6, #a78bfa);">
+                                    <th style="padding: 15px; text-align: left; color: white;">Problem</th>
+                                    <th style="padding: 15px; text-align: center; color: white;">Without Memo</th>
+                                    <th style="padding: 15px; text-align: center; color: white;">→</th>
+                                    <th style="padding: 15px; text-align: center; color: white;">With Memo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 15px; border-bottom: 1px solid #334155; font-weight: 600;">Fibonacci</td>
+                                    <td style="padding: 15px; border-bottom: 1px solid #334155; text-align: center; color: #ef4444; font-weight: 700;">O(2^N)</td>
+                                    <td style="padding: 15px; border-bottom: 1px solid #334155; text-align: center; font-size: 1.5rem;">→</td>
+                                    <td style="padding: 15px; border-bottom: 1px solid #334155; text-align: center; color: #10b981; font-weight: 700;">O(N)</td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 15px; border-bottom: 1px solid #334155; font-weight: 600;">House Robber</td>
+                                    <td style="padding: 15px; border-bottom: 1px solid #334155; text-align: center; color: #ef4444; font-weight: 700;">O(2^N)</td>
+                                    <td style="padding: 15px; border-bottom: 1px solid #334155; text-align: center; font-size: 1.5rem;">→</td>
+                                    <td style="padding: 15px; border-bottom: 1px solid #334155; text-align: center; color: #10b981; font-weight: 700;">O(N)</td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 15px; border-bottom: 1px solid #334155; font-weight: 600;">LIS</td>
+                                    <td style="padding: 15px; border-bottom: 1px solid #334155; text-align: center; color: #ef4444; font-weight: 700;">O(2^N)</td>
+                                    <td style="padding: 15px; border-bottom: 1px solid #334155; text-align: center; font-size: 1.5rem;">→</td>
+                                    <td style="padding: 15px; border-bottom: 1px solid #334155; text-align: center; color: #f59e0b; font-weight: 700;">O(N²)</td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 15px; border-bottom: 1px solid #334155; font-weight: 600;">LCS</td>
+                                    <td style="padding: 15px; border-bottom: 1px solid #334155; text-align: center; color: #ef4444; font-weight: 700;">O(2^(M+N))</td>
+                                    <td style="padding: 15px; border-bottom: 1px solid #334155; text-align: center; font-size: 1.5rem;">→</td>
+                                    <td style="padding: 15px; border-bottom: 1px solid #334155; text-align: center; color: #f59e0b; font-weight: 700;">O(M×N)</td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 15px; border-bottom: 1px solid #334155; font-weight: 600;">Coin Change</td>
+                                    <td style="padding: 15px; border-bottom: 1px solid #334155; text-align: center; color: #ef4444; font-weight: 700;">O(C^Amount)</td>
+                                    <td style="padding: 15px; border-bottom: 1px solid #334155; text-align: center; font-size: 1.5rem;">→</td>
+                                    <td style="padding: 15px; border-bottom: 1px solid #334155; text-align: center; color: #f59e0b; font-weight: 700;">O(C×Amount)</td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 15px; font-weight: 600;">Edit Distance</td>
+                                    <td style="padding: 15px; text-align: center; color: #ef4444; font-weight: 700;">O(3^(M+N))</td>
+                                    <td style="padding: 15px; text-align: center; font-size: 1.5rem;">→</td>
+                                    <td style="padding: 15px; text-align: center; color: #f59e0b; font-weight: 700;">O(M×N)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <h3 style="color: #a78bfa; margin: 30px 0 15px;">Visual: How Memo Prunes the Tree</h3>
+                        
+                        <div style="background: #0f172a; padding: 25px; border-radius: 12px; font-family: 'Consolas', monospace; overflow-x: auto;">
+                            <pre style="color: #e2e8f0; margin: 0; line-height: 1.4;">
+    <span style="color: #ef4444;">WITHOUT MEMO:</span> Every node is computed
+    
+                      fib(5)
+                     /      \\
+                fib(4)        fib(3)  ← <span style="color: #ef4444;">Recomputed!</span>
+               /    \\        /    \\
+           fib(3)  fib(2)  fib(2)  fib(1)  ← <span style="color: #ef4444;">Recomputed!</span>
+              ↓       ↓       ↓
+            (more recomputation...)
+    
+    ─────────────────────────────────────────
+    
+    <span style="color: #10b981;">WITH MEMO:</span> Reuse cached results (shown as ▣)
+    
+                      fib(5)
+                     /      \\
+                fib(4)       ▣ fib(3)  ← <span style="color: #10b981;">Cached! O(1)</span>
+               /    \\        
+           fib(3)   ▣ fib(2)  ← <span style="color: #10b981;">Cached! O(1)</span>
+           /    \\
+       fib(2)   ▣ fib(1)  ← <span style="color: #10b981;">Cached! O(1)</span>
+       /    \\
+   fib(1)   fib(0)
+   
+   Only 6 actual computations instead of 31!</pre>
+                        </div>
+                        
+                        <div style="background: rgba(16, 185, 129, 0.1); padding: 20px; border-radius: 12px; margin-top: 25px; border-left: 4px solid #10b981;">
+                            <h4 style="color: #10b981; margin-bottom: 10px;">💡 Key Insight</h4>
+                            <p style="color: #a7f3d0;">Memoization doesn't change the algorithm logic - it just avoids redundant work by remembering previous results!</p>
+                        </div>
+                    </div>
+                </div>`
+        },
+        {
+            id: "time-patterns",
+            title: "📊 Time Patterns",
+            icon: "fas fa-chart-bar",
+            content: `
+                <div class="flashcard">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-chart-bar"></i>
+                            Every DP Pattern's Complexity
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        
+                        <!-- Pattern 1: Simple Linear -->
+                        <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 16px; padding: 25px; margin-bottom: 20px;">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+                                <span style="background: #10b981; color: white; padding: 8px 14px; border-radius: 8px; font-weight: 700;">O(N)</span>
+                                <h3 style="color: #34d399; margin: 0;">Simple Take/Not-Take</h3>
+                            </div>
+                            <p style="color: gray; margin-bottom: 15px;">State: Only index | Work: O(1) decisions</p>
+                            <div style="background: #0f172a; padding: 15px; border-radius: 8px; font-family: Consolas;">
+                                <code style="color: #7dd3fc;">memo[(index)] = result  # N unique states</code>
+                            </div>
+                            <p style="margin-top: 15px; color: gray; font-size: 0.9rem;">
+                                <strong>Problems:</strong> Fibonacci, House Robber, Climbing Stairs
+                            </p>
+                        </div>
+                        
+                        <!-- Pattern 2: Two Parameter -->
+                        <div style="background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 16px; padding: 25px; margin-bottom: 20px;">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+                                <span style="background: #f59e0b; color: white; padding: 8px 14px; border-radius: 8px; font-weight: 700;">O(N²)</span>
+                                <h3 style="color: #fbbf24; margin: 0;">Two-Parameter State</h3>
+                            </div>
+                            <p style="color: gray; margin-bottom: 15px;">State: (index, prev_index) or (index, remaining) | Work: O(1)</p>
+                            <div style="background: #0f172a; padding: 15px; border-radius: 8px; font-family: Consolas;">
+                                <code style="color: #7dd3fc;">memo[(i, prev)] = result  # N × N = N² states</code>
+                            </div>
+                            <p style="margin-top: 15px; color: gray; font-size: 0.9rem;">
+                                <strong>Problems:</strong> LIS, Partition Equal Subset Sum
+                            </p>
+                        </div>
+                        
+                        <!-- Pattern 3: Two Strings -->
+                        <div style="background: rgba(139, 92, 246, 0.05); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 16px; padding: 25px; margin-bottom: 20px;">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+                                <span style="background: #8b5cf6; color: white; padding: 8px 14px; border-radius: 8px; font-weight: 700;">O(M×N)</span>
+                                <h3 style="color: #a78bfa; margin: 0;">Two-String DP</h3>
+                            </div>
+                            <p style="color: gray; margin-bottom: 15px;">State: (i in string1, j in string2) | Work: O(1)</p>
+                            <div style="background: #0f172a; padding: 15px; border-radius: 8px; font-family: Consolas;">
+                                <code style="color: #7dd3fc;">memo[(i, j)] = result  # M × N states</code>
+                            </div>
+                            <p style="margin-top: 15px; color: gray; font-size: 0.9rem;">
+                                <strong>Problems:</strong> LCS, Edit Distance, Interleaving String
+                            </p>
+                        </div>
+                        
+                        <!-- Pattern 4: With Extra Work -->
+                        <div style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 16px; padding: 25px; margin-bottom: 20px;">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+                                <span style="background: #ef4444; color: white; padding: 8px 14px; border-radius: 8px; font-weight: 700;">O(N³)</span>
+                                <h3 style="color: #f87171; margin: 0;">String Partition</h3>
+                            </div>
+                            <p style="color: gray; margin-bottom: 15px;">State: N positions | Work: O(N) loop + O(N) string slice!</p>
+                            <div style="background: #0f172a; padding: 15px; border-radius: 8px; font-family: Consolas;">
+                                <code style="color: #ef4444;"># N states × (N loop × N slice) = O(N³)!</code><br>
+                                <code style="color: #7dd3fc;">for end in range(start, n):  # O(N) loop</code><br>
+                                <code style="color: #7dd3fc;">    s[start:end+1]  # O(N) string slice!</code>
+                            </div>
+                            <p style="margin-top: 15px; color: gray; font-size: 0.9rem;">
+                                <strong>Problems:</strong> Word Break, Palindrome Partitioning
+                            </p>
+                        </div>
+                        
+                        <!-- Pattern 5: Knapsack -->
+                        <div style="background: rgba(34, 211, 238, 0.05); border: 1px solid rgba(34, 211, 238, 0.2); border-radius: 16px; padding: 25px;">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+                                <span style="background: #22d3ee; color: black; padding: 8px 14px; border-radius: 8px; font-weight: 700;">O(N×Target)</span>
+                                <h3 style="color: #22d3ee; margin: 0;">Knapsack Variants</h3>
+                            </div>
+                            <p style="color: gray; margin-bottom: 15px;">State: (index, remaining_capacity) | Work: O(1)</p>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div style="background: #0f172a; padding: 15px; border-radius: 8px;">
+                                    <p style="color: #22d3ee; margin-bottom: 8px; font-size: 0.85rem;">0/1 Knapsack</p>
+                                    <code style="color: #7dd3fc; font-size: 0.85rem;">O(N × Capacity)</code>
+                                </div>
+                                <div style="background: #0f172a; padding: 15px; border-radius: 8px;">
+                                    <p style="color: #f59e0b; margin-bottom: 8px; font-size: 0.85rem;">Unbounded (Coin Change)</p>
+                                    <code style="color: #7dd3fc; font-size: 0.85rem;">O(Coins × Amount)</code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>`
+        },
+        {
+            id: "space-analysis",
+            title: "📦 Space Deep Dive",
+            icon: "fas fa-memory",
+            content: `
+                <div class="flashcard">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-memory"></i>
+                            Space Complexity: The Full Picture
+                        </div>
+                        <div class="badges">
+                            <span class="badge" style="background:#c026d3; color:white;">DEEP DIVE</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="big-quote" style="font-size: 1.2rem; font-weight: 600; text-align: center; padding: 25px; background: linear-gradient(135deg, rgba(192, 38, 211, 0.1), rgba(139, 92, 246, 0.1)); border-radius: 12px; margin: 20px 0;">
+                            Space = <span style="color:#c026d3;">Recursion Stack</span> + <span style="color:#a78bfa;">Memoization Table</span>
+                        </div>
+                        
+                        <h3 style="color: #c026d3; margin: 25px 0 15px;">
+                            <i class="fas fa-layer-group"></i> Part 1: Recursion Stack
+                        </h3>
+                        
+                        <div style="background: #0f172a; padding: 25px; border-radius: 12px; font-family: 'Consolas', monospace; margin-bottom: 20px; overflow-x: auto;">
+                            <pre style="color: #e2e8f0; margin: 0; line-height: 1.5;">
+    Call Stack Visualization for fib(5):
+    
+    ┌─────────────────────────────────────┐
+    │  fib(0) ← Currently executing       │  ← Max Depth = N
+    ├─────────────────────────────────────┤
+    │  fib(1)                             │
+    ├─────────────────────────────────────┤
+    │  fib(2)                             │
+    ├─────────────────────────────────────┤
+    │  fib(3)                             │
+    ├─────────────────────────────────────┤
+    │  fib(4)                             │
+    ├─────────────────────────────────────┤
+    │  fib(5) ← First call                │
+    └─────────────────────────────────────┘
+    
+    Stack grows DOWN as we recurse deeper
+    Each frame stores: local vars + return address</pre>
+                        </div>
+                        
+                        <div style="background: rgba(192, 38, 211, 0.1); padding: 20px; border-radius: 12px; border-left: 4px solid #c026d3; margin-bottom: 25px;">
+                            <h4 style="color: #c026d3; margin-bottom: 10px;">Stack Depth Formula</h4>
+                            <p><strong>Max Stack Depth = Longest path from root to leaf in recursion tree</strong></p>
+                            <ul style="line-height: 2; margin-top: 10px;">
+                                <li><strong>Fibonacci:</strong> O(N) - goes fib(n) → fib(n-1) → ... → fib(0)</li>
+                                <li><strong>LCS:</strong> O(M+N) - at most M+N recursive calls deep</li>
+                                <li><strong>Binary Tree:</strong> O(H) where H = height of tree</li>
+                            </ul>
+                        </div>
+                        
+                        <h3 style="color: #a78bfa; margin: 30px 0 15px;">
+                            <i class="fas fa-table"></i> Part 2: Memoization Table
+                        </h3>
+                        
+                        <table style="width:100%; border-collapse: collapse; border-radius: 12px; overflow: hidden;">
+                            <thead>
+                                <tr style="background: linear-gradient(135deg, #8b5cf6, #a78bfa);">
+                                    <th style="padding: 15px; text-align: left; color: white;">Problem</th>
+                                    <th style="padding: 15px; text-align: left; color: white;">Memo Table Size</th>
+                                    <th style="padding: 15px; text-align: left; color: white;">Optimizable?</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155;">Fibonacci</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155; color: #7dd3fc;">O(N)</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155; color: #10b981;">✅ O(1) - only need last 2</td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155;">House Robber</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155; color: #7dd3fc;">O(N)</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155; color: #10b981;">✅ O(1) - rolling variables</td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155;">LCS</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155; color: #7dd3fc;">O(M×N)</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155; color: #f59e0b;">🔶 O(min(M,N)) - 1 row</td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 12px;">Coin Change</td>
+                                    <td style="padding: 12px; color: #7dd3fc;">O(Amount)</td>
+                                    <td style="padding: 12px; color: #ef4444;">❌ Can't reduce further</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <h3 style="color: #ef4444; margin: 30px 0 15px;">
+                            <i class="fas fa-exclamation-triangle"></i> Stack Overflow Warning!
+                        </h3>
+                        <div style="background: rgba(239, 68, 68, 0.1); padding: 20px; border-radius: 12px; border: 1px solid rgba(239, 68, 68, 0.3);">
+                            <p style="margin-bottom: 15px;">Python default recursion limit: <strong style="color: #ef4444;">1000 calls</strong></p>
+                            <p style="margin-bottom: 10px;">For N > 1000, you'll get:</p>
+                            <code style="background: #0f172a; padding: 8px 12px; border-radius: 6px; color: #f87171; display: block; margin: 10px 0;">RecursionError: maximum recursion depth exceeded</code>
+                            <p style="margin-top: 15px;"><strong>Solutions:</strong></p>
+                            <ul style="line-height: 2;">
+                                <li><code>import sys; sys.setrecursionlimit(10000)</code></li>
+                                <li>Convert to iterative DP (bottom-up)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>`
+        },
+        {
+            id: "real-numbers",
+            title: "🔢 Real Numbers",
+            icon: "fas fa-calculator",
+            content: `
+                <div class="flashcard">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-calculator"></i>
+                            What The Numbers Actually Mean
+                        </div>
+                        <div class="badges">
+                            <span class="badge" style="background:#ef4444; color:white;">REALITY CHECK</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="big-quote" style="font-size: 1.3rem; font-weight: 600; text-align: center; padding: 25px; background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(245, 158, 11, 0.1)); border-radius: 12px; margin: 20px 0;">
+                            LeetCode judges: ~10⁸ operations/second
+                        </div>
+                        
+                        <h3 style="color: #f59e0b; margin: 25px 0 15px;">2^N Growth - The Horror Show</h3>
+                        
+                        <table style="width:100%; border-collapse: collapse; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+                            <thead>
+                                <tr style="background: linear-gradient(135deg, #ef4444, #f87171);">
+                                    <th style="padding: 15px; text-align: center; color: white;">N</th>
+                                    <th style="padding: 15px; text-align: right; color: white;">2^N Operations</th>
+                                    <th style="padding: 15px; text-align: right; color: white;">Time @ 10⁸/sec</th>
+                                    <th style="padding: 15px; text-align: center; color: white;">Result</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 12px; text-align: center; border-bottom: 1px solid #334155;">10</td>
+                                    <td style="padding: 12px; text-align: right; border-bottom: 1px solid #334155; color: #7dd3fc;">1,024</td>
+                                    <td style="padding: 12px; text-align: right; border-bottom: 1px solid #334155;">0.00001 sec</td>
+                                    <td style="padding: 12px; text-align: center; border-bottom: 1px solid #334155; color: #10b981;">✅ Fast</td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 12px; text-align: center; border-bottom: 1px solid #334155;">20</td>
+                                    <td style="padding: 12px; text-align: right; border-bottom: 1px solid #334155; color: #7dd3fc;">1,048,576</td>
+                                    <td style="padding: 12px; text-align: right; border-bottom: 1px solid #334155;">0.01 sec</td>
+                                    <td style="padding: 12px; text-align: center; border-bottom: 1px solid #334155; color: #10b981;">✅ OK</td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 12px; text-align: center; border-bottom: 1px solid #334155;">30</td>
+                                    <td style="padding: 12px; text-align: right; border-bottom: 1px solid #334155; color: #fbbf24;">1,073,741,824</td>
+                                    <td style="padding: 12px; text-align: right; border-bottom: 1px solid #334155;">10.7 sec</td>
+                                    <td style="padding: 12px; text-align: center; border-bottom: 1px solid #334155; color: #ef4444;">❌ TLE</td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 12px; text-align: center; border-bottom: 1px solid #334155;">40</td>
+                                    <td style="padding: 12px; text-align: right; border-bottom: 1px solid #334155; color: #ef4444;">1,099,511,627,776</td>
+                                    <td style="padding: 12px; text-align: right; border-bottom: 1px solid #334155;">3 hours</td>
+                                    <td style="padding: 12px; text-align: center; border-bottom: 1px solid #334155; color: #ef4444;">💀 Dead</td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 12px; text-align: center;">50</td>
+                                    <td style="padding: 12px; text-align: right; color: #ef4444;">1,125,899,906,842,624</td>
+                                    <td style="padding: 12px; text-align: right;">130 days</td>
+                                    <td style="padding: 12px; text-align: center; color: #ef4444;">☠️ RIP</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <h3 style="color: #10b981; margin: 30px 0 15px;">What Complexity Can Handle What N?</h3>
+                        
+                        <table style="width:100%; border-collapse: collapse; border-radius: 12px; overflow: hidden; margin-top: 15px;">
+                            <thead>
+                                <tr style="background: linear-gradient(135deg, #10b981, #34d399);">
+                                    <th style="padding: 15px; text-align: left; color: white;">Complexity</th>
+                                    <th style="padding: 15px; text-align: center; color: white;">Max N for 1 sec</th>
+                                    <th style="padding: 15px; text-align: left; color: white;">Typical Problems</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155; font-weight: 600;">O(N)</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155; text-align: center; color: #10b981; font-weight: 700;">10⁸</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155; color: gray;">House Robber, Fibonacci</td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155; font-weight: 600;">O(N log N)</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155; text-align: center; color: #10b981; font-weight: 700;">10⁷</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155; color: gray;">LIS (Binary Search)</td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155; font-weight: 600;">O(N²)</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155; text-align: center; color: #f59e0b; font-weight: 700;">10⁴</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155; color: gray;">LIS, LCS, Edit Distance</td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155; font-weight: 600;">O(N³)</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155; text-align: center; color: #f59e0b; font-weight: 700;">500</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155; color: gray;">Word Break, Matrix Chain</td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 12px; font-weight: 600;">O(2^N)</td>
+                                    <td style="padding: 12px; text-align: center; color: #ef4444; font-weight: 700;">20-25</td>
+                                    <td style="padding: 12px; color: gray;">Subsets, Permutations</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <div style="background: rgba(139, 92, 246, 0.1); padding: 20px; border-radius: 12px; margin-top: 25px; border-left: 4px solid #8b5cf6;">
+                            <h4 style="color: #a78bfa; margin-bottom: 10px;">💡 Quick Check Rule</h4>
+                            <p>Look at constraints in problem:</p>
+                            <ul style="line-height: 2;">
+                                <li>N ≤ 20 → O(2^N) might work (brute force ok)</li>
+                                <li>N ≤ 10⁴ → Need at least O(N²)</li>
+                                <li>N ≤ 10⁵ → Need O(N log N) or O(N)</li>
+                                <li>N ≤ 10⁸ → Must be O(N) or O(1)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>`
+        },
+        {
+            id: "mistakes",
+            title: "⚠️ Mistakes",
+            icon: "fas fa-exclamation-triangle",
+            content: `
+                <div class="flashcard">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Common Complexity Mistakes
+                        </div>
+                        <div class="badges">
+                            <span class="badge" style="background:#ef4444; color:white;">AVOID THESE!</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        
+                        <!-- Mistake 1 -->
+                        <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                <span style="background: #ef4444; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">1</span>
+                                <strong style="color: #f87171; font-size: 1.1rem;">Counting Recursive Calls Instead of States</strong>
+                            </div>
+                            <p style="color: gray; margin-bottom: 15px;">"My function calls itself twice, so it's O(2^N)"</p>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div style="background: #0f172a; padding: 15px; border-radius: 8px;">
+                                    <p style="color: #ef4444; margin-bottom: 8px; font-size: 0.85rem;">❌ WRONG Thinking</p>
+                                    <code style="color: #f87171; font-size: 0.85rem;">2 calls per state = O(2^N)</code>
+                                </div>
+                                <div style="background: #0f172a; padding: 15px; border-radius: 8px;">
+                                    <p style="color: #10b981; margin-bottom: 8px; font-size: 0.85rem;">✅ RIGHT Thinking</p>
+                                    <code style="color: #34d399; font-size: 0.85rem;">N unique states × O(1) = O(N)</code>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Mistake 2 -->
+                        <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                <span style="background: #f59e0b; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">2</span>
+                                <strong style="color: #fbbf24; font-size: 1.1rem;">Forgetting String Slicing Cost</strong>
+                            </div>
+                            <p style="color: gray; margin-bottom: 15px;">String slicing in Python creates a NEW string = O(length) time!</p>
+                            <div style="background: #0f172a; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                                <code style="color: #f59e0b;">
+                                    # Word Break: s[start:end+1]<br>
+                                    # This is O(end - start), NOT O(1)!<br><br>
+                                    # Total: N states × N loop × N slice = O(N³)
+                                </code>
+                            </div>
+                            <p style="color: gray; font-size: 0.9rem;"><strong>Fix:</strong> Use index comparisons or hash the string</p>
+                        </div>
+                        
+                        <!-- Mistake 3 -->
+                        <div style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                <span style="background: #8b5cf6; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">3</span>
+                                <strong style="color: #a78bfa; font-size: 1.1rem;">Ignoring Hidden Loops</strong>
+                            </div>
+                            <p style="color: gray; margin-bottom: 15px;">Some operations have hidden loops you might miss:</p>
+                            <div style="background: #0f172a; padding: 15px; border-radius: 8px;">
+                                <code style="color: #a78bfa;">
+                                    word in wordSet  # O(len(word)) for hashing!<br>
+                                    list(set)        # O(N) to convert<br>
+                                    string + string  # O(N) - creates new string<br>
+                                    arr.copy()       # O(N) - copies all elements<br>
+                                    "x" * n          # O(N) - creates n-length string
+                                </code>
+                            </div>
+                        </div>
+                        
+                        <!-- Mistake 4 -->
+                        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 20px;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                <span style="background: #10b981; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">4</span>
+                                <strong style="color: #34d399; font-size: 1.1rem;">Not Recognizing State Dependencies</strong>
+                            </div>
+                            <p style="color: gray; margin-bottom: 15px;">Different parameters = Different states!</p>
+                            <div style="background: #0f172a; padding: 15px; border-radius: 8px;">
+                                <code style="color: #34d399;">
+                                    # LIS: memo[index] is WRONG!<br>
+                                    # Because result depends on prev_index too<br><br>
+                                    # Correct: memo[(index, prev_index)]<br>
+                                    # States: N × N = O(N²)
+                                </code>
+                            </div>
+                        </div>
+                        
+                        <div style="background: rgba(245, 158, 11, 0.1); padding: 20px; border-radius: 12px; margin-top: 25px; border-left: 4px solid #f59e0b;">
+                            <h4 style="color: #fbbf24; margin-bottom: 10px;">💡 Pro Tip</h4>
+                            <p>When calculating complexity, always ask:</p>
+                            <ol style="line-height: 2; margin-top: 10px;">
+                                <li>What are the state parameters? (memo key)</li>
+                                <li>How many unique combinations exist?</li>
+                                <li>What work happens INSIDE each state? (loops, string ops)</li>
+                                <li>Multiply: States × Work per State = Answer</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>`
+        }
+    ]
+};
+
+
+// ========== data/index.js ==========
+// data/index.js
+// Main entry point that loads all topic files and combines them into prepData
+// This file is loaded AFTER all the individual topic files
+
+// Combine all topics into prepData
+const prepData = {
+    // DSA Topics
+    arrays: topic_arrays,
+    binary_search: topic_binary_search,
+    linked_list: topic_linked_list,
+    stack: topic_stack,
+    trees: topic_trees,
+    graphs: topic_graphs,
+    dp: topic_dp,
+    heap_trie: topic_heap_trie,
+    backtracking: topic_backtracking,
+
+    // Concept Guides
+    dp_concepts: topic_dp_concepts,
+    arrays_concepts: topic_arrays_concepts,
+    graphs_concepts: topic_graphs_concepts,
+    trees_concepts: topic_trees_concepts,
+    complexity_concepts: topic_complexity_concepts
+};
+

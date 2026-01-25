@@ -8,34 +8,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <link rel="stylesheet" href="style.css">
     <style>
-        :root {
-            --bg-dark: #0f172a;
-            --bg-card: #1e293b;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --primary: #818cf8;
-            --success: #34d399;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --glass-bg: rgba(30, 41, 59, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.08);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
         .container {
             max-width: 1000px;
             margin: 0 auto;
@@ -44,19 +18,6 @@
         /* Navbar */
         .nav-bar {
             margin-bottom: 30px;
-        }
-
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-
-        .back-btn:hover {
-            color: var(--primary);
         }
 
         /* Header */
@@ -212,8 +173,21 @@
 
 <body>
     <div class="container">
-        <nav class="nav-bar">
-            <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Dashboard</a>
+        <nav class="navbar">
+            <div class="nav-content">
+                <a href="index.html" class="nav-logo">
+                    <i class="fas fa-fire"></i> Principal Prep
+                </a>
+                <div class="nav-links">
+                    <a href="index.html" class="nav-link">Dashboard</a>
+                    <a href="question_list.html" class="nav-link">55 Questions</a>
+                    <a href="flashcard.html" class="nav-link">Flashcards</a>
+                    <a href="cheatsheet.html" class="nav-link">Cheat Sheet</a>
+                    <a href="game.html" class="nav-link" style="color: #f472b6 !important;">
+                        <i class="fas fa-gamepad"></i> Game
+                    </a>
+                </div>
+            </div>
         </nav>
 
         <header class="header">

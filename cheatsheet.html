@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#818cf8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="manifest" href="manifest.json">
+    <title>📋 DSA Cheat Sheet | Principal Prep</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+
+            .navbar,
+            .no-print {
+                display: none !important;
+            }
+
+            .container {
+                max-width: 100%;
+                padding: 10px;
+            }
+
+            .pattern-card {
+                break-inside: avoid;
+                background: #f5f5f5;
+                border: 1px solid #ddd;
+                page-break-inside: avoid;
+            }
+
+            .pattern-card h3 {
+                color: #333;
+            }
+
+            .pattern-card ul li {
+                color: #555;
+            }
+
+            .complexity-table {
+                background: white;
+                border: 1px solid #ddd;
+            }
+
+            .complexity-table th,
+            .complexity-table td {
+                border: 1px solid #ddd;
+                color: #333;
+            }
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--success));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: var(--text-muted);
+        }
+
+        .print-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.2s;
+        }
+
+        .print-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Patterns Grid */
+        .patterns-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+
+        .pattern-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 25px;
+        }
+
+        .pattern-card h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .pattern-card h3 i {
+            color: var(--primary);
+        }
+
+        .pattern-card ul {
+            list-style: none;
+        }
+
+        .pattern-card ul li {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .pattern-card ul li:last-child {
+            border-bottom: none;
+        }
+
+        .pattern-card ul li::before {
+            content: "→";
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        .pattern-card code {
+            background: rgba(129, 140, 248, 0.1);
+            color: var(--primary);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+
+        /* Complexity Table */
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title i {
+            color: var(--primary);
+        }
+
+        .complexity-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--glass-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 50px;
+        }
+
+        .complexity-table th,
+        .complexity-table td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .complexity-table th {
+            background: rgba(129, 140, 248, 0.15);
+            color: var(--primary);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        .complexity-table td {
+            color: var(--text-main);
+        }
+
+        .complexity-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .complexity-table tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .complexity-table td:nth-child(2),
+        .complexity-table td:nth-child(3) {
+            font-family: 'Consolas', monospace;
+            color: var(--success);
+        }
+
+        /* Quick Tips */
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .tip-card {
+            background: linear-gradient(135deg, rgba(129, 140, 248, 0.1), rgba(52, 211, 153, 0.1));
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .tip-card h4 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .tip-card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .patterns-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .complexity-table {
+                font-size: 0.85rem;
+            }
+
+            .complexity-table th,
+            .complexity-table td {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar no-print">
+        <div class="nav-content">
+            <a href="index.html" class="nav-logo">
+                <i class="fas fa-fire" style="color: var(--primary)"></i> Principal Prep
+            </a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Dashboard</a>
+                <a href="question_list.html" class="nav-link">55 Questions</a>
+                <a href="flashcard.html" class="nav-link">Flashcards</a>
+                <a href="cheatsheet.html" class="nav-link active">Cheat Sheet</a>
+                <a href="game.html" class="nav-link" style="color: #f472b6;">
+                    <i class="fas fa-gamepad"></i> Game
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header class="header">
+            <h1>📋 DSA Cheat Sheet</h1>
+            <p>One-page reference for your interview</p>
+            <button class="print-btn no-print" onclick="window.print()">
+                <i class="fas fa-print"></i> Print / Save as PDF
+            </button>
+        </header>
+
+        <!-- Pattern Recognition -->
+        <h2 class="section-title"><i class="fas fa-lightbulb"></i> Pattern Recognition</h2>
+        <div class="patterns-grid">
+            <div class="pattern-card">
+                <h3><i class="fas fa-layer-group"></i> Sliding Window</h3>
+                <ul>
+                    <li>Use when: "Find max/min <b>subarray</b> of size K"</li>
+                    <li>Use when: "Longest substring with X property"</li>
+                    <li>Template: Two pointers, expand right, shrink left</li>
+                    <li>Key insight: <code>window_sum += arr[r]; window_sum -= arr[l]</code></li>
+                </ul>
+            </div>
+
+            <div class="pattern-card">
+                <h3><i class="fas fa-arrows-alt-h"></i> Two Pointers</h3>
+                <ul>
+                    <li>Use when: Sorted array, find pairs</li>
+                    <li>Use when: In-place modification needed</li>
+                    <li>Variants: Start/End, Fast/Slow, Same Direction</li>
+                    <li>Key insight: <code>if sum > target: r-- else l++</code></li>
+                </ul>
+            </div>
+
+            <div class="pattern-card">
+                <h3><i class="fas fa-search"></i> Binary Search</h3>
+                <ul>
+                    <li>Use when: Sorted data, O(log N) needed</li>
+                    <li>Use when: "Find first/last occurrence"</li>
+                    <li>Use when: Search in rotated sorted array</li>
+                    <li>Key insight: <code>mid = l + (r - l) // 2</code></li>
+                </ul>
+            </div>
+
+            <div class="pattern-card">
+                <h3><i class="fas fa-tree"></i> DFS / BFS</h3>
+                <ul>
+                    <li>Use DFS: Path finding, exhaustive search</li>
+                    <li>Use BFS: Shortest path, level order</li>
+                    <li>DFS → Stack/Recursion, BFS → Queue</li>
+                    <li>Key insight: Track <code>visited</code> set!</li>
+                </ul>
+            </div>
+
+            <div class="pattern-card">
+                <h3><i class="fas fa-cubes"></i> Dynamic Programming</h3>
+                <ul>
+                    <li>Use when: Overlapping subproblems</li>
+                    <li>Use when: Optimal substructure</li>
+                    <li>Steps: Define state → Base case → Transition</li>
+                    <li>Key insight: <code>dp[i] = fn(dp[i-1], dp[i-2]...)</code></li>
+                </ul>
+            </div>
+
+            <div class="pattern-card">
+                <h3><i class="fas fa-sitemap"></i> Heap / Priority Queue</h3>
+                <ul>
+                    <li>Use when: "Find K largest/smallest"</li>
+                    <li>Use when: Merge K sorted lists</li>
+                    <li>Min heap for K largest, Max heap for K smallest</li>
+                    <li>Key insight: Maintain heap of size K</li>
+                </ul>
+            </div>
+
+            <div class="pattern-card">
+                <h3><i class="fas fa-stack-overflow"></i> Monotonic Stack</h3>
+                <ul>
+                    <li>Use when: "Next greater/smaller element"</li>
+                    <li>Use when: Span problems, histogram area</li>
+                    <li>Maintain increasing or decreasing order</li>
+                    <li>Key insight: Pop while <code>stack[-1] < current</code></li>
+                </ul>
+            </div>
+
+            <div class="pattern-card">
+                <h3><i class="fas fa-undo"></i> Backtracking</h3>
+                <ul>
+                    <li>Use when: All permutations/combinations</li>
+                    <li>Use when: Constraint satisfaction (N-Queens)</li>
+                    <li>Template: Choose → Explore → Unchoose</li>
+                    <li>Key insight: Prune early with constraints</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Complexity Table -->
+        <h2 class="section-title"><i class="fas fa-clock"></i> Time & Space Complexity</h2>
+        <table class="complexity-table">
+            <thead>
+                <tr>
+                    <th>Problem Type</th>
+                    <th>Time</th>
+                    <th>Space</th>
+                    <th>Key Technique</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Two Sum</td>
+                    <td>O(N)</td>
+                    <td>O(N)</td>
+                    <td>HashMap for complement lookup</td>
+                </tr>
+                <tr>
+                    <td>3Sum</td>
+                    <td>O(N²)</td>
+                    <td>O(1)</td>
+                    <td>Sort + Two Pointers</td>
+                </tr>
+                <tr>
+                    <td>Binary Search</td>
+                    <td>O(log N)</td>
+                    <td>O(1)</td>
+                    <td>Divide search space by half</td>
+                </tr>
+                <tr>
+                    <td>Merge K Lists</td>
+                    <td>O(N log K)</td>
+                    <td>O(K)</td>
+                    <td>Min Heap of K elements</td>
+                </tr>
+                <tr>
+                    <td>LCS (2 strings)</td>
+                    <td>O(M×N)</td>
+                    <td>O(M×N)</td>
+                    <td>2D DP grid</td>
+                </tr>
+                <tr>
+                    <td>LIS</td>
+                    <td>O(N log N)</td>
+                    <td>O(N)</td>
+                    <td>Binary Search + Patience Sort</td>
+                </tr>
+                <tr>
+                    <td>Coin Change</td>
+                    <td>O(N×Amount)</td>
+                    <td>O(Amount)</td>
+                    <td>1D DP bottom-up</td>
+                </tr>
+                <tr>
+                    <td>Word Break</td>
+                    <td>O(N²×M)</td>
+                    <td>O(N)</td>
+                    <td>DP + HashSet lookup</td>
+                </tr>
+                <tr>
+                    <td>Tree DFS</td>
+                    <td>O(N)</td>
+                    <td>O(H)</td>
+                    <td>Recursion (H = height)</td>
+                </tr>
+                <tr>
+                    <td>Graph BFS</td>
+                    <td>O(V+E)</td>
+                    <td>O(V)</td>
+                    <td>Queue + Visited set</td>
+                </tr>
+                <tr>
+                    <td>Topological Sort</td>
+                    <td>O(V+E)</td>
+                    <td>O(V)</td>
+                    <td>Kahn's BFS or DFS</td>
+                </tr>
+                <tr>
+                    <td>Trie Operations</td>
+                    <td>O(L)</td>
+                    <td>O(N×L)</td>
+                    <td>L = word length</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Quick Tips -->
+        <h2 class="section-title"><i class="fas fa-bolt"></i> Interview Tips</h2>
+        <div class="tips-grid">
+            <div class="tip-card">
+                <h4>🎯 Clarify Before Coding</h4>
+                <p>Ask: Input size? Sorted? Duplicates? Negative numbers? What to return if no solution?</p>
+            </div>
+            <div class="tip-card">
+                <h4>🔄 Start with Brute Force</h4>
+                <p>Mention the O(N²) or O(N³) approach first. Then optimize. Shows thought process.</p>
+            </div>
+            <div class="tip-card">
+                <h4>📝 Write Clean Code</h4>
+                <p>Use meaningful variable names. Add comments. Handle edge cases explicitly.</p>
+            </div>
+            <div class="tip-card">
+                <h4>🧪 Test Your Solution</h4>
+                <p>Walk through with: Empty input, single element, edge cases, general case.</p>
+            </div>
+            <div class="tip-card">
+                <h4>⏰ Time Management</h4>
+                <p>Easy: 10-15 min. Medium: 20-25 min. Hard: 35-40 min. Know when to ask for hints.</p>
+            </div>
+            <div class="tip-card">
+                <h4>💡 Pattern Matching</h4>
+                <p>When stuck, ask: Is it sorted? Subarray? Graph? Can I use HashMap? Two Pointers?</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

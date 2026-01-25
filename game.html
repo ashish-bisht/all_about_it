@@ -13,21 +13,10 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <link rel="stylesheet" href="style.css">
     <style>
-        :root {
-            --bg-dark: #0a0e27;
-            --bg-card: #1a1f3a;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --primary: #818cf8;
-            --success: #34d399;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --gold: #fbbf24;
-            --game-accent: #f472b6;
-            --glass-bg: rgba(30, 41, 59, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.08);
-        }
+        /* Game Specific Overrides */
+        /* Note: Variables are inherited from style.css */
 
         * {
             margin: 0;
@@ -37,9 +26,7 @@
         }
 
         body {
-            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
-            color: var(--text-main);
-            min-height: 100vh;
+            /* Override global background for game-specific feel if needed, usually same is better for uniformity */
             overflow-x: hidden;
             /* Safe area insets for iPhone notch */
             padding-top: env(safe-area-inset-top);
@@ -80,14 +67,18 @@
 
         /* Navbar with XP Bar */
         .navbar {
-            background: rgba(15, 23, 42, 0.95);
+            background: rgba(15, 23, 42, 0.85);
+            /* Fallback */
+            background: rgba(5, 5, 10, 0.95);
+            /* Deep dark */
             backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--glass-border);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
             padding: 1rem 0;
             position: sticky;
             top: 0;
-            z-index: 100;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
         }
 
         .nav-content {
@@ -1210,8 +1201,8 @@
     <nav class="navbar">
         <div class="nav-content">
             <div class="nav-top">
-                <a href="index.html" class="nav-logo">
-                    <i class="fas fa-fire"></i> DSA ARENA
+                <a href="index.html" class="nav-logo" style="color: #f8fafc !important;">
+                    <i class="fas fa-fire"></i> Principal Prep
                 </a>
                 <div class="level-badge">
                     <i class="fas fa-star"></i>
@@ -1222,6 +1213,12 @@
                 <div class="xp-bar" id="xp-bar" style="width: 0%"></div>
             </div>
             <div class="xp-text"><span id="current-xp">0</span> / <span id="next-level-xp">100</span> XP</div>
+            <div class="nav-links" style="margin-top: 15px; justify-content: center;">
+                <a href="index.html" class="nav-link">Dashboard</a>
+                <a href="question_list.html" class="nav-link">55 Questions</a>
+                <a href="flashcard.html" class="nav-link">Flashcards</a>
+                <a href="cheatsheet.html" class="nav-link">Cheat Sheet</a>
+            </div>
         </div>
     </nav>
 

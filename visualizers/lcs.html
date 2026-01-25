@@ -9,32 +9,24 @@
     <meta name="theme-color" content="#8b5cf6">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <link rel="manifest" href="../manifest.json">
+    <link rel="stylesheet" href="../style.css">
     <style>
         :root {
-            --bg: #0f172a;
-            --card-bg: #1e293b;
+            /* Mapped to style.css variables */
+            --bg: var(--bg-dark);
+            --card-bg: var(--bg-card);
+            --border: var(--border-light);
+
+            /* Visualizer Specific */
+            --accent: #22d3ee;
+
+            /* Fallbacks/Aliases if needed by JS or other CSS */
             --text-main: #f1f5f9;
             --text-muted: #94a3b8;
             --primary: #8b5cf6;
             --success: #10b981;
             --danger: #ef4444;
             --warning: #f59e0b;
-            --accent: #22d3ee;
-            --border: #334155;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, sans-serif;
-            background: var(--bg);
-            color: var(--text-main);
-            padding: 20px;
-            line-height: 1.6;
         }
 
         .container {

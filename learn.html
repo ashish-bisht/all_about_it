@@ -9,259 +9,25 @@
     <meta name="theme-color" content="#818cf8">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
     <style>
-        :root {
-            --bg: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --primary: #6366f1;
-            --primary-light: #eef2ff;
-            --accent: #38bdf8;
-            --must: #ef4444;
-            --must-bg: #fef2f2;
-            --safe: #10b981;
-            --code-bg: #1e293b;
-        }
-
-        .ascii-visual {
-            font-family: 'JetBrains Mono', 'Fira Code', monospace;
-            font-size: 0.75rem;
-            line-height: 1.2;
-            background: #1e293b;
-            color: #4ade80;
-            /* Green-400 equivalent */
-            padding: 1rem;
-            border-radius: 0.5rem;
-            overflow-x: auto;
-            white-space: pre;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            margin: 0.5rem 0;
-        }
-
-        * {
-            box-sizing: border-box;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background: var(--bg);
-            color: var(--text-main);
-            margin: 0;
-            padding: 40px 20px;
-            line-height: 1.6;
-            min-height: 100vh;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        /* Navigation */
-        .nav-bar {
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-            color: var(--text-muted);
-            font-weight: 600;
-            cursor: pointer;
-            padding: 8px 16px;
-            background: #fff;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-        }
-
-        .back-btn:hover {
-            color: var(--primary);
-            border-color: var(--primary);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Header */
-        .header-section {
-            text-align: center;
-            margin-bottom: 50px;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .header-section h1 {
-            font-size: 2.5rem;
-            margin-bottom: 12px;
-            color: var(--text-main);
-            letter-spacing: -1px;
-            font-weight: 800;
-        }
-
-        /* Principal's Thinking Model */
-        .pattern-card {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            color: white;
-            padding: 35px;
-            border-radius: 20px;
-            margin-bottom: 50px;
-            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.2);
-            animation: fadeIn 0.6s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .pattern-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 200px;
-            height: 200px;
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
-            pointer-events: none;
-        }
-
-        .pattern-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            margin-top: 25px;
-        }
-
-        .pattern-col h4 {
-            color: var(--accent);
-            margin-top: 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 15px;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        /* --- TILE GRID SYSTEM --- */
-        .questions-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 25px;
-            animation: fadeIn 0.7s ease;
-        }
-
-        .question-tile {
-            background: #fff;
-            border-radius: 16px;
-            padding: 25px;
-            border: 1px solid #e2e8f0;
-            cursor: pointer;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .question-tile:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            border-color: var(--primary-light);
-        }
-
-        .question-tile:hover .tile-icon {
-            transform: scale(1.1) rotate(5deg);
-            color: var(--primary);
-        }
-
-        .tile-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
-
-        .tile-icon {
-            font-size: 1.5rem;
-            color: var(--text-muted);
-            transition: transform 0.3s ease;
-        }
-
-        .tile-badge {
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            padding: 4px 10px;
-            border-radius: 20px;
-            letter-spacing: 0.5px;
-        }
-
-        .tile-badge.must {
-            background: var(--must-bg);
-            color: var(--must);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-        }
-
-        .tile-badge.good {
-            background: #fffbeb;
-            color: #d97706;
-            border: 1px solid rgba(245, 158, 11, 0.2);
-        }
-
-        .tile-badge.bonus {
-            background: #ecfdf5;
-            color: var(--safe);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-        }
-
-        .tile-title {
-            font-weight: 700;
-            font-size: 1.15rem;
-            color: var(--text-main);
-            line-height: 1.4;
-        }
-
-        .tile-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: auto;
-        }
-
-        .tile-tag {
-            background: #f1f5f9;
-            color: var(--text-muted);
-            font-size: 0.75rem;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-weight: 500;
-        }
-
-        /* --- FOCUS VIEW (Full Card) --- */
+        /* --- Focus View Specifics (Page Local) --- */
         .focus-view {
             display: none;
-            /* Hidden by default */
             max-width: 900px;
             margin: 0 auto;
-            animation: slideUp 0.4s ease-out;
-        }
-
-        .focus-card {
-            background: #fff;
-            border-radius: 20px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            border: 1px solid #e2e8f0;
+            animation: fadeIn 0.4s ease-out;
+            background: var(--bg-card);
+            border: 1px solid var(--primary);
+            border-radius: var(--radius-xl);
             overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
 
         .focus-header {
+            background: linear-gradient(135deg, rgba(129, 140, 248, 0.1), rgba(99, 102, 241, 0.1));
             padding: 30px;
-            background: #fff;
-            border-bottom: 1px solid #f1f5f9;
+            border-bottom: 1px solid var(--border-light);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -269,53 +35,74 @@
 
         .focus-body {
             padding: 40px;
+            line-height: 1.8;
+            font-size: 1.05rem;
+            color: #d1d5db;
         }
 
-        /* Reuse internal card styles */
-        .metrics {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .metric-item {
+        .section-title {
+            font-size: 1.2rem;
+            color: var(--text-accent);
+            margin: 30px 0 15px 0;
             display: flex;
             align-items: center;
-            gap: 8px;
-            background: #f8fafc;
-            padding: 10px 16px;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-            color: var(--text-muted);
+            gap: 10px;
+            font-weight: 700;
+        }
+
+        /* --- Quiz Specifics --- */
+        .quiz-box {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            padding: 25px;
+            margin-top: 20px;
+        }
+
+        .quiz-option {
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: var(--radius-sm);
+            background: rgba(255, 255, 255, 0.05);
             cursor: pointer;
-            font-weight: 500;
+            transition: all 0.2s;
+            border: 1px solid transparent;
         }
 
-        .metric-item:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-            background: var(--primary-light);
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.1);
         }
 
-        /* Metric Explainer */
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: var(--safe);
+            color: var(--safe);
+        }
+
+        .quiz-option.wrong {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        /* --- Dry Run & Explainer --- */
         .metric-explainer {
             display: none;
             background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
             color: #f1f5f9;
             padding: 24px;
-            border-radius: 12px;
+            border-radius: var(--radius-md);
             margin: 20px 0;
             font-size: 1.05rem;
             line-height: 1.8;
             border-left: 4px solid var(--primary);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            animation: slideDown 0.3s ease;
+            animation: fadeIn 0.3s ease;
         }
 
-        /* Logic Boxes */
         .info-box {
             padding: 25px;
-            border-radius: 12px;
+            border-radius: var(--radius-md);
             margin: 30px 0;
             font-size: 1rem;
             position: relative;
@@ -323,60 +110,39 @@
         }
 
         .logic-box {
-            background: var(--primary-light);
+            background: rgba(99, 102, 241, 0.1);
             border-left: 5px solid var(--primary);
             color: var(--text-main);
         }
 
         .trap-box {
-            background: var(--must-bg);
-            border-left: 5px solid var(--must);
-            color: #991b1b;
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 5px solid var(--danger);
+            color: #fca5a5;
         }
 
         .box-label {
             position: absolute;
             top: -12px;
             left: 20px;
-            background: #fff;
+            background: var(--bg-card);
+            color: var(--text-main);
             padding: 2px 12px;
             font-size: 0.75rem;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 1px;
             border-radius: 20px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-light);
         }
 
-        /* Dry Run */
-        .dry-run {
-            background: #1e293b;
-            color: #cbd5e1;
-            padding: 25px;
-            border-radius: 12px;
-            font-family: 'Consolas', monospace;
-            margin: 30px 0;
-        }
-
-        .dry-step {
-            margin-bottom: 12px;
-            border-bottom: 1px solid #334155;
-            padding-bottom: 12px;
-        }
-
-        .dry-step:last-child {
-            border: none;
-            margin: 0;
-            padding: 0;
-        }
-
-        /* Code */
         details {
             margin-top: 30px;
-            background: var(--code-bg);
-            border-radius: 12px;
+            background: #0f172a;
+            border-radius: var(--radius-md);
             overflow: hidden;
-            border: 1px solid #334155;
+            border: 1px solid var(--border-light);
         }
 
         summary {
@@ -544,6 +310,24 @@
 </head>
 
 <body>
+    <!-- Navbar -->
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <a href="index.html" class="nav-logo">
+                <i class="fas fa-fire"></i> Principal Prep
+            </a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Dashboard</a>
+                <a href="question_list.html" class="nav-link">55 Questions</a>
+                <a href="flashcard.html" class="nav-link">Flashcards</a>
+                <a href="cheatsheet.html" class="nav-link">Cheat Sheet</a>
+                <a href="game.html" class="nav-link" style="color: #f472b6 !important;">
+                    <i class="fas fa-gamepad"></i> Game
+                </a>
+            </div>
+        </div>
+    </nav>
 
     <div class="container" id="app">
         <div class="nav-bar">
@@ -581,6 +365,9 @@
             const focusView = document.getElementById('focus-view-container');
             focusView.style.display = 'block';
 
+            // Show Navbar (if hidden by animation etc)
+            document.querySelector('.navbar').style.display = 'block';
+
             // Render content into focus view
             const contentDiv = document.getElementById('focus-content');
 
@@ -594,7 +381,7 @@
                             </h2>
                         </div>
                         <div style="display:flex; gap:10px; align-items:center;">
-                            <span class="tile-badge ${q.difficulty === 'Must Do' ? 'must' : (q.difficulty === 'Good to Know' ? 'good' : 'bonus')}">
+                            <span class="tile-badge ${q.difficulty === 'Must Do' ? 'must' : (q.difficulty === 'Good to Do' ? 'good' : 'bonus')}">
                                 ${q.difficulty}
                             </span>
                             ${q.leetcodeUrl ? `<a href="${q.leetcodeUrl}" target="_blank" class="back-btn" style="padding:6px 12px; font-size:0.9rem; color:#ffa116; border-color:#ffa116;">
@@ -605,12 +392,12 @@
                     
                     <div class="focus-body">
                         <!-- Metrics -->
-                        <div class="metrics">
-                            <div class="metric-item" onclick="toggleExplainer('focus-time')">
-                                <i class="far fa-clock"></i> ${learn.metrics.time} Time
+                        <div class="metrics" style="display: flex; gap: 20px; margin-bottom: 25px;">
+                            <div class="metric-item" onclick="toggleExplainer('focus-time')" style="background:rgba(255,255,255,0.03); padding:10px 15px; border-radius:12px; border:1px solid var(--border-light); cursor:pointer;">
+                                <i class="far fa-clock" style="color:var(--primary)"></i> ${learn.metrics.time} Time
                             </div>
-                            <div class="metric-item" onclick="toggleExplainer('focus-space')">
-                                <i class="fas fa-server"></i> ${learn.metrics.space} Space
+                            <div class="metric-item" onclick="toggleExplainer('focus-space')" style="background:rgba(255,255,255,0.03); padding:10px 15px; border-radius:12px; border:1px solid var(--border-light); cursor:pointer;">
+                                <i class="fas fa-server" style="color:var(--safe)"></i> ${learn.metrics.space} Space
                             </div>
                         </div>
                         
@@ -619,15 +406,15 @@
 
                         <!-- Visualizer Launch Button -->
                         ${q.visualizerUrl ? `
-                        <div style="margin-bottom: 20px;">
-                            <a href="${q.visualizerUrl}" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 10px; background:linear-gradient(135deg, #6366f1, #8b5cf6); color:white; padding:15px; border-radius:12px; font-weight:700; text-decoration:none; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); transition: transform 0.2s;">
+                        <div style="margin-bottom: 30px;">
+                            <a href="${q.visualizerUrl}" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 12px; background:linear-gradient(135deg, #6366f1, #8b5cf6); color:white; padding:18px; border-radius:16px; font-weight:700; text-decoration:none; box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4); transition: all 0.2s;">
                                 <i class="fas fa-play-circle fa-lg"></i>
                                 <span>Launch Interactive Visualization</span>
                             </a>
                         </div>` : ''}
 
                         <!-- Visuals -->
-                         ${learn.visual ? `<div style="background:#f8fafc; border:2px dashed #cbd5e1; border-radius:12px; padding:30px; text-align:center; font-size:0.9rem; color:#64748b; margin-bottom:30px;">
+                         ${learn.visual ? `<div style="background:rgba(0,0,0,0.2); border:1px solid var(--border-light); border-radius:16px; padding:30px; text-align:center; font-size:0.95rem; color:var(--text-muted); margin-bottom:30px;">
                             ${learn.visual}
                         </div>` : ''}
 
@@ -641,22 +428,24 @@
                         <!-- Trap -->
                         ${learn.trap ? `
                         <div class="info-box trap-box">
-                            <span class="box-label" style="color:#991b1b">⚠️ The Trap</span>
+                            <span class="box-label" style="color:var(--danger)">⚠️ The Trap</span>
                             ${learn.trap}
                         </div>` : ''}
                         
                          <!-- Dry Run -->
                          ${learn.dryRun ? `
                         <div style="margin-top:30px;">
-                            <h4 style="margin:0 0 10px 0; color:#64748b; text-transform:uppercase; font-size:0.85rem; letter-spacing:1px;">Step-by-Step Execution</h4>
-                            <div class="dry-run">
-                                ${learn.dryRun.map(step => `<div class="dry-step">${step}</div>`).join('')}
+                            <h4 style="margin:0 0 15px 0; color:var(--text-muted); text-transform:uppercase; font-size:0.8rem; letter-spacing:1.5px; font-weight:800;">Principal execution flow</h4>
+                            <div class="dry-run" style="background:rgba(0,0,0,0.1); border:1px solid var(--border-light); border-radius:16px; padding:20px;">
+                                ${Array.isArray(learn.dryRun)
+                        ? learn.dryRun.map(step => `<div class="dry-step" style="padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05); color:var(--text-main); font-size:0.95rem;">${step}</div>`).join('')
+                        : learn.dryRun}
                             </div>
                         </div>` : ''}
 
                         <!-- Code -->
                          ${learn.code ? `
-                        <details>
+                        <details style="margin-top: 40px;">
                             <summary>${learn.codeTitle || 'Implementation'}</summary>
                             <div style="position:relative;">
                                 <button class="copy-btn" onclick="copyCode('focus-code')">Copy</button>
@@ -674,6 +463,26 @@
                 e.preventDefault();
                 backToGrid();
             };
+        }
+
+        function filterQuestions(priority) {
+            const tiles = document.querySelectorAll('.question-tile');
+            const btns = document.querySelectorAll('.filter-btn');
+
+            // Update buttons
+            btns.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.filter === priority) btn.classList.add('active');
+            });
+
+            // Filter tiles
+            tiles.forEach(tile => {
+                if (priority === 'all' || tile.dataset.priority === priority) {
+                    tile.style.display = 'flex';
+                } else {
+                    tile.style.display = 'none';
+                }
+            });
         }
 
         function backToGrid() {
@@ -718,19 +527,47 @@
             currentTopicData = prepData[topicId];
             document.title = `Principal Prep | ${currentTopicData.title}`;
 
-            // SPECIAL: Guide Mode (Text heavy, keep simple)
+            // SPECIAL: Guide Mode (Tabbed sections for Mastery content)
             if (currentTopicData.type === 'guide') {
-                // Reuse existing Guide logic (Tabs) - Keeping it simple to avoid breaking DP Mastery
-                // ... [Skipping detailed Guide logic rewrite for brevity, assuming standard render for now]
-                // Actually, let's just do a simple render for Guide to ensure it works
+                const sections = currentTopicData.sections || [];
                 let html = `
                     <div class="nav-bar"><a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Dashboard</a></div>
-                    <div class="header-section"><h1>${currentTopicData.title} Guide</h1><p>Mastery Series</p></div>
-                    <div class="focus-card" style="padding:40px;">
-                        ${currentTopicData.sections[0].content} 
+                    <div class="header-section">
+                        <h1><i class="${currentTopicData.icon}" style="color:${currentTopicData.color}"></i> ${currentTopicData.title}</h1>
+                        <p style="color: var(--text-muted); font-size:1.1rem;">${currentTopicData.description}</p>
                     </div>
-                  `;
+                    
+                    <!-- Section Tabs -->
+                    <div class="guide-tabs">
+                        ${sections.map((sec, i) => `
+                            <button onclick="showGuideSection(${i})" id="guide-tab-${i}" 
+                                class="guide-tab ${i === 0 ? 'active' : ''}">
+                                ${sec.title}
+                            </button>
+                        `).join('')}
+                    </div>
+                    
+                    <!-- Section Content -->
+                    <div id="guide-sections-container">
+                        ${sections.map((sec, i) => `
+                            <div id="guide-section-${i}" class="focus-card" style="padding: 40px; display: ${i === 0 ? 'block' : 'none'};">
+                                ${sec.content}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
                 app.innerHTML = html;
+
+                // Add global function for tab switching
+                window.showGuideSection = function (idx) {
+                    // Hide all sections, remove active class
+                    document.querySelectorAll('[id^="guide-section-"]').forEach(el => el.style.display = 'none');
+                    document.querySelectorAll('.guide-tab').forEach(el => el.classList.remove('active'));
+
+                    // Show selected section, add active class
+                    document.getElementById('guide-section-' + idx).style.display = 'block';
+                    document.getElementById('guide-tab-' + idx).classList.add('active');
+                };
                 return;
             }
 
@@ -767,14 +604,23 @@
                         </div>
                     </div>` : ''}
 
+                    <!-- Filter Bar -->
+                    <div class="filter-bar">
+                        <button class="filter-btn active" data-filter="all" onclick="filterQuestions('all')">All</button>
+                        <button class="filter-btn must" data-filter="Must Do" onclick="filterQuestions('Must Do')">Must Do</button>
+                        <button class="filter-btn good" data-filter="Good to Do" onclick="filterQuestions('Good to Do')">Good to Do</button>
+                        <button class="filter-btn bonus" data-filter="Bonus" onclick="filterQuestions('Bonus')">Bonus</button>
+                    </div>
+
                     <!-- Question Tiles -->
                     <div class="questions-grid">
                         ${currentTopicData.questions.map((q, idx) => {
                 if (!q.learn) return '';
+                const priorityClass = q.difficulty === 'Must Do' ? 'must' : (q.difficulty === 'Good to Do' ? 'good' : 'bonus');
                 return `
-                            <div class="question-tile" onclick="openQuestion(${idx})">
+                            <div class="question-tile ${priorityClass}" data-priority="${q.difficulty}" onclick="openQuestion(${idx})">
                                 <div class="tile-header">
-                                    <span class="tile-badge ${q.difficulty === 'Must Do' ? 'must' : (q.difficulty === 'Good to Know' ? 'good' : 'bonus')}">${q.difficulty}</span>
+                                    <span class="tile-badge ${priorityClass}">${q.difficulty}</span>
                                     <i class="${currentTopicData.icon} tile-icon"></i>
                                 </div>
                                 <div class="tile-title">${q.title}</div>
