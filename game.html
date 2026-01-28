@@ -7,7 +7,7 @@
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#0a0e27">
+    <meta name="theme-color" content="#000000">
     <title>DSA Arena | Level Up Your Skills</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
         rel="stylesheet">
@@ -67,18 +67,14 @@
 
         /* Navbar with XP Bar */
         .navbar {
-            background: rgba(15, 23, 42, 0.85);
-            /* Fallback */
-            background: rgba(5, 5, 10, 0.95);
-            /* Deep dark */
+            background: rgba(28, 28, 30, 0.75);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             padding: 1rem 0;
             position: sticky;
             top: 0;
             z-index: 1000;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
         }
 
         .nav-content {
@@ -1175,6 +1171,59 @@
                 min-height: 48px;
             }
         }
+
+        /* --- Content De-Colorizer for Game Explanations --- */
+        #explanation-text div[style*="background"],
+        #explanation-text table[style*="background"],
+        #explanation-text tr[style*="background"],
+        #explanation-text td[style*="background"],
+        #explanation-text th[style*="background"] {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border-color: rgba(255, 255, 255, 0.1) !important;
+        }
+
+        #explanation-text h4[style*="color"],
+        #explanation-text h5[style*="color"],
+        #explanation-text div>strong[style*="color"] {
+            color: var(--text-main) !important;
+        }
+
+        /* Preserve Visual Legends (li strong) */
+        #explanation-text li strong[style*="color"] {
+            /* Keep semantic colors */
+        }
+
+        /* Adjust visual box layout */
+        .visual-box {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid var(--glass-border);
+            overflow-x: auto;
+            text-align: center;
+        }
+
+        .crux-box {
+            background: rgba(16, 185, 129, 0.05);
+            border-left: 4px solid var(--success);
+            padding: 15px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 15px;
+            color: var(--text-muted);
+        }
+
+        .trap-box {
+            background: rgba(239, 68, 68, 0.05);
+            border-left: 4px solid var(--danger);
+            padding: 15px;
+            border-radius: 0 12px 12px 0;
+            margin-top: 20px;
+            color: var(--text-muted);
+        }
+
+        .trap-box strong {
+            color: var(--danger) !important;
+        }
     </style>
 </head>
 
@@ -1354,7 +1403,7 @@
 
     </div>
 
-    <script src="data.js"></script>
+    <script src="data.js?v=2"></script>
 
     <!-- Confetti Canvas -->
     <canvas id="confetti-canvas"
@@ -1502,6 +1551,7 @@
                             options: q.quiz.options,
                             correct: q.quiz.correct,
                             explanation: q.quiz.explanation,
+                            learn: q.learn, // Capture rich learning data
                             topic: topicKey
                         };
 
@@ -1616,8 +1666,35 @@
 
             // Show explanation after 1.5 seconds
             setTimeout(() => {
-                document.getElementById('explanation-text').textContent = gameState.currentQuestion.explanation;
+                const q = gameState.currentQuestion;
+                const explanationBox = document.getElementById('explanation-text');
+
+                // Construct Rich Explanation
+                let html = '';
+
+                // 1. Visual (if available)
+                if (q.learn && q.learn.visual) {
+                    html += `<div class="visual-box">${q.learn.visual}</div>`;
+                }
+
+                // 2. The Crux (or Quiz Explanation)
+                const crux = (q.learn && q.learn.crux) ? q.learn.crux : q.explanation;
+                html += `<div class="crux-box">${crux}</div>`;
+
+                // 3. Trap (if available)
+                if (q.learn && q.learn.trap) {
+                    html += `<div class="trap-box">
+                        <strong>⚠️ The Trap</strong>
+                        ${q.learn.trap}
+                    </div>`;
+                }
+
+                explanationBox.innerHTML = html;
                 document.getElementById('explanation').classList.add('show');
+
+                // Scroll explanation into view if needed
+                document.getElementById('explanation').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
             }, 1500);
         }
 

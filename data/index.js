@@ -20,6 +20,7 @@ const prepData = {
     arrays_concepts: topic_arrays_concepts,
     graphs_concepts: topic_graphs_concepts,
     trees_concepts: topic_trees_concepts,
-    complexity_concepts: topic_complexity_concepts
+    complexity_concepts: topic_complexity_concepts,
+    stack_concepts: topic_stack_concepts
 };
 

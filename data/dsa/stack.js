@@ -37,22 +37,44 @@ const topic_stack = {
             },
             learn: {
                 metrics: { time: "O(N)", space: "O(N)" },
-                timeExplainer: "<strong>Monotonic Stack:</strong><br>• Each element pushed once<br>• Each element popped once<br><br><strong>Total:</strong> <code>O(N)</code>",
-                spaceExplainer: "<strong>Space Analysis:</strong><br>• Stack stores indices/values<br>• Worst: all decreasing = <code>O(N)</code>",
-                visual: "<span><strong>Visual: The Horizon</strong><br>You can only see the first person taller than you.</span>",
-                crux: "<strong>Decreasing Stack.</strong><br>If `current > stack.top`, pop! Current is the answer for the popped guy.",
-                trap: "<strong>Leftovers:</strong> Elements in stack at end have NO next greater. Answer is -1.",
-                dryRun: ["1. Stack [2]. Cur=1. 1<2. Push 1.", "2. Stack [2,1]. Cur=5. 5>1? Pop 1 (Ans 5). 5>2? Pop 2 (Ans 5).", "3. Push 5."],
-                codeTitle: "Python Solution",
-                code: `def nextGreaterElements(nums):
-res = [-1] * len(nums)
-stack = [] # Indices
-for i, n in enumerate(nums):
-    while stack and n > nums[stack[-1]]:
-        idx = stack.pop()
-        res[idx] = n
-    stack.append(i)
-return res`
+                timeExplainer: "<strong>Monotonic Stack:</strong><br>• Each element pushed ONCE<br>• Each element popped ONCE<br><br><strong>Total:</strong> <code>O(N)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Stack stores indices<br>• Worst Case: Decreasing order [5,4,3,2,1] -> Stack holds all N elements.<br><strong>Aux:</strong> <code>O(N)</code>",
+                visual: `<div style="text-align:center;">
+                    <div style="font-size:3rem; margin-bottom:10px;">📉 ➡️ 📈</div>
+                    <div><strong>Visual: The Horizon</strong></div>
+                    <div style="font-size:0.9rem; color:var(--text-muted); margin-top:5px;">
+                        Imagine looking to the right. You can only see the first person <strong>taller</strong> than you.<br>
+                        Smaller people get hidden (popped) by taller ones.
+                    </div>
+                </div>`,
+                crux: "<strong>Framework (Monotonic Decreasing Stack):</strong><br>1. Store <strong>Indices</strong> (better than values).<br>2. Loop `i` from `0` to `N-1`.<br>3. <strong>Resolving Conflict:</strong> While `arr[stack.top] < arr[i]`: We found the Next Greater for stack.top! <br>➡ `pop()` and record result.<br><br><strong>Logic Ek Line Mein:</strong><br>Jab bhi koi BADA element aata hai, toh stack se sab CHOTE elements pop karke unka answer set kar do!",
+                trap: "<strong>Leftovers:</strong><br>Elements remaining in stack have NO next greater element. Their result remains `-1` (default).",
+                dryRun: [
+                    "<strong>Init:</strong> arr=[4,5,2,10,8]. Result=[-1]*5. Stack=[]",
+                    "<strong>i=0 (Val 4):</strong> Stack empty. Push 0. Stack=[0(4)].",
+                    "<strong>i=1 (Val 5):</strong> 4 < 5? YES! <span style='color:var(--success)'>Found NGE for 4 is 5.</span> Pop 0. Stack=[]. Push 1. Stack=[1(5)].",
+                    "<strong>i=2 (Val 2):</strong> 5 < 2? NO. Push 2. Stack=[1(5), 2(2)].",
+                    "<strong>i=3 (Val 10):</strong> 2 < 10? YES! Pop 2 (NGE=10). 5 < 10? YES! Pop 1 (NGE=10). Push 3. Stack=[3(10)].",
+                    "<strong>i=4 (Val 8):</strong> 10 < 8? NO. Push 4. Stack=[3(10), 4(8)].",
+                    "<strong>End:</strong> Stack [3,4] have no NGE (-1)."
+                ],
+                codeTitle: "Python Solution (Better Variable Names)",
+                code: `def nextGreaterElement(arr):
+    n = len(arr)
+    result = [-1] * n
+    stack = []  # Indices store karenge
+    
+    for current_index in range(n):
+        current_value = arr[current_index]
+        
+        # Jab tak stack mein chote elements hain
+        while stack and arr[stack[-1]] < current_value:
+            smaller_index = stack.pop()
+            result[smaller_index] = current_value
+        
+        stack.append(current_index)
+    
+    return result`
             }
         },
         {
@@ -75,24 +97,40 @@ return res`
             },
             learn: {
                 metrics: { time: "O(N)", space: "O(N)" },
-                timeExplainer: "<strong>Monotonic Increasing Stack:</strong><br>• Each bar pushed/popped once<br>• Area calculated on pop<br><br><strong>Total:</strong> <code>O(N)</code>",
-                spaceExplainer: "<strong>Space Analysis:</strong><br>• Stack stores bar indices<br>• Worst: increasing heights = <code>O(N)</code>",
-                visual: "<span><strong>Visual: Expansion Limits</strong><br>How far Left and Right can a bar extend?</span>",
-                crux: "<strong>The Pop Moment:</strong><br>When `h < top`: Pop.<br>Height = Popped.<br>Width = `i - NewTop - 1`.<br>Area = H * W.",
-                trap: "<strong>Leftovers:</strong> Add a `0` at the end of array to force-pop everything.",
-                dryRun: ["1. [2]. Cur=1. Pop 2. Area=2*1.", "2. [1,5,6]. Cur=2. Pop 6 (Area 6). Pop 5 (Area 10).", "3. Max=10."],
-                codeTitle: "Python Solution",
+                timeExplainer: "<strong>Monotonic Increasing Stack:</strong><br>• Each element pushed ONCE<br>• Each element popped ONCE<br><br><strong>Total:</strong> <code>O(N)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Stack stores indices<br>• Worst Case: Increasing order [1,2,3...N] -> Stack holds all N elements.<br><strong>Aux:</strong> <code>O(N)</code>",
+                visual: `<div style="text-align:center;">
+                    <div style="font-size:3rem; margin-bottom:10px;">📊 🧱</div>
+                    <div><strong>Visual: The Expansion Limits</strong></div>
+                    <div style="font-size:0.9rem; color:var(--text-muted); margin-top:5px;">
+                        For current bar <code>H</code>, find left-most and right-most boundary where height >= <code>H</code>.<br>
+                        <strong>Pop Logic:</strong> When you see a smaller bar, the "tall" bars in stack can't expand right anymore. Process them!
+                    </div>
+                </div>`,
+                crux: "<strong>Framework (Monotonic Increasing Stack):</strong><br>1. <strong>Indices</strong> in stack.<br>2. <strong>Conflict:</strong> `arr[i] < arr[stack.top]`.<br>3. <strong>Pop & Resolve:</strong><br>• Height = `arr[popped]`<br>• Width = `i - stack.peek() - 1` (Right - Left - 1)<br>• Area = Max(Area, H*W)",
+                trap: "<strong>The Leftover Sentinel:</strong><br>Append `0` to end of array to force-pop all remaining elements in the stack at the end.",
+                dryRun: [
+                    "<strong>Init:</strong> heights=[2,1,5,6,2,3]. Append 0. Stack=[-1]. Ans=0.",
+                    "<strong>i=0 (Val 2):</strong> Push 0. Stack=[-1, 0].",
+                    "<strong>i=1 (Val 1):</strong> 1 < 2? YES. Pop 0 (Val 2). W = 1 - (-1) - 1 = 1. Area = 2*1 = 2.",
+                    "<strong>i=2,3 (Val 5,6):</strong> Push. Stack=[-1, 1, 2, 3].",
+                    "<strong>i=4 (Val 2):</strong> 2 < 6? YES. Pop 3 (Val 6). W = 4 - 2 - 1 = 1. Area = 6*1 = 6.",
+                    "<strong>Cont:</strong> 2 < 5? YES. Pop 2 (Val 5). W = 4 - 1 - 1 = 2. Area = 5*2 = 10 (Max)."
+                ],
+                codeTitle: "Python Solution (Sentinel Trick)",
                 code: `def largestRectangleArea(heights):
-heights.append(0)
-stack = [-1]
-ans = 0
-for i, h in enumerate(heights):
-    while stack[-1] != -1 and h < heights[stack[-1]]:
-        height = heights[stack.pop()]
-        width = i - stack[-1] - 1
-        ans = max(ans, height * width)
-    stack.append(i)
-return ans`
+    heights.append(0)  # Sentinel to clear stack
+    stack = [-1]      # Sentinel for left boundary
+    ans = 0
+    
+    for i, h in enumerate(heights):
+        while stack[-1] != -1 and h < heights[stack[-1]]:
+            height = heights[stack.pop()]
+            width = i - stack[-1] - 1
+            ans = max(ans, height * width)
+        stack.append(i)
+    
+    return ans`
             }
         },
         {
@@ -115,25 +153,46 @@ return ans`
             },
             learn: {
                 metrics: { time: "O(N)", space: "O(N)" },
-                timeExplainer: "<strong>Stack Approach:</strong><br>• Each index pushed/popped once<br>• Horizontal water layers<br><br><strong>Total:</strong> <code>O(N)</code>",
-                spaceExplainer: "<strong>Space Analysis:</strong><br>• Stack for indices<br>• Worst case: <code>O(N)</code>",
-                visual: "<span><strong>Visual: The Bowl</strong><br>We fill horizontal layers. Floor, Left Wall, Right Wall.</span>",
-                crux: "Found a Right Wall (`cur > top`)?<br>1. Pop `Floor`.<br>2. Calc `Water = (min(Left, Right) - Floor) * Width`.",
-                trap: "<strong>Sentinel:</strong> If stack empty after pop, no Left Wall exists. Break.",
-                dryRun: ["Stack [3, 0]. Cur=2.", "Pop 0 (Floor). Left=3. Right=2.", "Heigth=min(3,2)-0=2. Width=1. Water+=2."],
-                codeTitle: "Python Solution",
+                timeExplainer: "<strong>Monotonic Decreasing Stack:</strong><br>• Each bar pushed ONCE<br>• Each bar popped ONCE<br><br><strong>Total:</strong> <code>O(N)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Stack stores indices<br>• Worst Case: Decreasing order.<br><strong>Aux:</strong> <code>O(N)</code>",
+                visual: `<div style="text-align:center;">
+                    <div style="font-size:3rem; margin-bottom:10px;">🥣 💧</div>
+                    <div><strong>Visual: Horizontal Slicing</strong></div>
+                    <div style="font-size:0.9rem; color:var(--text-muted); margin-top:5px;">
+                        Imagine filling a bowl layer by layer.<br>
+                        <strong>Floor:</strong> The popped short bar.<br>
+                        <strong>Left Wall:</strong> The new top after pop.<br>
+                        <strong>Right Wall:</strong> The current bar <code>i</code>.
+                    </div>
+                </div>`,
+                crux: "<strong>Framework (The Bowl):</strong><br>1. <strong>Stack</strong> (Decreasing).<br>2. <strong>Conflict:</strong> `h[i] > h[stack.top]` (Right Wall found!).<br>3. <strong>Process Bowl:</strong><br>• `Floor` = pop().<br>• `height` = `min(Left, Right) - Floor`.<br>• `width` = `Right - Left - 1`.<br>• `Add water`!",
+                trap: "<strong>The Flat Floor:</strong><br>If `stack` is empty after popping floor, it means there is no <strong>Left Wall</strong> to hold water. Break.",
+                dryRun: [
+                    "<strong>Init:</strong> height=[4,2,0,3,2,5]. Ans=0. Stack=[].",
+                    "<strong>i=0,1,2 (Val 4,2,0):</strong> Decreasing. Push. Stack=[0(4), 1(2), 2(0)].",
+                    "<strong>i=3 (Val 3):</strong> 3 > 0? YES.",
+                    "➡ Pop 0 (Floor). Left=2. Right=3. H=min(2,3)-0=2. W=3-1-1=1. Water+=2.",
+                    "➡ 3 > 2 (Next Top)? YES.",
+                    "➡ Pop 2 (Floor). Left=4. Right=3. H=min(4,3)-2=1. W=3-0-1=2. Water+=2. Total=4."
+                ],
+                codeTitle: "Python Solution (Horizontal Method)",
                 code: `def trap(height):
-stack = []
-water = 0
-for i, h in enumerate(height):
-    while stack and h > height[stack[-1]]:
-        floor = stack.pop()
-        if not stack: break
-        w = i - stack[-1] - 1
-        wd = min(height[stack[-1]], h) - height[floor]
-        water += w * wd
-    stack.append(i)
-return water`
+    stack = []  # Indices
+    water = 0
+    
+    for i, h in enumerate(height):
+        while stack and h > height[stack[-1]]:
+            floor_index = stack.pop()
+            if not stack: break  # No left wall
+            
+            left_wall_index = stack[-1]
+            width = i - left_wall_index - 1
+            bounded_height = min(height[left_wall_index], h) - height[floor_index]
+            
+            water += width * bounded_height
+            
+        stack.append(i)
+    return water`
             }
         },
         {
@@ -157,22 +216,54 @@ return water`
             learn: {
                 metrics: { time: "O(N)", space: "O(N)" },
                 timeExplainer: "<strong>Simulation:</strong><br>• Each asteroid processed once<br>• Stack push/pop = O(1) each<br><br><strong>Total:</strong> <code>O(N)</code>",
-                spaceExplainer: "<strong>Space Analysis:</strong><br>• Stack stores survivors<br>• Worst: no collisions = <code>O(N)</code>",
-                visual: "<span><strong>Visual: One-Way Street</strong><br>Collision only if StackTop > 0 and Cur < 0.</span>",
-                crux: "<strong>Battle:</strong><br>1. Top < |Cur|? Top dies.<br>2. Top == |Cur|? Both die.<br>3. Top > |Cur|? Cur dies.",
-                trap: "<strong>Survivor:</strong> If Left asteroid destroys everyone, it must be pushed to stack.",
-                dryRun: ["Stack [10]. Cur -5. 10 defeats -5.", "Stack [5]. Cur -10. -10 defeats 5. Stack [-10]."],
-                codeTitle: "Python Solution",
-                code: `def asteroidCollision(asteroids):
-stack = []
-for ast in asteroids:
-    while stack and ast < 0 and stack[-1] > 0:
-        diff = ast + stack[-1]
-        if diff < 0: stack.pop()
-        elif diff > 0: ast = 0; break
-        else: ast = 0; stack.pop(); break
-    if ast: stack.append(ast)
-return stack`
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Stack stores survivors<br>• Worst: No collisions (all same direction) = <code>O(N)</code>",
+                visual: `<div style="text-align:center;">
+                    <div style="font-size:3rem; margin-bottom:10px;">☄️ 💥 🪨</div>
+                    <div><strong>Visual: The One-Way Street</strong></div>
+                    <div style="font-size:0.9rem; color:var(--text-muted); margin-top:5px;">
+                        Right-moving (+) asteroids are peaceful travellers waiting in the stack.<br>
+                        Left-moving (-) asteroids are destroyers attempting to crash into them.
+                    </div>
+                </div>`,
+                crux: "<strong>Framework (Collisions):</strong><br>1. <strong>Stack</strong> only stores Stable asteroids.<br>2. <strong>Conflict Cond:</strong> StackTop > 0 (Right) AND Current < 0 (Left).<br>3. <strong>Battle Logic:</strong><br>• Top < |Cur| ➡ 💥 Top destroyed. Continue Checking.<br>• Top == |Cur| ➡ 💥 Both destroyed.<br>• Top > |Cur| ➡ 💥 Cur destroyed. Stop.",
+                trap: "<strong>The Survivor:</strong><br>If a Left-Moving asteroid destroys ALL right-moving ones in the stack, it survives and settles in the stack itself.",
+                dryRun: [
+                    "<strong>Init:</strong> ast=[5, 10, -5]. Stack=[].",
+                    "<strong>Val 5 (+):</strong> Push. Stack=[5].",
+                    "<strong>Val 10 (+):</strong> Push. Stack=[5, 10].",
+                    "<strong>Val -5 (-):</strong> Conflict with 10!",
+                    "➡ Compare 10 vs |-5|. 10 wins. -5 destroyed.",
+                    "<strong>End:</strong> Stack=[5, 10]."
+                ],
+                codeTitle: "Python Solution (Battle Simulation)",
+                code: `def asteroid_collision(asteroids):
+    stack = []
+
+    for current_asteroid in asteroids:
+        # Collision sirf tab: current NEGATIVE (←) aur stack top POSITIVE (→)
+        while stack and current_asteroid < 0 < stack[-1]:
+            
+            # Case 1: Current BADA - top destroy, current zinda
+            if abs(current_asteroid) > stack[-1]:
+                stack.pop()
+                continue  # Agle se bhi collision check karo (chain reaction!)
+
+            # Case 2: EQUAL - dono destroy
+            elif abs(current_asteroid) == stack[-1]:
+                stack.pop()
+                break  # Current bhi destroy, append mat karo
+
+            # Case 3: Top BADA - current destroy
+            else:
+                break  # Current destroy, append mat karo
+
+        # Yahan tab aayega jab:
+        # 1. Current POSITIVE tha (while skip ho gaya)
+        # 2. Current NEGATIVE tha BUT bach gaya (sabko uda diya)
+        else:
+            stack.append(current_asteroid)
+
+    return stack`
             }
         }
     ]

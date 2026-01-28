@@ -64,48 +64,132 @@ const topic_arrays = {
                 explanation: "Sort first! Fix one element, use two pointers on rest. Skip duplicates by checking if current == previous. This is THE standard pattern for multi-pointer problems. O(n²) time!"
             },
             learn: {
-                metrics: { time: "O(N²)", space: "O(1) or O(N)" },
-                timeExplainer: "<strong>Time Breakdown:</strong><br>• Sorting: <code>O(N log N)</code><br>• Main loop: <code>N</code> iterations<br>• Each iteration: Two-pointer scan = <code>O(N)</code><br><br><strong>Total:</strong> <code>O(N log N + N²)</code> ≈ <code>O(N²)</code>",
-                spaceExplainer: "<strong>Space Analysis:</strong><br>• In Python, sorting might use <code>O(N)</code> auxiliary space<br>• If we ignore sorting and count only variables: <code>O(1)</code><br>• Result array not counted in space complexity",
-                visual: "<span><strong>Visual: The Anchor & Squeeze</strong><br>Array ko sort karo. Ek <code>anchor</code> fix karo, aur baaki do numbers ke liye <code>left_pointer</code> aur <code>right_pointer</code> ko tab tak squeeze karo jab tak 0 na mil jaye.</span>",
-                crux: "Triple loop ($O(N^3)$) se bachne ke liye **Sort** zaroori hai. Sorting se duplicates handle karna aur Two-Pointer lagana easy ho jata hai.<br><strong>Strategy:</strong><br>1. <code>anchor_value</code> ko fix karo loop se.<br>2. Agar <code>anchor_value</code> pichle element jaisa hai, toh skip (Duplicate protection).<br>3. Remaining array mein <code>target = -anchor_value</code> dhoondo.",
-                trap: "<strong>Internal Duplicates:</strong> Anchor skip karne ke baad bhi <code>left_pointer</code> same value pe land kar sakta hai.<br><strong>Fix:</strong> Jab triplet mil jaye, <code>left_pointer</code> ko tab tak badhao jab tak naya unique number na mil jaye.",
+                metrics: { time: "O(N²)", space: "O(1)" },
+                timeExplainer: "<strong>Time: O(N²)</strong><br>• Sorting takes O(N log N).<br>• We iterate N times (Anchor).<br>• Inside loop, max O(N) work (Two Pointers).<br>Total = N * N = O(N²).",
+                spaceExplainer: "<strong>Space: O(1)</strong><br>We only use pointers (left, right, index). Ignoring output array space.",
+                visual: `<span><strong>Visual: Anchor & Squeeze</strong><br>Array ko sort karo. First element <code>anchor</code> fix karo. Remaining array mein do pointers se target dhundo.<br>
+<pre style="background:none; border:none; padding:10px; font-size:0.8rem; line-height:1.2;">
+ Sorted: [-4, -1, -1, 0, 1, 2]
+          ^   ^             ^
+      Anchor  L             R
+ Target for (L, R) = -Anchor
+</pre>
+</span>`,
+                crux: "3Sum = 1 Fixed Number + 2Sum (Sorted).<br><strong>Formula:</strong> <code>nums[L] + nums[R] + Anchor = 0</code>",
+                strategy: "Sort First. Fix <code>i</code>, then solve 2Sum on <code>nums[i+1:]</code>.",
+                trap: "<strong>Duplicates:</strong><br>1. Anchor duplicates: <code>if i > 0 and nums[i] == nums[i-1]: continue</code><br>2. Pointer duplicates: <code>while nums[L] == nums[L-1]: L++</code>",
                 dryRun: [
                     "<strong>Input:</strong> nums = [-1, 0, 1, 2, -1, -4]",
-                    "<strong>Sorted:</strong> [-4, -1, -1, 0, 1, 2]",
-                    "1. i=0 (val=-4). Target = 4. <br>left_pointer=-1, right_pointer=2. Sum=1. <span class='var-highlight'>Small!</span> Move left_pointer.",
-                    "2. i=1 (val=-1). Target = 1. <br>left_pointer=-1, right_pointer=2. Sum=1. <span class='var-highlight'>Match!</span> Triple: [-1, -1, 2].",
-                    "3. <span class='var-highlight'>Duplicate Check:</span> left_pointer index 2 pe bhi -1 hai. Skip to index 3."
+                    "1. Sort: [-4, -1, -1, 0, 1, 2]",
+                    "2. Anchor=-4. Target=4. (L=-1, R=2) -> Sum=1 (Small). L++",
+                    "3. Anchor=-1. Target=1. (L=-1, R=2) -> Sum=1. FOUND! [-1, -1, 2].",
+                    "4. Skip duplicates for L. Move L to 0."
                 ],
-                codeTitle: "Python Solution (PEP 8 Style)",
+                codeTitle: "Python Solution (Clean)",
                 code: `def three_sum(nums):
-triplets = []
-nums.sort()
+    nums.sort()
+    ans = []
 
-for i, anchor_value in enumerate(nums):
-    # Skip duplicate anchors
-    if i > 0 and anchor_value == nums[i - 1]:
-        continue
+    for index in range(len(nums) - 2):
+        # Skip duplicate anchors
+        if index > 0 and nums[index] == nums[index - 1]:
+            continue
 
-    left_pointer = i + 1
-    right_pointer = len(nums) - 1
+        left = index + 1
+        right = len(nums) - 1
 
-    while left_pointer < right_pointer:
-        current_sum = anchor_value + nums[left_pointer] + nums[right_pointer]
-        
-        if current_sum > 0:
-            right_pointer -= 1
-        elif current_sum < 0:
-            left_pointer += 1
-        else:
-            triplets.append([anchor_value, nums[left_pointer], nums[right_pointer]])
-            left_pointer += 1
-            
-            # Skip duplicate values for the left pointer
-            while nums[left_pointer] == nums[left_pointer - 1] and left_pointer < right_pointer:
-                left_pointer += 1
+        while left < right:
+            total = nums[index] + nums[left] + nums[right]
+
+            if total == 0:
+                ans.append([nums[index], nums[left], nums[right]])
+                left += 1
+                right -= 1
                 
-return triplets`
+                # Skip duplicate left
+                while left < right and nums[left] == nums[left - 1]:
+                    left += 1
+                # Skip duplicate right
+                while left < right and nums[right] == nums[right + 1]:
+                    right -= 1
+                    
+            elif total < 0:
+                left += 1
+            else:
+                right -= 1
+
+    return ans`,
+                codeDetailed: `def three_sum(nums):
+    """
+    3Sum - Finding triplets that sum to zero
+    
+    ═══════════════════════════════════════════════════════════════
+    CRUX: Sort + Fix Anchor + Two Pointers
+    ═══════════════════════════════════════════════════════════════
+    
+    STRATEGY: Reduce 3Sum to 2Sum
+    1. SORT the array (Essential for Two Pointers)
+    2. Loop 'i' as the ANCHOR (the first element)
+    3. Treat the rest (i+1 to end) as a 2Sum Sorted problem
+       Goal: Find (Left + Right) = -Anchor
+    
+    Time: O(N²), Space: O(1)
+    """
+    nums.sort()  # Step 1: Sort is mandatory
+    ans = []
+
+    # Iterate with Anchor
+    # stop at len-2 because we need at least 2 more elements (Left, Right)
+    for index in range(len(nums) - 2):
+        
+        # ════════════════════════════════════════════════════════════
+        # STEP 1: Handle Anchor Duplicates
+        # ════════════════════════════════════════════════════════════
+        # If current number is same as previous, we've already done 
+        # the work for this value. Skip to avoid duplicate triplets.
+        if index > 0 and nums[index] == nums[index - 1]:
+            continue
+
+        # ════════════════════════════════════════════════════════════
+        # STEP 2: Set Two Pointers
+        # ════════════════════════════════════════════════════════════
+        left = index + 1
+        right = len(nums) - 1
+
+        # Visual:
+        # [-4, -1, -1, 0, 1, 2]
+        #   ^   ^            ^
+        #  Anc  L            R
+        
+        while left < right:
+            total = nums[index] + nums[left] + nums[right]
+
+            if total == 0:
+                # Found a Triplet!
+                ans.append([nums[index], nums[left], nums[right]])
+
+                # ════════════════════════════════════════════════════
+                # STEP 3: Handle Pointer Duplicates (Internal)
+                # ════════════════════════════════════════════════════
+                # We need to move BOTH pointers inward after finding a match
+                left += 1
+                right -= 1
+
+                # SKIP same values to avoid duplicate triplets like [-1, -1, 2] again
+                while left < right and nums[left] == nums[left - 1]:
+                    left += 1
+                
+                while left < right and nums[right] == nums[right + 1]:
+                    right -= 1
+
+            elif total < 0:
+                # Sum is too small -> Need bigger number -> Move Left forward
+                left += 1
+            else:
+                # Sum is too big -> Need smaller number -> Move Right backward
+                right -= 1
+
+    return ans`
             }
         },
         {
@@ -128,35 +212,65 @@ return triplets`
             },
             learn: {
                 metrics: { time: "O(N)", space: "O(1)" },
-                timeExplainer: "Single pass through the array.",
-                spaceExplainer: "Only two variables stored: current_sum and max_sum.",
+                timeExplainer: "<strong>Time Complexity: O(N)</strong><br>We iterate through the array exactly once (Single Pass). Each element is visited and processed in constant time.",
+                spaceExplainer: "<strong>Space Complexity: O(1)</strong><br>We only use two variables (`current_sum` and `global_max`) to track the state, regardless of the input array size.",
                 visual: "<span><strong>Visual: The Reset Button</strong><br>Jab tak <code>current_sum</code> positive hai, wo aage kaam aayega. Jaise hi wo negative hua, wo 'bojh' ban gaya. Use turant 0 karke naya safar shuru karo.</span>",
-                crux: "Contiguous subarray dhoondna hai. Agar pichla sum negative hai, toh wo current number ki value ko kam hi karega.<br><strong>Strategy:</strong><br>1. <code>current_sum</code> ko track karo.<br>2. Agar <code>current_sum < 0</code>, toh use <code>0</code> kar do (start fresh).<br>3. Har step pe <code>max_sum</code> update karo.",
-                trap: "<strong>All Negatives:</strong> Agar array <code>[-5, -2, -3]</code> hai aur tumne <code>max_sum = 0</code> se start kiya, toh answer 0 aayega jo galat hai.<br><strong>Fix:</strong> <code>max_sum</code> ko hamesha pehle element (<code>nums[0]</code>) se initialize karo.",
+                crux: "Contiguous subarray dhoondna hai. Agar pichla sum negative hai, toh wo current number ki value ko kam hi karega.<br><strong>Strategy:</strong><br>1. <code>current_sum</code> ko track karo.<br>2. DECISION: Kya <code>current + nums[i]</code> better hai ya fresh start <code>nums[i]</code> better hai?<br>3. Har step pe <code>global_max</code> update karo.",
+                trap: "<strong>All Negatives:</strong> Agar array <code>[-5, -2, -3]</code> hai aur tumne <code>max_sum = 0</code> se start kiya, toh answer 0 aayega jo galat hai.<br><strong>Fix:</strong> <code>global_max</code> ko hamesha pehle element (<code>nums[0]</code>) se initialize karo.",
                 dryRun: [
                     "<strong>Input:</strong> nums = [-2, 1, -3, 4]",
-                    "1. n=-2: current_sum=-2. max_sum=-2. <br><span class='var-highlight'>current_sum < 0</span> -> current_sum = 0.",
-                    "2. n=1: current_sum=1. max_sum=max(-2, 1) = <span class='var-highlight'>1</span>.",
-                    "3. n=-3: current_sum=-2. max_sum=1. <br><span class='var-highlight'>current_sum < 0</span> -> current_sum = 0.",
-                    "4. n=4: current_sum=4. max_sum=max(1, 4) = <span class='var-highlight'>4</span>."
+                    "1. n=-2: current_sum=-2. global_max=-2. <br><span class='var-highlight'>current_sum < 0</span> -> Reset logic triggers implicitly next step.",
+                    "2. n=1: max(1, -2+1) = 1. current_sum=1. global_max=max(-2, 1) = <span class='var-highlight'>1</span>.",
+                    "3. n=-3: max(-3, 1-3) = -2. current_sum=-2. global_max=1.",
+                    "4. n=4: max(4, -2+4) = 4. current_sum=4. global_max=4."
                 ],
-                codeTitle: "Python Solution",
+                codeTitle: "Python Solution (Clean)",
                 code: `def max_sub_array(nums):
-# Initialize with first element to handle all-negative arrays
-max_sum = nums[0]
-current_sum = 0
-
-for n in nums:
-    # If running sum is a liability, drop it
-    if current_sum < 0:
-        current_sum = 0
-        
-    current_sum += n
+    # Initialize with first element
+    max_sum = nums[0]
+    current_sum = nums[0]
     
-    if current_sum > max_sum:
-        max_sum = current_sum
+    # Iterate starting from the second element
+    for current_num in nums[1:]:
+        # If current_sum is negative, reset it (start fresh)
+        # Because adding a negative sum to current_num will only make it smaller
+        if current_sum < 0:
+            current_sum = 0
+            
+        current_sum += current_num
         
-return max_sum`
+        if current_sum > max_sum:
+            max_sum = current_sum
+            
+    return max_sum`,
+                codeDetailed: `def max_sub_array(nums):
+    """
+    Kadane's Algorithm - Maximum Subarray Sum
+    
+    CRUX: Track TWO things separately:
+    1. current_sum: Current subarray sum (can go negative!)
+    2. global_max: Overall best answer found so far (peak value)
+    """
+    
+    # Initialize with first element
+    global_max = nums[0]      # Best answer found so far
+    current_sum = nums[0]     # Current subarray sum
+    
+    # Iterate from second element
+    for current_num in nums[1:]:
+        # DECISION POINT: Fresh start ya continue?
+        # If adding current element makes sum worse, start fresh
+        current_sum = max(current_num, current_sum + current_num)
+        #                 \\_________/  \\_______________________/
+        #                Fresh          Continue previous
+        #                start          subarray
+        
+        # Track the peak! (CRUX of Kadane's)
+        # This ensures we don't lose the best answer
+        # even if current_sum becomes negative later
+        global_max = max(global_max, current_sum)
+    
+    return global_max  # Return peak, not current!`
             }
         },
         {
@@ -190,24 +304,48 @@ return max_sum`
                     "2. <strong>Suffix Pass:</strong> suffix_product start = 1 <br>- i=3: res[3]*1=6. suffix=4. <br>- i=2: res[2]*4=8. suffix=12. <br>- i=1: res[1]*12=12. suffix=24. <br>- i=0: res[0]*24=24",
                     "<strong>Final:</strong> [24, 12, 8, 6]"
                 ],
-                codeTitle: "Python Solution",
+                codeTitle: "Python Solution (Clean)",
                 code: `def product_except_self(nums):
-n = len(nums)
-result = [1] * n
-
-# Prefix pass
-prefix_product = 1
-for i in range(n):
-    result[i] = prefix_product
-    prefix_product *= nums[i]
+    n = len(nums)
+    result = [1] * n
     
-# Suffix pass
-suffix_product = 1
-for i in range(n - 1, -1, -1):
-    result[i] *= suffix_product
-    suffix_product *= nums[i]
+    # Pass 1: Left to Right
+    left_product = 1
+    for index, num in enumerate(nums):
+        result[index] = left_product
+        left_product *= num
+        
+    # Pass 2: Right to Left
+    right_product = 1
+    for index in range(n - 1, -1, -1):
+        result[index] *= right_product
+        right_product *= nums[index]
+        
+    return result`,
+                codeDetailed: `def product_except_self(nums):
+    """
+    Product of Array Except Self (Without Division)
     
-return result`
+    CRUX: Break the problem into LEFT and RIGHT products
+    - result[index] = (product of all left elements) * (product of all right elements)
+    """
+    
+    n = len(nums)
+    result = [1] * n
+    
+    # PASS 1: Left to Right (Store Left Products)
+    left_product = 1
+    for index, num in enumerate(nums):
+        result[index] = left_product      # Direct assignment (clearer!)
+        left_product *= num               # Update for next iteration
+    
+    # PASS 2: Right to Left (Multiply with Right Products)
+    right_product = 1
+    for index in range(n - 1, -1, -1):
+        result[index] *= right_product    # Multiply karna padega (combining left * right)
+        right_product *= nums[index]
+    
+    return result`
             }
         },
         {
@@ -230,34 +368,227 @@ return result`
             },
             learn: {
                 metrics: { time: "O(N)", space: "O(1)" },
-                timeExplainer: "<strong>Time Analysis:</strong><br>• Single pass with two pointers<br>• Each element visited exactly once<br><br><strong>Total:</strong> <code>O(N)</code>",
-                spaceExplainer: "<strong>Space Analysis:</strong><br>• Only 4 variables: <code>left, right, left_max, right_max</code><br>• No extra arrays needed<br><br><strong>Result:</strong> <code>O(1)</code>",
-                visual: "<span><strong>Visual: The Bottle Neck</strong><br>Kisi bhi bar pe kitna paani rukega? <br><code>water = min(max_left, max_right) - current_height</code>. <br>Hum dono sides se scan karte hain aur jo side 'choti' (bottleneck) hai, wahan ka paani calculate karte hain.</span>",
-                crux: "Paani tabhi rukega jab dono taraf deewar (boundary) ho.<br><strong>Strategy:</strong><br>1. Pointers ends pe rakho.<br>2. <code>left_max</code> aur <code>right_max</code> track karo.<br>3. Move smaller side.",
-                trap: "<strong>Negative Water:</strong> Ensure <code>max_boundary >= current_height</code> before subtracting.",
+                timeExplainer: "<strong>Time: O(N)</strong><br>We process each element exactly once using two pointers meeting in the middle.",
+                spaceExplainer: "<strong>Space: O(1)</strong><br>Only constant extra space used for pointers and max height variables.",
+                visual: `<span><strong>Visual: The Water Level</strong><br>Water at position <code>i</code> = <code>min(left_max, right_max) - height[i]</code>.<br>
+<pre style="background:none; border:none; padding:10px; font-size:0.8rem; line-height:1.2;">
+   LEFT_MAX        RIGHT_MAX
+      |               |
+      █               █
+      █       ?       █
+      █   █   i   █   █
+  ════════════════════════
+</pre>
+Smaller wall decides the water level! Kyunki pani MIN height tak hi bharega.</span>`,
+                crux: "Water level choti height se decide hota hai.<br><strong>Strategy:</strong><br>Process the <strong>SMALLER</strong> side (water is guaranteed there!).<br>1. Agar <code>height[left] < height[right]</code>, toh left side ka water confirm hai (kyunki right mein badi wall hai).<br>2. Same logic for right side.",
+                trap: "<strong>Wall vs Valley:</strong><br>Agar current height <code>> max_height</code>, toh wo <strong>Wall</strong> hai (pani nahi rukega, max update karo).<br>Agar choti hai, toh wo <strong>Valley</strong> hai (pani calculate karo).",
                 dryRun: [
-                    "<strong>Input:</strong> height = [0, 1, 0, 2, 1, 0, 1, 3]",
-                    "1. L=0(H=0), R=7(H=3). Left smaller. left_max=0. Water+=0. Move L.",
-                    "2. L=1(H=1). Left smaller. left_max=1. Water+=0. Move L.",
-                    "3. L=2(H=0). Left smaller. Water += 1-0 = 1 unit. Move L."
+                    "<strong>Input:</strong> height = [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]",
+                    "1. L=0, R=11. 0 < 1. Process Left. L_max=0. New Wall. Move L.",
+                    "2. L=1. 1 < 1. Process Left. L_max=1. New Wall. Move L.",
+                    "3. L=2. 0 < 1. Process Left. L_max=1. Valley! Water += 1-0 = 1. Move L.",
+                    "4. ... (Continuing logic where smaller side moves) ...",
+                    "<strong>Final Water:</strong> 6 units"
                 ],
-                codeTitle: "Python Solution",
-                code: `def trap(height):
-if not height: return 0
-left, right = 0, len(height) - 1
-left_max, right_max = height[left], height[right]
-water = 0
+                codeTitle: "Python Solution (Clean)",
+                code: `def trapping_rain_water(height):
+    if not height: return 0
+    
+    left_pointer = 0
+    right_pointer = len(height) - 1
 
-while left < right:
-    if left_max < right_max:
-        left += 1
-        left_max = max(left_max, height[left])
-        water += left_max - height[left]
-    else:
-        right -= 1
-        right_max = max(right_max, height[right])
-        water += right_max - height[right]
-return water`
+    left_max_height = height[left_pointer]
+    right_max_height = height[right_pointer]
+
+    trapped_water = 0
+
+    while left_pointer < right_pointer:
+        # Process the SMALLER side
+        if height[left_pointer] < height[right_pointer]:
+            if height[left_pointer] > left_max_height:
+                left_max_height = height[left_pointer]
+            else:
+                trapped_water += min(left_max_height, right_max_height) - height[left_pointer]
+            left_pointer += 1
+        else:
+            if height[right_pointer] > right_max_height:
+                right_max_height = height[right_pointer]
+            else:
+                trapped_water += min(left_max_height, right_max_height) - height[right_pointer]
+            right_pointer -= 1
+
+    return trapped_water`,
+                codeDetailed: `def trapping_rain_water(height):
+    """
+    Trapping Rain Water - Two Pointers Approach
+    
+    ═══════════════════════════════════════════════════════════════
+    CRUX: Water at position i = min(left_max, right_max) - height[i]
+    ═══════════════════════════════════════════════════════════════
+    
+    STRATEGY: Process the SMALLER side (water is guaranteed there!)
+    
+    Why? Kyunki pani MIN height tak hi bharega:
+         LEFT_MAX        RIGHT_MAX
+            |               |
+            █               █
+            █       ?       █
+            █   █   i   █   █
+        ════════════════════════
+        
+        Water level = min(LEFT_MAX, RIGHT_MAX)
+        Smaller wall decides the water level!
+    
+    Time: O(n), Space: O(1)
+    """
+    
+    # ════════════════════════════════════════════════════════════
+    # STEP 1: Initialize Two Pointers
+    # ════════════════════════════════════════════════════════════
+    left_pointer = 0                    # Start from left end
+    right_pointer = len(height) - 1    # Start from right end
+    
+    # Visual:
+    # height = [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]
+    #           ↑                                ↑
+    #      left_pointer                   right_pointer
+    
+    
+    # ════════════════════════════════════════════════════════════
+    # STEP 2: Track Maximum Heights from Both Sides
+    # ════════════════════════════════════════════════════════════
+    left_max_height = height[left_pointer]    # Tallest wall on left so far
+    right_max_height = height[right_pointer]  # Tallest wall on right so far
+    
+    # Initially:
+    # left_max_height = 0 (height at index 0)
+    # right_max_height = 1 (height at index 11)
+    
+    
+    # ════════════════════════════════════════════════════════════
+    # STEP 3: Initialize Water Counter
+    # ════════════════════════════════════════════════════════════
+    trapped_water = 0
+    
+    
+    # ════════════════════════════════════════════════════════════
+    # STEP 4: Process Elements Until Pointers Meet
+    # ════════════════════════════════════════════════════════════
+    while left_pointer < right_pointer:
+        
+        # ────────────────────────────────────────────────────────
+        # DECISION: Which side to process?
+        # ────────────────────────────────────────────────────────
+        # Rule: Process the SMALLER side
+        # Why? Because water level is decided by smaller wall
+        
+        if height[left_pointer] < height[right_pointer]:
+            # ┌────────────────────────────────────────────────┐
+            # │ LEFT SIDE IS SMALLER - Process Left!          │
+            # └────────────────────────────────────────────────┘
+            
+            # Visual:
+            #     █                   █
+            #     █       ?           █
+            #     █   █   L   █       █
+            # ════════════════════════════
+            #         ↑               ↑
+            #    left (small)    right (big)
+            #
+            # LEFT chhota hai, so RIGHT side pe definitely
+            # koi bada wall hai. LEFT ka water CONFIRM hai!
+            
+            # ┌────────────────────────────────────────────────┐
+            # │ Check: Is current bar a NEW WALL or VALLEY?   │
+            # └────────────────────────────────────────────────┘
+            if height[left_pointer] > left_max_height:
+                # Current bar is TALLER - it's a NEW WALL!
+                # Update the left boundary
+                left_max_height = height[left_pointer]
+                
+                # Visual:
+                # Old max:  █
+                # New max:  █ █  ← Update!
+                
+                # No water trapped here (it's a wall, not valley)
+            
+            else:
+                # Current bar is SHORTER - it's a VALLEY!
+                # Water will be trapped here
+                
+                # ┌────────────────────────────────────────────┐
+                # │ WATER FORMULA:                             │
+                # │ water = min(left_max, right_max) - height  │
+                # └────────────────────────────────────────────┘
+                
+                # Visual:
+                #     LEFT_MAX                RIGHT_MAX
+                #        |                       |
+                #        █                       █
+                #        █ ░░░                   █
+                #        █ ░i░   ←── water!      █
+                #        █_█_____________________█
+                #
+                # Water level = min(left_max, right_max)
+                # Water at i = water_level - current_height
+                
+                trapped_water += min(left_max_height, right_max_height) - height[left_pointer]
+                
+                # Example:
+                # left_max = 2, right_max = 3, height[i] = 0
+                # water = min(2,3) - 0 = 2 - 0 = 2 units ✅
+            
+            # Move left pointer forward
+            left_pointer += 1
+            
+        else:
+            # ┌────────────────────────────────────────────────┐
+            # │ RIGHT SIDE IS SMALLER/EQUAL - Process Right!  │
+            # └────────────────────────────────────────────────┘
+            
+            # Visual:
+            #         █                   █
+            #         █       ?           █
+            #         █   █       █   R   █
+            # ════════════════════════════════
+            #         ↑                   ↑
+            #    left (big)          right (small)
+            #
+            # RIGHT chhota hai, so LEFT side pe definitely
+            # koi bada wall hai. RIGHT ka water CONFIRM hai!
+            
+            # ┌────────────────────────────────────────────────┐
+            # │ Check: Is current bar a NEW WALL or VALLEY?   │
+            # └────────────────────────────────────────────────┘
+            if height[right_pointer] > right_max_height:
+                # Current bar is TALLER - it's a NEW WALL!
+                right_max_height = height[right_pointer]
+                
+                # No water trapped (it's a wall)
+            
+            else:
+                # Current bar is SHORTER - it's a VALLEY!
+                # Water will be trapped here
+                
+                # Visual:
+                #  LEFT_MAX                RIGHT_MAX
+                #     |                       |
+                #     █                       █
+                #     █                   ░░░ █
+                #     █       ←── water! ░i░ █
+                #     █_______________________█
+                
+                trapped_water += min(left_max_height, right_max_height) - height[right_pointer]
+            
+            # Move right pointer backward
+            right_pointer -= 1
+    
+    # ════════════════════════════════════════════════════════════
+    # STEP 5: Return Total Trapped Water
+    # ════════════════════════════════════════════════════════════
+    return trapped_water
+
+print(trapping_rain_water([0,1,0,2,1,0,1,3,2,1,2,1]))`
             }
         },
         {
@@ -375,32 +706,96 @@ return len(heap)`
                 explanation: "HashMap + Sliding Window! Store char → index. When duplicate found, jump LEFT pointer to max(left, map[char] + 1). Track max length. This is THE 'Hello World' of sliding window! O(n)."
             },
             learn: {
-                metrics: { time: "O(N)", space: "O(min(m,n))" },
-                timeExplainer: "<strong>Time Analysis:</strong><br>• Single pass with sliding window<br>• Each character visited at most twice<br><br><strong>Total:</strong> <code>O(N)</code>",
-                spaceExplainer: "<strong>Space Analysis:</strong><br>• HashMap stores char → index<br>• <code>m</code> = charset size, <code>n</code> = string length<br><br><strong>Result:</strong> <code>O(min(m, n))</code>",
-                visual: "<span><strong>Visual: Elastic Window</strong><br>Duplicate aate hi left pointer ko 'jump' karao to exclude the previous occurrence.</span>",
-                crux: "Uniqueness maintain karni hai.<br><strong>Strategy:</strong><br>1. <code>last_seen</code> map.<br>2. If char in map, <code>left = max(left, map[char] + 1)</code>.<br>3. Update map[char] = current_index.",
-                trap: "<strong>Backward Jump:</strong> Never move left pointer backwards. Always use max().",
+                metrics: { time: "O(N)", space: "O(N)" },
+                timeExplainer: "<strong>Time: O(N)</strong><br>We traverse the string once. Each character is added to the Set once and removed at most once (2N ops = O(N)).",
+                spaceExplainer: "<strong>Space: O(N)</strong><br>In worst case (all unique), the Set stores all N characters.",
+                visual: `<span><strong>Visual: Elastic Window</strong><br>Expand Right. If duplicate found, shrink Left until unique.<br>
+<pre style="background:none; border:none; padding:10px; font-size:0.8rem; line-height:1.2;">
+ "ppwkew"
+   ^  ^
+   L  R
+ Window: [w, k, e] -> Valid
+</pre>
+</span>`,
+                crux: "No Duplicates allowed.<br><strong>Formula:</strong> <code>max_len = max(max_len, R - L + 1)</code>",
+                strategy: "Use a <strong>Set</strong>. If <code>s[right]</code> exists in Set, <code>remove(s[left])</code> and <code>left++</code> until valid.",
+                trap: "<strong>While Loop:</strong> Don't use `if`. Use `while` to remove characters until the duplicate is gone.",
                 dryRun: [
-                    "<strong>Input:</strong> 'abba'",
-                    "1. r=0(a): map={a:0}. len=1",
-                    "2. r=1(b): map={a:0, b:1}. len=2",
-                    "3. r=2(b): Dup! left=max(0, 1+1)=2. map={b:2}. len=2",
-                    "4. r=3(a): Dup! left=max(2, 0+1)=2. (No jump backward)"
+                    "<strong>Input:</strong> 'abcabcbb'",
+                    "1. R=0('a'): Set={'a'}, Len=1",
+                    "2. R=1('b'): Set={'a','b'}, Len=2",
+                    "3. R=2('c'): Set={'a','b','c'}, Len=3",
+                    "4. R=3('a'): Duplicate 'a'! Remove s[L]('a'), L=1. Set={'b','c'}. Add 'a'. Set={'b','c','a'}. Len=3"
                 ],
-                codeTitle: "Python Solution",
+                codeTitle: "Python Solution (Clean)",
                 code: `def length_of_longest_substring(s):
-last_seen = {}
-left = 0
-max_len = 0
+    char_set = set()
+    left = 0
+    max_length = 0
 
-for right, char in enumerate(s):
-    if char in last_seen:
-        left = max(left, last_seen[char] + 1)
-    last_seen[char] = right
-    max_len = max(max_len, right - left + 1)
+    for right in range(len(s)):
+        # Shrink window if duplicate found
+        while s[right] in char_set:
+            char_set.remove(s[left])
+            left += 1
+
+        char_set.add(s[right])
+        max_length = max(max_length, right - left + 1)
+
+    return max_length`,
+                codeDetailed: `def length_of_longest_substring(s):
+    """
+    Longest Substring Without Repeating Characters
     
-return max_len`
+    ═══════════════════════════════════════════════════════════════
+    CRUX: Sliding Window + HashSet
+    ═══════════════════════════════════════════════════════════════
+    
+    STRATEGY: Expand Right, Shrink Left if Invalid
+    1. Maintain a Window [left, right]
+    2. Use a SET to track characters in the current window
+    3. If new char is in Set -> Shrink Left until it's gone
+    4. Update max_length at every valid step
+    
+    Time: O(N), Space: O(N)
+    """
+    char_set = set()
+    left = 0
+    max_length = 0
+
+    # ════════════════════════════════════════════════════════════
+    # STEP 1: Expand Window (Move Right Pointer)
+    # ════════════════════════════════════════════════════════════
+    for right in range(len(s)):
+        
+        # ════════════════════════════════════════════════════════════
+        # STEP 2: Handle Duplicates (Shrink Phase)
+        # ════════════════════════════════════════════════════════════
+        # WARNING: Use 'while', not 'if'. We might need to remove 
+        # multiple characters to clear the duplicate.
+        # Example: "abcc", right at second 'c', we remove 'a', 'b', then 'c'.
+        
+        while s[right] in char_set:
+            # Remove from logic (Set)
+            char_set.remove(s[left])
+            # Remove from window (Pointer)
+            left += 1
+
+            # Visual:
+            # [a, b, c, a] -> Duplicate 'a'!
+            #  ^        ^
+            #  L        R
+            # Remove 'a', Move L -> [b, c, a] (Valid now)
+
+        # ════════════════════════════════════════════════════════════
+        # STEP 3: Add New Character & Update Max
+        # ════════════════════════════════════════════════════════════
+        char_set.add(s[right])  # Add current char to tracking
+        
+        # Window size = right - left + 1
+        max_length = max(max_length, right - left + 1)
+
+    return max_length`
             }
         },
         {
@@ -448,15 +843,108 @@ while i <= r:
             },
             learn: {
                 metrics: { time: "O(N)", space: "O(1)" },
+                timeExplainer: "<strong>Time: O(N)</strong><br>Single pass solution. We calculate max/min for each element in constant time.",
+                spaceExplainer: "<strong>Space: O(1)</strong><br>We only store 3 variables: <code>max_prod</code>, <code>min_prod</code>, and <code>result</code>.",
+                visual: `<span><strong>Visual: The Flip</strong><br>Negative number se positive max chota min ban jata hai, aur negative min bada max ban jata hai!<br>
+<pre style="background:none; border:none; padding:10px; font-size:0.8rem; line-height:1.2;">
+   Input: [2, 3, -2, 4]
+   
+   Idx 1 (3): Max=6, Min=3
+   Idx 2 (-2):
+      Max candidate -> -2 * 6 = -12 (Too small!)
+      Min candidate -> -2 * 6 = -12 (Saved for later!)
+      Max becomes -2 (start fresh or flip min?)
+</pre>
+</span>`,
+                crux: "Negative numbers FLIP signs.<br>A huge negative Min * Negative number = Huge Positive Max!",
+                strategy: "Track BOTH `max_prod` and `min_prod`. Swap them if current number is negative.",
+                trap: "<strong>Zeros:</strong> If we see a 0, the subarray breaks. Reset max/min to the next number (effectively handled by logic).",
+                dryRun: [
+                    "<strong>Input:</strong> [2, 3, -2, 4]",
+                    "1. i=0: res=2, max=2, min=2",
+                    "2. i=1(3): max=max(3, 6, 6)=6, min=min(3, 6, 6)=3. res=6",
+                    "3. i=2(-2): max=max(-2, -12, -6)=-2. min=min(-2, -12, -6)=-12. res=6",
+                    "4. i=3(4): max=max(4, -8, -48)=4. min=min(4, -8, -48)=-48. res=6"
+                ],
+                codeTitle: "Python Solution (Clean)",
                 code: `def maxProduct(nums):
-res = nums[0]
-curMin, curMax = 1, 1
-for n in nums:
-    tmp = curMax * n
-    curMax = max(n * curMax, n * curMin, n)
-    curMin = min(tmp, n * curMin, n)
-    res = max(res, curMax)
-return res`
+    if not nums: return 0
+    
+    max_prod = nums[0]
+    min_prod = nums[0]
+    result = nums[0]
+    
+    for i in range(1, len(nums)):
+        temp_max = max_prod
+        
+        # KEY: Max can come from (n), (n*max), or (n*min)
+        max_prod = max(nums[i], nums[i] * max_prod, nums[i] * min_prod)
+        min_prod = min(nums[i], nums[i] * temp_max, nums[i] * min_prod)
+        
+        result = max(result, max_prod)
+    
+    return result`,
+                codeDetailed: `def maxProduct(nums):
+    """
+    Maximum Product Subarray
+    
+    ═══════════════════════════════════════════════════════════════
+    CRUX: Track Min & Max because Negatives Swap Signs
+    ═══════════════════════════════════════════════════════════════
+    
+    STRATEGY: 
+    When we multiply by a negative:
+    - Big Positive becomes Small Negative (Max -> Min)
+    - Big Negative becomes Big Positive (Min -> Max)
+    
+    So we must track BOTH candidates at every step.
+    
+    Time: O(N), Space: O(1)
+    """
+    if not nums:
+        return 0
+    
+    # ════════════════════════════════════════════════════════════
+    # STEP 1: Initialize State
+    # ════════════════════════════════════════════════════════════
+    max_prod = nums[0]  # Tracks max positive product ending here
+    min_prod = nums[0]  # Tracks min negative product ending here
+    result = nums[0]    # Global maximum found so far
+    
+    # ════════════════════════════════════════════════════════════
+    # STEP 2: Iterate Through Array
+    # ════════════════════════════════════════════════════════════
+    for i in range(1, len(nums)):
+        
+        # Store current max before updating (since we need it for min calculation)
+        temp_max = max_prod
+        
+        # ════════════════════════════════════════════════════════════
+        # STEP 3: Update Max & Min
+        # ════════════════════════════════════════════════════════════
+        # Current max can be:
+        # 1. Current number itself (start new subarray, e.g., after a 0)
+        # 2. Current number * previous max (positive * positive)
+        # 3. Current number * previous min (negative * negative = positive!)
+        
+        max_prod = max(nums[i], nums[i] * max_prod, nums[i] * min_prod)
+        
+        # Current min can be:
+        # 1. Current number itself
+        # 2. Current number * previous min (positive * negative)
+        # 3. Current number * previous max (negative * positive)
+        
+        min_prod = min(nums[i], nums[i] * temp_max, nums[i] * min_prod)
+        
+        # Example trace at index 2 (val = -2):
+        # Prev Max=6, Prev Min=3
+        # New Max = max(-2, -12, -6) = -2
+        # New Min = min(-2, -12, -6) = -12  <-- IMPORTANT! 
+        # The -12 is saved. If next num is -4, result became 48!
+        
+        result = max(result, max_prod)
+    
+    return result`
             }
         },
         {
@@ -1112,22 +1600,44 @@ const topic_stack = {
             },
             learn: {
                 metrics: { time: "O(N)", space: "O(N)" },
-                timeExplainer: "<strong>Monotonic Stack:</strong><br>• Each element pushed once<br>• Each element popped once<br><br><strong>Total:</strong> <code>O(N)</code>",
-                spaceExplainer: "<strong>Space Analysis:</strong><br>• Stack stores indices/values<br>• Worst: all decreasing = <code>O(N)</code>",
-                visual: "<span><strong>Visual: The Horizon</strong><br>You can only see the first person taller than you.</span>",
-                crux: "<strong>Decreasing Stack.</strong><br>If `current > stack.top`, pop! Current is the answer for the popped guy.",
-                trap: "<strong>Leftovers:</strong> Elements in stack at end have NO next greater. Answer is -1.",
-                dryRun: ["1. Stack [2]. Cur=1. 1<2. Push 1.", "2. Stack [2,1]. Cur=5. 5>1? Pop 1 (Ans 5). 5>2? Pop 2 (Ans 5).", "3. Push 5."],
-                codeTitle: "Python Solution",
-                code: `def nextGreaterElements(nums):
-res = [-1] * len(nums)
-stack = [] # Indices
-for i, n in enumerate(nums):
-    while stack and n > nums[stack[-1]]:
-        idx = stack.pop()
-        res[idx] = n
-    stack.append(i)
-return res`
+                timeExplainer: "<strong>Monotonic Stack:</strong><br>• Each element pushed ONCE<br>• Each element popped ONCE<br><br><strong>Total:</strong> <code>O(N)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Stack stores indices<br>• Worst Case: Decreasing order [5,4,3,2,1] -> Stack holds all N elements.<br><strong>Aux:</strong> <code>O(N)</code>",
+                visual: `<div style="text-align:center;">
+                    <div style="font-size:3rem; margin-bottom:10px;">📉 ➡️ 📈</div>
+                    <div><strong>Visual: The Horizon</strong></div>
+                    <div style="font-size:0.9rem; color:var(--text-muted); margin-top:5px;">
+                        Imagine looking to the right. You can only see the first person <strong>taller</strong> than you.<br>
+                        Smaller people get hidden (popped) by taller ones.
+                    </div>
+                </div>`,
+                crux: "<strong>Framework (Monotonic Decreasing Stack):</strong><br>1. Store <strong>Indices</strong> (better than values).<br>2. Loop `i` from `0` to `N-1`.<br>3. <strong>Resolving Conflict:</strong> While `arr[stack.top] < arr[i]`: We found the Next Greater for stack.top! <br>➡ `pop()` and record result.<br><br><strong>Logic Ek Line Mein:</strong><br>Jab bhi koi BADA element aata hai, toh stack se sab CHOTE elements pop karke unka answer set kar do!",
+                trap: "<strong>Leftovers:</strong><br>Elements remaining in stack have NO next greater element. Their result remains `-1` (default).",
+                dryRun: [
+                    "<strong>Init:</strong> arr=[4,5,2,10,8]. Result=[-1]*5. Stack=[]",
+                    "<strong>i=0 (Val 4):</strong> Stack empty. Push 0. Stack=[0(4)].",
+                    "<strong>i=1 (Val 5):</strong> 4 < 5? YES! <span style='color:var(--success)'>Found NGE for 4 is 5.</span> Pop 0. Stack=[]. Push 1. Stack=[1(5)].",
+                    "<strong>i=2 (Val 2):</strong> 5 < 2? NO. Push 2. Stack=[1(5), 2(2)].",
+                    "<strong>i=3 (Val 10):</strong> 2 < 10? YES! Pop 2 (NGE=10). 5 < 10? YES! Pop 1 (NGE=10). Push 3. Stack=[3(10)].",
+                    "<strong>i=4 (Val 8):</strong> 10 < 8? NO. Push 4. Stack=[3(10), 4(8)].",
+                    "<strong>End:</strong> Stack [3,4] have no NGE (-1)."
+                ],
+                codeTitle: "Python Solution (Better Variable Names)",
+                code: `def nextGreaterElement(arr):
+    n = len(arr)
+    result = [-1] * n
+    stack = []  # Indices store karenge
+    
+    for current_index in range(n):
+        current_value = arr[current_index]
+        
+        # Jab tak stack mein chote elements hain
+        while stack and arr[stack[-1]] < current_value:
+            smaller_index = stack.pop()
+            result[smaller_index] = current_value
+        
+        stack.append(current_index)
+    
+    return result`
             }
         },
         {
@@ -1150,24 +1660,40 @@ return res`
             },
             learn: {
                 metrics: { time: "O(N)", space: "O(N)" },
-                timeExplainer: "<strong>Monotonic Increasing Stack:</strong><br>• Each bar pushed/popped once<br>• Area calculated on pop<br><br><strong>Total:</strong> <code>O(N)</code>",
-                spaceExplainer: "<strong>Space Analysis:</strong><br>• Stack stores bar indices<br>• Worst: increasing heights = <code>O(N)</code>",
-                visual: "<span><strong>Visual: Expansion Limits</strong><br>How far Left and Right can a bar extend?</span>",
-                crux: "<strong>The Pop Moment:</strong><br>When `h < top`: Pop.<br>Height = Popped.<br>Width = `i - NewTop - 1`.<br>Area = H * W.",
-                trap: "<strong>Leftovers:</strong> Add a `0` at the end of array to force-pop everything.",
-                dryRun: ["1. [2]. Cur=1. Pop 2. Area=2*1.", "2. [1,5,6]. Cur=2. Pop 6 (Area 6). Pop 5 (Area 10).", "3. Max=10."],
-                codeTitle: "Python Solution",
+                timeExplainer: "<strong>Monotonic Increasing Stack:</strong><br>• Each element pushed ONCE<br>• Each element popped ONCE<br><br><strong>Total:</strong> <code>O(N)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Stack stores indices<br>• Worst Case: Increasing order [1,2,3...N] -> Stack holds all N elements.<br><strong>Aux:</strong> <code>O(N)</code>",
+                visual: `<div style="text-align:center;">
+                    <div style="font-size:3rem; margin-bottom:10px;">📊 🧱</div>
+                    <div><strong>Visual: The Expansion Limits</strong></div>
+                    <div style="font-size:0.9rem; color:var(--text-muted); margin-top:5px;">
+                        For current bar <code>H</code>, find left-most and right-most boundary where height >= <code>H</code>.<br>
+                        <strong>Pop Logic:</strong> When you see a smaller bar, the "tall" bars in stack can't expand right anymore. Process them!
+                    </div>
+                </div>`,
+                crux: "<strong>Framework (Monotonic Increasing Stack):</strong><br>1. <strong>Indices</strong> in stack.<br>2. <strong>Conflict:</strong> `arr[i] < arr[stack.top]`.<br>3. <strong>Pop & Resolve:</strong><br>• Height = `arr[popped]`<br>• Width = `i - stack.peek() - 1` (Right - Left - 1)<br>• Area = Max(Area, H*W)",
+                trap: "<strong>The Leftover Sentinel:</strong><br>Append `0` to end of array to force-pop all remaining elements in the stack at the end.",
+                dryRun: [
+                    "<strong>Init:</strong> heights=[2,1,5,6,2,3]. Append 0. Stack=[-1]. Ans=0.",
+                    "<strong>i=0 (Val 2):</strong> Push 0. Stack=[-1, 0].",
+                    "<strong>i=1 (Val 1):</strong> 1 < 2? YES. Pop 0 (Val 2). W = 1 - (-1) - 1 = 1. Area = 2*1 = 2.",
+                    "<strong>i=2,3 (Val 5,6):</strong> Push. Stack=[-1, 1, 2, 3].",
+                    "<strong>i=4 (Val 2):</strong> 2 < 6? YES. Pop 3 (Val 6). W = 4 - 2 - 1 = 1. Area = 6*1 = 6.",
+                    "<strong>Cont:</strong> 2 < 5? YES. Pop 2 (Val 5). W = 4 - 1 - 1 = 2. Area = 5*2 = 10 (Max)."
+                ],
+                codeTitle: "Python Solution (Sentinel Trick)",
                 code: `def largestRectangleArea(heights):
-heights.append(0)
-stack = [-1]
-ans = 0
-for i, h in enumerate(heights):
-    while stack[-1] != -1 and h < heights[stack[-1]]:
-        height = heights[stack.pop()]
-        width = i - stack[-1] - 1
-        ans = max(ans, height * width)
-    stack.append(i)
-return ans`
+    heights.append(0)  # Sentinel to clear stack
+    stack = [-1]      # Sentinel for left boundary
+    ans = 0
+    
+    for i, h in enumerate(heights):
+        while stack[-1] != -1 and h < heights[stack[-1]]:
+            height = heights[stack.pop()]
+            width = i - stack[-1] - 1
+            ans = max(ans, height * width)
+        stack.append(i)
+    
+    return ans`
             }
         },
         {
@@ -1190,25 +1716,46 @@ return ans`
             },
             learn: {
                 metrics: { time: "O(N)", space: "O(N)" },
-                timeExplainer: "<strong>Stack Approach:</strong><br>• Each index pushed/popped once<br>• Horizontal water layers<br><br><strong>Total:</strong> <code>O(N)</code>",
-                spaceExplainer: "<strong>Space Analysis:</strong><br>• Stack for indices<br>• Worst case: <code>O(N)</code>",
-                visual: "<span><strong>Visual: The Bowl</strong><br>We fill horizontal layers. Floor, Left Wall, Right Wall.</span>",
-                crux: "Found a Right Wall (`cur > top`)?<br>1. Pop `Floor`.<br>2. Calc `Water = (min(Left, Right) - Floor) * Width`.",
-                trap: "<strong>Sentinel:</strong> If stack empty after pop, no Left Wall exists. Break.",
-                dryRun: ["Stack [3, 0]. Cur=2.", "Pop 0 (Floor). Left=3. Right=2.", "Heigth=min(3,2)-0=2. Width=1. Water+=2."],
-                codeTitle: "Python Solution",
+                timeExplainer: "<strong>Monotonic Decreasing Stack:</strong><br>• Each bar pushed ONCE<br>• Each bar popped ONCE<br><br><strong>Total:</strong> <code>O(N)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Stack stores indices<br>• Worst Case: Decreasing order.<br><strong>Aux:</strong> <code>O(N)</code>",
+                visual: `<div style="text-align:center;">
+                    <div style="font-size:3rem; margin-bottom:10px;">🥣 💧</div>
+                    <div><strong>Visual: Horizontal Slicing</strong></div>
+                    <div style="font-size:0.9rem; color:var(--text-muted); margin-top:5px;">
+                        Imagine filling a bowl layer by layer.<br>
+                        <strong>Floor:</strong> The popped short bar.<br>
+                        <strong>Left Wall:</strong> The new top after pop.<br>
+                        <strong>Right Wall:</strong> The current bar <code>i</code>.
+                    </div>
+                </div>`,
+                crux: "<strong>Framework (The Bowl):</strong><br>1. <strong>Stack</strong> (Decreasing).<br>2. <strong>Conflict:</strong> `h[i] > h[stack.top]` (Right Wall found!).<br>3. <strong>Process Bowl:</strong><br>• `Floor` = pop().<br>• `height` = `min(Left, Right) - Floor`.<br>• `width` = `Right - Left - 1`.<br>• `Add water`!",
+                trap: "<strong>The Flat Floor:</strong><br>If `stack` is empty after popping floor, it means there is no <strong>Left Wall</strong> to hold water. Break.",
+                dryRun: [
+                    "<strong>Init:</strong> height=[4,2,0,3,2,5]. Ans=0. Stack=[].",
+                    "<strong>i=0,1,2 (Val 4,2,0):</strong> Decreasing. Push. Stack=[0(4), 1(2), 2(0)].",
+                    "<strong>i=3 (Val 3):</strong> 3 > 0? YES.",
+                    "➡ Pop 0 (Floor). Left=2. Right=3. H=min(2,3)-0=2. W=3-1-1=1. Water+=2.",
+                    "➡ 3 > 2 (Next Top)? YES.",
+                    "➡ Pop 2 (Floor). Left=4. Right=3. H=min(4,3)-2=1. W=3-0-1=2. Water+=2. Total=4."
+                ],
+                codeTitle: "Python Solution (Horizontal Method)",
                 code: `def trap(height):
-stack = []
-water = 0
-for i, h in enumerate(height):
-    while stack and h > height[stack[-1]]:
-        floor = stack.pop()
-        if not stack: break
-        w = i - stack[-1] - 1
-        wd = min(height[stack[-1]], h) - height[floor]
-        water += w * wd
-    stack.append(i)
-return water`
+    stack = []  # Indices
+    water = 0
+    
+    for i, h in enumerate(height):
+        while stack and h > height[stack[-1]]:
+            floor_index = stack.pop()
+            if not stack: break  # No left wall
+            
+            left_wall_index = stack[-1]
+            width = i - left_wall_index - 1
+            bounded_height = min(height[left_wall_index], h) - height[floor_index]
+            
+            water += width * bounded_height
+            
+        stack.append(i)
+    return water`
             }
         },
         {
@@ -1232,22 +1779,54 @@ return water`
             learn: {
                 metrics: { time: "O(N)", space: "O(N)" },
                 timeExplainer: "<strong>Simulation:</strong><br>• Each asteroid processed once<br>• Stack push/pop = O(1) each<br><br><strong>Total:</strong> <code>O(N)</code>",
-                spaceExplainer: "<strong>Space Analysis:</strong><br>• Stack stores survivors<br>• Worst: no collisions = <code>O(N)</code>",
-                visual: "<span><strong>Visual: One-Way Street</strong><br>Collision only if StackTop > 0 and Cur < 0.</span>",
-                crux: "<strong>Battle:</strong><br>1. Top < |Cur|? Top dies.<br>2. Top == |Cur|? Both die.<br>3. Top > |Cur|? Cur dies.",
-                trap: "<strong>Survivor:</strong> If Left asteroid destroys everyone, it must be pushed to stack.",
-                dryRun: ["Stack [10]. Cur -5. 10 defeats -5.", "Stack [5]. Cur -10. -10 defeats 5. Stack [-10]."],
-                codeTitle: "Python Solution",
-                code: `def asteroidCollision(asteroids):
-stack = []
-for ast in asteroids:
-    while stack and ast < 0 and stack[-1] > 0:
-        diff = ast + stack[-1]
-        if diff < 0: stack.pop()
-        elif diff > 0: ast = 0; break
-        else: ast = 0; stack.pop(); break
-    if ast: stack.append(ast)
-return stack`
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Stack stores survivors<br>• Worst: No collisions (all same direction) = <code>O(N)</code>",
+                visual: `<div style="text-align:center;">
+                    <div style="font-size:3rem; margin-bottom:10px;">☄️ 💥 🪨</div>
+                    <div><strong>Visual: The One-Way Street</strong></div>
+                    <div style="font-size:0.9rem; color:var(--text-muted); margin-top:5px;">
+                        Right-moving (+) asteroids are peaceful travellers waiting in the stack.<br>
+                        Left-moving (-) asteroids are destroyers attempting to crash into them.
+                    </div>
+                </div>`,
+                crux: "<strong>Framework (Collisions):</strong><br>1. <strong>Stack</strong> only stores Stable asteroids.<br>2. <strong>Conflict Cond:</strong> StackTop > 0 (Right) AND Current < 0 (Left).<br>3. <strong>Battle Logic:</strong><br>• Top < |Cur| ➡ 💥 Top destroyed. Continue Checking.<br>• Top == |Cur| ➡ 💥 Both destroyed.<br>• Top > |Cur| ➡ 💥 Cur destroyed. Stop.",
+                trap: "<strong>The Survivor:</strong><br>If a Left-Moving asteroid destroys ALL right-moving ones in the stack, it survives and settles in the stack itself.",
+                dryRun: [
+                    "<strong>Init:</strong> ast=[5, 10, -5]. Stack=[].",
+                    "<strong>Val 5 (+):</strong> Push. Stack=[5].",
+                    "<strong>Val 10 (+):</strong> Push. Stack=[5, 10].",
+                    "<strong>Val -5 (-):</strong> Conflict with 10!",
+                    "➡ Compare 10 vs |-5|. 10 wins. -5 destroyed.",
+                    "<strong>End:</strong> Stack=[5, 10]."
+                ],
+                codeTitle: "Python Solution (Battle Simulation)",
+                code: `def asteroid_collision(asteroids):
+    stack = []
+
+    for current_asteroid in asteroids:
+        # Collision sirf tab: current NEGATIVE (←) aur stack top POSITIVE (→)
+        while stack and current_asteroid < 0 < stack[-1]:
+            
+            # Case 1: Current BADA - top destroy, current zinda
+            if abs(current_asteroid) > stack[-1]:
+                stack.pop()
+                continue  # Agle se bhi collision check karo (chain reaction!)
+
+            # Case 2: EQUAL - dono destroy
+            elif abs(current_asteroid) == stack[-1]:
+                stack.pop()
+                break  # Current bhi destroy, append mat karo
+
+            # Case 3: Top BADA - current destroy
+            else:
+                break  # Current destroy, append mat karo
+
+        # Yahan tab aayega jab:
+        # 1. Current POSITIVE tha (while skip ho gaya)
+        # 2. Current NEGATIVE tha BUT bach gaya (sabko uda diya)
+        else:
+            stack.append(current_asteroid)
+
+    return stack`
             }
         }
     ]
@@ -2510,28 +3089,22 @@ def course_schedule(num_courses, prerequisites):
             learn: {
                 metrics: { time: "O(V+E)", space: "O(V)" },
                 timeExplainer: `
-                    <h4 style="color:#c026d3;">⏱️ Time Complexity: O(V+E)</h4>
+                    <h4 style="color:#c026d3;">⏱️ Time Complexity: O(V + E)</h4>
                     <div style="background:rgba(192, 38, 211, 0.1); padding:20px; border-radius:12px; margin:15px 0;">
-                        <table style="width:100%; margin-top:10px;">
-                            <tr style="border-bottom:1px solid rgba(255,255,255,0.1);">
-                                <td style="padding:10px;"><strong>Visit Nodes:</strong></td>
-                                <td style="padding:10px;">Each node visited exactly once → O(V)</td>
-                            </tr>
-                            <tr>
-                                <td style="padding:10px;"><strong>Process Edges:</strong></td>
-                                <td style="padding:10px;">Each edge traversed once → O(E)</td>
-                            </tr>
-                        </table>
+                        <ul style="line-height:2.0; color:#e2e8f0; margin-left: 10px;">
+                            <li><strong style="color:#f472b6;">Visit Nodes:</strong> Each node processed exactly once (Hash Map check). <code>O(V)</code></li>
+                            <li><strong style="color:#f472b6;">Traverse Edges:</strong> We iterate over neighbors for every node. <code>O(E)</code></li>
+                        </ul>
+                        <div style="margin-top:10px; font-weight:bold; text-align:center; color:#e879f9;">Total: O(V + E)</div>
                     </div>
                 `,
                 spaceExplainer: `
                     <h4 style="color:#c026d3;">📦 Space Complexity: O(V)</h4>
                     <div style="background:rgba(192, 38, 211, 0.1); padding:20px; border-radius:12px; margin:15px 0;">
-                        <table style="width:100%;">
-                            <tr><td style="padding:8px;"><strong>HashMap:</strong></td><td>O(V) - maps old nodes to new</td></tr>
-                            <tr><td style="padding:8px;"><strong>Recursion Stack:</strong></td><td>O(V) - maximum depth</td></tr>
-                            <tr><td style="padding:8px;"><strong>New Graph:</strong></td><td>O(V+E) - the clone itself (not counted)</td></tr>
-                        </table>
+                        <ul style="line-height:2.0; color:#e2e8f0; margin-left: 10px;">
+                            <li><strong style="color:#22d3ee;">Hash Map:</strong> Stores V nodes. <code>O(V)</code></li>
+                            <li><strong style="color:#22d3ee;">Recursion Stack:</strong> Worst case depth is V. <code>O(V)</code></li>
+                        </ul>
                     </div>
                 `,
                 visual: `
@@ -2602,43 +3175,72 @@ def course_schedule(num_courses, prerequisites):
                     </ul>
                 `,
                 trap: `
-                    <h4 style="color:#ef4444;">⚠️ Common Traps</h4>
+                    <h4 style="color:#ef4444;">⚠️ Common Mistakes & Why They're Wrong</h4>
                     <div style="display:grid; gap:15px; margin:15px 0;">
                         <div style="background:rgba(239, 68, 68, 0.1); padding:15px; border-radius:8px;">
-                            <strong style="color:#ef4444;">Trap 1: Infinite Recursion</strong><br>
-                            Must check map BEFORE creating new node. If you create first then check, you'll loop forever!
+                            <strong style="color:#ef4444;">1. Missing Base Case Check ❌</strong><br>
+                            <span style="color:#cbd5e1; font-size:0.9rem;"><code>if node in cloned: return cloned[node]</code></span><br>
+                            Without this, cycles (e.g., 1→2→1) cause infinite recursion!
                         </div>
                         <div style="background:rgba(239, 68, 68, 0.1); padding:15px; border-radius:8px;">
-                            <strong style="color:#ef4444;">Trap 2: Late Map Entry</strong><br>
-                            Must add to map BEFORE processing neighbors, not after!
+                            <strong style="color:#ef4444;">2. Late Map Entry ❌</strong><br>
+                            Store <code>cloned[node] = clone</code> <strong>BEFORE</strong> processing neighbors.<br>
+                            If you do it after, the neighbor's recursive call won't find the node in 'cloned', leading to loops.
                         </div>
-                        <div style="background:rgba(239, 68, 68, 0.1); padding:15px; border-radius:8px;">
-                            <strong style="color:#ef4444;">Trap 3: Empty Input</strong><br>
-                            <code>if not node: return None</code> - Handle null input!
+                        <div style="background:rgba(245, 158, 11, 0.1); padding:15px; border-radius:8px;">
+                            <strong style="color:#fbbf24;">3. Not Handling None Input ⚠️</strong><br>
+                            Graph can be empty! <code>if not node: return None</code>
+                        </div>
+                    </div>
+                `,
+                dryRun: `
+                    <h4 style="color:#22d3ee;">🔍 Dry Run: 1 -- 2</h4>
+                    <div style="background:#0f172a; padding:15px; border-radius:12px; font-family:'Consolas', monospace; font-size:0.9rem;">
+                        <div style="margin-bottom:10px; border-bottom:1px solid #334155; padding-bottom:5px;">
+                            <span style="color:#94a3b8;">Start: cloneGraph(1)</span>
+                        </div>
+                        
+                        <div style="color:#e2e8f0; margin-left:10px;">
+                            • <strong>DFS(1)</strong>: Not in map.
+                            <br>&nbsp;&nbsp;→ Create Clone(1). Map = {1: 1'}
+                            <br>&nbsp;&nbsp;→ Process neighbor 2.
+                        </div>
+                        
+                        <div style="color:#e2e8f0; margin-left:25px; margin-top:5px; border-left:2px solid #334155; padding-left:10px;">
+                            • <strong>DFS(2)</strong>: Not in map.
+                            <br>→ Create Clone(2). Map = {1: 1', 2: 2'}
+                            <br>→ Process neighbor 1 (Cycle!).
+                            <br><span style="color:#10b981; background:rgba(16, 185, 129, 0.2); padding:2px 6px; border-radius:4px;">1 IS in Map! Return Clone(1)</span>
                         </div>
                     </div>
                 `,
                 codeTitle: "Python Solution (DFS + HashMap)",
-                code: `def cloneGraph(node):
+                code: `class Node:
+    def __init__(self, val=0, neighbors=None):
+        self.val = val
+        self.neighbors = neighbors if neighbors is not None else []
+
+def cloneGraph(node):
+    # EDGE CASE: Empty graph
     if not node:
         return None
     
-    # HashMap: original node -> cloned node
-    old_to_new = {}
+    # Hash map: original_node -> cloned_node
+    cloned = {}
     
-    def dfs(curr):
-        # Already cloned? Return existing clone
-        if curr in old_to_new:
-            return old_to_new[curr]
+    def dfs(node):
+        # BASE CASE: Node already cloned? Return it!
+        if node in cloned:
+            return cloned[node]
         
-        # Create clone
-        clone = Node(curr.val)
+        # STEP 1: Create clone
+        clone = Node(node.val)
         
-        # Register BEFORE recursing (critical for cycles!)
-        old_to_new[curr] = clone
+        # STEP 2: Store in map BEFORE neighbors (Critical!)
+        cloned[node] = clone
         
-        # Clone all neighbors
-        for neighbor in curr.neighbors:
+        # STEP 3: Clone neighbors recursively
+        for neighbor in node.neighbors:
             clone.neighbors.append(dfs(neighbor))
         
         return clone
@@ -2663,22 +3265,22 @@ def course_schedule(num_courses, prerequisites):
             learn: {
                 metrics: { time: "O(V+E)", space: "O(V)" },
                 timeExplainer: `
-                    <h4 style="color:#c026d3;">⏱️ Time Complexity: O(V+E)</h4>
+                    <h4 style="color:#c026d3;">⏱️ Time Complexity: O(V + E)</h4>
                     <div style="background:rgba(192, 38, 211, 0.1); padding:20px; border-radius:12px; margin:15px 0;">
-                        <ul style="line-height:2;">
-                            <li><strong>Visit each node once:</strong> O(V)</li>
-                            <li><strong>Check each edge once:</strong> O(E)</li>
+                        <ul style="line-height:2.0; color:#e2e8f0; margin-left:10px;">
+                            <li><strong style="color:#f472b6;">Outer Loop:</strong> Iterates V nodes to handle disconnected components. <code>O(V)</code></li>
+                            <li><strong style="color:#f472b6;">BFS Traversal:</strong> Visits every node once <code>O(V)</code> and checks all edges <code>O(E)</code>.</li>
                         </ul>
-                        <p style="margin-top:15px; color:#34d399;"><strong>Total: O(V + E)</strong></p>
+                        <div style="margin-top:10px; font-weight:bold; text-align:center; color:#e879f9;">Total: O(V + E)</div>
                     </div>
                 `,
                 spaceExplainer: `
                     <h4 style="color:#c026d3;">📦 Space Complexity: O(V)</h4>
                     <div style="background:rgba(192, 38, 211, 0.1); padding:20px; border-radius:12px; margin:15px 0;">
-                        <table style="width:100%;">
-                            <tr><td style="padding:8px;"><strong>Color Array/Map:</strong></td><td>O(V)</td></tr>
-                            <tr><td style="padding:8px;"><strong>Queue/Recursion:</strong></td><td>O(V)</td></tr>
-                        </table>
+                        <ul style="line-height:2.0; color:#e2e8f0; margin-left:10px;">
+                            <li><strong style="color:#22d3ee;">Color Array:</strong> Stores state for V nodes. <code>O(V)</code></li>
+                            <li><strong style="color:#22d3ee;">Queue:</strong> Worst case holds all nodes at one level. <code>O(V)</code></li>
+                        </ul>
                     </div>
                 `,
                 visual: `
@@ -2735,41 +3337,76 @@ def course_schedule(num_courses, prerequisites):
                     </ul>
                 `,
                 trap: `
-                    <h4 style="color:#ef4444;">⚠️ Common Traps</h4>
+                    <h4 style="color:#ef4444;">⚠️ Common Mistakes & Why They're Wrong</h4>
                     <div style="display:grid; gap:15px; margin:15px 0;">
                         <div style="background:rgba(239, 68, 68, 0.1); padding:15px; border-radius:8px;">
-                            <strong style="color:#ef4444;">Trap: Disconnected Components</strong><br>
-                            Must check ALL nodes, not just starting from 0. Some nodes might not be reachable!
+                            <strong style="color:#ef4444;">1. Only starting BFS from Node 0 ❌</strong><br>
+                            Graphs can be disconnected! Must iterate <code>range(n)</code> to cover all components.
+                        </div>
+                        <div style="background:rgba(239, 68, 68, 0.1); padding:15px; border-radius:8px;">
+                            <strong style="color:#ef4444;">2. Using Visited Set (Boolean) ❌</strong><br>
+                            Need 3 states: <code>-1</code> (Unvisited), <code>0</code> (Color A), <code>1</code> (Color B). Boolean isn't enough to check conflicts.
+                        </div>
+                        <div style="background:rgba(245, 158, 11, 0.1); padding:15px; border-radius:8px;">
+                            <strong style="color:#fbbf24;">3. Incorrect Logic for "Same Color" ⚠️</strong><br>
+                            If neighbor has SAME color as current node → <strong>Odd Cycle Detected</strong> → Return False immediately.
                         </div>
                     </div>
                 `,
-                codeTitle: "Python Solution (BFS 2-Coloring)",
-                code: `def isBipartite(graph):
-    from collections import deque
+                dryRun: `
+                    <h4 style="color:#22d3ee;">🔍 Dry Run: Triangle 0-1-2 (Not Bipartite)</h4>
+                    <div style="background:#0f172a; padding:15px; border-radius:12px; font-family:'Consolas', monospace; font-size:0.9rem;">
+                        <div style="margin-bottom:10px; border-bottom:1px solid #334155; padding-bottom:5px;">
+                            <span style="color:#94a3b8;">Start: 0-1-2 connected</span>
+                        </div>
+                        
+                        <div style="color:#e2e8f0; margin-left:10px;">
+                            • <strong>Process 0</strong>: Color=0. Q=[0]
+                            <br>&nbsp;&nbsp;→ Neighbors 1, 2 uncolored.
+                            <br>&nbsp;&nbsp;→ Color[1]=1, Color[2]=1. Q=[1, 2]
+                        </div>
+                        
+                        <div style="color:#e2e8f0; margin-left:25px; margin-top:5px; border-left:2px solid #334155; padding-left:10px;">
+                            • <strong>Process 1</strong> (Color 1):
+                            <br>→ Neighbor 0 (Color 0) ✅ OK (Opposite)
+                            <br>→ Neighbor 2 (Color 1) ❌ <span style="color:#ef4444; font-weight:bold;">CONFLICT! Same Color!</span>
+                        </div>
+                        
+                        <div style="margin-top:10px; color:#ef4444; font-weight:bold;">
+                            Result: False (Odd Cycle Detected)
+                        </div>
+                    </div>
+                `,
+                codeTitle: "Python Solution (BFS Coloring)",
+                code: `from collections import deque
+
+def isBipartite(graph):
+    n = len(graph)
+    # -1: Uncolored, 0: Red, 1: Blue
+    color = [-1] * n
     
-    color = {}  # node -> 0 or 1
-    
-    # Check all components (might be disconnected)
-    for start in range(len(graph)):
-        if start in color:
-            continue  # Already colored
-        
-        # BFS from this node
-        color[start] = 0
+    # Check all components (Handle Disconnected Graphs)
+    for start in range(n):
+        if color[start] != -1:
+            continue
+            
+        # Begin BFS
         queue = deque([start])
+        color[start] = 0  # Assign first color
         
         while queue:
             node = queue.popleft()
             
             for neighbor in graph[node]:
-                if neighbor not in color:
-                    # Assign opposite color
+                # Case 1: Uncolored -> Assign opposite color
+                if color[neighbor] == -1:
                     color[neighbor] = 1 - color[node]
                     queue.append(neighbor)
+                
+                # Case 2: Already colored with SAME color -> CONFLICT!
                 elif color[neighbor] == color[node]:
-                    # Same color conflict!
                     return False
-    
+                    
     return True`
             }
         },
@@ -2790,69 +3427,83 @@ def course_schedule(num_courses, prerequisites):
             learn: {
                 metrics: { time: "O(V+E)", space: "O(V)" },
                 timeExplainer: `
-                    <h4 style="color:#c026d3;">⏱️ Time Complexity: O(V+E)</h4>
+                    <h4 style="color:#c026d3;">⏱️ Time Complexity: O(V + E)</h4>
                     <div style="background:rgba(192, 38, 211, 0.1); padding:20px; border-radius:12px; margin:15px 0;">
-                        <ul style="line-height:2;">
-                            <li><strong>Visit each node once:</strong> O(V)</li>
-                            <li><strong>Check each edge once:</strong> O(E)</li>
+                        <p><strong>Step-by-Step Breakdown:</strong></p>
+                        <ul style="line-height:2.0; color:#e2e8f0; margin-left: 10px;">
+                            <li><strong style="color:#f472b6;">Iterate Graph:</strong> We visit every node once using the loop. <code>O(V)</code></li>
+                            <li><strong style="color:#f472b6;">DFS Traversal:</strong> Inside DFS, each node is added to <code>visited</code> once. We never process a visited node again.</li>
+                            <li><strong style="color:#f472b6;">Edge Traversal:</strong> For every node, we iterate over its adjacency list. Across the entire process, we traverse every edge exactly once. <code>O(E)</code></li>
                         </ul>
+                        <p style="margin-top:10px; background:rgba(0,0,0,0.3); padding:10px; border-radius:8px; text-align:center; border: 1px solid rgba(192, 38, 211, 0.3);">
+                            <strong>Total: O(V + E)</strong> where V is vertices, E is edges.
+                        </p>
                     </div>
                 `,
                 spaceExplainer: `
                     <h4 style="color:#c026d3;">📦 Space Complexity: O(V)</h4>
                     <div style="background:rgba(192, 38, 211, 0.1); padding:20px; border-radius:12px; margin:15px 0;">
-                        <table style="width:100%;">
-                            <tr><td style="padding:8px;"><strong>Visited Set:</strong></td><td>O(V)</td></tr>
-                            <tr><td style="padding:8px;"><strong>Recursion Stack Set:</strong></td><td>O(V)</td></tr>
-                            <tr><td style="padding:8px;"><strong>Call Stack:</strong></td><td>O(V)</td></tr>
-                        </table>
+                        <p><strong>Memory Usage:</strong></p>
+                        <ul style="line-height:2.0; color:#e2e8f0; margin-left: 10px;">
+                            <li><strong style="color:#22d3ee;">Visited Set:</strong> Stores up to V nodes. <code>O(V)</code></li>
+                            <li><strong style="color:#22d3ee;">Recursive Stack Set:</strong> Stores current path nodes. Worst case (line graph) O(V).</li>
+                            <li><strong style="color:#22d3ee;">System Call Stack:</strong> Recursion depth can go up to V. <code>O(V)</code></li>
+                        </ul>
+                        <div style="margin-top:15px; font-size:0.9em; color:#cbd5e1; font-style:italic;">
+                            *Adjacency List takes O(V+E) if constructed, but usually given or considered input space. Aux space is O(V).
+                        </div>
                     </div>
                 `,
                 visual: `
-                    <h4 style="color:#c026d3;">🔄 DFS States: Visited vs Recursion Stack</h4>
-                    <div style="display:flex; gap:20px; margin:20px 0; max-width:600px;">
-                        
-                        <!-- Graph Visual -->
-                        <div style="flex:1; display:flex; flex-direction:column; align-items:center;">
-                            <div style="margin-bottom:10px; color:#cbd5e1; font-size:12px;">Graph State</div>
-                            <div style="position:relative; width:100px; height:100px;">
-                                <!-- Node 0 -->
-                                <div style="position:absolute; top:0; left:35px; width:30px; height:30px; background:#fbbf24; color:black; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold;">0</div>
-                                
-                                <!-- Node 1 -->
-                                <div style="position:absolute; top:40px; left:0; width:30px; height:30px; background:#fbbf24; color:black; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold;">1</div>
-                                
-                                <!-- Node 2 -->
-                                <div style="position:absolute; top:40px; right:0; width:30px; height:30px; background:#ef4444; color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; border:2px solid #fbbf24;">2</div>
-
-                                <!-- Node 1 -> 2 Arrow -->
-                                <div style="position:absolute; top:60px; left:30px; width:40px; height:2px; background:#64748b;"></div>
+                    <h4 style="color:#c026d3;">🔄 Visualizing the Trap</h4>
+                    <div style="display:flex; flex-direction:column; gap:20px; max-width:600px; margin:20px 0;">
+                        <div style="background:#1e293b; padding:20px; border-radius:12px; border: 1px solid rgba(255,255,255,0.1);">
+                            <div style="display:flex; justify-content:space-around; align-items:center;">
+                                <div style="text-align:center;">
+                                    <div style="width:50px; height:50px; background:#f59e0b; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; color:black; margin:0 auto; box-shadow:0 0 15px rgba(245, 158, 11, 0.4);">A</div>
+                                    <div style="margin-top:8px; font-size:12px; color:#f59e0b;">Current</div>
+                                </div>
+                                <div style="font-size:24px; color:#94a3b8;">➡</div>
+                                <div style="text-align:center;">
+                                    <div style="width:50px; height:50px; background:#ef4444; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; color:white; margin:0 auto; border:2px dashed #fff;">B</div>
+                                    <div style="margin-top:8px; font-size:12px; color:#ef4444;">Neighbor</div>
+                                </div>
+                            </div>
+                            <div style="margin-top:20px; background:rgba(0,0,0,0.3); padding:15px; border-radius:8px;">
+                                <div style="display:flex; justify-content:space-between; margin-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:8px;">
+                                    <span style="color:#94a3b8;">Case 1: B not visited</span>
+                                    <strong style="color:#10b981;">Safe to Explore 🟢</strong>
+                                </div>
+                                <div style="display:flex; justify-content:space-between; margin-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:8px;">
+                                    <span style="color:#94a3b8;">Case 2: B in Recursion Stack</span>
+                                    <strong style="color:#ef4444;">CYCLE DETECTED! 🔴</strong>
+                                </div>
+                                <div style="display:flex; justify-content:space-between;">
+                                    <span style="color:#94a3b8;">Case 3: B visited, NOT in Stack</span>
+                                    <strong style="color:#3b82f6;">Safe (Cross Edge) 🔵</strong>
+                                </div>
                             </div>
                         </div>
-
-                        <!-- Stack Visual -->
-                        <div style="flex:1; background:#1e293b; padding:15px; border-radius:8px;">
-                            <div style="margin-bottom:10px; color:#cbd5e1; font-size:12px; text-align:center;">Recursion Stack (Path)</div>
-                            <div style="display:flex; flex-direction:column; gap:5px; align-items:center;">
-                                
-                                <div style="width:80%; padding:8px; background:#fbbf24; color:black; border-radius:4px; text-align:center; font-size:12px;">
-                                    Stack: [0, 1]
-                                </div>
-                                
-                                <div style="color:#cbd5e1;">↓</div>
-                                
-                                <div style="width:80%; padding:8px; background:#ef4444; color:white; border-radius:4px; text-align:center; font-size:12px; border:1px solid #fbbf24;">
-                                    Try Visit 2
-                                </div>
-
-                                <div style="margin-top:10px; font-size:11px; color:#f87171; text-align:center;">
-                                    ⚠️ 2 is already in Stack (Ancestry)! 
-                                    <br><strong>CYCLE DETECTED</strong>
-                                </div>
-
-                            </div>
+                    </div>
+                `,
+                trap: `
+                    <h4 style="color:#ef4444;">⚠️ The "Visited" Trap</h4>
+                    <p style="color:#cbd5e1; margin-bottom:15px;">Why isn't a single <code>visited</code> set enough? Why do we need <code>recursive_stack</code>?</p>
+                    
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                        <div style="background:rgba(239, 68, 68, 0.1); padding:15px; border-radius:8px; border-left:3px solid #ef4444;">
+                            <strong style="color:#f87171;">Scenario:</strong>
+                            <br>Path A -> B -> C
+                            <br>Path A -> D -> C
                         </div>
-
+                        <div style="background:rgba(59, 130, 246, 0.1); padding:15px; border-radius:8px; border-left:3px solid #3b82f6;">
+                            <strong style="color:#60a5fa;">Explanation:</strong>
+                            <br>When DFS reaches C via D, C is "visited" (from path A->B->C).
+                            <br>But this is NOT a cycle! It's just a merge.
+                        </div>
+                    </div>
+                    <div style="margin-top:15px; background:rgba(255,255,255,0.05); padding:12px; border-radius:8px;">
+                        <span style="color:#fbbf24;">✅ Fix:</span> A cycle exists ONLY if we see a node that is part of the <strong>CURRENT active path</strong> (recursion stack).
                     </div>
                 `,
                 crux: `
@@ -2868,69 +3519,84 @@ def course_schedule(num_courses, prerequisites):
                             <strong>Cycle:</strong> Node is in RecStack → We're revisiting it in same path → Back edge → Cycle!
                         </div>
                     </div>
-                    <div style="background:#0f172a; padding:15px; border-radius:8px; margin:15px 0; font-family:Consolas;">
-                        <code style="color:#7dd3fc;">
-                            # Enter: Add to both sets<br>
-                            visited.add(node)<br>
-                            recStack.add(node)<br><br>
-                            # Check neighbor<br>
-                            if neighbor in recStack: return True  # <span style="color:#ef4444;">CYCLE!</span><br>
-                            if neighbor not in visited: dfs(neighbor)<br><br>
-                            # Exit: Remove from recStack only<br>
-                            recStack.remove(node)
-                        </code>
-                    </div>
+                
                     <h5 style="color:#a78bfa; margin-top:20px;">Same Pattern Problems:</h5>
                     <ul style="line-height:2;">
-                        <li>📚 <strong>Course Schedule</strong> - Uses same DFS cycle detection</li>
-                        <li>🔗 <strong>Find Eventual Safe States</strong> - Nodes not in any cycle</li>
-                        <li>⭕ <strong>Detect Cycle in Undirected</strong> - Simpler: just track parent</li>
+                        <li>📚 <strong>Course Schedule</strong> - Uses same DFS cycle detection to find circular dependencies.</li>
+                        <li>🔗 <strong>Find Eventual Safe States</strong> - Nodes that are not part of any cycle (and don't lead to one).</li>
+                        <li>⭕ <strong>Detect Cycle in Undirected Graph</strong> - Simpler version: just track 'parent' to avoid trivial immediate backward path.</li>
+                        <li>👽 <strong>Alien Dictionary</strong> - Topological Sort (which detects cycles as "impossible" ordering).</li>
                     </ul>
                 `,
-                trap: `
-                    <h4 style="color:#ef4444;">⚠️ Common Traps</h4>
-                    <div style="display:grid; gap:15px; margin:15px 0;">
-                        <div style="background:rgba(239, 68, 68, 0.1); padding:15px; border-radius:8px;">
-                            <strong style="color:#ef4444;">Trap 1: Using Only Visited</strong><br>
-                            Cross edges (visiting node from different path) will give false positives!
+                dryRun: `
+                    <h4 style="color:#22d3ee;">🔍 Dry Run: 0->1, 1->2, 2->0</h4>
+                    <div style="background:#0f172a; padding:15px; border-radius:12px; font-family:'Consolas', monospace; font-size:0.9rem;">
+                        <div style="margin-bottom:10px; border-bottom:1px solid #334155; padding-bottom:5px;">
+                            <span style="color:#94a3b8;">Start DFS(0)</span>
                         </div>
-                        <div style="background:rgba(239, 68, 68, 0.1); padding:15px; border-radius:8px;">
-                            <strong style="color:#ef4444;">Trap 2: Forgetting to Remove from RecStack</strong><br>
-                            Must remove from recStack when backtracking!
+                        
+                        <div style="color:#e2e8f0; margin-left:10px;">
+                            • <strong>DFS(0)</strong>: Visited={0}, Stack={0}
+                            <br>&nbsp;&nbsp;→ Neighbor 1? Not visited.
                         </div>
-                        <div style="background:rgba(239, 68, 68, 0.1); padding:15px; border-radius:8px;">
-                            <strong style="color:#ef4444;">Trap 3: Disconnected Graph</strong><br>
-                            Must try DFS from ALL unvisited nodes, not just node 0.
+                        
+                        <div style="color:#e2e8f0; margin-left:25px; margin-top:5px; border-left:2px solid #334155; padding-left:10px;">
+                            • <strong>DFS(1)</strong>: Visited={0,1}, Stack={0,1}
+                            <br>→ Neighbor 2? Not visited.
+                        </div>
+                        
+                        <div style="color:#e2e8f0; margin-left:40px; margin-top:5px; border-left:2px solid #334155; padding-left:10px;">
+                            • <strong>DFS(2)</strong>: Visited={0,1,2}, Stack={0,1,2}
+                            <br>→ Neighbor 0?
+                            <br><span style="color:#ef4444; background:rgba(239, 68, 68, 0.2); padding:2px 6px; border-radius:4px;">⚠️ 0 is in Stack! Return True</span>
+                        </div>
+                        
+                        <div style="color:#10b981; margin-top:10px; font-weight:bold;">
+                            Result: True (Cycle Detected)
                         </div>
                     </div>
                 `,
-                codeTitle: "Python Solution (DFS with 2 Sets)",
-                code: `def isCyclic(V, adj):
+                codeTitle: "Python Solution (DFS + Recursive Stack)",
+                code: `from collections import defaultdict
+
+def detect_cycle(n, edges):
+    # 1. Build Adjacency List
+    graph = defaultdict(list)
+    for u, v in edges:
+        graph[u].append(v)
+    
     visited = set()
-    recStack = set()  # Current DFS path
+    recursive_stack = set()
     
     def dfs(node):
+        # Mark current node as visited and add to recursion stack
         visited.add(node)
-        recStack.add(node)  # Enter current path
+        recursive_stack.add(node)
         
-        for neighbor in adj[node]:
-            if neighbor not in visited:
-                if dfs(neighbor):  # Cycle found deeper
+        for neighbour in graph[node]:
+            # Case 1: If neighbour not visited, recurse
+            if neighbour not in visited:
+                if dfs(neighbour):
                     return True
-            elif neighbor in recStack:
-                # Back edge! Cycle detected!
+            # Case 2: If neighbour in recursion stack -> CYCLE!
+            elif neighbour in recursive_stack:
                 return True
         
-        recStack.remove(node)  # Exit current path
+        # Backtrack: Remove from recursion stack before returning
+        recursive_stack.remove(node)
         return False
     
-    # Check all components
-    for i in range(V):
-        if i not in visited:
-            if dfs(i):
+    # 2. Iterate ALL nodes (Handle disconnected components)
+    for node in range(n):
+        if node not in visited:
+            if dfs(node):
                 return True
-    
-    return False`
+                
+    return False
+
+# Example Usage
+# n = 3, edges = [[0,1], [1,2], [2,0]] -> True
+# n = 4, edges = [[0,1], [0,2], [1,3], [2,3]] -> False`
             }
         }
     ]
@@ -5129,6 +5795,180 @@ def backtrack(start):
 backtrack(0)
 return res`
             }
+        },
+        {
+            id: "subsets",
+            title: "Subsets",
+            leetcodeUrl: "https://leetcode.com/problems/subsets/",
+            difficulty: "Good to Do",
+            priority: "🟡",
+            tags: ["Pick/No-Pick"],
+            quiz: {
+                description: "Generate power set. Core decision?",
+                options: ["Loop n times", "Include or Exclude current element", "Swap adjacent", "Bit manipulation only"],
+                correct: 1,
+                explanation: "Pick/No-Pick! For every element, you have 2 choices: Include it in current subset OR Skip it. 2^N total."
+            },
+            learn: {
+                metrics: { time: "O(2^N)", space: "O(N)" },
+                timeExplainer: "<strong>Exponential:</strong><br>• Each element has 2 choices (Yes/No)<br>• Total <code>2^N</code> subsets<br>• Copying takes O(N)<br><br><strong>Total:</strong> <code>O(N × 2^N)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Stack depth: <code>O(N)</code><br>• Result size: <code>2^N</code><br><br><strong>Aux:</strong> <code>O(N)</code>",
+                visual: "<span><strong>Visual: The Fork</strong><br>At index i: Left Path (Include), Right Path (Exclude).</span>",
+                crux: "<strong>Pattern:</strong> `dfs(i, current_path)`<br>1. Include `nums[i]` -> Recurse `i+1`<br>2. Exclude `nums[i]` (Pop) -> Recurse `i+1`",
+                trap: "<strong>Base Case:</strong> Add to results at START of function, because every node in decision tree is a valid subset.",
+                dryRun: ["dfs(0, []). Add [].", "Include 1. dfs(1, [1]). Add [1].", "Exclude 1. dfs(1, [])..."],
+                codeTitle: "Python Solution",
+                code: `def subsets(nums):
+    res = []
+    def backtrack(i, path):
+        if i == len(nums):
+            res.append(path[:])
+            return
+        
+        # Choice 1: Include
+        path.append(nums[i])
+        backtrack(i + 1, path)
+        
+        # Choice 2: Exclude (Backtrack)
+        path.pop()
+        backtrack(i + 1, path)
+        
+    backtrack(0, [])
+    return res`
+            }
+        },
+        {
+            id: "combination-sum",
+            title: "Combination Sum",
+            leetcodeUrl: "https://leetcode.com/problems/combination-sum/",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["Unbounded Knapsack"],
+            quiz: {
+                description: "Reuse elements allowed. How to handle logic?",
+                options: ["Pass index i+1", "Pass index i (Stay)", "Use a set", "Sort array"],
+                correct: 1,
+                explanation: "Pass `i`! Since we can reuse the same element, we recurse with the SAME index. Only increment when we choose to SKIP."
+            },
+            learn: {
+                metrics: { time: "O(2^T)", space: "O(T)" },
+                timeExplainer: "<strong>Branching Factor:</strong><br>• Depends on Target T and min(candidates)<br>• Roughly O(Candidates ^ (T/min))",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Recursion depth = Max number of elements in sum (T/min)",
+                visual: "<span><strong>Visual: Infinite Supply</strong><br>You can grab the same coin multiple times until you bust (sum > target).</span>",
+                crux: "<strong>Reuse Pattern:</strong><br>• Include: `dfs(i, current_sum + nums[i])` (Stay at `i`)<br>• Skip: `dfs(i + 1, current_sum)`",
+                trap: "<strong>Negative Numbers:</strong> If candidates had negatives, this would infinite loop!",
+                dryRun: ["Target=7. Cands=[2,3].", "Use 2. Rem=5. Recurse(i=0).", "Use 2. Rem=3. ..."],
+                codeTitle: "Python Solution",
+                code: `def combinationSum(candidates, target):
+    res = []
+    def backtrack(i, cur, total):
+        if total == target:
+            res.append(cur.copy())
+            return
+        if i >= len(candidates) or total > target:
+            return
+            
+        # Choice 1: Include (Reuse i)
+        cur.append(candidates[i])
+        backtrack(i, cur, total + candidates[i])
+        
+        # Choice 2: Skip (Move to i+1)
+        cur.pop()
+        backtrack(i + 1, cur, total)
+        
+    backtrack(0, [], 0)
+    return res`
+            }
+        },
+        {
+            id: "word-search",
+            title: "Word Search",
+            leetcodeUrl: "https://leetcode.com/problems/word-search/",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["Grid DFS"],
+            quiz: {
+                description: "Find string in grid (adjacent cells). Constraint?",
+                options: ["Any cell can be used twice", "Visited cells cannot be reused in current path", "Diagonals allowed", "Only right/down"],
+                correct: 1,
+                explanation: "Path constraint! You cannot visit the same cell twice IN THE SAME PATH. Mark visited, recurse, then unmark (backtrack)."
+            },
+            learn: {
+                metrics: { time: "O(N*M * 4^L)", space: "O(L)" },
+                timeExplainer: "<strong>DFS from Every Cell:</strong><br>• N*M starting points<br>• 4 directions<br>• Depth L (word len)<br><br><strong>Total:</strong> <code>O(N×M × 3^L)</code> (3 dirs effectively)",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Recursion stack depth = L (Length of word)",
+                visual: "<span><strong>Visual: The Snake</strong><br>The snake crawls on the grid. If it hits a dead end, it retreats (undoes move).</span>",
+                crux: "<strong>Grid Backtracking:</strong><br>1. Check boundaries & match.<br>2. Mark `#` (visited).<br>3. Explore 4 dirs.<br>4. AES: Restore original char.",
+                trap: "<strong>Early Exit:</strong> If ANY direction implies True, return True immediately. Don't explore others.",
+                dryRun: ["Grid 'A','B'. Target 'AB'.", "dfs(0,0) matches 'A'. Mark '#'.", "dfs(0,1) matches 'B'. Valid!"],
+                codeTitle: "Python Solution",
+                code: `def exist(board, word):
+    ROWS, COLS = len(board), len(board[0])
+    
+    def dfs(r, c, i):
+        if i == len(word): return True
+        if (r < 0 or c < 0 or r >= ROWS or c >= COLS or 
+            board[r][c] != word[i]):
+            return False
+            
+        temp = board[r][c]
+        board[r][c] = "#" # Mark
+        
+        res = (dfs(r+1, c, i+1) or dfs(r-1, c, i+1) or
+               dfs(r, c+1, i+1) or dfs(r, c-1, i+1))
+               
+        board[r][c] = temp # Unmark
+        return res
+        
+    for r in range(ROWS):
+        for c in range(COLS):
+            if dfs(r, c, 0): return True
+    return False`
+            }
+        },
+        {
+            id: "sudoku-solver",
+            title: "Sudoku Solver",
+            leetcodeUrl: "https://leetcode.com/problems/sudoku-solver/",
+            difficulty: "Bonus",
+            priority: "🟢",
+            tags: ["Hard"],
+            quiz: {
+                description: "Fill 9x9 grid. How to optimize?",
+                options: ["Try 1-9 sequentially", "Constraint Propagation", "Random Guessing", "Genetic Algo"],
+                correct: 0,
+                explanation: "Backtracking! Find empty cell. Try 1-9. Check validity (Row, Col, 3x3 Box). If valid, recurse. If stuck, backtrack."
+            },
+            learn: {
+                metrics: { time: "O(9^M)", space: "O(M)" },
+                timeExplainer: "<strong>Exponential:</strong><br>• M empty cells<br>• 9 choices each<br><br><strong>Worst Case:</strong> NP-Complete.",
+                spaceExplainer: "<strong>Space:</strong> Recursion depth M (number of empty cells).",
+                visual: "<span><strong>Visual: Filling the Void</strong><br>Place 1. Stuck? Change to 2. Stuck? Change to 3...</span>",
+                crux: "<strong>Validity Check:</strong><br>• Row `board[r][c]`<br>• Col `board[r][c]`<br>• Box `3*(r//3) + c//3`",
+                trap: "<strong>Return Value:</strong> Must return `True` when solved to stop other branches from overwriting solution!",
+                dryRun: ["Find empty (0,2).", "Try '1'. Check rules. OK. Recurse.", "Downstream fails? Change '1' to '2'."],
+                codeTitle: "Python Solution",
+                code: `def solveSudoku(board):
+    def isValid(r, c, k):
+        for i in range(9):
+            if board[r][i] == k: return False
+            if board[i][c] == k: return False
+            if board[3*(r//3) + i//3][3*(c//3) + i%3] == k: return False
+        return True
+
+    def solve():
+        for r in range(9):
+            for c in range(9):
+                if board[r][c] == ".":
+                    for k in "123456789":
+                        if isValid(r, c, k):
+                            board[r][c] = k
+                            if solve(): return True
+                            board[r][c] = "."
+                    return False
+        return True # Solved
+    solve()`
+            }
         }
     ]
 }
@@ -7042,6 +7882,289 @@ const topic_complexity_concepts = {
 };
 
 
+// ========== data/concepts/stack_concepts.js ==========
+// Stack Concepts data
+// Extracted from data.js
+
+const topic_stack_concepts = {
+    id: "stack_concepts",
+    title: "Stack Mastery: The Monotonic Framework",
+    description: "Master the Art of 'Waiting Room' Logic",
+    color: "#7c3aed",
+    icon: "fas fa-layer-group",
+    type: "guide",
+    sections: [
+        {
+            id: "philosophy",
+            title: "🧠 Philosophy",
+            icon: "fas fa-lightbulb",
+            content: `
+                <div class="flashcard">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-lightbulb"></i>
+                            The "Waiting Room" Philosophy
+                        </div>
+                        <div class="badges">
+                            <span class="badge badge-must" style="background:#7c3aed; color:white;">CORE CONCEPT</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="big-quote" style="font-size: 1.4rem; font-weight: 600; text-align: center; padding: 30px; background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(139, 92, 246, 0.1)); border-radius: 12px; border: 2px solid var(--border); margin: 30px 0; line-height: 1.8;">
+                            "Stack ek <span style='color:#7c3aed; font-weight:800;'>Waiting Room</span> hai. Elements tab tak wait karte hain jab tak unhe koi 'Resolve' karne wala na mil jaye."
+                        </div>
+                        
+                        <div style="background: rgba(124, 58, 237, 0.1); padding: 25px; border-radius: 12px; border-left: 4px solid #7c3aed; margin: 25px 0;">
+                            <h4 style="margin-bottom:15px; color:#a78bfa;"><i class="fas fa-star"></i> Why It Works</h4>
+                            <ul style="list-style:none; padding-left:0; line-height:2;">
+                                <li>✅ <strong>Time Travel:</strong> Hum past ke un elements ko access kar sakte hain jo abhi "unresolved" hain.</li>
+                                <li>✅ <strong>O(N) Magic:</strong> Each element is pushed ONCE and popped ONCE. Linear time guaranteed!</li>
+                                <li>✅ <strong>Structure:</strong> Nested problems (brackets, recursive calls) ko linear way mein handle karta hai.</li>
+                            </ul>
+                        </div>
+                        
+                        <h3 style="margin: 30px 0 15px 0; color: #a78bfa;">
+                            <i class="fas fa-layer-group"></i> The Monotonic Stack Rule
+                        </h3>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0;">
+                            <div style="background: rgba(239, 68, 68, 0.1); padding: 20px; border-radius: 12px; text-align:center;">
+                                <div style="font-size:2rem; margin-bottom:10px;">📉</div>
+                                <strong style="color:#ef4444;">Decreasing Stack</strong>
+                                <p style="font-size:0.9rem; color:gray; margin-top:8px;">Find <strong>Next Greater</strong></p>
+                                <p style="font-size:0.8rem; color:gray;">Jab tak chote hain, wait karo. Bada aaya toh pop!</p>
+                            </div>
+                            <div style="background: rgba(16, 185, 129, 0.1); padding: 20px; border-radius: 12px; text-align:center;">
+                                <div style="font-size:2rem; margin-bottom:10px;">📈</div>
+                                <strong style="color:#10b981;">Increasing Stack</strong>
+                                <p style="font-size:0.9rem; color:gray; margin-top:8px;">Find <strong>Next Smaller</strong></p>
+                                <p style="font-size:0.8rem; color:gray;">Jab tak bade hain, wait karo. Chota aaya toh pop!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>`
+        },
+        {
+            id: "roadmap",
+            title: "🗺️ Roadmap",
+            icon: "fas fa-route",
+            content: `
+                <div class="flashcard">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-route"></i>
+                            Stack Mastery Roadmap
+                        </div>
+                        <div class="badges">
+                            <span class="badge" style="background:#10b981; color:white;">4 LEVELS</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p style="color: gray; margin-bottom: 25px;">
+                            Start from basics and climb to the top.
+                        </p>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 15px;">
+                            
+                            <!-- Level 1 -->
+                            <a href="learn.html?topic=stack&q=next-greater-element" style="text-decoration: none; display: block; background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(124, 58, 237, 0.05)); padding: 20px; border-radius: 12px; border: 1px solid rgba(124, 58, 237, 0.3); transition: transform 0.2s;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                            <span style="background: #7c3aed; color: white; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700;">LEVEL 1</span>
+                                            <strong style="color: white; font-size: 1.1rem;">Next Greater Element</strong>
+                                        </div>
+                                        <p style="color: gray; font-size: 0.9rem; margin: 0;">
+                                            <strong style="color:#a78bfa;">Learn:</strong> The basic Monotonic Decreasing Stack.
+                                        </p>
+                                    </div>
+                                    <i class="fas fa-arrow-right" style="color: #7c3aed;"></i>
+                                </div>
+                            </a>
+
+                            <!-- Level 2 -->
+                            <a href="learn.html?topic=stack&q=asteroid-collision" style="text-decoration: none; display: block; background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05)); padding: 20px; border-radius: 12px; border: 1px solid rgba(239, 68, 68, 0.3); transition: transform 0.2s;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                            <span style="background: #ef4444; color: white; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700;">LEVEL 2</span>
+                                            <strong style="color: white; font-size: 1.1rem;">Asteroid Collision</strong>
+                                        </div>
+                                        <p style="color: gray; font-size: 0.9rem; margin: 0;">
+                                            <strong style="color:#a78bfa;">Learn:</strong> Collision Logic & Left/Right interactions.
+                                        </p>
+                                    </div>
+                                    <i class="fas fa-arrow-right" style="color: #ef4444;"></i>
+                                </div>
+                            </a>
+
+                            <!-- Level 3 -->
+                            <a href="learn.html?topic=stack&q=largest-rectangle-in-histogram" style="text-decoration: none; display: block; background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.05)); padding: 20px; border-radius: 12px; border: 1px solid rgba(245, 158, 11, 0.3);">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                            <span style="background: #f59e0b; color: white; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700;">LEVEL 3</span>
+                                            <strong style="color: white; font-size: 1.1rem;">Histogram Area</strong>
+                                        </div>
+                                        <p style="color: gray; font-size: 0.9rem; margin: 0;">
+                                            <strong style="color:#a78bfa;">Learn:</strong> Finding Expansion Limits (Left & Right).
+                                        </p>
+                                    </div>
+                                    <i class="fas fa-arrow-right" style="color: #f59e0b;"></i>
+                                </div>
+                            </a>
+                            
+                            <!-- Level 4 -->
+                            <a href="learn.html?topic=stack&q=trapping-rain-water" style="text-decoration: none; display: block; background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05)); padding: 20px; border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.3);">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                            <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700;">BOSS</span>
+                                            <strong style="color: white; font-size: 1.1rem;">Trapping Rain Water</strong>
+                                        </div>
+                                        <p style="color: gray; font-size: 0.9rem; margin: 0;">
+                                            <strong style="color:#a78bfa;">Learn:</strong> 3-Bar Logic (Left, Right, Base) - "The Bowl".
+                                        </p>
+                                    </div>
+                                    <i class="fas fa-arrow-right" style="color: #10b981;"></i>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>`
+        },
+        {
+            id: "patterns",
+            title: "🧩 3 Patterns",
+            icon: "fas fa-puzzle-piece",
+            content: `
+                <div class="flashcard">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-puzzle-piece"></i>
+                            The 3 Stack Patterns
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p style="color: gray; margin-bottom: 25px;">
+                            Ye 3 patterns samajh liye toh Stack ke 80% questions solved!
+                        </p>
+                        
+                        <!-- Pattern 1: NGE -->
+                        <div style="background: rgba(124, 58, 237, 0.05); border: 1px solid rgba(124, 58, 237, 0.2); border-radius: 16px; padding: 25px; margin-bottom: 20px;">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+                                <span style="background: #7c3aed; color: white; padding: 6px 12px; border-radius: 8px; font-weight: 700;">1</span>
+                                <h3 style="color: #a78bfa; margin: 0;">The Monotonic Decreasing Stack</h3>
+                            </div>
+                            <p style="color: gray; margin-bottom: 15px;"><strong>Pehchaan:</strong> "Next Greater Element dhoondo"</p>
+                            <div style="background: #0f172a; padding: 12px; border-radius: 8px; font-family: Consolas; color: #7dd3fc; font-size: 0.9rem;">
+                                while stack and arr[stack[-1]] < arr[i]:<br>
+                                &nbsp;&nbsp;smaller_index = stack.pop()<br>
+                                &nbsp;&nbsp;result[smaller_index] = arr[i]  # Founded Next Greater!<br>
+                                stack.append(i)
+                            </div>
+                            <p style="margin-top: 12px; color: gray; font-size: 0.9rem;">
+                                <strong>Logic:</strong> Chote wale wait karenge, Bada aayega toh sabko pop kar dega.
+                            </p>
+                        </div>
+                        
+                        <!-- Pattern 2: Expansion Limits -->
+                        <div style="background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 16px; padding: 25px; margin-bottom: 20px;">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+                                <span style="background: #f59e0b; color: white; padding: 6px 12px; border-radius: 8px; font-weight: 700;">2</span>
+                                <h3 style="color: #fbbf24; margin: 0;">The Expansion Limits (Previous Smaller)</h3>
+                            </div>
+                            <p style="color: gray; margin-bottom: 15px;"><strong>Pehchaan:</strong> "Area, Rectangle, ya Span dhoondo"</p>
+                            <div style="background: #0f172a; padding: 12px; border-radius: 8px; font-family: Consolas; color: #7dd3fc; font-size: 0.9rem;">
+                                while stack and arr[stack[-1]] >= arr[i]:<br>
+                                &nbsp;&nbsp;h = arr[stack.pop()]  # Height is fully determined<br>
+                                &nbsp;&nbsp;w = i - stack[-1] - 1  # Right Limit - Left Limit - 1<br>
+                                &nbsp;&nbsp;max_area = max(max_area, h * w)
+                            </div>
+                            <p style="margin-top: 12px; color: gray; font-size: 0.9rem;">
+                                <strong>Logic:</strong> Jab chota element aata hai, toh current height ka raaj khatam. Calculate kar lo!
+                            </p>
+                        </div>
+                        
+                        <!-- Pattern 3: Collision / Matching -->
+                        <div style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 16px; padding: 25px;">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+                                <span style="background: #ef4444; color: white; padding: 6px 12px; border-radius: 8px; font-weight: 700;">3</span>
+                                <h3 style="color: #f87171; margin: 0;">Collision & Matching</h3>
+                            </div>
+                            <p style="color: gray; margin-bottom: 15px;"><strong>Pehchaan:</strong> "Brackets, Asteroids, ya adjacent pair removal"</p>
+                            <div style="background: #0f172a; padding: 12px; border-radius: 8px; font-family: Consolas; color: #7dd3fc; font-size: 0.9rem;">
+                                if stack and matches(stack[-1], current):<br>
+                                &nbsp;&nbsp;stack.pop()  # Destroy/Match/Resolves<br>
+                                else:<br>
+                                &nbsp;&nbsp;stack.append(current)  # Wait for partner
+                            </div>
+                            <p style="margin-top: 12px; color: gray; font-size: 0.9rem;">
+                                <strong>Logic:</strong> Aane wala element stack ke top se react karta hai.
+                            </p>
+                        </div>
+                    </div>
+                </div>`
+        },
+        {
+            id: "mistakes",
+            title: "⚠️ Mistakes",
+            icon: "fas fa-exclamation-triangle",
+            content: `
+                <div class="flashcard">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Common Stack Mistakes
+                        </div>
+                        <div class="badges">
+                            <span class="badge" style="background:#ef4444; color:white;">TRAPS</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        
+                        <!-- Mistake 1 -->
+                        <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                <span style="background: #ef4444; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">1</span>
+                                <strong style="color: #f87171; font-size: 1.1rem;">Storing Values Instead of Indices</strong>
+                            </div>
+                            <p style="color: gray; margin-bottom: 12px;">Values store karne se aap original position lose kar dete ho. Width kaise nikaloge?</p>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div style="background: #0f172a; padding: 12px; border-radius: 8px;">
+                                    <p style="color: #ef4444; margin-bottom: 8px; font-size: 0.85rem;">❌ WRONG</p>
+                                    <code style="color: #f87171; font-family: Consolas; font-size: 0.85rem;">stack.append(arr[i])</code>
+                                </div>
+                                <div style="background: #0f172a; padding: 12px; border-radius: 8px;">
+                                    <p style="color: #10b981; margin-bottom: 8px; font-size: 0.85rem;">✅ RIGHT</p>
+                                    <code style="color: #34d399; font-family: Consolas; font-size: 0.85rem;">stack.append(i)</code>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Mistake 2 -->
+                        <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 12px; padding: 20px;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                <span style="background: #f59e0b; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">2</span>
+                                <strong style="color: #fbbf24; font-size: 1.1rem;">Infinite Loop / TLE</strong>
+                            </div>
+                            <p style="color: gray; margin-bottom: 12px;">While loop condition galat likhne se stack kabhi empty nahi hota ya infinite loop chalta hai.</p>
+                            <div style="background: #0f172a; padding: 12px; border-radius: 8px;">
+                                <code style="color: #f59e0b; font-family: Consolas; font-size: 0.85rem;">
+                                    # Always check stack is not empty FIRST<br>
+                                    while stack and arr[stack[-1]] < arr[i]:<br>
+                                    &nbsp;&nbsp;stack.pop()
+                                </code>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>`
+        }
+    ]
+};
+
+
 // ========== data/index.js ==========
 // data/index.js
 // Main entry point that loads all topic files and combines them into prepData
@@ -7065,6 +8188,7 @@ const prepData = {
     arrays_concepts: topic_arrays_concepts,
     graphs_concepts: topic_graphs_concepts,
     trees_concepts: topic_trees_concepts,
-    complexity_concepts: topic_complexity_concepts
+    complexity_concepts: topic_complexity_concepts,
+    stack_concepts: topic_stack_concepts
 };
 

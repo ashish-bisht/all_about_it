@@ -1,5 +1,5 @@
 // Service Worker for Principal Prep PWA
-const CACHE_NAME = 'principal-prep-v1';
+const CACHE_NAME = 'principal-prep-v2-latest';
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',
@@ -39,30 +39,31 @@ self.addEventListener('activate', event => {
     self.clients.claim();
 });
 
-// Fetch event - serve from cache, fallback to network
+// Fetch event - Network First (Freshness over Speed)
 self.addEventListener('fetch', event => {
     event.respondWith(
-        caches.match(event.request)
-            .then(response => {
-                if (response) {
-                    return response;
-                }
-                return fetch(event.request)
-                    .then(networkResponse => {
-                        // Cache successful fetches
-                        if (networkResponse && networkResponse.status === 200) {
-                            const responseClone = networkResponse.clone();
-                            caches.open(CACHE_NAME)
-                                .then(cache => cache.put(event.request, responseClone));
-                        }
-                        return networkResponse;
+        fetch(event.request)
+            .then(networkResponse => {
+                // If network works, update cache and return fresh content
+                if (networkResponse && networkResponse.status === 200 && event.request.method === 'GET') {
+                    const responseClone = networkResponse.clone();
+                    caches.open(CACHE_NAME).then(cache => {
+                        cache.put(event.request, responseClone);
                     });
+                }
+                return networkResponse;
             })
             .catch(() => {
-                // Offline fallback
-                if (event.request.mode === 'navigate') {
-                    return caches.match('/index.html');
-                }
+                // Network failed (Offline), try cache
+                return caches.match(event.request)
+                    .then(cachedResponse => {
+                        if (cachedResponse) return cachedResponse;
+
+                        // Fallback for navigation
+                        if (event.request.mode === 'navigate') {
+                            return caches.match('/index.html');
+                        }
+                    });
             })
     );
 });

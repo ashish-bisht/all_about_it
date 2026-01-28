@@ -937,28 +937,22 @@ def course_schedule(num_courses, prerequisites):
             learn: {
                 metrics: { time: "O(V+E)", space: "O(V)" },
                 timeExplainer: `
-                    <h4 style="color:#c026d3;">⏱️ Time Complexity: O(V+E)</h4>
+                    <h4 style="color:#c026d3;">⏱️ Time Complexity: O(V + E)</h4>
                     <div style="background:rgba(192, 38, 211, 0.1); padding:20px; border-radius:12px; margin:15px 0;">
-                        <table style="width:100%; margin-top:10px;">
-                            <tr style="border-bottom:1px solid rgba(255,255,255,0.1);">
-                                <td style="padding:10px;"><strong>Visit Nodes:</strong></td>
-                                <td style="padding:10px;">Each node visited exactly once → O(V)</td>
-                            </tr>
-                            <tr>
-                                <td style="padding:10px;"><strong>Process Edges:</strong></td>
-                                <td style="padding:10px;">Each edge traversed once → O(E)</td>
-                            </tr>
-                        </table>
+                        <ul style="line-height:2.0; color:#e2e8f0; margin-left: 10px;">
+                            <li><strong style="color:#f472b6;">Visit Nodes:</strong> Each node processed exactly once (Hash Map check). <code>O(V)</code></li>
+                            <li><strong style="color:#f472b6;">Traverse Edges:</strong> We iterate over neighbors for every node. <code>O(E)</code></li>
+                        </ul>
+                        <div style="margin-top:10px; font-weight:bold; text-align:center; color:#e879f9;">Total: O(V + E)</div>
                     </div>
                 `,
                 spaceExplainer: `
                     <h4 style="color:#c026d3;">📦 Space Complexity: O(V)</h4>
                     <div style="background:rgba(192, 38, 211, 0.1); padding:20px; border-radius:12px; margin:15px 0;">
-                        <table style="width:100%;">
-                            <tr><td style="padding:8px;"><strong>HashMap:</strong></td><td>O(V) - maps old nodes to new</td></tr>
-                            <tr><td style="padding:8px;"><strong>Recursion Stack:</strong></td><td>O(V) - maximum depth</td></tr>
-                            <tr><td style="padding:8px;"><strong>New Graph:</strong></td><td>O(V+E) - the clone itself (not counted)</td></tr>
-                        </table>
+                        <ul style="line-height:2.0; color:#e2e8f0; margin-left: 10px;">
+                            <li><strong style="color:#22d3ee;">Hash Map:</strong> Stores V nodes. <code>O(V)</code></li>
+                            <li><strong style="color:#22d3ee;">Recursion Stack:</strong> Worst case depth is V. <code>O(V)</code></li>
+                        </ul>
                     </div>
                 `,
                 visual: `
@@ -1029,43 +1023,72 @@ def course_schedule(num_courses, prerequisites):
                     </ul>
                 `,
                 trap: `
-                    <h4 style="color:#ef4444;">⚠️ Common Traps</h4>
+                    <h4 style="color:#ef4444;">⚠️ Common Mistakes & Why They're Wrong</h4>
                     <div style="display:grid; gap:15px; margin:15px 0;">
                         <div style="background:rgba(239, 68, 68, 0.1); padding:15px; border-radius:8px;">
-                            <strong style="color:#ef4444;">Trap 1: Infinite Recursion</strong><br>
-                            Must check map BEFORE creating new node. If you create first then check, you'll loop forever!
+                            <strong style="color:#ef4444;">1. Missing Base Case Check ❌</strong><br>
+                            <span style="color:#cbd5e1; font-size:0.9rem;"><code>if node in cloned: return cloned[node]</code></span><br>
+                            Without this, cycles (e.g., 1→2→1) cause infinite recursion!
                         </div>
                         <div style="background:rgba(239, 68, 68, 0.1); padding:15px; border-radius:8px;">
-                            <strong style="color:#ef4444;">Trap 2: Late Map Entry</strong><br>
-                            Must add to map BEFORE processing neighbors, not after!
+                            <strong style="color:#ef4444;">2. Late Map Entry ❌</strong><br>
+                            Store <code>cloned[node] = clone</code> <strong>BEFORE</strong> processing neighbors.<br>
+                            If you do it after, the neighbor's recursive call won't find the node in 'cloned', leading to loops.
                         </div>
-                        <div style="background:rgba(239, 68, 68, 0.1); padding:15px; border-radius:8px;">
-                            <strong style="color:#ef4444;">Trap 3: Empty Input</strong><br>
-                            <code>if not node: return None</code> - Handle null input!
+                        <div style="background:rgba(245, 158, 11, 0.1); padding:15px; border-radius:8px;">
+                            <strong style="color:#fbbf24;">3. Not Handling None Input ⚠️</strong><br>
+                            Graph can be empty! <code>if not node: return None</code>
+                        </div>
+                    </div>
+                `,
+                dryRun: `
+                    <h4 style="color:#22d3ee;">🔍 Dry Run: 1 -- 2</h4>
+                    <div style="background:#0f172a; padding:15px; border-radius:12px; font-family:'Consolas', monospace; font-size:0.9rem;">
+                        <div style="margin-bottom:10px; border-bottom:1px solid #334155; padding-bottom:5px;">
+                            <span style="color:#94a3b8;">Start: cloneGraph(1)</span>
+                        </div>
+                        
+                        <div style="color:#e2e8f0; margin-left:10px;">
+                            • <strong>DFS(1)</strong>: Not in map.
+                            <br>&nbsp;&nbsp;→ Create Clone(1). Map = {1: 1'}
+                            <br>&nbsp;&nbsp;→ Process neighbor 2.
+                        </div>
+                        
+                        <div style="color:#e2e8f0; margin-left:25px; margin-top:5px; border-left:2px solid #334155; padding-left:10px;">
+                            • <strong>DFS(2)</strong>: Not in map.
+                            <br>→ Create Clone(2). Map = {1: 1', 2: 2'}
+                            <br>→ Process neighbor 1 (Cycle!).
+                            <br><span style="color:#10b981; background:rgba(16, 185, 129, 0.2); padding:2px 6px; border-radius:4px;">1 IS in Map! Return Clone(1)</span>
                         </div>
                     </div>
                 `,
                 codeTitle: "Python Solution (DFS + HashMap)",
-                code: `def cloneGraph(node):
+                code: `class Node:
+    def __init__(self, val=0, neighbors=None):
+        self.val = val
+        self.neighbors = neighbors if neighbors is not None else []
+
+def cloneGraph(node):
+    # EDGE CASE: Empty graph
     if not node:
         return None
     
-    # HashMap: original node -> cloned node
-    old_to_new = {}
+    # Hash map: original_node -> cloned_node
+    cloned = {}
     
-    def dfs(curr):
-        # Already cloned? Return existing clone
-        if curr in old_to_new:
-            return old_to_new[curr]
+    def dfs(node):
+        # BASE CASE: Node already cloned? Return it!
+        if node in cloned:
+            return cloned[node]
         
-        # Create clone
-        clone = Node(curr.val)
+        # STEP 1: Create clone
+        clone = Node(node.val)
         
-        # Register BEFORE recursing (critical for cycles!)
-        old_to_new[curr] = clone
+        # STEP 2: Store in map BEFORE neighbors (Critical!)
+        cloned[node] = clone
         
-        # Clone all neighbors
-        for neighbor in curr.neighbors:
+        # STEP 3: Clone neighbors recursively
+        for neighbor in node.neighbors:
             clone.neighbors.append(dfs(neighbor))
         
         return clone
@@ -1090,22 +1113,22 @@ def course_schedule(num_courses, prerequisites):
             learn: {
                 metrics: { time: "O(V+E)", space: "O(V)" },
                 timeExplainer: `
-                    <h4 style="color:#c026d3;">⏱️ Time Complexity: O(V+E)</h4>
+                    <h4 style="color:#c026d3;">⏱️ Time Complexity: O(V + E)</h4>
                     <div style="background:rgba(192, 38, 211, 0.1); padding:20px; border-radius:12px; margin:15px 0;">
-                        <ul style="line-height:2;">
-                            <li><strong>Visit each node once:</strong> O(V)</li>
-                            <li><strong>Check each edge once:</strong> O(E)</li>
+                        <ul style="line-height:2.0; color:#e2e8f0; margin-left:10px;">
+                            <li><strong style="color:#f472b6;">Outer Loop:</strong> Iterates V nodes to handle disconnected components. <code>O(V)</code></li>
+                            <li><strong style="color:#f472b6;">BFS Traversal:</strong> Visits every node once <code>O(V)</code> and checks all edges <code>O(E)</code>.</li>
                         </ul>
-                        <p style="margin-top:15px; color:#34d399;"><strong>Total: O(V + E)</strong></p>
+                        <div style="margin-top:10px; font-weight:bold; text-align:center; color:#e879f9;">Total: O(V + E)</div>
                     </div>
                 `,
                 spaceExplainer: `
                     <h4 style="color:#c026d3;">📦 Space Complexity: O(V)</h4>
                     <div style="background:rgba(192, 38, 211, 0.1); padding:20px; border-radius:12px; margin:15px 0;">
-                        <table style="width:100%;">
-                            <tr><td style="padding:8px;"><strong>Color Array/Map:</strong></td><td>O(V)</td></tr>
-                            <tr><td style="padding:8px;"><strong>Queue/Recursion:</strong></td><td>O(V)</td></tr>
-                        </table>
+                        <ul style="line-height:2.0; color:#e2e8f0; margin-left:10px;">
+                            <li><strong style="color:#22d3ee;">Color Array:</strong> Stores state for V nodes. <code>O(V)</code></li>
+                            <li><strong style="color:#22d3ee;">Queue:</strong> Worst case holds all nodes at one level. <code>O(V)</code></li>
+                        </ul>
                     </div>
                 `,
                 visual: `
@@ -1162,41 +1185,76 @@ def course_schedule(num_courses, prerequisites):
                     </ul>
                 `,
                 trap: `
-                    <h4 style="color:#ef4444;">⚠️ Common Traps</h4>
+                    <h4 style="color:#ef4444;">⚠️ Common Mistakes & Why They're Wrong</h4>
                     <div style="display:grid; gap:15px; margin:15px 0;">
                         <div style="background:rgba(239, 68, 68, 0.1); padding:15px; border-radius:8px;">
-                            <strong style="color:#ef4444;">Trap: Disconnected Components</strong><br>
-                            Must check ALL nodes, not just starting from 0. Some nodes might not be reachable!
+                            <strong style="color:#ef4444;">1. Only starting BFS from Node 0 ❌</strong><br>
+                            Graphs can be disconnected! Must iterate <code>range(n)</code> to cover all components.
+                        </div>
+                        <div style="background:rgba(239, 68, 68, 0.1); padding:15px; border-radius:8px;">
+                            <strong style="color:#ef4444;">2. Using Visited Set (Boolean) ❌</strong><br>
+                            Need 3 states: <code>-1</code> (Unvisited), <code>0</code> (Color A), <code>1</code> (Color B). Boolean isn't enough to check conflicts.
+                        </div>
+                        <div style="background:rgba(245, 158, 11, 0.1); padding:15px; border-radius:8px;">
+                            <strong style="color:#fbbf24;">3. Incorrect Logic for "Same Color" ⚠️</strong><br>
+                            If neighbor has SAME color as current node → <strong>Odd Cycle Detected</strong> → Return False immediately.
                         </div>
                     </div>
                 `,
-                codeTitle: "Python Solution (BFS 2-Coloring)",
-                code: `def isBipartite(graph):
-    from collections import deque
+                dryRun: `
+                    <h4 style="color:#22d3ee;">🔍 Dry Run: Triangle 0-1-2 (Not Bipartite)</h4>
+                    <div style="background:#0f172a; padding:15px; border-radius:12px; font-family:'Consolas', monospace; font-size:0.9rem;">
+                        <div style="margin-bottom:10px; border-bottom:1px solid #334155; padding-bottom:5px;">
+                            <span style="color:#94a3b8;">Start: 0-1-2 connected</span>
+                        </div>
+                        
+                        <div style="color:#e2e8f0; margin-left:10px;">
+                            • <strong>Process 0</strong>: Color=0. Q=[0]
+                            <br>&nbsp;&nbsp;→ Neighbors 1, 2 uncolored.
+                            <br>&nbsp;&nbsp;→ Color[1]=1, Color[2]=1. Q=[1, 2]
+                        </div>
+                        
+                        <div style="color:#e2e8f0; margin-left:25px; margin-top:5px; border-left:2px solid #334155; padding-left:10px;">
+                            • <strong>Process 1</strong> (Color 1):
+                            <br>→ Neighbor 0 (Color 0) ✅ OK (Opposite)
+                            <br>→ Neighbor 2 (Color 1) ❌ <span style="color:#ef4444; font-weight:bold;">CONFLICT! Same Color!</span>
+                        </div>
+                        
+                        <div style="margin-top:10px; color:#ef4444; font-weight:bold;">
+                            Result: False (Odd Cycle Detected)
+                        </div>
+                    </div>
+                `,
+                codeTitle: "Python Solution (BFS Coloring)",
+                code: `from collections import deque
+
+def isBipartite(graph):
+    n = len(graph)
+    # -1: Uncolored, 0: Red, 1: Blue
+    color = [-1] * n
     
-    color = {}  # node -> 0 or 1
-    
-    # Check all components (might be disconnected)
-    for start in range(len(graph)):
-        if start in color:
-            continue  # Already colored
-        
-        # BFS from this node
-        color[start] = 0
+    # Check all components (Handle Disconnected Graphs)
+    for start in range(n):
+        if color[start] != -1:
+            continue
+            
+        # Begin BFS
         queue = deque([start])
+        color[start] = 0  # Assign first color
         
         while queue:
             node = queue.popleft()
             
             for neighbor in graph[node]:
-                if neighbor not in color:
-                    # Assign opposite color
+                # Case 1: Uncolored -> Assign opposite color
+                if color[neighbor] == -1:
                     color[neighbor] = 1 - color[node]
                     queue.append(neighbor)
+                
+                # Case 2: Already colored with SAME color -> CONFLICT!
                 elif color[neighbor] == color[node]:
-                    # Same color conflict!
                     return False
-    
+                    
     return True`
             }
         },
@@ -1217,69 +1275,83 @@ def course_schedule(num_courses, prerequisites):
             learn: {
                 metrics: { time: "O(V+E)", space: "O(V)" },
                 timeExplainer: `
-                    <h4 style="color:#c026d3;">⏱️ Time Complexity: O(V+E)</h4>
+                    <h4 style="color:#c026d3;">⏱️ Time Complexity: O(V + E)</h4>
                     <div style="background:rgba(192, 38, 211, 0.1); padding:20px; border-radius:12px; margin:15px 0;">
-                        <ul style="line-height:2;">
-                            <li><strong>Visit each node once:</strong> O(V)</li>
-                            <li><strong>Check each edge once:</strong> O(E)</li>
+                        <p><strong>Step-by-Step Breakdown:</strong></p>
+                        <ul style="line-height:2.0; color:#e2e8f0; margin-left: 10px;">
+                            <li><strong style="color:#f472b6;">Iterate Graph:</strong> We visit every node once using the loop. <code>O(V)</code></li>
+                            <li><strong style="color:#f472b6;">DFS Traversal:</strong> Inside DFS, each node is added to <code>visited</code> once. We never process a visited node again.</li>
+                            <li><strong style="color:#f472b6;">Edge Traversal:</strong> For every node, we iterate over its adjacency list. Across the entire process, we traverse every edge exactly once. <code>O(E)</code></li>
                         </ul>
+                        <p style="margin-top:10px; background:rgba(0,0,0,0.3); padding:10px; border-radius:8px; text-align:center; border: 1px solid rgba(192, 38, 211, 0.3);">
+                            <strong>Total: O(V + E)</strong> where V is vertices, E is edges.
+                        </p>
                     </div>
                 `,
                 spaceExplainer: `
                     <h4 style="color:#c026d3;">📦 Space Complexity: O(V)</h4>
                     <div style="background:rgba(192, 38, 211, 0.1); padding:20px; border-radius:12px; margin:15px 0;">
-                        <table style="width:100%;">
-                            <tr><td style="padding:8px;"><strong>Visited Set:</strong></td><td>O(V)</td></tr>
-                            <tr><td style="padding:8px;"><strong>Recursion Stack Set:</strong></td><td>O(V)</td></tr>
-                            <tr><td style="padding:8px;"><strong>Call Stack:</strong></td><td>O(V)</td></tr>
-                        </table>
+                        <p><strong>Memory Usage:</strong></p>
+                        <ul style="line-height:2.0; color:#e2e8f0; margin-left: 10px;">
+                            <li><strong style="color:#22d3ee;">Visited Set:</strong> Stores up to V nodes. <code>O(V)</code></li>
+                            <li><strong style="color:#22d3ee;">Recursive Stack Set:</strong> Stores current path nodes. Worst case (line graph) O(V).</li>
+                            <li><strong style="color:#22d3ee;">System Call Stack:</strong> Recursion depth can go up to V. <code>O(V)</code></li>
+                        </ul>
+                        <div style="margin-top:15px; font-size:0.9em; color:#cbd5e1; font-style:italic;">
+                            *Adjacency List takes O(V+E) if constructed, but usually given or considered input space. Aux space is O(V).
+                        </div>
                     </div>
                 `,
                 visual: `
-                    <h4 style="color:#c026d3;">🔄 DFS States: Visited vs Recursion Stack</h4>
-                    <div style="display:flex; gap:20px; margin:20px 0; max-width:600px;">
-                        
-                        <!-- Graph Visual -->
-                        <div style="flex:1; display:flex; flex-direction:column; align-items:center;">
-                            <div style="margin-bottom:10px; color:#cbd5e1; font-size:12px;">Graph State</div>
-                            <div style="position:relative; width:100px; height:100px;">
-                                <!-- Node 0 -->
-                                <div style="position:absolute; top:0; left:35px; width:30px; height:30px; background:#fbbf24; color:black; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold;">0</div>
-                                
-                                <!-- Node 1 -->
-                                <div style="position:absolute; top:40px; left:0; width:30px; height:30px; background:#fbbf24; color:black; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold;">1</div>
-                                
-                                <!-- Node 2 -->
-                                <div style="position:absolute; top:40px; right:0; width:30px; height:30px; background:#ef4444; color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; border:2px solid #fbbf24;">2</div>
-
-                                <!-- Node 1 -> 2 Arrow -->
-                                <div style="position:absolute; top:60px; left:30px; width:40px; height:2px; background:#64748b;"></div>
+                    <h4 style="color:#c026d3;">🔄 Visualizing the Trap</h4>
+                    <div style="display:flex; flex-direction:column; gap:20px; max-width:600px; margin:20px 0;">
+                        <div style="background:#1e293b; padding:20px; border-radius:12px; border: 1px solid rgba(255,255,255,0.1);">
+                            <div style="display:flex; justify-content:space-around; align-items:center;">
+                                <div style="text-align:center;">
+                                    <div style="width:50px; height:50px; background:#f59e0b; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; color:black; margin:0 auto; box-shadow:0 0 15px rgba(245, 158, 11, 0.4);">A</div>
+                                    <div style="margin-top:8px; font-size:12px; color:#f59e0b;">Current</div>
+                                </div>
+                                <div style="font-size:24px; color:#94a3b8;">➡</div>
+                                <div style="text-align:center;">
+                                    <div style="width:50px; height:50px; background:#ef4444; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; color:white; margin:0 auto; border:2px dashed #fff;">B</div>
+                                    <div style="margin-top:8px; font-size:12px; color:#ef4444;">Neighbor</div>
+                                </div>
+                            </div>
+                            <div style="margin-top:20px; background:rgba(0,0,0,0.3); padding:15px; border-radius:8px;">
+                                <div style="display:flex; justify-content:space-between; margin-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:8px;">
+                                    <span style="color:#94a3b8;">Case 1: B not visited</span>
+                                    <strong style="color:#10b981;">Safe to Explore 🟢</strong>
+                                </div>
+                                <div style="display:flex; justify-content:space-between; margin-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:8px;">
+                                    <span style="color:#94a3b8;">Case 2: B in Recursion Stack</span>
+                                    <strong style="color:#ef4444;">CYCLE DETECTED! 🔴</strong>
+                                </div>
+                                <div style="display:flex; justify-content:space-between;">
+                                    <span style="color:#94a3b8;">Case 3: B visited, NOT in Stack</span>
+                                    <strong style="color:#3b82f6;">Safe (Cross Edge) 🔵</strong>
+                                </div>
                             </div>
                         </div>
-
-                        <!-- Stack Visual -->
-                        <div style="flex:1; background:#1e293b; padding:15px; border-radius:8px;">
-                            <div style="margin-bottom:10px; color:#cbd5e1; font-size:12px; text-align:center;">Recursion Stack (Path)</div>
-                            <div style="display:flex; flex-direction:column; gap:5px; align-items:center;">
-                                
-                                <div style="width:80%; padding:8px; background:#fbbf24; color:black; border-radius:4px; text-align:center; font-size:12px;">
-                                    Stack: [0, 1]
-                                </div>
-                                
-                                <div style="color:#cbd5e1;">↓</div>
-                                
-                                <div style="width:80%; padding:8px; background:#ef4444; color:white; border-radius:4px; text-align:center; font-size:12px; border:1px solid #fbbf24;">
-                                    Try Visit 2
-                                </div>
-
-                                <div style="margin-top:10px; font-size:11px; color:#f87171; text-align:center;">
-                                    ⚠️ 2 is already in Stack (Ancestry)! 
-                                    <br><strong>CYCLE DETECTED</strong>
-                                </div>
-
-                            </div>
+                    </div>
+                `,
+                trap: `
+                    <h4 style="color:#ef4444;">⚠️ The "Visited" Trap</h4>
+                    <p style="color:#cbd5e1; margin-bottom:15px;">Why isn't a single <code>visited</code> set enough? Why do we need <code>recursive_stack</code>?</p>
+                    
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                        <div style="background:rgba(239, 68, 68, 0.1); padding:15px; border-radius:8px; border-left:3px solid #ef4444;">
+                            <strong style="color:#f87171;">Scenario:</strong>
+                            <br>Path A -> B -> C
+                            <br>Path A -> D -> C
                         </div>
-
+                        <div style="background:rgba(59, 130, 246, 0.1); padding:15px; border-radius:8px; border-left:3px solid #3b82f6;">
+                            <strong style="color:#60a5fa;">Explanation:</strong>
+                            <br>When DFS reaches C via D, C is "visited" (from path A->B->C).
+                            <br>But this is NOT a cycle! It's just a merge.
+                        </div>
+                    </div>
+                    <div style="margin-top:15px; background:rgba(255,255,255,0.05); padding:12px; border-radius:8px;">
+                        <span style="color:#fbbf24;">✅ Fix:</span> A cycle exists ONLY if we see a node that is part of the <strong>CURRENT active path</strong> (recursion stack).
                     </div>
                 `,
                 crux: `
@@ -1295,69 +1367,84 @@ def course_schedule(num_courses, prerequisites):
                             <strong>Cycle:</strong> Node is in RecStack → We're revisiting it in same path → Back edge → Cycle!
                         </div>
                     </div>
-                    <div style="background:#0f172a; padding:15px; border-radius:8px; margin:15px 0; font-family:Consolas;">
-                        <code style="color:#7dd3fc;">
-                            # Enter: Add to both sets<br>
-                            visited.add(node)<br>
-                            recStack.add(node)<br><br>
-                            # Check neighbor<br>
-                            if neighbor in recStack: return True  # <span style="color:#ef4444;">CYCLE!</span><br>
-                            if neighbor not in visited: dfs(neighbor)<br><br>
-                            # Exit: Remove from recStack only<br>
-                            recStack.remove(node)
-                        </code>
-                    </div>
+                
                     <h5 style="color:#a78bfa; margin-top:20px;">Same Pattern Problems:</h5>
                     <ul style="line-height:2;">
-                        <li>📚 <strong>Course Schedule</strong> - Uses same DFS cycle detection</li>
-                        <li>🔗 <strong>Find Eventual Safe States</strong> - Nodes not in any cycle</li>
-                        <li>⭕ <strong>Detect Cycle in Undirected</strong> - Simpler: just track parent</li>
+                        <li>📚 <strong>Course Schedule</strong> - Uses same DFS cycle detection to find circular dependencies.</li>
+                        <li>🔗 <strong>Find Eventual Safe States</strong> - Nodes that are not part of any cycle (and don't lead to one).</li>
+                        <li>⭕ <strong>Detect Cycle in Undirected Graph</strong> - Simpler version: just track 'parent' to avoid trivial immediate backward path.</li>
+                        <li>👽 <strong>Alien Dictionary</strong> - Topological Sort (which detects cycles as "impossible" ordering).</li>
                     </ul>
                 `,
-                trap: `
-                    <h4 style="color:#ef4444;">⚠️ Common Traps</h4>
-                    <div style="display:grid; gap:15px; margin:15px 0;">
-                        <div style="background:rgba(239, 68, 68, 0.1); padding:15px; border-radius:8px;">
-                            <strong style="color:#ef4444;">Trap 1: Using Only Visited</strong><br>
-                            Cross edges (visiting node from different path) will give false positives!
+                dryRun: `
+                    <h4 style="color:#22d3ee;">🔍 Dry Run: 0->1, 1->2, 2->0</h4>
+                    <div style="background:#0f172a; padding:15px; border-radius:12px; font-family:'Consolas', monospace; font-size:0.9rem;">
+                        <div style="margin-bottom:10px; border-bottom:1px solid #334155; padding-bottom:5px;">
+                            <span style="color:#94a3b8;">Start DFS(0)</span>
                         </div>
-                        <div style="background:rgba(239, 68, 68, 0.1); padding:15px; border-radius:8px;">
-                            <strong style="color:#ef4444;">Trap 2: Forgetting to Remove from RecStack</strong><br>
-                            Must remove from recStack when backtracking!
+                        
+                        <div style="color:#e2e8f0; margin-left:10px;">
+                            • <strong>DFS(0)</strong>: Visited={0}, Stack={0}
+                            <br>&nbsp;&nbsp;→ Neighbor 1? Not visited.
                         </div>
-                        <div style="background:rgba(239, 68, 68, 0.1); padding:15px; border-radius:8px;">
-                            <strong style="color:#ef4444;">Trap 3: Disconnected Graph</strong><br>
-                            Must try DFS from ALL unvisited nodes, not just node 0.
+                        
+                        <div style="color:#e2e8f0; margin-left:25px; margin-top:5px; border-left:2px solid #334155; padding-left:10px;">
+                            • <strong>DFS(1)</strong>: Visited={0,1}, Stack={0,1}
+                            <br>→ Neighbor 2? Not visited.
+                        </div>
+                        
+                        <div style="color:#e2e8f0; margin-left:40px; margin-top:5px; border-left:2px solid #334155; padding-left:10px;">
+                            • <strong>DFS(2)</strong>: Visited={0,1,2}, Stack={0,1,2}
+                            <br>→ Neighbor 0?
+                            <br><span style="color:#ef4444; background:rgba(239, 68, 68, 0.2); padding:2px 6px; border-radius:4px;">⚠️ 0 is in Stack! Return True</span>
+                        </div>
+                        
+                        <div style="color:#10b981; margin-top:10px; font-weight:bold;">
+                            Result: True (Cycle Detected)
                         </div>
                     </div>
                 `,
-                codeTitle: "Python Solution (DFS with 2 Sets)",
-                code: `def isCyclic(V, adj):
+                codeTitle: "Python Solution (DFS + Recursive Stack)",
+                code: `from collections import defaultdict
+
+def detect_cycle(n, edges):
+    # 1. Build Adjacency List
+    graph = defaultdict(list)
+    for u, v in edges:
+        graph[u].append(v)
+    
     visited = set()
-    recStack = set()  # Current DFS path
+    recursive_stack = set()
     
     def dfs(node):
+        # Mark current node as visited and add to recursion stack
         visited.add(node)
-        recStack.add(node)  # Enter current path
+        recursive_stack.add(node)
         
-        for neighbor in adj[node]:
-            if neighbor not in visited:
-                if dfs(neighbor):  # Cycle found deeper
+        for neighbour in graph[node]:
+            # Case 1: If neighbour not visited, recurse
+            if neighbour not in visited:
+                if dfs(neighbour):
                     return True
-            elif neighbor in recStack:
-                # Back edge! Cycle detected!
+            # Case 2: If neighbour in recursion stack -> CYCLE!
+            elif neighbour in recursive_stack:
                 return True
         
-        recStack.remove(node)  # Exit current path
+        # Backtrack: Remove from recursion stack before returning
+        recursive_stack.remove(node)
         return False
     
-    # Check all components
-    for i in range(V):
-        if i not in visited:
-            if dfs(i):
+    # 2. Iterate ALL nodes (Handle disconnected components)
+    for node in range(n):
+        if node not in visited:
+            if dfs(node):
                 return True
-    
-    return False`
+                
+    return False
+
+# Example Usage
+# n = 3, edges = [[0,1], [1,2], [2,0]] -> True
+# n = 4, edges = [[0,1], [0,2], [1,3], [2,3]] -> False`
             }
         }
     ]

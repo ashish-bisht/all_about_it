@@ -106,10 +106,12 @@
         }
 
         .pattern-card {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
             padding: 25px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
         }
 
         .pattern-card h3 {
@@ -173,10 +175,12 @@
         .complexity-table {
             width: 100%;
             border-collapse: collapse;
-            background: var(--glass-bg);
-            border-radius: 16px;
+            background: var(--bg-card);
+            border-radius: 20px;
             overflow: hidden;
             margin-bottom: 50px;
+            border: 1px solid var(--border-light);
+            backdrop-filter: blur(20px);
         }
 
         .complexity-table th,
@@ -221,9 +225,9 @@
         }
 
         .tip-card {
-            background: linear-gradient(135deg, rgba(129, 140, 248, 0.1), rgba(52, 211, 153, 0.1));
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-light);
+            border-radius: 14px;
             padding: 20px;
         }
 

@@ -108,16 +108,18 @@
         }
 
         .card-front {
-            background: linear-gradient(135deg, var(--bg-card) 0%, rgba(30, 41, 59, 0.9) 100%);
+            background: linear-gradient(135deg, var(--bg-card) 0%, rgba(20, 20, 20, 0.9) 100%);
             justify-content: center;
             align-items: center;
             text-align: center;
+            border: 1px solid var(--border-light);
         }
 
         .card-back {
-            background: linear-gradient(135deg, #1a1f3a 0%, var(--bg-card) 100%);
+            background: linear-gradient(135deg, #000000 0%, var(--bg-card) 100%);
             transform: rotateY(180deg);
             overflow-y: auto;
+            border: 1px solid var(--border-light);
         }
 
         /* Front Content */
@@ -229,7 +231,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            background: rgba(129, 140, 248, 0.1);
+            background: rgba(94, 92, 230, 0.1);
             padding: 6px 12px;
             border-radius: 8px;
             font-size: 0.85rem;
@@ -240,8 +242,18 @@
             color: var(--primary);
         }
 
+        .visual-section {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            overflow-x: auto;
+        }
+
         .crux-section {
-            background: rgba(129, 140, 248, 0.08);
+            background: rgba(129, 140, 248, 0.05);
+            /* Very subtle primary tint */
             border-left: 4px solid var(--primary);
             padding: 20px;
             border-radius: 0 12px 12px 0;
@@ -524,6 +536,7 @@
                             </div>
                         </div>
                     </div>
+                    <div id="visualContainer" class="visual-section" style="display: none;"></div>
                     <div class="crux-section">
                         <div class="crux-label">💡 The Crux</div>
                         <div class="crux-text" id="cruxText">Loading...</div>
@@ -574,7 +587,7 @@
         </div>
     </div>
 
-    <script src="data.js"></script>
+    <script src="data.js?v=2"></script>
     <script>
         // State
         let allCards = [];
@@ -685,14 +698,23 @@
             document.getElementById('timeComplexity').textContent = metrics.time || 'N/A';
             document.getElementById('spaceComplexity').textContent = metrics.space || 'N/A';
 
+            // Visual
+            const visual = learn.visual || '';
+            const visualContainer = document.getElementById('visualContainer');
+            if (visual) {
+                visualContainer.innerHTML = visual;
+                visualContainer.style.display = 'block';
+            } else {
+                visualContainer.style.display = 'none';
+            }
+
             // Crux - try multiple sources
             let crux = learn.crux || '';
             if (!crux && card.quiz) {
                 crux = card.quiz.explanation || '';
             }
-            // Strip HTML for cleaner display
-            crux = crux.replace(/<[^>]*>/g, ' ').substring(0, 2000);
-            document.getElementById('cruxText').textContent = crux || 'No explanation available';
+            // Do NOT strip HTML - Render Rich Content
+            document.getElementById('cruxText').innerHTML = crux || '<p class="text-muted">No explanation available</p>';
 
             // Code
             let code = learn.code || '';
