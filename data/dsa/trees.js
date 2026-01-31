@@ -180,11 +180,13 @@ def burnTree(root, start):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>DFS bubbling kyun?</strong> Bottom-up check karna hai — kahan mil rahe hain?",
-                    "⚡ Base Case: <code>if root in [p, q, null]: return root</code> — found one target or hit end",
-                    "🔄 Recurse: <code>left = dfs(L), right = dfs(R)</code>",
-                    "✅ <code>if left and right: return root</code> → Current node is split point (LCA)",
-                    "💡 <code>else: return left or right</code> → Pass found target up"
+                    "if not root or root == p or root == q: # 🎯 Base Case: Found target or None",
+                    "    return root",
+                    "left = dfs(root.left, p, q)        # ⚡ Search Left Subtree",
+                    "right = dfs(root.right, p, q)      # ⚡ Search Right Subtree",
+                    "if left and right:                 # ✅ Both sides returned non-null?",
+                    "    return root                    #    -> Current 'root' is the Split Point (LCA)",
+                    "return left if left else right     # 🔄 Propagate found node upwards"
                 ],
                 metrics: { time: "O(N)", space: "O(H)" },
                 timeExplainer: "<strong>DFS Traversal:</strong><br>• Visit every node once<br>• Recurse Left and Right<br><br><strong>Total:</strong> <code>O(N)</code>",
@@ -217,11 +219,19 @@ return left if left else right`
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Preorder kyun?</strong> Root pehle process hota hai — easy to rebuild",
-                    "⚡ Serialize: <code>vals.append(str(val))</code> else <code>append('N')</code> for null structure",
-                    "🔄 Deserialize: Use <code>iterator</code> (next()) — global index management se better",
-                    "✅ <code>val = next(); if 'N' return None</code> else create Node & recurse",
-                    "💡 Inorder kaam nahi karega kyunki root ambiguous hota hai string mein"
+                    "vals = []",
+                    "def encode(node):                  # 🎯 Preorder Traversal (Root->Left->Right)",
+                    "    if not node: vals.append('#')  # ⚡ Mark nulls to keep structure",
+                    "    else:",
+                    "        vals.append(str(node.val))",
+                    "        encode(node.left); encode(node.right)",
+                    "def decode(iter_vals):             # 🔄 Reconstruct matches Preorder",
+                    "    val = next(iter_vals)",
+                    "    if val == '#': return None     # ✅ Null marker -> Stop branch",
+                    "    node = TreeNode(int(val))",
+                    "    node.left = decode(iter_vals)  # 💡 Next val goes to left child",
+                    "    node.right = decode(iter_vals)",
+                    "    return node"
                 ],
                 metrics: { time: "O(N)", space: "O(H)" },
                 timeExplainer: "<strong>Preorder Traversal:</strong><br>• Visit all nodes to serialize: <code>O(N)</code><br>• Deserialize visits all nodes: <code>O(N)</code><br><br><strong>Total:</strong> <code>O(N)</code>",
@@ -269,11 +279,13 @@ def deserialize(self, data):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Split vs Flow kyun?</strong> Path U-turn le sakta hai (split) ya upar ja sakta hai (flow)",
-                    "⚡ Split (Local): <code>root + left + right</code> → update global max",
-                    "🔄 Flow (Return): <code>root + max(left, right)</code> → parent ko extend karne ke liye",
-                    "✅ Clamp negatives: <code>max(dfs(), 0)</code> — negative path mat lo",
-                    "💡 Global variable <code>self.max_sum</code> track karta hai best U-turn path"
+                    "self.global_max = float('-inf')",
+                    "def dfs(node):",
+                    "    if not node: return 0",
+                    "    L = max(dfs(node.left), 0)     # ⚡ Clamp negatives to 0 (Don't extend bad path)",
+                    "    R = max(dfs(node.right), 0)",
+                    "    self.global_max = max(self.global_max, node.val + L + R) # ✅ Split point potential",
+                    "    return node.val + max(L, R)    # 🔄 Return max SINGLE branch to parent"
                 ],
                 metrics: { time: "O(N)", space: "O(H)" },
                 timeExplainer: "<strong>DFS Postorder:</strong><br>• Compute max path for each node<br>• Visit every node exactly once<br><br><strong>Total:</strong> <code>O(N)</code>",
@@ -311,11 +323,18 @@ def maxPathSum(self, root):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Pre + In logic?</strong> Pre[0] is Root. Inorder mein Root split karta hai L/R ko",
-                    "⚡ Hashmap: <code>in_map = {val: idx}</code> for O(1) loopups of split index",
-                    "🔄 <code>mid = in_map[root_val]</code>; Recurse <code>build(is, mid-1)</code> then <code>build(mid+1, ie)</code>",
-                    "✅ Preorder iterator global rakho — apne aap next node dega",
-                    "💡 Important: Left subtree pehle build karo (Preorder rule)"
+                    "in_map = {val: idx for idx, val in enumerate(inorder)} # 🎯 O(1) lookup for root in inorder",
+                    "pre_idx = 0                                            # ⚡ Global index for preorder (current root)",
+                    "def build(in_start, in_end):",
+                    "    nonlocal pre_idx",
+                    "    if in_start > in_end: return None                 # ✅ Base Case: No elements left",
+                    "    root_val = preorder[pre_idx]",
+                    "    root = TreeNode(root_val)",
+                    "    pre_idx += 1",
+                    "    mid = in_map[root_val]                             # 🔄 Find root in inorder to split",
+                    "    root.left = build(in_start, mid - 1)               # 💡 Build left subtree",
+                    "    root.right = build(mid + 1, in_end)              # 💡 Build right subtree",
+                    "    return root"
                 ],
                 metrics: { time: "O(N)", space: "O(N)" },
                 timeExplainer: "<strong>Time Breakdown:</strong><br>• HashMap construction: <code>O(N)</code><br>• Recursive Tree Building: <code>O(N)</code><br><br><strong>Total:</strong> <code>O(N)</code>",
@@ -356,11 +375,16 @@ return build(0, len(inorder) - 1)`
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Coordinates kyun?</strong> (row, col) chahiye grouping ke liye",
-                    "⚡ BFS: Store <code>(node, row, col)</code> tuple in queue",
-                    "🔄 Map: <code>cols[c].append((r, val))</code> — col key hai, (row, val) value",
-                    "✅ Sort: Pehle Column, phir Row, phir Value (overlapping case)",
-                    "💡 BFS levels automatically row sort karte hain, bas value sort chahiye"
+                    "q = deque([root]); res = []",
+                    "while q:",
+                    "    level = []",
+                    "    for _ in range(len(q)):        # 🎯 Freeze size logic for Level Separation",
+                    "        node = q.popleft()",
+                    "        if not node: continue",
+                    "        level.append(node.val)",
+                    "        q.append(node.left)        # ⚡ Queue children for NEXT level",
+                    "        q.append(node.right)",
+                    "    if level: res.append(level)    # ✅ Add level if not empty (handles null children)"
                 ],
                 metrics: { time: "O(N log N)", space: "O(N)" },
                 timeExplainer: "<strong>BFS + Sorting:</strong><br>• BFS Traversal: <code>O(N)</code><br>• Sorting nodes in same column: <code>O(N log N)</code><br><br><strong>Total:</strong> <code>O(N log N)</code>",
@@ -404,11 +428,11 @@ return res`
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>BST Property use kyun?</strong> O(H) vs O(N) — data sorted hai!",
-                    "⚡ Logic: Agar dono P, Q < Root → Go Left. Agar dono > Root → Go Right",
-                    "🔄 Split Point: Jab ek chhota aur ek bada ho → Wohi LCA hai!",
-                    "✅ Iterative: Space O(1) ho jaata hai recursion stack ke bina",
-                    "💡 Binary Search jaisa: discard half tree every step"
+                    "def maxDepth(node):",
+                    "    if not node: return 0              # 🎯 Base Case: Empty tree has depth 0",
+                    "    left_depth = maxDepth(node.left)   # ⚡ Recurse Left",
+                    "    right_depth = maxDepth(node.right) # ⚡ Recurse Right",
+                    "    return 1 + max(left_depth, right_depth) # ✅ My Depth = 1 (Me) + Max(Children)"
                 ],
                 metrics: { time: "O(H)", space: "O(1)" },
                 code: `def lowestCommonAncestor(root, p, q):
@@ -436,11 +460,13 @@ while root:
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Postorder Tuple kyun?</strong> Valid BST check karne ke liye children ka min/max chahiye",
-                    "⚡ Return: <code>(min, max, size)</code> up the tree",
-                    "🔄 Check: <code>L.max < Node < R.min</code> — agar ye true hai toh valid MST",
-                    "✅ Size: <code>L.size + R.size + 1</code>. Update global max if valid",
-                    "💡 Invalid? Return <code>(inf, -inf)</code> taaki parent range check fail ho"
+                    "def validate(node, min_val, max_val):",
+                    "    if not node: return True           # 🎯 Base Case: Empty tree is a valid BST",
+                    "    if not (min_val < node.val < max_val): # ⚡ Check current node's value against range",
+                    "        return False",
+                    "    # ✅ Recursively check left and right subtrees with updated ranges",
+                    "    return validate(node.left, min_val, node.val) and \\",
+                    "           validate(node.right, node.val, max_val)"
                 ],
                 metrics: { time: "O(N)", space: "O(H)" },
                 code: `def largestBST(root):

@@ -189,11 +189,19 @@ def aggressiveCows(stalls, k):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Sorted Half kyun?</strong> Array rotated hai, par ek half HAMESHA sorted hoga",
-                    "⚡ Identify Sorted Half: <code>if nums[L] <= nums[mid]</code> (Left) else Right",
-                    "🔄 Range Check: <code>if L <= target < M</code> (Left mein hai?)",
-                    "✅ Eliminate other half: <code>high = mid - 1</code> or <code>low = mid + 1</code>",
-                    "💡 Duplicates? Fog clears by shrinking <code>L++</code> and <code>R--</code>"
+                    "L, R = 0, len(nums)-1",
+                    "while L <= R:",
+                    "    mid = L + (R-L)//2",
+                    "    if nums[mid] == target: return True # 🎯 Found",
+                    "    if nums[L] == nums[mid] == nums[R]: # ⚡ Foggy Duplicates",
+                    "        L += 1; R -= 1; continue        # 🔄 Shrink window",
+                    "    if nums[L] <= nums[mid]:            # ✅ Left Sorted",
+                    "        if nums[L] <= target < nums[mid]: R = mid - 1",
+                    "        else: L = mid + 1",
+                    "    else:                               # 💡 Right Sorted",
+                    "        if nums[mid] < target <= nums[R]: L = mid + 1",
+                    "        else: R = mid - 1",
+                    "return False"
                 ],
                 metrics: { time: "Avg O(log N)", space: "O(1)" },
                 timeExplainer: "<strong>Time Analysis:</strong><br>• <strong>Best/Avg:</strong> <code>O(log N)</code> - Standard binary search<br>• <strong>Worst:</strong> <code>O(N)</code> - All duplicates<br><br><strong>Why?</strong> Duplicates create 'fog' requiring linear scan",
@@ -381,11 +389,22 @@ return ans`
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Partition kyun?</strong> Left halves ka total size total/2 hona chahiye",
-                    "⚡ BS on Smaller Array: Cut <code>nums1</code> at <code>i</code>, adjust <code>nums2</code> cut at <code>j</code>",
-                    "🔄 Partition Validity: <code>maxLeft1 <= minRight2</code> and <code>maxLeft2 <= minRight1</code>",
-                    "✅ Found? Calc median from boundary max/mins. Else adjust cut.",
-                    "💡 Total len (M+N) odd/even handle karne ke liye (M+N+1)//2 use karo"
+                    "A, B = nums1, nums2",
+                    "total = len(A) + len(B); half = total // 2",
+                    "if len(A) > len(B): A, B = B, A    # 🎯 BS on smaller array",
+                    "L, R = 0, len(A)-1",
+                    "while True:",
+                    "    i = (L + R) // 2               # ⚡ A's partition",
+                    "    j = half - i - 2               # 🔄 B's partition",
+                    "    Aleft = A[i] if i >= 0 else float('-inf')",
+                    "    Aright = A[i+1] if i+1 < len(A) else float('inf')",
+                    "    Bleft = B[j] if j >= 0 else float('-inf')",
+                    "    Bright = B[j+1] if j+1 < len(B) else float('inf')",
+                    "    if Aleft <= Bright and Bleft <= Aright: # ✅ Valid Partition",
+                    "        if total % 2: return min(Aright, Bright)",
+                    "        else: return (max(Aleft, Bleft) + min(Aright, Bright)) / 2",
+                    "    elif Aleft > Bright: R = i - 1 # 💡 A too big, move left",
+                    "    else: L = i + 1                # 💡 A too small, move right"
                 ],
                 metrics: { time: "O(log min(N,M))", space: "O(1)" },
                 timeExplainer: "<strong>Time Analysis:</strong><br>• Binary search on smaller array<br>• Always pick smaller for partitioning<br><br><strong>Total:</strong> <code>O(log min(N, M))</code>",

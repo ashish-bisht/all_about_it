@@ -233,11 +233,12 @@ def lengthOfLIS(nums):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Adjacent ban kyun?</strong> Ek chorr ke ek lootna hai",
-                    "⚡ Choice: <code>Rob current + nums[i-2]</code> OR <code>Skip current (keep prev)</code>",
-                    "🔄 <code>new_rob = max(rob1 + n, rob2)</code> transition",
-                    "✅ Space optimization: Sirf 2 variables <code>rob1, rob2</code> chahiye",
-                    "💡 Greedy fail karega: [2, 100, 2] — greedy takes 2+2=4, optimal is 100!"
+                    "rob1, rob2 = 0, 0                  # 🎯 Space Optimization: Only 2 vars needed",
+                    "for n in nums:",
+                    "    new_rob = max(rob1 + n, rob2)  # ⚡ Decision: Rob current (n + prev_prev) vs Skip (prev)",
+                    "    rob1 = rob2                    # 🔄 Shift window forward",
+                    "    rob2 = new_rob                 # ✅ Update max loot found so far",
+                    "return rob2"
                 ],
                 metrics: { time: "O(N)", space: "O(1)" },
                 timeExplainer: `<strong>Time Breakdown:</strong><br>
@@ -603,11 +604,11 @@ print(lengthOfLIS([0,1,0,3,2,3]))       # 4 → [0,1,2,3]`
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>2D DP kyun?</strong> String matching mein indices (i, j) track karne padte hain",
-                    "⚡ <code>if s1[i] == s2[j]</code> → MATCH! <code>1 + dp[i-1][j-1]</code> (diagonal)",
-                    "🔄 <code>else</code> → NO MATCH! <code>max(dp[i-1][j], dp[i][j-1])</code> (retain best previous)",
-                    "✅ Base case: dp[0][0] = 0 (empty strings match nothing)",
-                    "💡 Space Opt? Sirf <code>prev_row</code> aur <code>curr_row</code> chahiye (O(N) space)"
+                    "if s1[i] == s2[j]:                 # 🎯 Characters MATCH",
+                    "    return 1 + solve(i+1, j+1)     # ⚡ Add 1, move both pointers diagonally",
+                    "else:                              # 🔄 NO MATCH",
+                    "    return max(solve(i+1, j),      # ✅ Skip s1 char",
+                    "               solve(i, j+1))      #    Skip s2 char"
                 ],
                 metrics: { time: "O(M × N)", space: "O(M × N)" },
                 timeExplainer: `<strong style="color:#f59e0b;">⏱️ Time Complexity Deep Dive</strong>
@@ -819,11 +820,12 @@ print(longestCommonSubsequence("abcde", "ace"))  # 3 → "ace"`
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Unbounded Knapsack kyun?</strong> Coins infinite supply mein hain",
-                    "⚡ <code>dp[a] = min(dp[a], 1 + dp[a - coin])</code> — try all coins",
-                    "🔄 Init <code>dp = [inf]</code>, default <code>dp[0]=0</code> (0 coin for 0 amount)",
-                    "✅ <code>dp[amount] > amount</code>? Return -1 (impossible)",
-                    "💡 Loop order: <code>for coin in coins</code> bahar kyun? Reduce repetitive permutations (perf boost)"
+                    "dp = [inf] * (amount + 1); dp[0]=0 # 🎯 Min coins to reach 'i' amount",
+                    "for a in range(1, amount+1):",
+                    "    for c in coins:",
+                    "        if a - c >= 0:             # ⚡ Can we use this coin?",
+                    "            dp[a] = min(dp[a], 1 + dp[a-c]) # 🔄 Update min cost",
+                    "return dp[amount] if != inf else -1"
                 ],
                 metrics: { time: "O(A × C)", space: "O(A × C)" },
                 timeExplainer: `<strong style="color:#f59e0b;">⏱️ Time Complexity Deep Dive</strong>
@@ -944,7 +946,7 @@ print(longestCommonSubsequence("abcde", "ace"))  # 3 → "ace"`
                     • Take 5: remaining = 1, coins = 2<br>
                     • Take 1: remaining = 0, coins = 3 ✅<br>
                     • 5 + 5 + 1 = 11 with 3 coins`,
-                    `<strong>Answer:</strong> 3 coins<br>
+                    `<strong>Answer:</strong> 3<br>
                     One valid combination: [5, 5, 1]<br>
                     Another: [5, 2, 2, 2] = 4 coins (not optimal)`
                 ],
@@ -1039,11 +1041,12 @@ print(coinChange([2], 3))       # -1 → impossible`
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Cut points kyun?</strong> String ko valid words mein split karna hai",
-                    "⚡ <code>if dp[j] and s[j:i] in dict</code> → Valid segment found!",
-                    "🔄 <code>dp[i] = True</code> — current prefix ends with a valid word",
-                    "✅ Return <code>dp[n]</code> — pura string segmented hai ya nahi",
-                    "💡 O(N²) loop nested but efficient — inner loop checks previous cuts"
+                    "dp = [1] * n                       # 🎯 dp[i] = Longest chain ending at i",
+                    "for i in range(n):",
+                    "    for j in range(i):             # ⚡ Check all previous elements",
+                    "        if nums[i] > nums[j]:      # 🔄 Can we extend the chain?",
+                    "            dp[i] = max(dp[i], 1 + dp[j])",
+                    "return max(dp)"
                 ],
                 metrics: { time: "O(N³)", space: "O(N)" },
                 timeExplainer: `
@@ -1782,11 +1785,13 @@ return dp[target]`
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Min Operations kyun?</strong> Transform word1 to word2 in cheapest way",
-                    "⚡ If mismatch: <code>1 + min(Insert, Delete, Replace)</code>",
-                    "🔄 Insert = <code>dp[i][j-1]</code>, Delete = <code>dp[i-1][j]</code>, Replace = <code>dp[i-1][j-1]</code>",
-                    "✅ Base case: dp[i][0] = i (delete all), dp[0][j] = j (insert all)",
-                    "💡 Replace is diagonal move, others are straight moves"
+                    "if w1[i] == w2[j]:                 # 🎯 Match: No op needed",
+                    "    return solve(i+1, j+1)",
+                    "else:",
+                    "    insert = 1 + solve(i, j+1)     # ⚡ Insert char",
+                    "    delete = 1 + solve(i+1, j)     # ⚡ Delete char",
+                    "    replace = 1 + solve(i+1, j+1)  # 🔄 Replace char",
+                    "    return min(insert, delete, replace)"
                 ],
                 metrics: { time: "O(M×N)", space: "O(M×N)" },
                 timeExplainer: `

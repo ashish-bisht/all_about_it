@@ -174,11 +174,14 @@ def asteroidCollision(asteroids):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Monotonic Stack kyun?</strong> Right side ka pehla bada number chahiye in O(N)",
-                    "⚡ <code>while stack and arr[stack[-1]] < curr</code> → Found a greater element!",
-                    "🔄 Pop stack index, update result -> <code>result[pop] = curr</code>",
-                    "✅ Push current index (might be NGE for future elements)",
-                    "💡 Store **indices** in stack, not values, agar index based answer chahiye"
+                    "res = [-1] * n",
+                    "stack = []                     # 🎯 Store INDICES",
+                    "for i in range(len(nums)):",
+                    "    while stack and nums[stack[-1]] < nums[i]: # ⚡ Found NGE!",
+                    "        idx = stack.pop()",
+                    "        res[idx] = nums[i]     # ✅ Map NGE for popped index",
+                    "    stack.append(i)            # 💡 Push current index",
+                    "return res"
                 ],
                 metrics: { time: "O(N)", space: "O(N)" },
                 timeExplainer: "<strong>Monotonic Stack:</strong><br>• Each element pushed ONCE<br>• Each element popped ONCE<br><br><strong>Total:</strong> <code>O(N)</code>",
@@ -304,10 +307,16 @@ def asteroidCollision(asteroids):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Horizontal Slicing kyun?</strong> Stack boundaries (Left & Right) ke beech paani bharta hai",
-                    "⚡ Decreasing Stack: <code>h > height[stack.top]</code> → Puddle found!",
-                    "🔄 Floor = Pop(). Height = <code>min(Left, Right) - Floor</code>",
-                    "✅ Width = <code>Right - Left - 1</code>. Add water.",
+                    "vol = 0; stack = []",
+                    "for i, h in enumerate(height):",
+                    "    while stack and height[stack[-1]] < h: # 🎯 Bowl boundary found (Right Wall)",
+                    "        mid = stack.pop()          # ⚡ Identify valley (Bottom)",
+                    "        if not stack: break        # ❌ No Left Wall",
+                    "        h_bound = min(h, height[stack[-1]]) - height[mid] # 🔄 Water Height",
+                    "        w_bound = i - stack[-1] - 1 # ✅ Water Width",
+                    "        vol += h_bound * w_bound",
+                    "    stack.append(i)",
+                    "return vol",
                     "💡 Two Pointer approach is usually better (O(1) space), but this is good concept"
                 ],
                 metrics: { time: "O(N)", space: "O(N)" },

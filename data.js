@@ -186,11 +186,30 @@ def merge(intervals):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Sort kyun?</strong> Two pointers tabhi kaam karte hain jab sorted ho",
-                    "⚡ 3Sum = Fix anchor + 2Sum: <code>target = -nums[i]</code>",
-                    "🔄 <code>if sum < 0: L++</code> (zyada chahiye) else <code>R--</code> (kam chahiye)",
-                    "✅ <code>sum == 0</code> → found triplet! Skip duplicates both sides",
-                    "💡 O(N²) best possible kyunki output itself can be O(N²)"
+                    "def num_islands(grid):",
+                    "    rows, cols = len(grid), len(grid[0])",
+                    "    count = 0",
+                    "    ",
+                    "    def dfs(r, c):",
+                    "        # Base cases for DFS: out of bounds or water",
+                    "        if r < 0 or r >= rows or c < 0 or c >= cols or grid[r][c] == '0':",
+                    "            return",
+                    "        ",
+                    "        grid[r][c] = '0' # Mark as visited (sink the land)",
+                    "        ",
+                    "        # Recursively visit all 4 adjacent directions",
+                    "        dfs(r + 1, c)",
+                    "        dfs(r - 1, c)",
+                    "        dfs(r, c + 1)",
+                    "        dfs(r, c - 1)",
+                    "        ",
+                    "    for r in range(rows):",
+                    "        for c in range(cols):",
+                    "            if grid[r][c] == '1': # Found new unvisited land",
+                    "                count += 1",
+                    "                dfs(r, c) # Sink the entire island",
+                    "                ",
+                    "    return count"
                 ],
                 metrics: { time: "O(N²)", space: "O(1)" },
                 timeExplainer: "<strong>Time: O(N²)</strong><br>• Sorting takes O(N log N).<br>• We iterate N times (Anchor).<br>• Inside loop, max O(N) work (Two Pointers).<br>Total = N * N = O(N²).",
@@ -340,17 +359,18 @@ def merge(intervals):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Current < 0 toh fresh start kyun?</strong> Negative sum aage ka contribution kam karega",
-                    "⚡ Decision: <code>max(num, current + num)</code> — extend ya restart?",
-                    "🔄 Har step pe: <code>global_max = max(global_max, current)</code>",
-                    "✅ Single pass O(N) mein answer mil jaata hai",
-                    "💡 All negatives? <code>max_sum = nums[0]</code> se start karo, 0 se nahi!"
+                    "curr = max_sum = nums[0]         # 🎯 Init with first element (handle all negs)",
+                    "for n in nums[1:]:               # ⚡ Iterate rest",
+                    "    if curr < 0: curr = 0        # 🔄 Reset: Negative sum is a burden",
+                    "    curr += n                    # 💡 Add current element",
+                    "    max_sum = max(max_sum, curr) # ✅ Track global maximum",
+                    "return max_sum"
                 ],
                 metrics: { time: "O(N)", space: "O(1)" },
                 timeExplainer: "<strong>Time Complexity: O(N)</strong><br>We iterate through the array exactly once (Single Pass). Each element is visited and processed in constant time.",
                 spaceExplainer: "<strong>Space Complexity: O(1)</strong><br>We only use two variables (`current_sum` and `global_max`) to track the state, regardless of the input array size.",
                 visual: "<span><strong>Visual: The Reset Button</strong><br>Jab tak <code>current_sum</code> positive hai, wo aage kaam aayega. Jaise hi wo negative hua, wo 'bojh' ban gaya. Use turant 0 karke naya safar shuru karo.</span>",
-                crux: "Contiguous subarray dhoondna hai. Agar pichla sum negative hai, toh wo current number ki value ko kam hi karega.<br><strong>Strategy:</strong><br>1. <code>current_sum</code> ko track karo.<br>2. DECISION: Kya <code>current + nums[i]</code> better hai ya fresh start <code>nums[i]</code> better hai?<br>3. Har step pe <code>global_max</code> update karo.",
+                crux: "Contiguous subarray dhoondna hai. Agar pichla sum negative hai, toh wo current number ki value ko kam ਹੀ karega.<br><strong>Strategy:</strong><br>1. <code>current_sum</code> ko track karo.<br>2. DECISION: Kya <code>current + nums[i]</code> better hai ya fresh start <code>nums[i]</code> better hai?<br>3. Har step pe <code>global_max</code> update karo.",
                 trap: "<strong>All Negatives:</strong> Agar array <code>[-5, -2, -3]</code> hai aur tumne <code>max_sum = 0</code> se start kiya, toh answer 0 aayega jo galat hai.<br><strong>Fix:</strong> <code>global_max</code> ko hamesha pehle element (<code>nums[0]</code>) se initialize karo.",
                 dryRun: [
                     "<strong>Input:</strong> nums = [-2, 1, -3, 4]",
@@ -428,15 +448,41 @@ def merge(intervals):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Division banned kyun?</strong> Zero se divide hoga toh crash",
-                    "⚡ Prefix-Suffix trick: <code>result[i] = left[0..i-1] × right[i+1..n]</code>",
-                    "🔄 Pass 1: prefix product build; Pass 2: suffix multiply",
-                    "✅ Single variable <code>suffix</code> enough — O(1) extra space",
-                    "💡 Zeros? Prefix-Suffix naturally handles — ek zero toh baaki 0"
+                    "def can_finish(num_courses, prerequisites):",
+                    "    # Build adjacency list for the graph",
+                    "    adj = {i: [] for i in range(num_courses)}",
+                    "    for course, prereq in prerequisites:",
+                    "        adj[prereq].append(course)",
+                    "    ",
+                    "    # 0: unvisited, 1: visiting (in current DFS path), 2: visited (finished processing)",
+                    "    state = [0] * num_courses",
+                    "    ",
+                    "    def dfs(course):",
+                    "        if state[course] == 1: # Cycle detected (back edge)",
+                    "            return False",
+                    "        if state[course] == 2: # Already processed and confirmed no cycle",
+                    "            return True",
+                    "        ",
+                    "        state[course] = 1 # Mark as visiting",
+                    "        ",
+                    "        # Visit all neighbors (courses that depend on current course)",
+                    "        for neighbor in adj[course]:",
+                    "            if not dfs(neighbor):",
+                    "                return False # If any child path has a cycle, propagate False",
+                    "        ",
+                    "        state[course] = 2 # Mark as visited (finished processing, no cycle found in this path)",
+                    "        return True",
+                    "        ",
+                    "    # Run DFS for each course to detect cycles",
+                    "    for i in range(num_courses):",
+                    "        if not dfs(i):",
+                    "            return False # If any DFS traversal finds a cycle, return False",
+                    "            ",
+                    "    return True # No cycles found, so all courses can be finished"
                 ],
                 metrics: { time: "O(N)", space: "O(1)" },
-                timeExplainer: "<strong>Time Analysis:</strong><br>• <code>2 passes</code> through the array<br>• First pass: Build prefix products<br>• Second pass: Multiply with suffix products<br><br><strong>Total:</strong> <code>O(2N)</code> = <code>O(N)</code>",
-                spaceExplainer: "<strong>Space Analysis:</strong><br>• Output array not counted as extra space<br>• Only one variable <code>suffix_product</code> used<br><br><strong>Result:</strong> <code>O(1)</code> auxiliary space",
+                timeExplainer: "<strong>Time: O(N)</strong><br>• <code>2 passes</code> through the array<br>• First pass: Build prefix products<br>• Second pass: Multiply with suffix products<br><br><strong>Total:</strong> <code>O(2N)</code> = <code>O(N)</code>",
+                spaceExplainer: "<strong>Space: O(1)</strong><br>• Output array not counted as extra space<br>• Only one variable <code>suffix_product</code> used<br><br><strong>Result:</strong> <code>O(1)</code> auxiliary space",
                 visual: "<span><strong>Visual: The Sandwich Logic</strong><br>Index <code>i</code> ke liye: (Left se sabka product) × (Right se sabka product). Hum result array mein pehle left side ka maal bharte hain, phir right side se aate waqt subtract kar dete hain.</span>",
                 crux: "Division operator banned hai.<br><strong>Strategy:</strong><br>1. <strong>Left Pass:</strong> <code>result[i]</code> mein 0 se <code>i-1</code> tak ka product store karo.<br>2. <strong>Right Pass:</strong> Ek variable <code>suffix_product</code> maintain karo aur piche se aate waqt <code>result[i]</code> ko usse multiply karo.",
                 trap: "<strong>Zero Handling:</strong> Agar array mein ek <code>0</code> hai, toh baaki sab index zero ho jayenge except the zero's index. Fix: Prefix/Suffix logic handles this naturally.",
@@ -510,11 +556,39 @@ def merge(intervals):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Chhoti side kyun process?</strong> Water level min(left, right) se decide hota hai",
-                    "⚡ <code>if height[L] < height[R]</code> → left side ka water CONFIRMED hai",
-                    "🔄 <code>water += L_max - height[L]</code> (agar positive ho toh)",
-                    "✅ Update max: <code>L_max = max(L_max, height[L])</code> wall hai toh",
-                    "💡 O(1) space kyunki sirf 2 pointers + 2 max variables"
+                    "from collections import deque",
+                    "def oranges_rotting(grid):",
+                    "    rows, cols = len(grid), len(grid[0])",
+                    "    q = deque()",
+                    "    fresh_oranges = 0",
+                    "    ",
+                    "    # Initialize BFS queue with all rotten oranges and count fresh ones",
+                    "    for r in range(rows):",
+                    "        for c in range(cols):",
+                    "            if grid[r][c] == 2:",
+                    "                q.append((r, c, 0)) # (row, col, time)",
+                    "            elif grid[r][c] == 1:",
+                    "                fresh_oranges += 1",
+                    "                ",
+                    "    max_time = 0",
+                    "    directions = [(0, 1), (0, -1), (1, 0), (-1, 0)] # Right, Left, Down, Up",
+                    "    ",
+                    "    while q:",
+                    "        r, c, time = q.popleft()",
+                    "        max_time = max(max_time, time)",
+                    "        ",
+                    "        # Explore neighbors",
+                    "        for dr, dc in directions:",
+                    "            nr, nc = r + dr, c + dc",
+                    "            ",
+                    "            # Check bounds and if neighbor is a fresh orange",
+                    "            if 0 <= nr < rows and 0 <= nc < cols and grid[nr][nc] == 1:",
+                    "                grid[nr][nc] = 2 # Rot the orange",
+                    "                fresh_oranges -= 1",
+                    "                q.append((nr, nc, time + 1))",
+                    "                ",
+                    "    # If any fresh oranges remain, they could not be rotted",
+                    "    return max_time if fresh_oranges == 0 else -1"
                 ],
                 metrics: { time: "O(N)", space: "O(1)" },
                 timeExplainer: "<strong>Time: O(N)</strong><br>We process each element exactly once using two pointers meeting in the middle.",
@@ -760,11 +834,15 @@ print(trapping_rain_water([0,1,0,2,1,0,1,3,2,1,2,1]))`
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Sort kyun?</strong> Overlapping check tabhi easy hai jab start time se sorted ho",
-                    "⚡ <code>if curr_start <= last_end</code> → OVERLAP! Merge: <code>max(ends)</code>",
-                    "🔄 Non-overlapping? Simply append to result",
-                    "✅ Single pass after sort — O(N log N) total",
-                    "💡 [1,10] + [2,5] = [1,10] — chhota andar hai, end change mat karo"
+                    "intervals.sort(key=lambda x: x[0]) # 🎯 Sort by Start Time",
+                    "merged = [intervals[0]]",
+                    "for curr in intervals[1:]:         # ⚡ Iterate sorted intervals",
+                    "    last = merged[-1]",
+                    "    if curr[0] <= last[1]:         # 🔄 Overlap detected! (curr.start <= last.end)",
+                    "        last[1] = max(last[1], curr[1]) # ✅ Merge: Extend end time",
+                    "    else:",
+                    "        merged.append(curr)        # 💡 No overlap: Add new interval",
+                    "return merged"
                 ],
                 metrics: { time: "O(N log N)", space: "O(N)" },
                 timeExplainer: "<strong>Time Breakdown:</strong><br>• Sorting: <code>O(N log N)</code><br>• Single pass to merge: <code>O(N)</code><br><br><strong>Total:</strong> <code>O(N log N)</code>",
@@ -815,11 +893,49 @@ return merged`
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>MinHeap kyun?</strong> Earliest ending meeting track karna hai for room reuse",
-                    "⚡ <code>if new_start >= heap[0]</code> → room free! <code>heappop</code>",
-                    "🔄 <code>heappush(end)</code> always — new meeting occupy kar rahi hai",
-                    "✅ <code>len(heap)</code> = max rooms needed at any point",
-                    "💡 [1,5] + [5,10] reuse allowed — >= check, not >"
+                    "import heapq",
+                    "def alien_order(words):",
+                    "    # 1. Build the graph (adjacency list) and in-degrees",
+                    "    adj = {char: set() for word in words for char in word}",
+                    "    in_degree = {char: 0 for word in words for char in word}",
+                    "    ",
+                    "    # Compare adjacent words to find character order",
+                    "    for i in range(len(words) - 1):",
+                    "        w1, w2 = words[i], words[i+1]",
+                    "        min_len = min(len(w1), len(w2))",
+                    "        ",
+                    "        # Handle edge case: ['abc', 'ab'] -> invalid order",
+                    "        if len(w1) > len(w2) and w1[:min_len] == w2[:min_len]:",
+                    "            return ''",
+                    "            ",
+                    "        found_diff = False",
+                    "        for j in range(min_len):",
+                    "            char1, char2 = w1[j], w2[j]",
+                    "            if char1 != char2:",
+                    "                if char2 not in adj[char1]: # Add edge only if not already present",
+                    "                    adj[char1].add(char2)",
+                    "                    in_degree[char2] += 1",
+                    "                found_diff = True",
+                    "                break # Only the first differing character matters",
+                    "    ",
+                    "    # 2. Topological Sort (Kahn's Algorithm using BFS)",
+                    "    q = deque([char for char in in_degree if in_degree[char] == 0])",
+                    "    result = []",
+                    "    ",
+                    "    while q:",
+                    "        char = q.popleft()",
+                    "        result.append(char)",
+                    "        ",
+                    "        for neighbor in adj[char]:",
+                    "            in_degree[neighbor] -= 1",
+                    "            if in_degree[neighbor] == 0:",
+                    "                q.append(neighbor)",
+                    "                ",
+                    "    # 3. Check for cycle (if result length != total unique characters)",
+                    "    if len(result) == len(in_degree):",
+                    "        return ''.join(result)",
+                    "    else:",
+                    "        return '' # Cycle detected or graph is not fully connected"
                 ],
                 metrics: { time: "O(N log N)", space: "O(N)" },
                 timeExplainer: "<strong>Time Breakdown:</strong><br>• Sorting: <code>O(N log N)</code><br>• Heap operations: <code>O(N log N)</code><br><br><strong>Total:</strong> <code>O(N log N)</code>",
@@ -870,11 +986,14 @@ return len(heap)`
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Sliding Window kyun?</strong> Contiguous substring chahiye",
-                    "⚡ <code>while char in set: remove s[L], L++</code> duplicate hatao",
-                    "🔄 <code>set.add(char)</code> expand; <code>max_len = R - L + 1</code>",
-                    "✅ Set ensures O(1) duplicate check",
-                    "💡 HashMap trick: <code>L = max(L, last_idx[char]+1)</code> for O(1) shrink"
+                    "char_set = set(); L = 0            # 🎯 Set for O(1) duplicate check",
+                    "for R in range(len(s)):",
+                    "    while s[R] in char_set:        # ⚡ Duplicate found!",
+                    "        char_set.remove(s[L])      # 🔄 Shrink window from Left",
+                    "        L += 1",
+                    "    char_set.add(s[R])             # ✅ Add new char",
+                    "    max_len = max(max_len, R-L+1)  # 💡 R-L+1 is current window size",
+                    "return max_len"
                 ],
                 metrics: { time: "O(N)", space: "O(N)" },
                 timeExplainer: "<strong>Time: O(N)</strong><br>We traverse the string once. Each character is added to the Set once and removed at most once (2N ops = O(N)).",
@@ -983,11 +1102,16 @@ return len(heap)`
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Dutch National Flag kyun?</strong> 3-way partition single pass mein",
-                    "⚡ 3 pointers: <code>L</code> (0s boundary), <code>R</code> (2s boundary), <code>i</code> (current)",
-                    "🔄 0 → swap with L, both move; 2 → swap with R, only R moves; 1 → skip",
-                    "✅ <code>i <= R</code> tak loop — R ke baad sab 2s sorted hai",
-                    "💡 i++ nahi karte swap 2 pe kyunki swapped element check karna hai"
+                    "L, mid, R = 0, 0, len(nums)-1      # 🎯 3 Pointers: 0s, 1s, 2s boundaries",
+                    "while mid <= R:",
+                    "    if nums[mid] == 0:             # ⚡ Found 0: Move to Front",
+                    "        swap(nums[L], nums[mid])",
+                    "        L += 1; mid += 1",
+                    "    elif nums[mid] == 1:           # 🔄 Found 1: Skip",
+                    "        mid += 1",
+                    "    else:                          # 💡 Found 2: Move to Back",
+                    "        swap(nums[mid], nums[R])",
+                    "        R -= 1                     # ✅ Don't move mid (check swapped val)"
                 ],
                 metrics: { time: "O(N)", space: "O(1)" },
                 code: `def sortColors(nums):
@@ -1005,125 +1129,7 @@ while i <= r:
         i += 1`
             }
         },
-        {
-            id: "max-product-subarray",
-            title: "Max Product Subarray",
-            leetcodeUrl: "https://leetcode.com/problems/maximum-product-subarray/",
-            difficulty: "Must Do",
-            priority: "🔴",
-            tags: ["DP"],
-            quiz: {
-                description: "Find max product. Negatives allowed. Trick?",
-                options: ["Kadane's normally", "Track Min and Max product", "Prefix products", "Two pointers"],
-                correct: 1,
-                explanation: "Track both MAX and MIN! A negative number can flip a large negative Min into a huge positive Max. cur_max = max(n, n*prev_max, n*prev_min)."
-            },
-            learn: {
-                metrics: { time: "O(N)", space: "O(1)" },
-                timeExplainer: "<strong>Time: O(N)</strong><br>Single pass solution. We calculate max/min for each element in constant time.",
-                spaceExplainer: "<strong>Space: O(1)</strong><br>We only store 3 variables: <code>max_prod</code>, <code>min_prod</code>, and <code>result</code>.",
-                visual: `<span><strong>Visual: The Flip</strong><br>Negative number se positive max chota min ban jata hai, aur negative min bada max ban jata hai!<br>
-<pre style="background:none; border:none; padding:10px; font-size:0.8rem; line-height:1.2;">
-   Input: [2, 3, -2, 4]
-   
-   Idx 1 (3): Max=6, Min=3
-   Idx 2 (-2):
-      Max candidate -> -2 * 6 = -12 (Too small!)
-      Min candidate -> -2 * 6 = -12 (Saved for later!)
-      Max becomes -2 (start fresh or flip min?)
-</pre>
-</span>`,
-                crux: "Negative numbers FLIP signs.<br>A huge negative Min * Negative number = Huge Positive Max!",
-                strategy: "Track BOTH `max_prod` and `min_prod`. Swap them if current number is negative.",
-                trap: "<strong>Zeros:</strong> If we see a 0, the subarray breaks. Reset max/min to the next number (effectively handled by logic).",
-                dryRun: [
-                    "<strong>Input:</strong> [2, 3, -2, 4]",
-                    "1. i=0: res=2, max=2, min=2",
-                    "2. i=1(3): max=max(3, 6, 6)=6, min=min(3, 6, 6)=3. res=6",
-                    "3. i=2(-2): max=max(-2, -12, -6)=-2. min=min(-2, -12, -6)=-12. res=6",
-                    "4. i=3(4): max=max(4, -8, -48)=4. min=min(4, -8, -48)=-48. res=6"
-                ],
-                codeTitle: "Python Solution (Clean)",
-                code: `def maxProduct(nums):
-    if not nums: return 0
-    
-    max_prod = nums[0]
-    min_prod = nums[0]
-    result = nums[0]
-    
-    for i in range(1, len(nums)):
-        temp_max = max_prod
-        
-        # KEY: Max can come from (n), (n*max), or (n*min)
-        max_prod = max(nums[i], nums[i] * max_prod, nums[i] * min_prod)
-        min_prod = min(nums[i], nums[i] * temp_max, nums[i] * min_prod)
-        
-        result = max(result, max_prod)
-    
-    return result`,
-                codeDetailed: `def maxProduct(nums):
-    """
-    Maximum Product Subarray
-    
-    ═══════════════════════════════════════════════════════════════
-    CRUX: Track Min & Max because Negatives Swap Signs
-    ═══════════════════════════════════════════════════════════════
-    
-    STRATEGY: 
-    When we multiply by a negative:
-    - Big Positive becomes Small Negative (Max -> Min)
-    - Big Negative becomes Big Positive (Min -> Max)
-    
-    So we must track BOTH candidates at every step.
-    
-    Time: O(N), Space: O(1)
-    """
-    if not nums:
-        return 0
-    
-    # ════════════════════════════════════════════════════════════
-    # STEP 1: Initialize State
-    # ════════════════════════════════════════════════════════════
-    max_prod = nums[0]  # Tracks max positive product ending here
-    min_prod = nums[0]  # Tracks min negative product ending here
-    result = nums[0]    # Global maximum found so far
-    
-    # ════════════════════════════════════════════════════════════
-    # STEP 2: Iterate Through Array
-    # ════════════════════════════════════════════════════════════
-    for i in range(1, len(nums)):
-        
-        # Store current max before updating (since we need it for min calculation)
-        temp_max = max_prod
-        
-        # ════════════════════════════════════════════════════════════
-        # STEP 3: Update Max & Min
-        # ════════════════════════════════════════════════════════════
-        # Current max can be:
-        # 1. Current number itself (start new subarray, e.g., after a 0)
-        # 2. Current number * previous max (positive * positive)
-        # 3. Current number * previous min (negative * negative = positive!)
-        
-        max_prod = max(nums[i], nums[i] * max_prod, nums[i] * min_prod)
-        
-        # Current min can be:
-        # 1. Current number itself
-        # 2. Current number * previous min (positive * negative)
-        # 3. Current number * previous max (negative * positive)
-        
-        min_prod = min(nums[i], nums[i] * temp_max, nums[i] * min_prod)
-        
-        # Example trace at index 2 (val = -2):
-        # Prev Max=6, Prev Min=3
-        # New Max = max(-2, -12, -6) = -2
-        # New Min = min(-2, -12, -6) = -12  <-- IMPORTANT! 
-        # The -12 is saved. If next num is -4, result became 48!
-        
-        result = max(result, max_prod)
-    
-    return result`
-            }
-        },
+
         {
             id: "subarray-sum-xor-k",
             title: "Subarrays with XOR K",
@@ -1139,11 +1145,15 @@ while i <= r:
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Prefix XOR kyun?</strong> Subarray XOR [i..j] = Prefix[j] ^ Prefix[i-1]",
-                    "⚡ Formula: <code>XR ^ K = Target</code> check karna hai map mein",
-                    "🔄 <code>map[xor]++</code> store count of this prefix XOR occurrence",
-                    "✅ <code>count += map[XR ^ K]</code> — purane positions mil gaye jaha required XOR banta hai",
-                    "💡 <code>map = {0: 1}</code> handle subarray starting from index 0"
+                    "count = 0; xor = 0",
+                    "map = {0: 1}                       # 🎯 Base case: XOR 0 seen once (empty prefix)",
+                    "for n in nums:",
+                    "    xor ^= n                       # ⚡ Current Prefix XOR",
+                    "    target = xor ^ K               # 🔄 Formula: Prefix[i] ^ Prefix[j] = K",
+                    "    if target in map:",
+                    "        count += map[target]       # ✅ Add occurrences of required prefix",
+                    "    map[xor] = map.get(xor,0) + 1  # 💡 Store current XOR frequency",
+                    "return count"
                 ],
                 metrics: { time: "O(N)", space: "O(N)" },
                 code: `def solve(A, B):
@@ -1390,11 +1400,19 @@ def aggressiveCows(stalls, k):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Sorted Half kyun?</strong> Array rotated hai, par ek half HAMESHA sorted hoga",
-                    "⚡ Identify Sorted Half: <code>if nums[L] <= nums[mid]</code> (Left) else Right",
-                    "🔄 Range Check: <code>if L <= target < M</code> (Left mein hai?)",
-                    "✅ Eliminate other half: <code>high = mid - 1</code> or <code>low = mid + 1</code>",
-                    "💡 Duplicates? Fog clears by shrinking <code>L++</code> and <code>R--</code>"
+                    "L, R = 0, len(nums)-1",
+                    "while L <= R:",
+                    "    mid = L + (R-L)//2",
+                    "    if nums[mid] == target: return True # 🎯 Found",
+                    "    if nums[L] == nums[mid] == nums[R]: # ⚡ Foggy Duplicates",
+                    "        L += 1; R -= 1; continue        # 🔄 Shrink window",
+                    "    if nums[L] <= nums[mid]:            # ✅ Left Sorted",
+                    "        if nums[L] <= target < nums[mid]: R = mid - 1",
+                    "        else: L = mid + 1",
+                    "    else:                               # 💡 Right Sorted",
+                    "        if nums[mid] < target <= nums[R]: L = mid + 1",
+                    "        else: R = mid - 1",
+                    "return False"
                 ],
                 metrics: { time: "Avg O(log N)", space: "O(1)" },
                 timeExplainer: "<strong>Time Analysis:</strong><br>• <strong>Best/Avg:</strong> <code>O(log N)</code> - Standard binary search<br>• <strong>Worst:</strong> <code>O(N)</code> - All duplicates<br><br><strong>Why?</strong> Duplicates create 'fog' requiring linear scan",
@@ -1582,11 +1600,22 @@ return ans`
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Partition kyun?</strong> Left halves ka total size total/2 hona chahiye",
-                    "⚡ BS on Smaller Array: Cut <code>nums1</code> at <code>i</code>, adjust <code>nums2</code> cut at <code>j</code>",
-                    "🔄 Partition Validity: <code>maxLeft1 <= minRight2</code> and <code>maxLeft2 <= minRight1</code>",
-                    "✅ Found? Calc median from boundary max/mins. Else adjust cut.",
-                    "💡 Total len (M+N) odd/even handle karne ke liye (M+N+1)//2 use karo"
+                    "A, B = nums1, nums2",
+                    "total = len(A) + len(B); half = total // 2",
+                    "if len(A) > len(B): A, B = B, A    # 🎯 BS on smaller array",
+                    "L, R = 0, len(A)-1",
+                    "while True:",
+                    "    i = (L + R) // 2               # ⚡ A's partition",
+                    "    j = half - i - 2               # 🔄 B's partition",
+                    "    Aleft = A[i] if i >= 0 else float('-inf')",
+                    "    Aright = A[i+1] if i+1 < len(A) else float('inf')",
+                    "    Bleft = B[j] if j >= 0 else float('-inf')",
+                    "    Bright = B[j+1] if j+1 < len(B) else float('inf')",
+                    "    if Aleft <= Bright and Bleft <= Aright: # ✅ Valid Partition",
+                    "        if total % 2: return min(Aright, Bright)",
+                    "        else: return (max(Aleft, Bleft) + min(Aright, Bright)) / 2",
+                    "    elif Aleft > Bright: R = i - 1 # 💡 A too big, move left",
+                    "    else: L = i + 1                # 💡 A too small, move right"
                 ],
                 metrics: { time: "O(log min(N,M))", space: "O(1)" },
                 timeExplainer: "<strong>Time Analysis:</strong><br>• Binary search on smaller array<br>• Always pick smaller for partitioning<br><br><strong>Total:</strong> <code>O(log min(N, M))</code>",
@@ -1804,11 +1833,19 @@ def findMiddle(head):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>DLL + Map kyun?</strong> O(1) delete/add chahiye (DLL) aur O(1) lookup (Map)",
-                    "⚡ <code>get(k)</code>: Map lookup node OR return -1. Move node to Head (Most Recent)",
-                    "🔄 <code>put(k, v)</code>: If exists, update val & move head. Else add new head. If full, delete tail",
-                    "✅ Helper: <code>_remove(node)</code> removes from list, <code>_add(node)</code> adds to list head",
-                    "💡 Tail = Least Recent, Head = Most Recent"
+                    "class Node: prev, next, key, val",
+                    "def get(key):",
+                    "    if key in map:",
+                    "        node = map[key]; remove(node); add(node) # ⚡ Move to Head (Most Recent)",
+                    "        return node.val",
+                    "    return -1",
+                    "def put(key, val):",
+                    "    if key in map: remove(map[key])    # 🔄 Update existing",
+                    "    node = Node(key, val); add(node)   # ✅ Add new to Head",
+                    "    map[key] = node",
+                    "    if len(map) > cap:",
+                    "        lru = head.next; remove(lru)   # 💡 Evict Tail (Least Recent)",
+                    "        del map[lru.key]"
                 ],
                 metrics: { time: "O(1)", space: "O(N)" },
                 timeExplainer: "<strong>Time Analysis:</strong><br>• <code>get()</code>: HashMap lookup = <code>O(1)</code><br>• <code>put()</code>: Map + DLL operations = <code>O(1)</code><br><br><strong>All operations:</strong> <code>O(1)</code> average",
@@ -1879,11 +1916,20 @@ def put(self, key, value):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Reverse per group kyun?</strong> Problem says 'k nodes' at a time",
-                    "⚡ Check length: <code>kth = get_kth(group_prev, k)</code> — agar k nodes nahi, toh stop!",
-                    "🔄 Reverse: Standard reverse logic inside the group range",
-                    "✅ Rewire: <code>group_prev.next = kth</code> (new head); <code>group_start.next = next_group</code>",
-                    "💡 Dummy Node bahut zaroori hai to handle head change easily"
+                    "dummy = ListNode(0, head)",
+                    "groupPrev = dummy",
+                    "while True:",
+                    "    kth = getKth(groupPrev, k)     # 🎯 Check if K nodes exist",
+                    "    if not kth: break",
+                    "    groupNext = kth.next",
+                    "    # ⚡ Reverse K nodes [curr ... kth]",
+                    "    prev, curr = kth.next, groupPrev.next",
+                    "    while curr != groupNext:",
+                    "        tmp = curr.next; curr.next = prev; prev = curr; curr = tmp",
+                    "    # 🔄 Connect reversed group",
+                    "    tmp = groupPrev.next           # Old start is now end",
+                    "    groupPrev.next = prev          # ✅ Connect start",
+                    "    groupPrev = tmp                # 💡 Move pointer for next group"
                 ],
                 metrics: { time: "O(N)", space: "O(1)" },
                 timeExplainer: "<strong>Time Analysis:</strong><br>• Visit each node once<br>• Reversal within groups is O(K)<br><br><strong>Total:</strong> <code>O(N)</code>",
@@ -1943,15 +1989,21 @@ return dummy.next`
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Floyd Cycle kyun?</strong> O(N) time aur O(1) space — HashSet O(N) space leta hai",
-                    "⚡ Phase 1: <code>slow/fast</code> collision detect karo",
-                    "🔄 Phase 2: <code>slow = head</code>, move both 1 step. Collision point = Cycle Start",
-                    "✅ Why works? Math proves <code>dist(head, start) == dist(meet, start)</code>",
-                    "💡 Start milne pe ruk jao, wahi loop entry hai"
+                    "slow, fast = head, head",
+                    "while fast and fast.next:",
+                    "    slow = slow.next",
+                    "    fast = fast.next.next",
+                    "    if slow == fast:               # ⚡ Cycle Detected",
+                    "        slow = head                # 🔄 Reset Slow to Head",
+                    "        while slow != fast:        # 🎯 Move both 1 step",
+                    "            slow = slow.next",
+                    "            fast = fast.next",
+                    "        return slow                # ✅ Meeting point is Start of Cycle",
+                    "return None"
                 ],
                 metrics: { time: "O(N)", space: "O(1)" },
-                timeExplainer: "<strong>Floyd's Algorithm:</strong><br>• Phase 1: Detect cycle = <code>O(N)</code><br>• Phase 2: Find start = <code>O(N)</code><br><br><strong>Total:</strong> <code>O(N)</code>",
-                spaceExplainer: "<strong>Space Analysis:</strong><br>• Only 2 pointers: slow, fast<br>• No HashSet needed!<br><br><strong>Result:</strong> <code>O(1)</code>",
+                timeExplainer: "<strong>Floyd's Algorithm:</strong><br>• Phase 1: Detect cycle = <code>O(N)</code><br>• Phase 2: Find start = <code>O(N)</code><br><strong>Total:</strong> <code>O(N)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Only 2 pointers: slow, fast<br>• No HashSet needed!<br><strong>Result:</strong> <code>O(1)</code>",
                 visual: "<span><strong>Visual: The P Shape</strong><br>Distance(Head to Start) = Distance(Meeting to Start).</span>",
                 crux: "<strong>Phase 1:</strong> Intercept (do they collide?).<br><strong>Phase 2:</strong> Reset slow to head. Move both 1 step. Collision = Start.",
                 trap: "<strong>The False Start:</strong> `slow` and `fast` equal at head initially. Don't return true immediately!",
@@ -1996,15 +2048,22 @@ return None`
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Interleaving kyun?</strong> O(1) space trick! Node ke bagal mein copy rakho",
-                    "⚡ Weave: <code>A -> A' -> B -> B'</code>",
-                    "🔄 Random: <code>curr.next.random = curr.random.next</code> — easy navigation",
-                    "✅ Unweave: <code>curr.next = curr.next.next</code> — restore original list",
-                    "💡 HashMap approach is simpler (O(N) space) but interleaving is 'cool' optimization"
+                    "map = {None: None}                 # 🎯 Map old_node -> new_node",
+                    "cur = head",
+                    "while cur:                         # ⚡ 1st Pass: Create copies",
+                    "    map[cur] = Node(cur.val)",
+                    "    cur = cur.next",
+                    "cur = head",
+                    "while cur:                         # 🔄 2nd Pass: Link pointers",
+                    "    copy = map[cur]",
+                    "    copy.next = map[cur.next]      # ✅ Link Next",
+                    "    copy.random = map[cur.random]  # ✅ Link Random",
+                    "    cur = cur.next",
+                    "return map[head]"
                 ],
                 metrics: { time: "O(N)", space: "O(1) (Interleaving)" },
-                timeExplainer: "<strong>3-Pass Algorithm:</strong><br>• Pass 1: Weave copies = <code>O(N)</code><br>• Pass 2: Link randoms = <code>O(N)</code><br>• Pass 3: Unweave = <code>O(N)</code><br><br><strong>Total:</strong> <code>O(N)</code>",
-                spaceExplainer: "<strong>Interleaving Method:</strong><br>• Insert copies inline<br>• No HashMap needed<br><br><strong>Result:</strong> <code>O(1)</code> extra space",
+                timeExplainer: "<strong>3-Pass Algorithm:</strong><br>• Pass 1: Weave copies = <code>O(N)</code><br>• Pass 2: Link randoms = <code>O(N)</code><br>• Pass 3: Unweave = <code>O(N)</code><br><strong>Total:</strong> <code>O(N)</code>",
+                spaceExplainer: "<strong>Interleaving Method:</strong><br>• Insert copies inline<br>• No HashMap needed<br><strong>Result:</strong> <code>O(1)</code> extra space",
                 visual: "<span><strong>Visual: DNA Replication</strong><br>Pass 1: Weave A->A'->B->B'.<br>Pass 2: Link Randoms.<br>Pass 3: Unweave.</span>",
                 crux: "<strong>Interleaving Strategy:</strong><br>1. Insert Copy next to Original.<br>2. `copy.random = original.random.next`.<br>3. Extract Copy list.",
                 trap: "<strong>Null Crash:</strong> Check `if curr.random:` before accessing `next`.",
@@ -2062,8 +2121,8 @@ return new_head`
                     "💡 Restore list (optional) — dobara reverse karke original state laao"
                 ],
                 metrics: { time: "O(N)", space: "O(1)" },
-                timeExplainer: "<strong>Time Breakdown:</strong><br>• Find middle: <code>O(N/2)</code><br>• Reverse second half: <code>O(N/2)</code><br>• Compare: <code>O(N/2)</code><br><br><strong>Total:</strong> <code>O(N)</code>",
-                spaceExplainer: "<strong>Space Analysis:</strong><br>• No extra array for reversal<br>• In-place manipulation<br><br><strong>Result:</strong> <code>O(1)</code>",
+                timeExplainer: "<strong>Time Breakdown:</strong><br>• Find middle: <code>O(N/2)</code><br>• Reverse second half: <code>O(N/2)</code><br>• Compare: <code>O(N/2)</code><br><strong>Total:</strong> <code>O(N)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• No extra array for reversal<br>• In-place manipulation<br><strong>Result:</strong> <code>O(1)</code>",
                 visual: "<span><strong>Visual: The Butterfly</strong><br>1. Find Body (Mid).<br>2. Flip Right Wing.<br>3. Compare Wings.</span>",
                 crux: "Singly lists only go forward. To read backward, we must <strong>Reverse the Second Half</strong>.",
                 trap: "<strong>Destructive Read:</strong> You broke the list! Good engineers restore the list before returning.",
@@ -2272,11 +2331,14 @@ def asteroidCollision(asteroids):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Monotonic Stack kyun?</strong> Right side ka pehla bada number chahiye in O(N)",
-                    "⚡ <code>while stack and arr[stack[-1]] < curr</code> → Found a greater element!",
-                    "🔄 Pop stack index, update result -> <code>result[pop] = curr</code>",
-                    "✅ Push current index (might be NGE for future elements)",
-                    "💡 Store **indices** in stack, not values, agar index based answer chahiye"
+                    "res = [-1] * n",
+                    "stack = []                     # 🎯 Store INDICES",
+                    "for i in range(len(nums)):",
+                    "    while stack and nums[stack[-1]] < nums[i]: # ⚡ Found NGE!",
+                    "        idx = stack.pop()",
+                    "        res[idx] = nums[i]     # ✅ Map NGE for popped index",
+                    "    stack.append(i)            # 💡 Push current index",
+                    "return res"
                 ],
                 metrics: { time: "O(N)", space: "O(N)" },
                 timeExplainer: "<strong>Monotonic Stack:</strong><br>• Each element pushed ONCE<br>• Each element popped ONCE<br><br><strong>Total:</strong> <code>O(N)</code>",
@@ -2402,10 +2464,16 @@ def asteroidCollision(asteroids):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Horizontal Slicing kyun?</strong> Stack boundaries (Left & Right) ke beech paani bharta hai",
-                    "⚡ Decreasing Stack: <code>h > height[stack.top]</code> → Puddle found!",
-                    "🔄 Floor = Pop(). Height = <code>min(Left, Right) - Floor</code>",
-                    "✅ Width = <code>Right - Left - 1</code>. Add water.",
+                    "vol = 0; stack = []",
+                    "for i, h in enumerate(height):",
+                    "    while stack and height[stack[-1]] < h: # 🎯 Bowl boundary found (Right Wall)",
+                    "        mid = stack.pop()          # ⚡ Identify valley (Bottom)",
+                    "        if not stack: break        # ❌ No Left Wall",
+                    "        h_bound = min(h, height[stack[-1]]) - height[mid] # 🔄 Water Height",
+                    "        w_bound = i - stack[-1] - 1 # ✅ Water Width",
+                    "        vol += h_bound * w_bound",
+                    "    stack.append(i)",
+                    "return vol",
                     "💡 Two Pointer approach is usually better (O(1) space), but this is good concept"
                 ],
                 metrics: { time: "O(N)", space: "O(N)" },
@@ -2716,11 +2784,13 @@ def burnTree(root, start):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>DFS bubbling kyun?</strong> Bottom-up check karna hai — kahan mil rahe hain?",
-                    "⚡ Base Case: <code>if root in [p, q, null]: return root</code> — found one target or hit end",
-                    "🔄 Recurse: <code>left = dfs(L), right = dfs(R)</code>",
-                    "✅ <code>if left and right: return root</code> → Current node is split point (LCA)",
-                    "💡 <code>else: return left or right</code> → Pass found target up"
+                    "if not root or root == p or root == q: # 🎯 Base Case: Found target or None",
+                    "    return root",
+                    "left = dfs(root.left, p, q)        # ⚡ Search Left Subtree",
+                    "right = dfs(root.right, p, q)      # ⚡ Search Right Subtree",
+                    "if left and right:                 # ✅ Both sides returned non-null?",
+                    "    return root                    #    -> Current 'root' is the Split Point (LCA)",
+                    "return left if left else right     # 🔄 Propagate found node upwards"
                 ],
                 metrics: { time: "O(N)", space: "O(H)" },
                 timeExplainer: "<strong>DFS Traversal:</strong><br>• Visit every node once<br>• Recurse Left and Right<br><br><strong>Total:</strong> <code>O(N)</code>",
@@ -2753,11 +2823,19 @@ return left if left else right`
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Preorder kyun?</strong> Root pehle process hota hai — easy to rebuild",
-                    "⚡ Serialize: <code>vals.append(str(val))</code> else <code>append('N')</code> for null structure",
-                    "🔄 Deserialize: Use <code>iterator</code> (next()) — global index management se better",
-                    "✅ <code>val = next(); if 'N' return None</code> else create Node & recurse",
-                    "💡 Inorder kaam nahi karega kyunki root ambiguous hota hai string mein"
+                    "vals = []",
+                    "def encode(node):                  # 🎯 Preorder Traversal (Root->Left->Right)",
+                    "    if not node: vals.append('#')  # ⚡ Mark nulls to keep structure",
+                    "    else:",
+                    "        vals.append(str(node.val))",
+                    "        encode(node.left); encode(node.right)",
+                    "def decode(iter_vals):             # 🔄 Reconstruct matches Preorder",
+                    "    val = next(iter_vals)",
+                    "    if val == '#': return None     # ✅ Null marker -> Stop branch",
+                    "    node = TreeNode(int(val))",
+                    "    node.left = decode(iter_vals)  # 💡 Next val goes to left child",
+                    "    node.right = decode(iter_vals)",
+                    "    return node"
                 ],
                 metrics: { time: "O(N)", space: "O(H)" },
                 timeExplainer: "<strong>Preorder Traversal:</strong><br>• Visit all nodes to serialize: <code>O(N)</code><br>• Deserialize visits all nodes: <code>O(N)</code><br><br><strong>Total:</strong> <code>O(N)</code>",
@@ -2805,11 +2883,13 @@ def deserialize(self, data):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Split vs Flow kyun?</strong> Path U-turn le sakta hai (split) ya upar ja sakta hai (flow)",
-                    "⚡ Split (Local): <code>root + left + right</code> → update global max",
-                    "🔄 Flow (Return): <code>root + max(left, right)</code> → parent ko extend karne ke liye",
-                    "✅ Clamp negatives: <code>max(dfs(), 0)</code> — negative path mat lo",
-                    "💡 Global variable <code>self.max_sum</code> track karta hai best U-turn path"
+                    "self.global_max = float('-inf')",
+                    "def dfs(node):",
+                    "    if not node: return 0",
+                    "    L = max(dfs(node.left), 0)     # ⚡ Clamp negatives to 0 (Don't extend bad path)",
+                    "    R = max(dfs(node.right), 0)",
+                    "    self.global_max = max(self.global_max, node.val + L + R) # ✅ Split point potential",
+                    "    return node.val + max(L, R)    # 🔄 Return max SINGLE branch to parent"
                 ],
                 metrics: { time: "O(N)", space: "O(H)" },
                 timeExplainer: "<strong>DFS Postorder:</strong><br>• Compute max path for each node<br>• Visit every node exactly once<br><br><strong>Total:</strong> <code>O(N)</code>",
@@ -2847,11 +2927,18 @@ def maxPathSum(self, root):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Pre + In logic?</strong> Pre[0] is Root. Inorder mein Root split karta hai L/R ko",
-                    "⚡ Hashmap: <code>in_map = {val: idx}</code> for O(1) loopups of split index",
-                    "🔄 <code>mid = in_map[root_val]</code>; Recurse <code>build(is, mid-1)</code> then <code>build(mid+1, ie)</code>",
-                    "✅ Preorder iterator global rakho — apne aap next node dega",
-                    "💡 Important: Left subtree pehle build karo (Preorder rule)"
+                    "in_map = {val: idx for idx, val in enumerate(inorder)} # 🎯 O(1) lookup for root in inorder",
+                    "pre_idx = 0                                            # ⚡ Global index for preorder (current root)",
+                    "def build(in_start, in_end):",
+                    "    nonlocal pre_idx",
+                    "    if in_start > in_end: return None                 # ✅ Base Case: No elements left",
+                    "    root_val = preorder[pre_idx]",
+                    "    root = TreeNode(root_val)",
+                    "    pre_idx += 1",
+                    "    mid = in_map[root_val]                             # 🔄 Find root in inorder to split",
+                    "    root.left = build(in_start, mid - 1)               # 💡 Build left subtree",
+                    "    root.right = build(mid + 1, in_end)              # 💡 Build right subtree",
+                    "    return root"
                 ],
                 metrics: { time: "O(N)", space: "O(N)" },
                 timeExplainer: "<strong>Time Breakdown:</strong><br>• HashMap construction: <code>O(N)</code><br>• Recursive Tree Building: <code>O(N)</code><br><br><strong>Total:</strong> <code>O(N)</code>",
@@ -2892,11 +2979,16 @@ return build(0, len(inorder) - 1)`
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Coordinates kyun?</strong> (row, col) chahiye grouping ke liye",
-                    "⚡ BFS: Store <code>(node, row, col)</code> tuple in queue",
-                    "🔄 Map: <code>cols[c].append((r, val))</code> — col key hai, (row, val) value",
-                    "✅ Sort: Pehle Column, phir Row, phir Value (overlapping case)",
-                    "💡 BFS levels automatically row sort karte hain, bas value sort chahiye"
+                    "q = deque([root]); res = []",
+                    "while q:",
+                    "    level = []",
+                    "    for _ in range(len(q)):        # 🎯 Freeze size logic for Level Separation",
+                    "        node = q.popleft()",
+                    "        if not node: continue",
+                    "        level.append(node.val)",
+                    "        q.append(node.left)        # ⚡ Queue children for NEXT level",
+                    "        q.append(node.right)",
+                    "    if level: res.append(level)    # ✅ Add level if not empty (handles null children)"
                 ],
                 metrics: { time: "O(N log N)", space: "O(N)" },
                 timeExplainer: "<strong>BFS + Sorting:</strong><br>• BFS Traversal: <code>O(N)</code><br>• Sorting nodes in same column: <code>O(N log N)</code><br><br><strong>Total:</strong> <code>O(N log N)</code>",
@@ -2940,11 +3032,11 @@ return res`
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>BST Property use kyun?</strong> O(H) vs O(N) — data sorted hai!",
-                    "⚡ Logic: Agar dono P, Q < Root → Go Left. Agar dono > Root → Go Right",
-                    "🔄 Split Point: Jab ek chhota aur ek bada ho → Wohi LCA hai!",
-                    "✅ Iterative: Space O(1) ho jaata hai recursion stack ke bina",
-                    "💡 Binary Search jaisa: discard half tree every step"
+                    "def maxDepth(node):",
+                    "    if not node: return 0              # 🎯 Base Case: Empty tree has depth 0",
+                    "    left_depth = maxDepth(node.left)   # ⚡ Recurse Left",
+                    "    right_depth = maxDepth(node.right) # ⚡ Recurse Right",
+                    "    return 1 + max(left_depth, right_depth) # ✅ My Depth = 1 (Me) + Max(Children)"
                 ],
                 metrics: { time: "O(H)", space: "O(1)" },
                 code: `def lowestCommonAncestor(root, p, q):
@@ -2972,11 +3064,13 @@ while root:
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Postorder Tuple kyun?</strong> Valid BST check karne ke liye children ka min/max chahiye",
-                    "⚡ Return: <code>(min, max, size)</code> up the tree",
-                    "🔄 Check: <code>L.max < Node < R.min</code> — agar ye true hai toh valid MST",
-                    "✅ Size: <code>L.size + R.size + 1</code>. Update global max if valid",
-                    "💡 Invalid? Return <code>(inf, -inf)</code> taaki parent range check fail ho"
+                    "def validate(node, min_val, max_val):",
+                    "    if not node: return True           # 🎯 Base Case: Empty tree is a valid BST",
+                    "    if not (min_val < node.val < max_val): # ⚡ Check current node's value against range",
+                    "        return False",
+                    "    # ✅ Recursively check left and right subtrees with updated ranges",
+                    "    return validate(node.left, min_val, node.val) and \\",
+                    "           validate(node.right, node.val, max_val)"
                 ],
                 metrics: { time: "O(N)", space: "O(H)" },
                 code: `def largestBST(root):
@@ -4916,11 +5010,12 @@ def lengthOfLIS(nums):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Adjacent ban kyun?</strong> Ek chorr ke ek lootna hai",
-                    "⚡ Choice: <code>Rob current + nums[i-2]</code> OR <code>Skip current (keep prev)</code>",
-                    "🔄 <code>new_rob = max(rob1 + n, rob2)</code> transition",
-                    "✅ Space optimization: Sirf 2 variables <code>rob1, rob2</code> chahiye",
-                    "💡 Greedy fail karega: [2, 100, 2] — greedy takes 2+2=4, optimal is 100!"
+                    "rob1, rob2 = 0, 0                  # 🎯 Space Optimization: Only 2 vars needed",
+                    "for n in nums:",
+                    "    new_rob = max(rob1 + n, rob2)  # ⚡ Decision: Rob current (n + prev_prev) vs Skip (prev)",
+                    "    rob1 = rob2                    # 🔄 Shift window forward",
+                    "    rob2 = new_rob                 # ✅ Update max loot found so far",
+                    "return rob2"
                 ],
                 metrics: { time: "O(N)", space: "O(1)" },
                 timeExplainer: `<strong>Time Breakdown:</strong><br>
@@ -5286,11 +5381,11 @@ print(lengthOfLIS([0,1,0,3,2,3]))       # 4 → [0,1,2,3]`
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>2D DP kyun?</strong> String matching mein indices (i, j) track karne padte hain",
-                    "⚡ <code>if s1[i] == s2[j]</code> → MATCH! <code>1 + dp[i-1][j-1]</code> (diagonal)",
-                    "🔄 <code>else</code> → NO MATCH! <code>max(dp[i-1][j], dp[i][j-1])</code> (retain best previous)",
-                    "✅ Base case: dp[0][0] = 0 (empty strings match nothing)",
-                    "💡 Space Opt? Sirf <code>prev_row</code> aur <code>curr_row</code> chahiye (O(N) space)"
+                    "if s1[i] == s2[j]:                 # 🎯 Characters MATCH",
+                    "    return 1 + solve(i+1, j+1)     # ⚡ Add 1, move both pointers diagonally",
+                    "else:                              # 🔄 NO MATCH",
+                    "    return max(solve(i+1, j),      # ✅ Skip s1 char",
+                    "               solve(i, j+1))      #    Skip s2 char"
                 ],
                 metrics: { time: "O(M × N)", space: "O(M × N)" },
                 timeExplainer: `<strong style="color:#f59e0b;">⏱️ Time Complexity Deep Dive</strong>
@@ -5502,11 +5597,12 @@ print(longestCommonSubsequence("abcde", "ace"))  # 3 → "ace"`
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Unbounded Knapsack kyun?</strong> Coins infinite supply mein hain",
-                    "⚡ <code>dp[a] = min(dp[a], 1 + dp[a - coin])</code> — try all coins",
-                    "🔄 Init <code>dp = [inf]</code>, default <code>dp[0]=0</code> (0 coin for 0 amount)",
-                    "✅ <code>dp[amount] > amount</code>? Return -1 (impossible)",
-                    "💡 Loop order: <code>for coin in coins</code> bahar kyun? Reduce repetitive permutations (perf boost)"
+                    "dp = [inf] * (amount + 1); dp[0]=0 # 🎯 Min coins to reach 'i' amount",
+                    "for a in range(1, amount+1):",
+                    "    for c in coins:",
+                    "        if a - c >= 0:             # ⚡ Can we use this coin?",
+                    "            dp[a] = min(dp[a], 1 + dp[a-c]) # 🔄 Update min cost",
+                    "return dp[amount] if != inf else -1"
                 ],
                 metrics: { time: "O(A × C)", space: "O(A × C)" },
                 timeExplainer: `<strong style="color:#f59e0b;">⏱️ Time Complexity Deep Dive</strong>
@@ -5627,7 +5723,7 @@ print(longestCommonSubsequence("abcde", "ace"))  # 3 → "ace"`
                     • Take 5: remaining = 1, coins = 2<br>
                     • Take 1: remaining = 0, coins = 3 ✅<br>
                     • 5 + 5 + 1 = 11 with 3 coins`,
-                    `<strong>Answer:</strong> 3 coins<br>
+                    `<strong>Answer:</strong> 3<br>
                     One valid combination: [5, 5, 1]<br>
                     Another: [5, 2, 2, 2] = 4 coins (not optimal)`
                 ],
@@ -5722,11 +5818,12 @@ print(coinChange([2], 3))       # -1 → impossible`
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Cut points kyun?</strong> String ko valid words mein split karna hai",
-                    "⚡ <code>if dp[j] and s[j:i] in dict</code> → Valid segment found!",
-                    "🔄 <code>dp[i] = True</code> — current prefix ends with a valid word",
-                    "✅ Return <code>dp[n]</code> — pura string segmented hai ya nahi",
-                    "💡 O(N²) loop nested but efficient — inner loop checks previous cuts"
+                    "dp = [1] * n                       # 🎯 dp[i] = Longest chain ending at i",
+                    "for i in range(n):",
+                    "    for j in range(i):             # ⚡ Check all previous elements",
+                    "        if nums[i] > nums[j]:      # 🔄 Can we extend the chain?",
+                    "            dp[i] = max(dp[i], 1 + dp[j])",
+                    "return max(dp)"
                 ],
                 metrics: { time: "O(N³)", space: "O(N)" },
                 timeExplainer: `
@@ -6465,11 +6562,13 @@ return dp[target]`
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Min Operations kyun?</strong> Transform word1 to word2 in cheapest way",
-                    "⚡ If mismatch: <code>1 + min(Insert, Delete, Replace)</code>",
-                    "🔄 Insert = <code>dp[i][j-1]</code>, Delete = <code>dp[i-1][j]</code>, Replace = <code>dp[i-1][j-1]</code>",
-                    "✅ Base case: dp[i][0] = i (delete all), dp[0][j] = j (insert all)",
-                    "💡 Replace is diagonal move, others are straight moves"
+                    "if w1[i] == w2[j]:                 # 🎯 Match: No op needed",
+                    "    return solve(i+1, j+1)",
+                    "else:",
+                    "    insert = 1 + solve(i, j+1)     # ⚡ Insert char",
+                    "    delete = 1 + solve(i+1, j)     # ⚡ Delete char",
+                    "    replace = 1 + solve(i+1, j+1)  # 🔄 Replace char",
+                    "    return min(insert, delete, replace)"
                 ],
                 metrics: { time: "O(M×N)", space: "O(M×N)" },
                 timeExplainer: `
@@ -6966,11 +7065,17 @@ def singleNumber(nums):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Min-Heap why?</strong> Don't sort! Hume sirf top K largest elements ka 'club' maintain karna hai",
-                    "⚡ <code>MinHeap(k)</code>: Root is smallest member of Top-K club (bouncer)",
-                    "🔄 If <code>new_val > root</code>: <code>heapreplace(val)</code> — chhota bahar, bada andar",
-                    "✅ Heap size K constant rakhna hai stream mein",
-                    "💡 Kth Largest = <code>MinHeap.root</code> (smallest of the giants)"
+                    "class KthLargest:",
+                    "    def __init__(self, k, nums):",
+                    "        self.k = k",
+                    "        self.heap = []",
+                    "        for n in nums: self.add(n)",
+                    "    def add(self, val):",
+                    "        # 🎯 Min-Heap: Stores Top-K largest elements",
+                    "        heapq.heappush(self.heap, val) # ⚡ Add new candidate",
+                    "        if len(self.heap) > self.k:",
+                    "            heapq.heappop(self.heap)   # 🔄 Remove smallest of the giants",
+                    "        return self.heap[0]            # ✅ Root is the Kth largest"
                 ],
                 metrics: { time: "O(log K)", space: "O(K)" },
                 timeExplainer: "<strong>Min-Heap:</strong><br>• Add element: <code>O(log K)</code><br>• Maintain size K<br><br><strong>Total:</strong> <code>O(log K)</code> per add",
@@ -7009,11 +7114,17 @@ def add(self, val):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Heap Merge logic?</strong> Race track! Har list ka head race mein hai",
-                    "⚡ Min-Heap stores <code>(val, idx, node)</code> of all list heads",
-                    "🔄 Pop smallest: Add to result. Push <code>node.next</code> from THAT list",
-                    "✅ Runs until heap is empty (all nodes processed)",
-                    "💡 Tuple <code>(val, i, node)</code> mein 'i' tie-breaker hai (node comparison crash rokne ke liye)"
+                    "heap = []                          # 🎯 Min-Heap: (val, index, node)",
+                    "for i, l in enumerate(lists):",
+                    "    if l: heapq.heappush(heap, (l.val, i, l)) # ⚡ Init heap with heads",
+                    "dummy = curr = ListNode(0)",
+                    "while heap:",
+                    "    val, i, node = heapq.heappop(heap) # 🔄 Get smallest among K heads",
+                    "    curr.next = node",
+                    "    curr = curr.next",
+                    "    if node.next:                  # ✅ Push next node from same list",
+                    "        heapq.heappush(heap, (node.next.val, i, node.next))",
+                    "return dummy.next"
                 ],
                 metrics: { time: "O(N log K)", space: "O(K)" },
                 timeExplainer: "<strong>Heap Merge:</strong><br>• Heap size K (one per list)<br>• Process all N nodes<br>• Push/Pop is log K<br><br><strong>Total:</strong> <code>O(N log K)</code>",
@@ -7117,11 +7228,19 @@ def startsWith(self, prefix):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Bit Trie kyun?</strong> XOR maximize karne ke liye 'opposite' bit chahiye (1^0=1)",
-                    "⚡ Insert nums as 32-bit binary strings (MSB to LSB)",
-                    "🔄 Query: For each bit, try going opposite direction (if 1 go 0). If blocked, go same.",
-                    "✅ Successful opposite moves = higher XOR value",
-                    "💡 O(N) approach compared to O(N²) brute force"
+                    "counts = Counter(tasks)",
+                    "maxHeap = [-cnt for cnt in counts.values()] # 🎯 Max Frequency first",
+                    "heapq.heapify(maxHeap)",
+                    "q = deque()                        # ⚡ Queue: (count, available_time)",
+                    "time = 0",
+                    "while maxHeap or q:",
+                    "    time += 1",
+                    "    if maxHeap:                    # 🔄 Process task",
+                    "        cnt = heapq.heappop(maxHeap) + 1 # Decr count (negative logic)",
+                    "        if cnt: q.append((cnt, time + n)) # ✅ Add to wait queue",
+                    "    if q and q[0][1] == time:      # 💡 Task becomes available again",
+                    "        heapq.heappush(maxHeap, q.popleft()[0])",
+                    "return time"
                 ],
                 metrics: { time: "O(N * 32)", space: "O(N * 32)" },
                 code: `# Trie Implementation needed`
@@ -7142,11 +7261,17 @@ def startsWith(self, prefix):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>XOR Magic?</strong> Compare pairs without Sort/Set",
-                    "⚡ Property: <code>A ^ A = 0</code> (Pairs vanish) and <code>A ^ 0 = A</code>",
-                    "🔄 Loop: XOR all numbers together",
-                    "✅ Result: Jo single hai wahi bachega, baaki sab 0 ban jayenge",
-                    "💡 O(N) time & O(1) space — best solution possible"
+                    "small, large = [], []              # 🎯 Small: Max-Heap, Large: Min-Heap",
+                    "def addNum(num):",
+                    "    heapq.heappush(small, -num)    # ⚡ Always push to Small first",
+                    "    # 🔄 Balance: Max(Small) <= Min(Large)",
+                    "    if small and large and (-small[0] > large[0]):",
+                    "        heapq.heappush(large, -heapq.heappop(small))",
+                    "    # ✅ Size Balance: len(Small) roughly len(Large)",
+                    "    if len(small) > len(large) + 1:",
+                    "        heapq.heappush(large, -heapq.heappop(small))",
+                    "    elif len(large) > len(small):",
+                    "        heapq.heappush(small, -heapq.heappop(large))"
                 ],
                 metrics: { time: "O(N)", space: "O(1)" },
                 code: `def singleNumber(nums):
@@ -7395,11 +7520,19 @@ def solveNQueens(n):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>3 Sets kyun?</strong> O(1) mein attack check — loop se O(N) lagta",
-                    "⚡ <code>cols, posDiag(r+c), negDiag(r-c)</code> — same diagonal = same sum/diff",
-                    "🔄 Row-by-row: <code>for col in range(N)</code> try karo, constraint check karo",
-                    "✅ <code>if row == N</code> → solution found! Board save karo",
-                    "💡 Backtrack: <code>sets.remove(col)</code> — next column try karne ke liye"
+                    "cols, diag, anti_diag = set(), set(), set()",
+                    "res = []",
+                    "def backtrack(r):",
+                    "    if r == n:                     # 🎯 Base Case: All queens placed",
+                    "        res.append(board[:])",
+                    "        return",
+                    "    for c in range(n):             # ⚡ Try all columns in current row",
+                    "        if c in cols or (r+c) in diag or (r-c) in anti_diag: # 🔄 Valid?",
+                    "            continue",
+                    "        cols.add(c); diag.add(r+c); anti_diag.add(r-c) # ✅ Place & Mark",
+                    "        board[r] = c",
+                    "        backtrack(r + 1)           # 💡 Recurse next row",
+                    "        cols.remove(c); diag.remove(r+c); anti_diag.remove(r-c) # 🔄 Backtrack logic (Unmark)"
                 ],
                 metrics: { time: "O(N!)", space: "O(N)" },
                 timeExplainer: `<strong>Time Complexity: O(N!)</strong><br><br>
@@ -7689,11 +7822,15 @@ for solution in solveNQueens_detailed(4):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Swap kyun?</strong> In-place permutation — extra array nahi chahiye",
-                    "⚡ <code>for i in range(start, n): swap(start, i)</code> — har element ko start pe try karo",
-                    "🔄 <code>backtrack(start+1)</code> → baaki array permute karo",
-                    "✅ <code>start == n</code> → ek permutation complete, copy and save",
-                    "💡 Duplicates? Sort first, skip if <code>nums[i] == nums[i-1]</code>"
+                    "res = []",
+                    "def backtrack(first):",
+                    "    if first == n:                 # 🎯 Base Case: Permutation complete",
+                    "        res.append(nums[:])",
+                    "        return",
+                    "    for i in range(first, n):      # ⚡ Swap current with all future pos",
+                    "        nums[first], nums[i] = nums[i], nums[first] # 🔄 Swap",
+                    "        backtrack(first + 1)       # ✅ Fix 'first' and move on",
+                    "        nums[first], nums[i] = nums[i], nums[first] # 💡 Undo Swap"
                 ],
                 metrics: { time: "O(N × N!)", space: "O(N)" },
                 timeExplainer: `<strong>Why O(N × N!)?</strong><br><br>
@@ -7957,11 +8094,13 @@ print(permute_detailed([1, 2, 3]))
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Pick/Skip kyun?</strong> Har element ke 2 choices — include ya exclude",
-                    "⚡ <code>path.append(nums[i])</code> PICK, <code>backtrack(i+1)</code>",
-                    "🔄 <code>path.pop()</code> SKIP — ye backtrack hai, not separate call",
-                    "✅ <code>i == len(nums)</code> → <code>result.append(path[:])</code> — COPY zaruri!",
-                    "💡 Duplicates? Sort + <code>if i>start and nums[i]==nums[i-1]: skip</code>"
+                    "res = []",
+                    "def backtrack(start, path):",
+                    "    res.append(path[:])            # 🎯 Capture EVERY valid subset node",
+                    "    for i in range(start, n):      # ⚡ Iterate remaining options",
+                    "        path.append(nums[i])       # 🔄 Include nums[i]",
+                    "        backtrack(i + 1, path)     # ✅ Move forward (i+1)",
+                    "        path.pop()                 # 💡 Backtrack (Exclude)"
                 ],
                 metrics: { time: "O(2^N × N)", space: "O(N)" },
                 timeExplainer: `<strong>Exponential Growth:</strong><br>
@@ -8097,7 +8236,7 @@ def subsets_iterative(nums):
 
 # Test with dry run
 print(subsets_detailed([1, 2, 3]))
-# Output: [[], [3], [2], [2,3], [1], [1,3], [1,2], [1,2,3]]`
+# Output: [[], [3], [2], [2,3], [1], [1,3], [2,3], [1,2,3]]`
             }
         },
         {
@@ -8394,11 +8533,13 @@ def combinationSum2(candidates, target):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Grid DFS kyun?</strong> 4-directional path finding with backtracking",
-                    "⚡ <code>board[r][c] = '#'</code> MARK before recursing — avoid revisit",
-                    "🔄 4 directions: <code>short-circuit OR</code> → <code>return dfs() or dfs() or...</code>",
-                    "✅ <code>idx == len(word)</code> → found! Return True immediately",
-                    "💡 <code>board[r][c] = temp</code> UNMARK after — other paths bhi try karenge"
+                    "def dfs(r, c, k):",
+                    "    if k == len(word): return True # 🎯 Word Found!",
+                    "    if not (0 <= r < ROWS and 0 <= c < COLS) or board[r][c] != word[k]: return False # ⚡ Mismatch/Off-board",
+                    "    temp, board[r][c] = board[r][c], '#' # 🔄 Mark visited",
+                    "    found = (dfs(r+1,c,k+1) or dfs(r-1,c,k+1) or dfs(r,c+1,k+1) or dfs(r,c-1,k+1)) # ✅ Try 4 dirs",
+                    "    board[r][c] = temp             # 💡 Unmark (Backtrack)",
+                    "    return found"
                 ],
                 metrics: { time: "O(M×N × 3^L)", space: "O(L)" },
                 timeExplainer: `<strong>Time Complexity: O(M×N × 3^L)</strong><br><br>
@@ -8689,11 +8830,17 @@ def exist_clean(board, word):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Constraint propagation kyun?</strong> 3 checks: row, col, 3x3 box",
-                    "⚡ <code>box_idx = (r//3)*3 + c//3</code> — 9 boxes indexed 0-8",
-                    "🔄 Find empty cell → try 1-9 → <code>if valid: place and recurse</code>",
-                    "✅ No empty cell left → solved! Return True",
-                    "💡 <code>board[r][c] = '.'</code> backtrack if recursion returns False"
+                    "def solve():",
+                    "    for r in range(9):",
+                    "        for c in range(9):",
+                    "            if board[r][c] == '.': # 🎯 Find empty cell",
+                    "                for digit in '123456789': # ⚡ Try digits 1-9",
+                    "                    if is_valid(r, c, digit): # 🔄 Check constraints",
+                    "                        board[r][c] = digit # ✅ Place digit",
+                    "                        if solve(): return True # 💡 Recurse & propagate success",
+                    "                        board[r][c] = '.' # 🔄 Backtrack",
+                    "                return False # No digit works, backtrack",
+                    "    return True # All cells filled, solved!"
                 ],
                 metrics: { time: "O(9^M)", space: "O(M)" },
                 timeExplainer: `<strong>Time Complexity: O(9^M)</strong><br><br>

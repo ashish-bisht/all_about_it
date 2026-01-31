@@ -167,11 +167,17 @@ def singleNumber(nums):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Min-Heap why?</strong> Don't sort! Hume sirf top K largest elements ka 'club' maintain karna hai",
-                    "⚡ <code>MinHeap(k)</code>: Root is smallest member of Top-K club (bouncer)",
-                    "🔄 If <code>new_val > root</code>: <code>heapreplace(val)</code> — chhota bahar, bada andar",
-                    "✅ Heap size K constant rakhna hai stream mein",
-                    "💡 Kth Largest = <code>MinHeap.root</code> (smallest of the giants)"
+                    "class KthLargest:",
+                    "    def __init__(self, k, nums):",
+                    "        self.k = k",
+                    "        self.heap = []",
+                    "        for n in nums: self.add(n)",
+                    "    def add(self, val):",
+                    "        # 🎯 Min-Heap: Stores Top-K largest elements",
+                    "        heapq.heappush(self.heap, val) # ⚡ Add new candidate",
+                    "        if len(self.heap) > self.k:",
+                    "            heapq.heappop(self.heap)   # 🔄 Remove smallest of the giants",
+                    "        return self.heap[0]            # ✅ Root is the Kth largest"
                 ],
                 metrics: { time: "O(log K)", space: "O(K)" },
                 timeExplainer: "<strong>Min-Heap:</strong><br>• Add element: <code>O(log K)</code><br>• Maintain size K<br><br><strong>Total:</strong> <code>O(log K)</code> per add",
@@ -210,11 +216,17 @@ def add(self, val):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Heap Merge logic?</strong> Race track! Har list ka head race mein hai",
-                    "⚡ Min-Heap stores <code>(val, idx, node)</code> of all list heads",
-                    "🔄 Pop smallest: Add to result. Push <code>node.next</code> from THAT list",
-                    "✅ Runs until heap is empty (all nodes processed)",
-                    "💡 Tuple <code>(val, i, node)</code> mein 'i' tie-breaker hai (node comparison crash rokne ke liye)"
+                    "heap = []                          # 🎯 Min-Heap: (val, index, node)",
+                    "for i, l in enumerate(lists):",
+                    "    if l: heapq.heappush(heap, (l.val, i, l)) # ⚡ Init heap with heads",
+                    "dummy = curr = ListNode(0)",
+                    "while heap:",
+                    "    val, i, node = heapq.heappop(heap) # 🔄 Get smallest among K heads",
+                    "    curr.next = node",
+                    "    curr = curr.next",
+                    "    if node.next:                  # ✅ Push next node from same list",
+                    "        heapq.heappush(heap, (node.next.val, i, node.next))",
+                    "return dummy.next"
                 ],
                 metrics: { time: "O(N log K)", space: "O(K)" },
                 timeExplainer: "<strong>Heap Merge:</strong><br>• Heap size K (one per list)<br>• Process all N nodes<br>• Push/Pop is log K<br><br><strong>Total:</strong> <code>O(N log K)</code>",
@@ -318,11 +330,19 @@ def startsWith(self, prefix):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Bit Trie kyun?</strong> XOR maximize karne ke liye 'opposite' bit chahiye (1^0=1)",
-                    "⚡ Insert nums as 32-bit binary strings (MSB to LSB)",
-                    "🔄 Query: For each bit, try going opposite direction (if 1 go 0). If blocked, go same.",
-                    "✅ Successful opposite moves = higher XOR value",
-                    "💡 O(N) approach compared to O(N²) brute force"
+                    "counts = Counter(tasks)",
+                    "maxHeap = [-cnt for cnt in counts.values()] # 🎯 Max Frequency first",
+                    "heapq.heapify(maxHeap)",
+                    "q = deque()                        # ⚡ Queue: (count, available_time)",
+                    "time = 0",
+                    "while maxHeap or q:",
+                    "    time += 1",
+                    "    if maxHeap:                    # 🔄 Process task",
+                    "        cnt = heapq.heappop(maxHeap) + 1 # Decr count (negative logic)",
+                    "        if cnt: q.append((cnt, time + n)) # ✅ Add to wait queue",
+                    "    if q and q[0][1] == time:      # 💡 Task becomes available again",
+                    "        heapq.heappush(maxHeap, q.popleft()[0])",
+                    "return time"
                 ],
                 metrics: { time: "O(N * 32)", space: "O(N * 32)" },
                 code: `# Trie Implementation needed`
@@ -343,11 +363,17 @@ def startsWith(self, prefix):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>XOR Magic?</strong> Compare pairs without Sort/Set",
-                    "⚡ Property: <code>A ^ A = 0</code> (Pairs vanish) and <code>A ^ 0 = A</code>",
-                    "🔄 Loop: XOR all numbers together",
-                    "✅ Result: Jo single hai wahi bachega, baaki sab 0 ban jayenge",
-                    "💡 O(N) time & O(1) space — best solution possible"
+                    "small, large = [], []              # 🎯 Small: Max-Heap, Large: Min-Heap",
+                    "def addNum(num):",
+                    "    heapq.heappush(small, -num)    # ⚡ Always push to Small first",
+                    "    # 🔄 Balance: Max(Small) <= Min(Large)",
+                    "    if small and large and (-small[0] > large[0]):",
+                    "        heapq.heappush(large, -heapq.heappop(small))",
+                    "    # ✅ Size Balance: len(Small) roughly len(Large)",
+                    "    if len(small) > len(large) + 1:",
+                    "        heapq.heappush(large, -heapq.heappop(small))",
+                    "    elif len(large) > len(small):",
+                    "        heapq.heappush(small, -heapq.heappop(large))"
                 ],
                 metrics: { time: "O(N)", space: "O(1)" },
                 code: `def singleNumber(nums):

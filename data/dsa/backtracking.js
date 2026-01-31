@@ -205,11 +205,19 @@ def solveNQueens(n):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>3 Sets kyun?</strong> O(1) mein attack check — loop se O(N) lagta",
-                    "⚡ <code>cols, posDiag(r+c), negDiag(r-c)</code> — same diagonal = same sum/diff",
-                    "🔄 Row-by-row: <code>for col in range(N)</code> try karo, constraint check karo",
-                    "✅ <code>if row == N</code> → solution found! Board save karo",
-                    "💡 Backtrack: <code>sets.remove(col)</code> — next column try karne ke liye"
+                    "cols, diag, anti_diag = set(), set(), set()",
+                    "res = []",
+                    "def backtrack(r):",
+                    "    if r == n:                     # 🎯 Base Case: All queens placed",
+                    "        res.append(board[:])",
+                    "        return",
+                    "    for c in range(n):             # ⚡ Try all columns in current row",
+                    "        if c in cols or (r+c) in diag or (r-c) in anti_diag: # 🔄 Valid?",
+                    "            continue",
+                    "        cols.add(c); diag.add(r+c); anti_diag.add(r-c) # ✅ Place & Mark",
+                    "        board[r] = c",
+                    "        backtrack(r + 1)           # 💡 Recurse next row",
+                    "        cols.remove(c); diag.remove(r+c); anti_diag.remove(r-c) # 🔄 Backtrack logic (Unmark)"
                 ],
                 metrics: { time: "O(N!)", space: "O(N)" },
                 timeExplainer: `<strong>Time Complexity: O(N!)</strong><br><br>
@@ -499,11 +507,15 @@ for solution in solveNQueens_detailed(4):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Swap kyun?</strong> In-place permutation — extra array nahi chahiye",
-                    "⚡ <code>for i in range(start, n): swap(start, i)</code> — har element ko start pe try karo",
-                    "🔄 <code>backtrack(start+1)</code> → baaki array permute karo",
-                    "✅ <code>start == n</code> → ek permutation complete, copy and save",
-                    "💡 Duplicates? Sort first, skip if <code>nums[i] == nums[i-1]</code>"
+                    "res = []",
+                    "def backtrack(first):",
+                    "    if first == n:                 # 🎯 Base Case: Permutation complete",
+                    "        res.append(nums[:])",
+                    "        return",
+                    "    for i in range(first, n):      # ⚡ Swap current with all future pos",
+                    "        nums[first], nums[i] = nums[i], nums[first] # 🔄 Swap",
+                    "        backtrack(first + 1)       # ✅ Fix 'first' and move on",
+                    "        nums[first], nums[i] = nums[i], nums[first] # 💡 Undo Swap"
                 ],
                 metrics: { time: "O(N × N!)", space: "O(N)" },
                 timeExplainer: `<strong>Why O(N × N!)?</strong><br><br>
@@ -767,11 +779,13 @@ print(permute_detailed([1, 2, 3]))
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Pick/Skip kyun?</strong> Har element ke 2 choices — include ya exclude",
-                    "⚡ <code>path.append(nums[i])</code> PICK, <code>backtrack(i+1)</code>",
-                    "🔄 <code>path.pop()</code> SKIP — ye backtrack hai, not separate call",
-                    "✅ <code>i == len(nums)</code> → <code>result.append(path[:])</code> — COPY zaruri!",
-                    "💡 Duplicates? Sort + <code>if i>start and nums[i]==nums[i-1]: skip</code>"
+                    "res = []",
+                    "def backtrack(start, path):",
+                    "    res.append(path[:])            # 🎯 Capture EVERY valid subset node",
+                    "    for i in range(start, n):      # ⚡ Iterate remaining options",
+                    "        path.append(nums[i])       # 🔄 Include nums[i]",
+                    "        backtrack(i + 1, path)     # ✅ Move forward (i+1)",
+                    "        path.pop()                 # 💡 Backtrack (Exclude)"
                 ],
                 metrics: { time: "O(2^N × N)", space: "O(N)" },
                 timeExplainer: `<strong>Exponential Growth:</strong><br>
@@ -907,7 +921,7 @@ def subsets_iterative(nums):
 
 # Test with dry run
 print(subsets_detailed([1, 2, 3]))
-# Output: [[], [3], [2], [2,3], [1], [1,3], [1,2], [1,2,3]]`
+# Output: [[], [3], [2], [2,3], [1], [1,3], [2,3], [1,2,3]]`
             }
         },
         {
@@ -1204,11 +1218,13 @@ def combinationSum2(candidates, target):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Grid DFS kyun?</strong> 4-directional path finding with backtracking",
-                    "⚡ <code>board[r][c] = '#'</code> MARK before recursing — avoid revisit",
-                    "🔄 4 directions: <code>short-circuit OR</code> → <code>return dfs() or dfs() or...</code>",
-                    "✅ <code>idx == len(word)</code> → found! Return True immediately",
-                    "💡 <code>board[r][c] = temp</code> UNMARK after — other paths bhi try karenge"
+                    "def dfs(r, c, k):",
+                    "    if k == len(word): return True # 🎯 Word Found!",
+                    "    if not (0 <= r < ROWS and 0 <= c < COLS) or board[r][c] != word[k]: return False # ⚡ Mismatch/Off-board",
+                    "    temp, board[r][c] = board[r][c], '#' # 🔄 Mark visited",
+                    "    found = (dfs(r+1,c,k+1) or dfs(r-1,c,k+1) or dfs(r,c+1,k+1) or dfs(r,c-1,k+1)) # ✅ Try 4 dirs",
+                    "    board[r][c] = temp             # 💡 Unmark (Backtrack)",
+                    "    return found"
                 ],
                 metrics: { time: "O(M×N × 3^L)", space: "O(L)" },
                 timeExplainer: `<strong>Time Complexity: O(M×N × 3^L)</strong><br><br>
@@ -1499,11 +1515,17 @@ def exist_clean(board, word):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Constraint propagation kyun?</strong> 3 checks: row, col, 3x3 box",
-                    "⚡ <code>box_idx = (r//3)*3 + c//3</code> — 9 boxes indexed 0-8",
-                    "🔄 Find empty cell → try 1-9 → <code>if valid: place and recurse</code>",
-                    "✅ No empty cell left → solved! Return True",
-                    "💡 <code>board[r][c] = '.'</code> backtrack if recursion returns False"
+                    "def solve():",
+                    "    for r in range(9):",
+                    "        for c in range(9):",
+                    "            if board[r][c] == '.': # 🎯 Find empty cell",
+                    "                for digit in '123456789': # ⚡ Try digits 1-9",
+                    "                    if is_valid(r, c, digit): # 🔄 Check constraints",
+                    "                        board[r][c] = digit # ✅ Place digit",
+                    "                        if solve(): return True # 💡 Recurse & propagate success",
+                    "                        board[r][c] = '.' # 🔄 Backtrack",
+                    "                return False # No digit works, backtrack",
+                    "    return True # All cells filled, solved!"
                 ],
                 metrics: { time: "O(9^M)", space: "O(M)" },
                 timeExplainer: `<strong>Time Complexity: O(9^M)</strong><br><br>

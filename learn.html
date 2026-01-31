@@ -740,7 +740,6 @@
                             </a>
                         </div>` : ''}
 
-                        <!-- Quick Algo Steps (Mental Map) -->
                         ${learn.quickAlgo && learn.quickAlgo.length > 0 ? `
                         <div class="collapsible-section quick-algo" onclick="toggleCollapsible(this)">
                             <div class="collapsible-header">
@@ -751,17 +750,8 @@
                                 <i class="fas fa-chevron-down collapsible-arrow"></i>
                             </div>
                             <div class="collapsible-content">
-                                <div class="collapsible-inner" style="padding-top:0;">
-                                    <div class="quick-algo-steps">
-                                        ${learn.quickAlgo.map((step, i) => `
-                                        <div class="algo-step">
-                                            <div class="step-number">${i + 1}</div>
-                                            <div class="step-content">
-                                                <div class="step-text">${step}</div>
-                                            </div>
-                                        </div>
-                                        `).join('')}
-                                    </div>
+                                <div class="collapsible-inner" style="padding:0; background: #0d1117;">
+                                    <pre style="margin:0; border:none; border-radius:0;"><code class="language-python" style="font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; line-height: 1.5;">${learn.quickAlgo.join('\n')}</code></pre>
                                 </div>
                             </div>
                         </div>` : ''}
@@ -849,6 +839,12 @@
             // Trigger Highlight.js
             if (window.hljs) {
                 hljs.highlightAll();
+            }
+
+            // Highlight specific Quick Algo block if it exists (for dynamic content safety)
+            const quickAlgoBlock = document.querySelector('.quick-algo code');
+            if (quickAlgoBlock) {
+                hljs.highlightElement(quickAlgoBlock);
             }
 
             // Switch Nav button to "Back to List"
