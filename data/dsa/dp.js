@@ -9,12 +9,212 @@ const topic_dp = {
     icon: "fas fa-braille",
     mentalModel: {
         whenToApply: [
-            { label: "Overlapping Subproblems", desc: "Solving the same small problem again and again? Memoize it." },
-            { label: "Optimal Substructure", desc: "Can you build the answer from answers of smaller inputs?" }
+            { label: "🔄 Overlapping Subproblems", desc: "Same small problem solved repeatedly → Memoize it!" },
+            { label: "🏗️ Optimal Substructure", desc: "Optimal solution built from optimal sub-solutions" },
+            { label: "📊 Counting Ways", desc: "How many ways to reach X? → DP addition" },
+            { label: "⚖️ Optimization", desc: "Min/Max value? → DP with min()/max()" },
+            { label: "✅ Decision Making", desc: "Take or skip? → Compare both choices" }
         ],
+        patterns: [
+            { algo: "1D Linear", use: "House Robber, Climbing Stairs", time: "O(N)", space: "O(1)", template: "dp[i] = f(dp[i-1], dp[i-2])" },
+            { algo: "0/1 Knapsack", use: "Subset Sum, Partition Equal", time: "O(N×W)", space: "O(W)", template: "Take: dp[j-w]+v, Skip: dp[j]" },
+            { algo: "Unbounded Knapsack", use: "Coin Change, Rod Cutting", time: "O(N×W)", space: "O(W)", template: "for coin: dp[j] = min(dp[j], dp[j-coin]+1)" },
+            { algo: "LCS/LIS", use: "Longest Common/Increasing", time: "O(N²) or O(N log N)", space: "O(N)", template: "match: dp[i-1][j-1]+1, else: max(skip)" },
+            { algo: "Grid DP", use: "Unique Paths, Min Path Sum", time: "O(M×N)", space: "O(N)", template: "dp[i][j] = f(dp[i-1][j], dp[i][j-1])" },
+            { algo: "Interval DP", use: "Burst Balloons, MCM", time: "O(N³)", space: "O(N²)", template: "for len, for i, for k in (i,j)" }
+        ],
+        decisionTree: `
+<div style="background:#1e293b; padding:25px; border-radius:16px; margin:15px 0; border:1px solid rgba(255,255,255,0.1);">
+<h4 style="color:#a78bfa; margin-bottom:20px; text-align:center; font-size:1.1rem;">🧠 DP Pattern Recognition (Recursive Thinking)</h4>
+<div style="font-family:monospace; font-size:0.85rem; line-height:1.8;">
+<pre style="color:#e2e8f0; text-align:left; margin:0;">
+              ┌──────────────────────────────┐
+              │ "What type of DP problem?"   │
+              └──────────────┬───────────────┘
+                             │
+     ┌───────────────────────┼───────────────────────┐
+     ▼                       ▼                       ▼
+┌──────────────┐      ┌──────────────┐      ┌──────────────┐
+│  SEQUENCE    │      │   KNAPSACK   │      │    GRID      │
+│  Problems    │      │   Problems   │      │   Problems   │
+└──────┬───────┘      └──────┬───────┘      └──────┬───────┘
+       │                     │                     │
+       ▼                     ▼                     ▼
+ ┌───────────────┐    ┌───────────────┐    ┌───────────────┐
+ │ LIS/LCS?      │    │ 0/1? Use item │    │ solve(i, j)   │
+ │ solve(i, j)   │    │ ONCE only     │    │               │
+ │               │    │               │    │ return from   │
+ │ match? +1     │    │ Unbounded?    │    │ solve(i-1, j) │
+ │ else max()    │    │ Can REUSE     │    │ solve(i, j-1) │
+ └───────────────┘    └───────────────┘    └───────────────┘
+
+  ┌─────────────────────────────────────────────────────────┐
+  │ 🔥 UNIVERSAL RECURSIVE TEMPLATE:                        │
+  │                                                         │
+  │   def solve(i, ...):                                    │
+  │       if BASE_CASE: return 0                            │
+  │       if (i, ...) in memo: return memo[(i, ...)]        │
+  │                                                         │
+  │       take = value + solve(NEXT_STATE_AFTER_TAKE)       │
+  │       skip = solve(NEXT_STATE_AFTER_SKIP)               │
+  │                                                         │
+  │       memo[(i, ...)] = max(take, skip)  # or min        │
+  │       return memo[(i, ...)]                             │
+  └─────────────────────────────────────────────────────────┘
+
+       "Counting ways vs Optimization?"
+              │
+       ┌──────┴──────┐
+       ▼             ▼
+  ┌─────────────┐   ┌─────────────┐
+  │ COUNTING    │   │ OPTIMIZATION│
+  │ return      │   │ return      │
+  │ solve(a) +  │   │ max/min(    │
+  │ solve(b)    │   │  take, skip │
+  └─────────────┘   │ )           │
+                    └─────────────┘
+</pre>
+</div>
+</div>`,
+        codeTemplates: `
+<div style="background:#0f172a; padding:20px; border-radius:12px; margin:15px 0;">
+<h4 style="color:#10b981; margin-bottom:15px;">📝 DP Templates (Memoization)</h4>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+1️⃣ House Robber (Take/Skip)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def rob(nums):
+    memo = {}
+    def solve(i):
+        if i >= len(nums): return 0
+        if i in memo: return memo[i]
+        
+        take = nums[i] + solve(i + 2)  # Take current, skip next
+        skip = solve(i + 1)             # Skip current
+        
+        memo[i] = max(take, skip)
+        return memo[i]
+    return solve(0)
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+2️⃣ Coin Change (Unbounded)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def coinChange(coins, amount):
+    memo = {}
+    def solve(remaining):
+        if remaining == 0: return 0
+        if remaining < 0: return float('inf')
+        if remaining in memo: return memo[remaining]
+        
+        min_coins = float('inf')
+        for coin in coins:
+            min_coins = min(min_coins, solve(remaining - coin) + 1)
+        
+        memo[remaining] = min_coins
+        return min_coins
+    
+    ans = solve(amount)
+    return ans if ans != float('inf') else -1
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+3️⃣ LCS (Longest Common Subsequence)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def lcs(text1, text2):
+    memo = {}
+    def solve(i, j):
+        if i == len(text1) or j == len(text2): return 0
+        if (i, j) in memo: return memo[(i, j)]
+        
+        if text1[i] == text2[j]:
+            memo[(i, j)] = 1 + solve(i + 1, j + 1)  # Match!
+        else:
+            memo[(i, j)] = max(solve(i + 1, j), solve(i, j + 1))  # Skip
+        
+        return memo[(i, j)]
+    return solve(0, 0)
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+4️⃣ 0/1 Knapsack
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def knapsack(weights, values, capacity):
+    memo = {}
+    def solve(i, remaining):
+        if i == len(weights) or remaining == 0: return 0
+        if (i, remaining) in memo: return memo[(i, remaining)]
+        
+        skip = solve(i + 1, remaining)  # Skip current item
+        take = 0
+        if weights[i] <= remaining:
+            take = values[i] + solve(i + 1, remaining - weights[i])
+        
+        memo[(i, remaining)] = max(take, skip)
+        return memo[(i, remaining)]
+    return solve(0, capacity)
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+5️⃣ Unique Paths (Grid DP)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def uniquePaths(m, n):
+    memo = {}
+    def solve(i, j):
+        if i == m - 1 and j == n - 1: return 1  # Reached destination
+        if i >= m or j >= n: return 0           # Out of bounds
+        if (i, j) in memo: return memo[(i, j)]
+        
+        # Can only go DOWN or RIGHT
+        memo[(i, j)] = solve(i + 1, j) + solve(i, j + 1)
+        return memo[(i, j)]
+    return solve(0, 0)
+</pre>
+</details>
+
+<details>
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+6️⃣ Longest Increasing Subsequence (LIS)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def lengthOfLIS(nums):
+    memo = {}
+    def solve(i, prev_idx):
+        if i == len(nums): return 0
+        if (i, prev_idx) in memo: return memo[(i, prev_idx)]
+        
+        skip = solve(i + 1, prev_idx)  # Skip current
+        take = 0
+        if prev_idx == -1 or nums[i] > nums[prev_idx]:
+            take = 1 + solve(i + 1, i)  # Take current
+        
+        memo[(i, prev_idx)] = max(take, skip)
+        return memo[(i, prev_idx)]
+    return solve(0, -1)
+</pre>
+</details>
+</div>`,
         safetyCheck: [
-            { label: "State Definition", desc: "Clearly define what `dp[i]` represents." },
-            { label: "Base Cases", desc: "Don't forget `dp[0]` initialization." }
+            { label: "📝 Define dp[i]!", desc: "Clearly write what dp[i] represents BEFORE coding" },
+            { label: "🔢 Base cases!", desc: "<code>dp[0]</code> initialization — don't skip!" },
+            { label: "🔄 Loop direction!", desc: "0/1 Knapsack: REVERSE loop. Unbounded: FORWARD loop" },
+            { label: "⚡ Space optimize!", desc: "2D → 1D: Use only prev row. Often just 2 variables!" },
+            { label: "📊 Counting vs Opt!", desc: "Counting: <code>+=</code>. Optimization: <code>min()/max()</code>" },
+            { label: "🎯 Don't overthink!", desc: "Most DP = Take vs Skip: <code>max(take, skip)</code>" }
         ]
     },
     questions: [
@@ -32,6 +232,13 @@ const topic_dp = {
                 explanation: "At each house: Either ROB it (take money + skip previous) OR SKIP it (keep previous max). Compare and take maximum!"
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Adjacent ban kyun?</strong> Ek chorr ke ek lootna hai",
+                    "⚡ Choice: <code>Rob current + nums[i-2]</code> OR <code>Skip current (keep prev)</code>",
+                    "🔄 <code>new_rob = max(rob1 + n, rob2)</code> transition",
+                    "✅ Space optimization: Sirf 2 variables <code>rob1, rob2</code> chahiye",
+                    "💡 Greedy fail karega: [2, 100, 2] — greedy takes 2+2=4, optimal is 100!"
+                ],
                 metrics: { time: "O(N)", space: "O(1)" },
                 timeExplainer: `<strong>Time Breakdown:</strong><br>
                     • Single pass through all N houses<br>
@@ -173,6 +380,13 @@ print(rob([100]))         # 100 (single house)`
                 explanation: "Patience Sorting! Maintain a 'tails' array. For each x, replace the first element in tails >= x. If x is largest, append. Len(tails) is answer."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>NlogN kaise?</strong> Patience sorting — solitaire card game strategy",
+                    "⚡ <code>tails</code> array: smallest ending element for LIS of length i+1",
+                    "🔄 Binary Search: Find insertion point of current num in <code>tails</code>",
+                    "✅ Extend: append if largest; Replace: existing bada element chote se replace karo",
+                    "💡 Replace kyun? Smaller ending value gives better chance to extend later!"
+                ],
                 metrics: { time: "O(N²)", space: "O(N²)" },
                 timeExplainer: `<strong style="color:#f59e0b;">⏱️ Time Complexity Deep Dive</strong>
                 
@@ -388,6 +602,13 @@ print(lengthOfLIS([0,1,0,3,2,3]))       # 4 → [0,1,2,3]`
                 explanation: "2D Grid! If chars match: `1 + dp[i-1][j-1]`. If no match: `max(dp[i-1][j], dp[i][j-1])` (carry forward best result)."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>2D DP kyun?</strong> String matching mein indices (i, j) track karne padte hain",
+                    "⚡ <code>if s1[i] == s2[j]</code> → MATCH! <code>1 + dp[i-1][j-1]</code> (diagonal)",
+                    "🔄 <code>else</code> → NO MATCH! <code>max(dp[i-1][j], dp[i][j-1])</code> (retain best previous)",
+                    "✅ Base case: dp[0][0] = 0 (empty strings match nothing)",
+                    "💡 Space Opt? Sirf <code>prev_row</code> aur <code>curr_row</code> chahiye (O(N) space)"
+                ],
                 metrics: { time: "O(M × N)", space: "O(M × N)" },
                 timeExplainer: `<strong style="color:#f59e0b;">⏱️ Time Complexity Deep Dive</strong>
                 
@@ -597,6 +818,13 @@ print(longestCommonSubsequence("abcde", "ace"))  # 3 → "ace"`
                 explanation: "Greedy fails (e.g., Coins [1,3,4], Target 6. Greedy 4+1+1 (3 coins). Optimal 3+3 (2 coins)). Use DP: solve for amount 1, then 2..."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Unbounded Knapsack kyun?</strong> Coins infinite supply mein hain",
+                    "⚡ <code>dp[a] = min(dp[a], 1 + dp[a - coin])</code> — try all coins",
+                    "🔄 Init <code>dp = [inf]</code>, default <code>dp[0]=0</code> (0 coin for 0 amount)",
+                    "✅ <code>dp[amount] > amount</code>? Return -1 (impossible)",
+                    "💡 Loop order: <code>for coin in coins</code> bahar kyun? Reduce repetitive permutations (perf boost)"
+                ],
                 metrics: { time: "O(A × C)", space: "O(A × C)" },
                 timeExplainer: `<strong style="color:#f59e0b;">⏱️ Time Complexity Deep Dive</strong>
                 
@@ -810,6 +1038,13 @@ print(coinChange([2], 3))       # -1 → impossible`
                 explanation: "Brute Force is O(2^N). We need DP! dp[i] = True if dp[j] is True AND s[j:i] in dict. Iterate i from 1 to N, j from 0 to i."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Cut points kyun?</strong> String ko valid words mein split karna hai",
+                    "⚡ <code>if dp[j] and s[j:i] in dict</code> → Valid segment found!",
+                    "🔄 <code>dp[i] = True</code> — current prefix ends with a valid word",
+                    "✅ Return <code>dp[n]</code> — pura string segmented hai ya nahi",
+                    "💡 O(N²) loop nested but efficient — inner loop checks previous cuts"
+                ],
                 metrics: { time: "O(N³)", space: "O(N)" },
                 timeExplainer: `
                     <div class="space-y-3">
@@ -1191,6 +1426,13 @@ return dp[n]`
                 explanation: "If Total Sum is odd, impossible. Else, find subset with sum = Total/2. This is 0/1 Knapsack."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Target Sum kyun?</strong> Equal partition = Subset Sum with target <code>Total/2</code>",
+                    "⚡ <code>if sum % 2 != 0</code> → Odd sum divide nahi ho sakta, return False",
+                    "🔄 0/1 Knapsack logic: Iterate BACKWARDS <code>range(target, num-1, -1)</code>",
+                    "✅ <code>dp[t] = dp[t] or dp[t - num]</code> — can we make sum 't'?",
+                    "💡 Backwards loop zaroori hai for 1D array to avoid reusing same element"
+                ],
                 metrics: { time: "O(N × Sum)", space: "O(Sum)" },
                 timeExplainer: `
                     <div class="space-y-3">
@@ -1539,6 +1781,13 @@ return dp[target]`
                 explanation: "2D DP. If match: dp[i-1][j-1]. If mismatch: 1 + min(Insert, Delete, Replace)."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Min Operations kyun?</strong> Transform word1 to word2 in cheapest way",
+                    "⚡ If mismatch: <code>1 + min(Insert, Delete, Replace)</code>",
+                    "🔄 Insert = <code>dp[i][j-1]</code>, Delete = <code>dp[i-1][j]</code>, Replace = <code>dp[i-1][j-1]</code>",
+                    "✅ Base case: dp[i][0] = i (delete all), dp[0][j] = j (insert all)",
+                    "💡 Replace is diagonal move, others are straight moves"
+                ],
                 metrics: { time: "O(M×N)", space: "O(M×N)" },
                 timeExplainer: `
                     <div class="space-y-3">

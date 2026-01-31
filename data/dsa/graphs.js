@@ -9,26 +9,154 @@ const topic_graphs = {
     icon: "fas fa-project-diagram",
     mentalModel: {
         whenToApply: [
-            { label: "Shortest Path (No weights)", desc: "BFS (Layer by layer)." },
-            { label: "Shortest Path (Weights)", desc: "Dijkstra (Priority Queue)." },
-            { label: "Dependencies", desc: "Topo Sort (Kahn's Algo)." },
-            { label: "Connectivity", desc: "Union-Find (DSU)." },
-            { label: "Graph Traversal (DFS/BFS)", desc: "Explore all nodes/edges, useful for connectivity checks." },
-            { label: "Minimum Spanning Tree", desc: "Kruskal or Prim to connect all nodes with minimal total weight." },
-            { label: "Max Flow / Min Cut", desc: "Ford‑Fulkerson or Edmonds‑Karp for network flow problems." },
-            { label: "Cycle Detection", desc: "Union‑Find or DFS back‑edge detection." }
+            { label: "🛤️ Shortest Path (Unweighted)", desc: "BFS (Level by level). O(V+E)" },
+            { label: "⚖️ Shortest Path (Weighted)", desc: "Dijkstra (Priority Queue). No negative edges!" },
+            { label: "📋 Dependencies", desc: "Topological Sort (Kahn's BFS or DFS)" },
+            { label: "🔗 Connectivity", desc: "Union-Find (DSU). O(α(N)) per op" },
+            { label: "🌳 MST", desc: "Kruskal (sort edges + UF) or Prim (min-heap)" },
+            { label: "🔄 Cycle Detection", desc: "DFS back-edge or Union-Find" }
         ],
         patterns: [
-            { algo: "BFS", use: "Unweighted shortest path / level order", time: "O(V+E)", space: "O(V)" },
-            { algo: "DFS", use: "Connectivity, topological sort", time: "O(V+E)", space: "O(V)" },
-            { algo: "Dijkstra", use: "Weighted shortest path", time: "O((V+E) log V)", space: "O(V)" },
-            { algo: "Kruskal", use: "Minimum Spanning Tree", time: "O(E log E)", space: "O(V)" },
-            { algo: "Union‑Find", use: "Cycle detection / DSU problems", time: "≈ O(α(N)) per op", space: "O(N)" }
+            { algo: "BFS", use: "Unweighted shortest path / level order", time: "O(V+E)", space: "O(V)", template: "queue + visited set, pop front" },
+            { algo: "DFS", use: "Connectivity, topological sort", time: "O(V+E)", space: "O(V)", template: "recursion/stack + visited" },
+            { algo: "Dijkstra", use: "Weighted shortest path", time: "O((V+E) log V)", space: "O(V)", template: "min-heap (dist, node), relax edges" },
+            { algo: "Kruskal", use: "Minimum Spanning Tree", time: "O(E log E)", space: "O(V)", template: "sort edges + Union-Find" },
+            { algo: "Union‑Find", use: "Cycle detection / DSU problems", time: "≈ O(α(N)) per op", space: "O(N)", template: "find(x) with path compression, union by rank" },
+            { algo: "Topo Sort", use: "Course schedule, build order", time: "O(V+E)", space: "O(V)", template: "Kahn's BFS: indegree=0 first" }
         ],
+        decisionTree: `
+<div style="background:#1e293b; padding:25px; border-radius:16px; margin:15px 0; border:1px solid rgba(255,255,255,0.1);">
+<h4 style="color:#a78bfa; margin-bottom:20px; text-align:center; font-size:1.1rem;">🧠 Graph Pattern Recognition</h4>
+<div style="font-family:monospace; font-size:0.85rem; line-height:1.8;">
+<pre style="color:#e2e8f0; text-align:left; margin:0;">
+              ┌──────────────────────────────┐
+              │ "What's the graph problem?"  │
+              └──────────────┬───────────────┘
+                             │
+     ┌───────────────────────┼───────────────────────┐
+     ▼                       ▼                       ▼
+┌──────────────┐      ┌──────────────┐      ┌──────────────┐
+│  SHORTEST    │      │ CONNECTIVITY │      │ DEPENDENCY/  │
+│    PATH      │      │  / GROUPING  │      │   ORDERING   │
+└──────┬───────┘      └──────┬───────┘      └──────┬───────┘
+       │                     │                     │
+       ▼                     ▼                     ▼
+ ┌───────────────┐    ┌───────────────┐    ┌───────────────┐
+ │ Weighted?     │    │ Components?   │    │ Topological   │
+ │ → DIJKSTRA    │    │ → DFS/BFS     │    │ Sort!         │
+ │               │    │ → Union-Find  │    │               │
+ │ Unweighted?   │    │               │    │ Kahn's BFS:   │
+ │ → BFS         │    │ MST?          │    │ indegree = 0  │
+ │               │    │ → Kruskal     │    │ first         │
+ └───────────────┘    └───────────────┘    └───────────────┘
+
+  ┌─────────────────────────────────────────────────────────┐
+  │ 🔑 VISITED TRACKING:                                    │
+  │ • BFS: Mark visited WHEN ADDING to queue (not pop)     │
+  │ • DFS: Mark visited at START of visit                  │
+  │ • This prevents duplicates and saves time!              │
+  └─────────────────────────────────────────────────────────┘
+</pre>
+</div>
+</div>`,
+        codeTemplates: `
+<div style="background:#0f172a; padding:20px; border-radius:12px; margin:15px 0;">
+<h4 style="color:#10b981; margin-bottom:15px;">📝 Graph Templates</h4>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+1️⃣ BFS (Shortest Path Unweighted)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+from collections import deque
+def bfs(graph, start):
+    visited = {start}
+    queue = deque([(start, 0)])  # (node, distance)
+    while queue:
+        node, dist = queue.popleft()
+        for neighbor in graph[node]:
+            if neighbor not in visited:
+                visited.add(neighbor)  # Mark BEFORE push!
+                queue.append((neighbor, dist + 1))
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+2️⃣ Dijkstra (Weighted Shortest Path)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+import heapq
+def dijkstra(graph, start):
+    dist = {start: 0}
+    heap = [(0, start)]
+    while heap:
+        d, node = heapq.heappop(heap)
+        if d > dist.get(node, float('inf')): continue
+        for neighbor, weight in graph[node]:
+            new_dist = d + weight
+            if new_dist < dist.get(neighbor, float('inf')):
+                dist[neighbor] = new_dist
+                heapq.heappush(heap, (new_dist, neighbor))
+    return dist
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+3️⃣ Union-Find (DSU)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+class UnionFind:
+    def __init__(self, n):
+        self.parent = list(range(n))
+        self.rank = [0] * n
+    def find(self, x):
+        if self.parent[x] != x:
+            self.parent[x] = self.find(self.parent[x])  # Path compression
+        return self.parent[x]
+    def union(self, x, y):
+        px, py = self.find(x), self.find(y)
+        if px == py: return False  # Already connected
+        if self.rank[px] < self.rank[py]: px, py = py, px
+        self.parent[py] = px
+        if self.rank[px] == self.rank[py]: self.rank[px] += 1
+        return True
+</pre>
+</details>
+
+<details>
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+4️⃣ Topological Sort (Kahn's BFS)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+from collections import deque
+def topoSort(numCourses, prerequisites):
+    graph = defaultdict(list)
+    indegree = [0] * numCourses
+    for course, prereq in prerequisites:
+        graph[prereq].append(course)
+        indegree[course] += 1
+    queue = deque([i for i in range(numCourses) if indegree[i] == 0])
+    order = []
+    while queue:
+        node = queue.popleft()
+        order.append(node)
+        for neighbor in graph[node]:
+            indegree[neighbor] -= 1
+            if indegree[neighbor] == 0:
+                queue.append(neighbor)
+    return order if len(order) == numCourses else []  # [] = cycle!
+</pre>
+</details>
+</div>`,
         safetyCheck: [
-            { label: "No BFS for Shortest Path", desc: "Use Dijkstra instead of BFS when edges have weights." },
-            { label: "Visited Tracking", desc: "Mark visited immediately upon pushing to queue to avoid duplicates." },
-            { label: "Do Not Mutate Graph During Traversal", desc: "If you need to modify, work on a copy or track changes separately." }
+            { label: "🛑 Mark visited EARLY!", desc: "BFS: Add to visited BEFORE pushing to queue, not when popping" },
+            { label: "⚖️ No negative edges!", desc: "Dijkstra fails with negative edges. Use Bellman-Ford instead" },
+            { label: "🔄 Cycle = no topo sort!", desc: "If output length < V, there's a cycle" },
+            { label: "📊 Build graph first!", desc: "Convert edge list to adjacency list before traversal" },
+            { label: "🔗 Path compression!", desc: "Union-Find: Always use <code>find()</code> to update parent" },
+            { label: "📍 Multi-source BFS!", desc: "Rotten oranges: Add ALL sources to queue initially" }
         ]
     },
     questions: [
@@ -46,6 +174,13 @@ const topic_graphs = {
                 explanation: "The core problem is **SIMULTANEOUS** expansion. All rotten oranges affect neighbors at `t=1`. DFS goes deep on one orange (sequential) effectively calculating 'distance from ONE root', which is wrong here. We need 'min distance from ANY root' -> BFS."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>BFS kyun?</strong> Simultaneous spread chahiye — sab rotten ek saath affect karte hain",
+                    "⚡ Multi-source BFS: <code>queue = all rotten cells</code> initially",
+                    "🔄 Level by level: <code>time++</code> per BFS level, not per cell",
+                    "✅ End: <code>if any fresh left → -1</code>, else return time",
+                    "💡 DFS galat kyun? DFS sequential hai, BFS parallel spread simulate karta hai"
+                ],
                 metrics: { time: "O(N×M)", space: "O(N×M)" },
                 timeExplainer: `
                     <h4 style="color:#c026d3;">⏱️ Time Complexity: O(N×M)</h4>
@@ -292,6 +427,13 @@ def orangesRotting(grid):
                 explanation: "Topo Sort (Kahn's)! Build graph. Calculate Indegrees. Q = [Indegree 0]. Process Q, reduce neighbor indegrees. If processed count == N, true."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Topo Sort kyun?</strong> Dependencies hai — pehle prereq complete karo",
+                    "⚡ Kahn's (BFS): <code>indegree[i]=0</code> matlab no dependency, start from these",
+                    "🔄 Jab course complete: <code>indegree[neighbor]--</code>; if 0, add to queue",
+                    "✅ <code>processed == n</code> means sab courses possible",
+                    "💡 Cycle detect: agar processed < n, cycle hai — impossible!"
+                ],
                 metrics: { time: "O(V+E)", space: "O(V+E)" },
                 timeExplainer: `
                     <h4 style="color:#c026d3;">⏱️ Time Complexity: O(V + E)</h4>
@@ -513,6 +655,13 @@ def course_schedule(num_courses, prerequisites):
                 explanation: "Dijkstra! Weighted edges require Priority Queue. BFS is for unweighted. Visit nodes in increasing order of cost."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Dijkstra kyun?</strong> Weighted edges hai — simple BFS won't work",
+                    "⚡ MinHeap: <code>heappop</code> gives node with MINIMUM cost first",
+                    "🔄 <code>if node already visited: skip</code> — already found shortest",
+                    "✅ First time reaching node = shortest path (greedy works!)",
+                    "💡 Negative weights? Dijkstra fails — use Bellman-Ford"
+                ],
                 metrics: { time: "O(E log V)", space: "O(V+E)" },
                 timeExplainer: `
                     <h4 style="color:#c026d3;">⏱️ Time Complexity: O(E log V)</h4>
@@ -758,6 +907,13 @@ def course_schedule(num_courses, prerequisites):
                 explanation: "All work! But DSU (Union-Find) is the most elegant for 'connectivity' and 'components'. Initialize N parents. Union connected nodes. Count unique parents."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Union-Find kyun?</strong> Connectivity check — 'same group?' O(1) mein",
+                    "⚡ Path compression: <code>parent[x] = find(parent[x])</code> tree flat karta hai",
+                    "🔄 Union by rank: chhota tree bade mein merge — height controlled",
+                    "✅ Count components: unique <code>find(i)</code> values count karo",
+                    "💡 DFS/BFS bhi chalega but Union-Find cleaner for dynamic connectivity"
+                ],
                 metrics: { time: "O(N²×α(N))", space: "O(N)" },
                 timeExplainer: `
                     <h4 style="color:#c026d3;">⏱️ Time Complexity: O(N² × α(N))</h4>
@@ -935,6 +1091,13 @@ def course_schedule(num_courses, prerequisites):
                 explanation: "DFS + HashMap! Map stores `OldNode -> NewNode`. If node in map, return stored copy (handles cycles). Else create, add to map, recurse."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>HashMap kyun?</strong> Cycle handle karna hai — same node dobara aaye toh existing clone return karo",
+                    "⚡ <code>old_to_new[node]</code> = mapping from original → clone",
+                    "🔄 DFS: clone bana, map mein daal, neighbors recursively clone karo",
+                    "✅ Base: <code>if node in map: return map[node]</code> — already cloned",
+                    "💡 BFS bhi chalega — same hashmap logic, just iterative"
+                ],
                 metrics: { time: "O(V+E)", space: "O(V)" },
                 timeExplainer: `
                     <h4 style="color:#c026d3;">⏱️ Time Complexity: O(V + E)</h4>
@@ -1111,6 +1274,13 @@ def cloneGraph(node):
                 explanation: "2-Coloring (Bipartite Check)! Use BFS/DFS. Assign color 0/1. If neighbor has SAME color -> False. If neighbor unvisited -> Assign opposite color."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>2-Coloring kyun?</strong> Bipartite = 2 groups with no same-group edges",
+                    "⚡ BFS/DFS: alternate colors assign karo — <code>0, 1, 0, 1...</code>",
+                    "🔄 <code>if neighbor same color → NOT bipartite!</code>",
+                    "✅ All nodes colored without conflict → bipartite hai",
+                    "💡 Multiple components? Start BFS from each unvisited node"
+                ],
                 metrics: { time: "O(V+E)", space: "O(V)" },
                 timeExplainer: `
                     <h4 style="color:#c026d3;">⏱️ Time Complexity: O(V + E)</h4>
@@ -1273,6 +1443,13 @@ def isBipartite(graph):
                 explanation: "Need 2 Sets! 1. Visited (Global), 2. RecursionStack (Current Path). If node in RecursionStack -> Cycle detected. If in Visited but not Stack -> Safe (Cross Edge)."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>2 Sets kyun?</strong> visited(global) vs rec_stack(current path) — back edge detect karta hai",
+                    "⚡ <code>if node in rec_stack → CYCLE!</code> — same path pe wapas aaye",
+                    "🔄 Enter: <code>rec_stack.add</code>; Exit: <code>rec_stack.remove</code> (backtrack)",
+                    "✅ <code>if node in visited but not in stack → cross edge, safe</code>",
+                    "💡 Undirected graph? Single visited set enough — no direction matters"
+                ],
                 metrics: { time: "O(V+E)", space: "O(V)" },
                 timeExplainer: `
                     <h4 style="color:#c026d3;">⏱️ Time Complexity: O(V + E)</h4>

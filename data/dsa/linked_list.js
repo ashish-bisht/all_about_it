@@ -9,11 +9,142 @@ const topic_linked_list = {
     icon: "fas fa-network-wired",
     mentalModel: {
         whenToApply: [
-            { label: "Wiring not Calculating", desc: "Don't think numbers. Think <strong>wires</strong>. Always draw pointers." }
+            { label: "🎯 O(1) Cache", desc: "LRU/LFU Cache → HashMap + Doubly Linked List" },
+            { label: "🔄 Cycle Detection", desc: "Find loop → Floyd's Slow/Fast pointers" },
+            { label: "✂️ Reversal", desc: "Reverse K groups, halves → Use prev/curr/next pointers" },
+            { label: "📋 Deep Copy", desc: "Clone with random → HashMap or Interleaving" },
+            { label: "🏃 Two Pointers", desc: "Find middle, palindrome → Slow/Fast technique" }
         ],
+        patterns: [
+            { algo: "LRU Cache", use: "O(1) get/put with eviction", time: "O(1)", space: "O(N)", template: "HashMap{key→node} + DLL (head=recent, tail=old)" },
+            { algo: "Floyd's Algorithm", use: "Cycle detection + start", time: "O(N)", space: "O(1)", template: "slow/fast meet, reset slow to head, both move 1" },
+            { algo: "K-Group Reversal", use: "Reverse every K nodes", time: "O(N)", space: "O(1)", template: "get_kth, reverse inner, rewire anchors" },
+            { algo: "Interleaving Clone", use: "Deep copy O(1) space", time: "O(N)", space: "O(1)", template: "Weave copies → link randoms → unweave" },
+            { algo: "Palindrome Check", use: "O(1) space check", time: "O(N)", space: "O(1)", template: "Find mid → reverse 2nd half → compare" }
+        ],
+        decisionTree: `
+<div style="background:#1e293b; padding:25px; border-radius:16px; margin:15px 0; border:1px solid rgba(255,255,255,0.1);">
+<h4 style="color:#a78bfa; margin-bottom:20px; text-align:center; font-size:1.1rem;">🧠 Linked List Pattern Recognition</h4>
+<div style="font-family:monospace; font-size:0.85rem; line-height:1.8;">
+<pre style="color:#e2e8f0; text-align:left; margin:0;">
+              ┌──────────────────────────────┐
+              │ "Linked List problem type?"  │
+              └──────────────┬───────────────┘
+                             │
+     ┌───────────────────────┼───────────────────────┐
+     ▼                       ▼                       ▼
+┌──────────────┐      ┌──────────────┐      ┌──────────────┐
+│ CYCLE/LOOP   │      │  REVERSAL    │      │  CACHE/      │
+│  Problems    │      │  Problems    │      │  DESIGN      │
+└──────┬───────┘      └──────┬───────┘      └──────┬───────┘
+       │                     │                     │
+       ▼                     ▼                     ▼
+ ┌───────────────┐    ┌───────────────┐    ┌───────────────┐
+ │ Floyd's Algo  │    │ Use DUMMY!    │    │ HashMap +     │
+ │               │    │               │    │ Doubly LL     │
+ │ Slow = 1 step │    │ prev=None     │    │               │
+ │ Fast = 2 step │    │ curr=head     │    │ _add() _del() │
+ │               │    │ loop: swap    │    │ helpers       │
+ │ Meet? → Reset │    │               │    │               │
+ └───────────────┘    └───────────────┘    └───────────────┘
+
+         "Need to find middle?"
+              │
+              ▼
+      ┌───────────────────────┐
+      │ SLOW/FAST pointers    │
+      │ When fast reaches end │
+      │ slow is at middle!    │
+      └───────────────────────┘
+</pre>
+</div>
+</div>`,
+        codeTemplates: `
+<div style="background:#0f172a; padding:20px; border-radius:12px; margin:15px 0;">
+<h4 style="color:#10b981; margin-bottom:15px;">📝 Linked List Templates</h4>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+1️⃣ LRU Cache (DLL + HashMap)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+class LRUCache:
+    def __init__(self, cap):
+        self.cap, self.cache = cap, {}
+        self.head, self.tail = Node(0,0), Node(0,0)
+        self.head.next, self.tail.prev = self.tail, self.head
+    def _remove(self, node):
+        node.prev.next, node.next.prev = node.next, node.prev
+    def _add(self, node):
+        node.prev, node.next = self.head, self.head.next
+        self.head.next.prev = node
+        self.head.next = node
+    def get(self, key):
+        if key in self.cache:
+            self._remove(self.cache[key])
+            self._add(self.cache[key])
+            return self.cache[key].val
+        return -1
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+2️⃣ Floyd's Cycle Detection
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def detectCycle(head):
+    slow, fast = head, head
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+        if slow == fast:
+            slow = head  # Reset!
+            while slow != fast:
+                slow = slow.next
+                fast = fast.next
+            return slow  # Cycle start
+    return None
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+3️⃣ Reverse Linked List
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def reverse(head):
+    prev, curr = None, head
+    while curr:
+        next_temp = curr.next
+        curr.next = prev
+        prev = curr
+        curr = next_temp
+    return prev
+</pre>
+</details>
+
+<details>
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+4️⃣ Find Middle (Slow/Fast)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def findMiddle(head):
+    slow, fast = head, head
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+    return slow  # Middle node
+</pre>
+</details>
+</div>`,
         safetyCheck: [
-            { label: "Sentinel Nodes", desc: "Use <code>dummy -> head</code>. It solves 90% of edge cases like inserting at head." },
-            { label: "Runner Tech", desc: "Use Fast/Slow pointers for cycles and midpoints." }
+            { label: "🔗 Use DUMMY!", desc: "<code>dummy = ListNode(0, head)</code> — Handles edge cases at head" },
+            { label: "📍 Save next first!", desc: "Before changing <code>curr.next</code>, save <code>temp = curr.next</code>" },
+            { label: "🔄 Check null!", desc: "<code>while fast and fast.next</code> — Both conditions needed!" },
+            { label: "⚠️ Delete from map!", desc: "LRU: When evicting, <code>del cache[lru.key]</code> — Often forgotten!" },
+            { label: "🔍 Phase 2 reset!", desc: "Floyd's: Reset <code>slow = head</code> AFTER meeting, not before" },
+            { label: "↩️ Restore list!", desc: "After palindrome check, reverse back to restore original" }
         ]
     },
     questions: [
@@ -36,6 +167,13 @@ const topic_linked_list = {
                 explanation: "Doubly LL + HashMap! HashMap for O(1) lookup. DLL for O(1) removal/insertion at head/tail. Get: move to head. Put: if full, remove tail. Add to head. #1 design question!"
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>DLL + Map kyun?</strong> O(1) delete/add chahiye (DLL) aur O(1) lookup (Map)",
+                    "⚡ <code>get(k)</code>: Map lookup node OR return -1. Move node to Head (Most Recent)",
+                    "🔄 <code>put(k, v)</code>: If exists, update val & move head. Else add new head. If full, delete tail",
+                    "✅ Helper: <code>_remove(node)</code> removes from list, <code>_add(node)</code> adds to list head",
+                    "💡 Tail = Least Recent, Head = Most Recent"
+                ],
                 metrics: { time: "O(1)", space: "O(N)" },
                 timeExplainer: "<strong>Time Analysis:</strong><br>• <code>get()</code>: HashMap lookup = <code>O(1)</code><br>• <code>put()</code>: Map + DLL operations = <code>O(1)</code><br><br><strong>All operations:</strong> <code>O(1)</code> average",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• HashMap: <code>O(N)</code> for N key-value pairs<br>• Doubly Linked List: <code>O(N)</code> nodes<br><br><strong>Total:</strong> <code>O(N)</code>",
@@ -104,6 +242,13 @@ def put(self, key, value):
                 explanation: "Pointer management! For each group: connect prev_group.next to new head. Connect new tail to next_group. Edge cases: < K nodes at end (don't reverse)."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Reverse per group kyun?</strong> Problem says 'k nodes' at a time",
+                    "⚡ Check length: <code>kth = get_kth(group_prev, k)</code> — agar k nodes nahi, toh stop!",
+                    "🔄 Reverse: Standard reverse logic inside the group range",
+                    "✅ Rewire: <code>group_prev.next = kth</code> (new head); <code>group_start.next = next_group</code>",
+                    "💡 Dummy Node bahut zaroori hai to handle head change easily"
+                ],
                 metrics: { time: "O(N)", space: "O(1)" },
                 timeExplainer: "<strong>Time Analysis:</strong><br>• Visit each node once<br>• Reversal within groups is O(K)<br><br><strong>Total:</strong> <code>O(N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Only pointers for manipulation<br>• No extra data structures<br><br><strong>Result:</strong> <code>O(1)</code>",
@@ -161,6 +306,13 @@ return dummy.next`
                 explanation: "Floyd's Math! After slow/fast meet, reset slow to head. Move both by 1 step. They meet AT cycle start! Proven by math."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Floyd Cycle kyun?</strong> O(N) time aur O(1) space — HashSet O(N) space leta hai",
+                    "⚡ Phase 1: <code>slow/fast</code> collision detect karo",
+                    "🔄 Phase 2: <code>slow = head</code>, move both 1 step. Collision point = Cycle Start",
+                    "✅ Why works? Math proves <code>dist(head, start) == dist(meet, start)</code>",
+                    "💡 Start milne pe ruk jao, wahi loop entry hai"
+                ],
                 metrics: { time: "O(N)", space: "O(1)" },
                 timeExplainer: "<strong>Floyd's Algorithm:</strong><br>• Phase 1: Detect cycle = <code>O(N)</code><br>• Phase 2: Find start = <code>O(N)</code><br><br><strong>Total:</strong> <code>O(N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Only 2 pointers: slow, fast<br>• No HashSet needed!<br><br><strong>Result:</strong> <code>O(1)</code>",
@@ -207,6 +359,13 @@ return None`
                 explanation: "HashMap is cleaner! Interleaving works (O(1) space) but is trickier. Both are accepted."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Interleaving kyun?</strong> O(1) space trick! Node ke bagal mein copy rakho",
+                    "⚡ Weave: <code>A -> A' -> B -> B'</code>",
+                    "🔄 Random: <code>curr.next.random = curr.random.next</code> — easy navigation",
+                    "✅ Unweave: <code>curr.next = curr.next.next</code> — restore original list",
+                    "💡 HashMap approach is simpler (O(N) space) but interleaving is 'cool' optimization"
+                ],
                 metrics: { time: "O(N)", space: "O(1) (Interleaving)" },
                 timeExplainer: "<strong>3-Pass Algorithm:</strong><br>• Pass 1: Weave copies = <code>O(N)</code><br>• Pass 2: Link randoms = <code>O(N)</code><br>• Pass 3: Unweave = <code>O(N)</code><br><br><strong>Total:</strong> <code>O(N)</code>",
                 spaceExplainer: "<strong>Interleaving Method:</strong><br>• Insert copies inline<br>• No HashMap needed<br><br><strong>Result:</strong> <code>O(1)</code> extra space",
@@ -259,6 +418,13 @@ return new_head`
                 explanation: "Find mid + Reverse! Use slow/fast to find middle. Reverse second half. Compare halves. Optional: reverse back."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Middle Reverse kyun?</strong> Array mein convert kiya toh O(N) space lagega",
+                    "⚡ <code>fast/slow</code> se mid find karo",
+                    "🔄 Reverse <code>slow.next</code> (second half)",
+                    "✅ 2 pointers: <code>left=head, right=tail</code> — match karo",
+                    "💡 Restore list (optional) — dobara reverse karke original state laao"
+                ],
                 metrics: { time: "O(N)", space: "O(1)" },
                 timeExplainer: "<strong>Time Breakdown:</strong><br>• Find middle: <code>O(N/2)</code><br>• Reverse second half: <code>O(N/2)</code><br>• Compare: <code>O(N/2)</code><br><br><strong>Total:</strong> <code>O(N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• No extra array for reversal<br>• In-place manipulation<br><br><strong>Result:</strong> <code>O(1)</code>",

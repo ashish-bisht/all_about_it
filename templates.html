@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#8b5cf6">
+    <title>Principal Prep | Pattern Mastery</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            /* Apple Midnight Theme */
+            --bg-dark: #000000;
+            --bg-card: rgba(28, 28, 30, 0.65);
+            --bg-glass: rgba(28, 28, 30, 0.8);
+            --text-main: #f5f5f7;
+            --text-muted: #86868b;
+            --primary: #5e5ce6;
+            --primary-glow: rgba(94, 92, 230, 0.4);
+            --border-light: rgba(255, 255, 255, 0.12);
+            --success: #30d158;
+            --danger: #ff453a;
+            --warning: #ff9f0a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
+            background: var(--bg-dark);
+            min-height: 100vh;
+            color: var(--text-main);
+        }
+
+        /* Topic Pills */
+        .topic-selector {
+            display: flex;
+            gap: 8px;
+            padding: 12px 20px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .topic-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            color: var(--text-muted);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.25s ease;
+        }
+
+        .topic-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        /* Section Pills */
+        .section-selector {
+            display: flex;
+            gap: 6px;
+            padding: 10px 20px;
+            overflow-x: auto;
+            background: rgba(0, 0, 0, 0.15);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .section-btn.active {
+            background: rgba(139, 92, 246, 0.2);
+            color: #a78bfa;
+            border-color: #8b5cf6;
+        }
+
+        /* Progress */
+        .progress-wrapper {
+            padding: 8px 20px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            color: #64748b;
+            margin-bottom: 4px;
+        }
+
+        .progress-bar {
+            height: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), #bf5af2);
+            transition: width 0.3s;
+        }
+
+        /* Content Container */
+        .content-container {
+            padding: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Card Styles */
+        .content-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-light);
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .content-card .card-header {
+            background: var(--bg-glass);
+            border-bottom: 1px solid var(--border-light);
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .content-card .card-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .content-card .card-title i {
+            color: var(--primary);
+        }
+
+        .content-card .card-body {
+            padding: 20px;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            padding: 20px;
+        }
+
+        .ctrl-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.2s;
+        }
+
+        .ctrl-btn.prev {
+            background: var(--bg-card);
+            color: var(--text-muted);
+            border: 1px solid var(--border-light);
+        }
+
+        .ctrl-btn.next {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        .ctrl-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .ctrl-btn:active {
+            transform: scale(0.95);
+        }
+
+        .keyboard-hint {
+            text-align: center;
+            font-size: 0.65rem;
+            color: #475569;
+            padding-bottom: 15px;
+        }
+
+        .key {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 3px;
+            margin: 0 2px;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #475569;
+        }
+
+        /* Flashcard inner content */
+        .flashcard {
+            background: transparent;
+        }
+
+        .flashcard .card-header {
+            display: none;
+        }
+
+        /* We have our own header */
+        .flashcard .card-body {
+            padding: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar (Same as rest of app) -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <a href="index.html" class="nav-logo">
+                <i class="fas fa-fire"></i> Principal Prep
+            </a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Dashboard</a>
+                <a href="question_list.html" class="nav-link">55 Questions</a>
+                <a href="flashcard.html" class="nav-link">Flashcards</a>
+                <a href="cheatsheet.html" class="nav-link">Cheat Sheet</a>
+                <a href="templates.html" class="nav-link active">Templates</a>
+                <a href="game.html" class="nav-link game-btn">
+                    <i class="fas fa-gamepad"></i> Game
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="topic-selector" id="topicSelector"></div>
+    <div class="section-selector" id="sectionSelector"></div>
+
+    <div class="progress-wrapper">
+        <div class="progress-info">
+            <span id="sectionName">Select topic</span>
+            <span id="sectionCounter">0 / 0</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+    </div>
+
+    <div class="content-container">
+        <div class="content-card" id="contentCard">
+            <div class="empty-state">
+                <i class="fas fa-graduation-cap"></i>
+                <p>Select a topic to start learning</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="ctrl-btn prev" onclick="prevSection()" title="Previous (←)">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <button class="ctrl-btn next" onclick="nextSection()" title="Next (→)">
+            <i class="fas fa-arrow-right"></i>
+        </button>
+    </div>
+
+    <div class="keyboard-hint">
+        <span class="key">←</span> Previous Section
+        <span class="key">→</span> Next Section
+    </div>
+
+    <script src="data.js?v=8"></script>
+    <script>
+        let currentTopic = null;
+        let sections = [];
+        let currentSectionIndex = 0;
+
+        // Concept topics mapping
+        const conceptTopics = {
+            'backtracking': 'backtracking_concepts',
+            'dp': 'dp_concepts',
+            'arrays': 'arrays_concepts',
+            'trees': 'trees_concepts',
+            'graphs': 'graphs_concepts',
+            'stack': 'stack_concepts'
+        };
+
+        function renderTopicSelector() {
+            const selector = document.getElementById('topicSelector');
+            const topics = [
+                { key: 'backtracking', name: 'Backtracking' },
+                { key: 'dp', name: 'Dynamic Programming' },
+                { key: 'arrays', name: 'Arrays' },
+                { key: 'trees', name: 'Trees' },
+                { key: 'graphs', name: 'Graphs' },
+                { key: 'stack', name: 'Stack' }
+            ];
+
+            selector.innerHTML = topics.map(t => {
+                const conceptKey = conceptTopics[t.key];
+                const exists = prepData[conceptKey];
+                if (!exists) return '';
+                return `<button class="topic-btn" data-topic="${t.key}">${t.name}</button>`;
+            }).join('');
+
+            selector.addEventListener('click', e => {
+                if (e.target.classList.contains('topic-btn')) {
+                    document.querySelectorAll('.topic-btn').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    loadTopic(e.target.dataset.topic);
+                }
+            });
+        }
+
+        function loadTopic(topicKey) {
+            currentTopic = topicKey;
+            const conceptKey = conceptTopics[topicKey];
+            const conceptData = prepData[conceptKey];
+
+            if (!conceptData || !conceptData.sections) {
+                sections = [];
+                renderContent();
+                return;
+            }
+
+            sections = conceptData.sections;
+            currentSectionIndex = 0;
+            renderSectionSelector();
+            renderContent();
+        }
+
+        function renderSectionSelector() {
+            const selector = document.getElementById('sectionSelector');
+            selector.innerHTML = sections.map((s, i) =>
+                `<button class="section-btn ${i === currentSectionIndex ? 'active' : ''}" data-index="${i}">
+                    ${s.title}
+                </button>`
+            ).join('');
+
+            selector.addEventListener('click', e => {
+                if (e.target.classList.contains('section-btn')) {
+                    currentSectionIndex = parseInt(e.target.dataset.index);
+                    updateSectionButtons();
+                    renderContent();
+                }
+            });
+        }
+
+        function updateSectionButtons() {
+            document.querySelectorAll('.section-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === currentSectionIndex);
+            });
+        }
+
+        function renderContent() {
+            const card = document.getElementById('contentCard');
+            const progress = document.getElementById('progressFill');
+            const name = document.getElementById('sectionName');
+            const counter = document.getElementById('sectionCounter');
+
+            if (sections.length === 0) {
+                card.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>No sections found</p></div>`;
+                return;
+            }
+
+            const section = sections[currentSectionIndex];
+            progress.style.width = ((currentSectionIndex + 1) / sections.length * 100) + '%';
+            name.textContent = section.title;
+            counter.textContent = `${currentSectionIndex + 1} / ${sections.length}`;
+
+            card.innerHTML = `
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="${section.icon}"></i>
+                        ${section.title}
+                    </div>
+                </div>
+                <div class="card-body">
+                    ${section.content}
+                </div>
+            `;
+        }
+
+        function nextSection() {
+            if (sections.length === 0) return;
+            currentSectionIndex = (currentSectionIndex + 1) % sections.length;
+            updateSectionButtons();
+            renderContent();
+        }
+
+        function prevSection() {
+            if (sections.length === 0) return;
+            currentSectionIndex = (currentSectionIndex - 1 + sections.length) % sections.length;
+            updateSectionButtons();
+            renderContent();
+        }
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'ArrowRight') nextSection();
+            if (e.key === 'ArrowLeft') prevSection();
+        });
+
+        renderTopicSelector();
+    </script>
+</body>
+
+</html>

@@ -9,13 +9,163 @@ const topic_binary_search = {
     icon: "fas fa-search",
     mentalModel: {
         whenToApply: [
-            { label: "Sorted Data", desc: "Classic usage (Find X)." },
-            { label: "Monotonic Functions", desc: "F(x) goes F, F, T, T. (BS on Answer)." },
-            { label: "Rotated Structures", desc: "Finding pivots/cliffs." }
+            { label: "🔍 Sorted Data", desc: "Array sorted? → Classic Binary Search" },
+            { label: "📈 Monotonic Function", desc: "F(x) goes F,F,F,T,T,T? → Binary Search on Answer" },
+            { label: "🔄 Rotated Array", desc: "Sorted but rotated? → Find which half is sorted" },
+            { label: "⚖️ Min-Max / Max-Min", desc: "Optimize extremes? → BS on Answer + Greedy check" },
+            { label: "✂️ Partition", desc: "Split 2 arrays optimally? → BS on smaller + auto-calc other" }
         ],
+        patterns: [
+            { algo: "Classic BS", use: "Find target in sorted array", time: "O(log N)", space: "O(1)", template: "while l<=r: mid=(l+r)//2" },
+            { algo: "Rotated Array BS", use: "Search in rotated sorted", time: "O(log N)", space: "O(1)", template: "Find sorted half, check target range" },
+            { algo: "BS on Answer", use: "Min speed, max distance", time: "O(N log M)", space: "O(1)", template: "Search [lo, hi], check if feasible(mid)" },
+            { algo: "Min-Max / Max-Min", use: "Aggressive Cows, Books", time: "O(N log D)", space: "O(1)", template: "BS distance + greedy placement" },
+            { algo: "Partition BS", use: "Median of 2 sorted", time: "O(log min(m,n))", space: "O(1)", template: "Cut smaller, calc j automatically" }
+        ],
+        decisionTree: `
+<div style="background:#1e293b; padding:25px; border-radius:16px; margin:15px 0; border:1px solid rgba(255,255,255,0.1);">
+<h4 style="color:#a78bfa; margin-bottom:20px; text-align:center; font-size:1.1rem;">🧠 Binary Search Pattern Recognition</h4>
+<div style="font-family:monospace; font-size:0.85rem; line-height:1.8;">
+<pre style="color:#e2e8f0; text-align:left; margin:0;">
+                 ┌──────────────────────────┐
+                 │ "What are you searching?"│
+                 └────────────┬─────────────┘
+                              │
+       ┌──────────────────────┼──────────────────────┐
+       ▼                      ▼                      ▼
+┌─────────────┐        ┌─────────────┐        ┌─────────────┐
+│ TARGET in   │        │ ANSWER/     │        │ PARTITION   │
+│ sorted array│        │ SPEED/DIST  │        │ 2 arrays    │
+└──────┬──────┘        └──────┬──────┘        └──────┬──────┘
+       │                      │                      │
+       ▼                      ▼                      ▼
+ "Is it rotated?"       "Can you check         "Use smaller for
+       │               if answer works?"         BS, calc other"
+       │                      │                      │
+  ┌────┴────┐                 ▼                      ▼
+  ▼         ▼         ┌─────────────┐        ┌─────────────┐
+┌─────┐ ┌───────┐     │ BS on range │        │ Median of   │
+│ NO  │ │  YES  │     │ [lo, hi]    │        │ 2 sorted    │
+│     │ │       │     │ is_feasible │        │ arrays      │
+└──┬──┘ └───┬───┘     └─────────────┘        └─────────────┘
+   │        │
+   ▼        ▼
+Classic  Rotated
+  BS       BS
+         ┌────────────────────┐
+         │ nums[l]==nums[m]== │
+         │ nums[r]? → Shrink! │
+         └────────────────────┘
+</pre>
+</div>
+</div>`,
+        codeTemplates: `
+<div style="background:#0f172a; padding:20px; border-radius:12px; margin:15px 0;">
+<h4 style="color:#10b981; margin-bottom:15px;">📝 Binary Search Templates</h4>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+1️⃣ Classic Binary Search
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def binary_search(nums, target):
+    left, right = 0, len(nums) - 1
+    while left <= right:
+        mid = left + (right - left) // 2  # Prevent overflow!
+        if nums[mid] == target:
+            return mid
+        elif nums[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    return -1
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+2️⃣ BS on Answer (Koko Bananas)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def minEatingSpeed(piles, h):
+    def can_finish(speed):
+        return sum((p + speed - 1) // speed for p in piles) <= h
+    
+    left, right = 1, max(piles)
+    while left <= right:
+        mid = left + (right - left) // 2
+        if can_finish(mid):
+            right = mid - 1  # Try slower
+        else:
+            left = mid + 1   # Need faster
+    return left
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+3️⃣ Rotated Array Search
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def search(nums, target):
+    low, high = 0, len(nums) - 1
+    while low <= high:
+        mid = low + (high - low) // 2
+        if nums[mid] == target: return True
+        # Handle duplicates (fog)
+        if nums[low] == nums[mid] == nums[high]:
+            low += 1; high -= 1
+            continue
+        # Left sorted
+        if nums[low] <= nums[mid]:
+            if nums[low] <= target < nums[mid]:
+                high = mid - 1
+            else:
+                low = mid + 1
+        # Right sorted
+        else:
+            if nums[mid] < target <= nums[high]:
+                low = mid + 1
+            else:
+                high = mid - 1
+    return False
+</pre>
+</details>
+
+<details>
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+4️⃣ Maximize Minimum (Aggressive Cows)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def aggressiveCows(stalls, k):
+    stalls.sort()  # MUST SORT!
+    def can_place(min_dist):
+        count, last = 1, stalls[0]
+        for s in stalls[1:]:
+            if s - last >= min_dist:
+                count += 1
+                last = s
+        return count >= k
+    
+    left, right, ans = 1, stalls[-1] - stalls[0], 1
+    while left <= right:
+        mid = left + (right - left) // 2
+        if can_place(mid):
+            ans = mid
+            left = mid + 1  # Try larger
+        else:
+            right = mid - 1
+    return ans
+</pre>
+</details>
+</div>`,
         safetyCheck: [
-            { label: "Overflow", desc: "Never use <code>(L+R)//2</code>. Always use <span class='code-snippet'>L + (R-L)//2</span>." },
-            { label: "Infinite Loops", desc: "If <code>high = mid</code> → use <span class='code-snippet'>while L < R</span>." }
+            { label: "⚠️ Overflow!", desc: "<code>mid = left + (right - left) // 2</code> NOT <code>(left + right) // 2</code>" },
+            { label: "🔄 Infinite Loop!", desc: "If <code>high = mid</code>, use <code>while left < right</code> not <code><=</code>" },
+            { label: "🌫️ Duplicates Fog!", desc: "When <code>nums[l]==nums[m]==nums[r]</code>, shrink: <code>l++, r--</code>" },
+            { label: "📊 Sort First!", desc: "Aggressive Cows: <code>stalls.sort()</code> before BS!" },
+            { label: "🎯 Answer vs Index!", desc: "BS on Answer: return <code>left</code> (answer). Classic: return <code>mid</code> (index)" },
+            { label: "♾️ Virtual Infinity!", desc: "Partition problems: Use <code>float('-inf')</code> and <code>float('inf')</code> for edges" }
         ]
     },
     questions: [
@@ -38,6 +188,13 @@ const topic_binary_search = {
                 explanation: "Duplicates create 'fog'! When nums[low] == nums[mid] == nums[high], we can't tell which side is sorted. Solution: Shrink window (low++, high--) until fog clears. Worst case O(n)!"
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Sorted Half kyun?</strong> Array rotated hai, par ek half HAMESHA sorted hoga",
+                    "⚡ Identify Sorted Half: <code>if nums[L] <= nums[mid]</code> (Left) else Right",
+                    "🔄 Range Check: <code>if L <= target < M</code> (Left mein hai?)",
+                    "✅ Eliminate other half: <code>high = mid - 1</code> or <code>low = mid + 1</code>",
+                    "💡 Duplicates? Fog clears by shrinking <code>L++</code> and <code>R--</code>"
+                ],
                 metrics: { time: "Avg O(log N)", space: "O(1)" },
                 timeExplainer: "<strong>Time Analysis:</strong><br>• <strong>Best/Avg:</strong> <code>O(log N)</code> - Standard binary search<br>• <strong>Worst:</strong> <code>O(N)</code> - All duplicates<br><br><strong>Why?</strong> Duplicates create 'fog' requiring linear scan",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Iterative approach with 3 pointers<br>• No recursion stack<br><br><strong>Result:</strong> <code>O(1)</code>",
@@ -101,6 +258,13 @@ return False`
                 explanation: "Binary Search on ANSWER! Search space = [1, max(piles)]. For each speed, calculate hours. If ≤ h, try slower (right = mid - 1). If > h, must go faster (left = mid + 1). Classic pattern!"
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>BS on Answer kyun?</strong> Speed 1 to Max ho sakti hai (Monotonic Range)",
+                    "⚡ Predicate: <code>can_eat(speed) <= H</code> hours check karo",
+                    "🔄 Binary Search Speed: <code>[1, max(piles)]</code>",
+                    "✅ If feasible (<= H), try slower (store ans, go Left). Else go Right.",
+                    "💡 Formula: <code>ceil(p / speed)</code> is equivalent to <code>(p + s - 1) // s</code>"
+                ],
                 metrics: { time: "O(N log M)", space: "O(1)" },
                 timeExplainer: "<strong>Time Analysis:</strong><br>• Binary search range: <code>log M</code> iterations<br>• Each check: <code>O(N)</code> to sum hours<br><br><strong>Total:</strong> <code>O(N log M)</code> where M = max(piles)",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Only variables for binary search<br>• No extra arrays<br><br><strong>Result:</strong> <code>O(1)</code>",
@@ -150,6 +314,13 @@ return min_speed`
                 explanation: "SORT + BS on Answer! Sort stalls. Binary search on distance [1, max-min]. For each distance, greedily try to place K cows. If successful, try larger distance (left = mid + 1). Min-Max pattern!"
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Max-Min logic?</strong> Hamesha 'Maximize the Minimum distance' = BS on Answer",
+                    "⚡ Sort Stalls: Distances check karne ke liye order zaroori hai",
+                    "🔄 Range: <code>[1, max-min]</code>. Check: <code>can_place(min_dist)</code>",
+                    "✅ Greedy Check: Place first cow, then next if <code>dist >= mid</code>",
+                    "💡 Valid? Try bigger gap (Right). Invalid? Shrink gap (Left)."
+                ],
                 metrics: { time: "O(N log N)", space: "O(1)" },
                 timeExplainer: "<strong>Time Breakdown:</strong><br>• Sorting stalls: <code>O(N log N)</code><br>• Binary search × greedy check: <code>O(N log D)</code><br><br><strong>Total:</strong> <code>O(N log N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• In-place sorting possible<br>• Only variables for counting<br><br><strong>Result:</strong> <code>O(1)</code>",
@@ -209,6 +380,13 @@ return ans`
                 explanation: "Partition + Virtual Infinity! BS on smaller array (cut at i). Calculate j for larger array: j = (m+n+1)/2 - i. Valid when maxLeft_X ≤ minRight_Y and maxLeft_Y ≤ minRight_X. Handle edges with ±∞!"
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Partition kyun?</strong> Left halves ka total size total/2 hona chahiye",
+                    "⚡ BS on Smaller Array: Cut <code>nums1</code> at <code>i</code>, adjust <code>nums2</code> cut at <code>j</code>",
+                    "🔄 Partition Validity: <code>maxLeft1 <= minRight2</code> and <code>maxLeft2 <= minRight1</code>",
+                    "✅ Found? Calc median from boundary max/mins. Else adjust cut.",
+                    "💡 Total len (M+N) odd/even handle karne ke liye (M+N+1)//2 use karo"
+                ],
                 metrics: { time: "O(log min(N,M))", space: "O(1)" },
                 timeExplainer: "<strong>Time Analysis:</strong><br>• Binary search on smaller array<br>• Always pick smaller for partitioning<br><br><strong>Total:</strong> <code>O(log min(N, M))</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Only partition pointers<br>• No extra arrays<br><br><strong>Result:</strong> <code>O(1)</code>",

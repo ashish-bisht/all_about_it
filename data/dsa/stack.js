@@ -9,11 +9,148 @@ const topic_stack = {
     icon: "fas fa-layer-group",
     mentalModel: {
         whenToApply: [
-            { label: "Delayed Processing", desc: "Put it in stack, wait for trigger (Next Greater/Smaller)." }
+            { label: "📈 Next Greater/Smaller", desc: "Find next larger or smaller element → Monotonic Stack" },
+            { label: "📊 Rectangle Area", desc: "Max rectangle in histogram → Monotonic Increasing Stack" },
+            { label: "💧 Trapping Water", desc: "Water between bars → Decreasing Stack (horizontal slicing)" },
+            { label: "💥 Collision/Matching", desc: "Parentheses, Asteroids → Stack simulation" },
+            { label: "⏳ Delayed Processing", desc: "Wait for future info to resolve current element" }
         ],
+        patterns: [
+            { algo: "NGE (Decreasing Stack)", use: "Next Greater Element", time: "O(N)", space: "O(N)", template: "while stack and arr[top] < curr: pop, resolve" },
+            { algo: "NSE (Increasing Stack)", use: "Next Smaller Element", time: "O(N)", space: "O(N)", template: "while stack and arr[top] > curr: pop, resolve" },
+            { algo: "Histogram Rectangle", use: "Max rectangle area", time: "O(N)", space: "O(N)", template: "Increasing stack + sentinel, width = i - stack[-1] - 1" },
+            { algo: "Trapping Rain Water", use: "Water between bars", time: "O(N)", space: "O(N)", template: "Decreasing stack, floor = pop, water = min(L,R) - floor" },
+            { algo: "Stack Simulation", use: "Collisions, matching", time: "O(N)", space: "O(N)", template: "Push stable, battle on conflict" }
+        ],
+        decisionTree: `
+<div style="background:#1e293b; padding:25px; border-radius:16px; margin:15px 0; border:1px solid rgba(255,255,255,0.1);">
+<h4 style="color:#a78bfa; margin-bottom:20px; text-align:center; font-size:1.1rem;">🧠 Stack Pattern Recognition</h4>
+<div style="font-family:monospace; font-size:0.85rem; line-height:1.8;">
+<pre style="color:#e2e8f0; text-align:left; margin:0;">
+              ┌──────────────────────────────┐
+              │ "What are you looking for?"  │
+              └──────────────┬───────────────┘
+                             │
+     ┌───────────────────────┼───────────────────────┐
+     ▼                       ▼                       ▼
+┌──────────────┐      ┌──────────────┐      ┌──────────────┐
+│ NEXT GREATER │      │ AREA/RANGE   │      │  MATCHING/   │
+│    ELEMENT   │      │  PROBLEMS    │      │  COLLISION   │
+└──────┬───────┘      └──────┬───────┘      └──────┬───────┘
+       │                     │                     │
+       ▼                     ▼                     ▼
+ ┌───────────────┐    ┌───────────────┐    ┌───────────────┐
+ │ DECREASING    │    │ Histogram?    │    │ Parentheses?  │
+ │ Stack         │    │ → INCREASING  │    │ Asteroids?    │
+ │               │    │ Stack         │    │ → Simulate!   │
+ │ Pop when      │    │               │    │               │
+ │ curr > top    │    │ Water Trap?   │    │ Push stable,  │
+ └───────────────┘    │ → DECREASING  │    │ battle on     │
+                      │ Stack         │    │ conflict      │
+                      └───────────────┘    └───────────────┘
+
+  ┌─────────────────────────────────────────────────────────┐
+  │ 🔑 KEY INSIGHT: Stack stores UNRESOLVED elements        │
+  │    When conflict occurs → POP and RESOLVE!             │
+  │    Remaining in stack → No answer (-1 or default)       │
+  └─────────────────────────────────────────────────────────┘
+</pre>
+</div>
+</div>`,
+        codeTemplates: `
+<div style="background:#0f172a; padding:20px; border-radius:12px; margin:15px 0;">
+<h4 style="color:#10b981; margin-bottom:15px;">📝 Stack Templates</h4>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+1️⃣ Next Greater Element (NGE)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def nextGreaterElement(arr):
+    n = len(arr)
+    result = [-1] * n
+    stack = []  # Store INDICES
+    
+    for current_index in range(n):
+        # Pop all smaller elements
+        while stack and arr[stack[-1]] < arr[current_index]:
+            smaller_index = stack.pop()
+            result[smaller_index] = arr[current_index]
+        stack.append(current_index)
+    return result
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+2️⃣ Largest Rectangle in Histogram
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def largestRectangleArea(heights):
+    heights.append(0)  # Sentinel to clear stack
+    stack = [-1]       # Sentinel for left boundary
+    max_area = 0
+    
+    for i, h in enumerate(heights):
+        while stack[-1] != -1 and h < heights[stack[-1]]:
+            height = heights[stack.pop()]
+            width = i - stack[-1] - 1
+            max_area = max(max_area, height * width)
+        stack.append(i)
+    return max_area
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+3️⃣ Trapping Rain Water (Stack)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def trap(height):
+    stack = []  # Decreasing stack
+    water = 0
+    
+    for i, h in enumerate(height):
+        while stack and h > height[stack[-1]]:
+            floor = stack.pop()
+            if not stack: break  # No left wall
+            left = stack[-1]
+            width = i - left - 1
+            bounded_h = min(height[left], h) - height[floor]
+            water += width * bounded_h
+        stack.append(i)
+    return water
+</pre>
+</details>
+
+<details>
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+4️⃣ Asteroid Collision
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def asteroidCollision(asteroids):
+    stack = []
+    for current in asteroids:
+        while stack and current < 0 < stack[-1]:
+            if abs(current) > stack[-1]:
+                stack.pop(); continue
+            elif abs(current) == stack[-1]:
+                stack.pop(); break
+            else:
+                break
+        else:
+            stack.append(current)
+    return stack
+</pre>
+</details>
+</div>`,
         safetyCheck: [
-            { label: "Empty Stack", desc: "Always check `if stack` before peeking." },
-            { label: "Decr vs Incr", desc: "Next Greater -> Decreasing Stack. <br>Next Smaller -> Increasing Stack." }
+            { label: "📋 Store INDICES!", desc: "Always store indices in stack, not values: <code>stack.append(i)</code>" },
+            { label: "🔍 Check empty!", desc: "<code>if stack</code> before <code>stack[-1]</code> or <code>stack.pop()</code>" },
+            { label: "📉 Decreasing = NGE!", desc: "Next GREATER → Decreasing stack (pop when curr > top)" },
+            { label: "📈 Increasing = NSE!", desc: "Next SMALLER → Increasing stack (pop when curr < top)" },
+            { label: "🚨 Sentinel trick!", desc: "Append 0 to force-clear stack at end (Histogram)" },
+            { label: "⚠️ Width formula!", desc: "Rectangle width = <code>i - stack[-1] - 1</code> (not i - popped)" }
         ]
     },
     questions: [
@@ -36,6 +173,13 @@ const topic_stack = {
                 explanation: "Monotonic Stack! Traverse right to left (or store indices). If current > stack.top, current is NGE for top. Stack maintains decreasing order. O(n)!"
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Monotonic Stack kyun?</strong> Right side ka pehla bada number chahiye in O(N)",
+                    "⚡ <code>while stack and arr[stack[-1]] < curr</code> → Found a greater element!",
+                    "🔄 Pop stack index, update result -> <code>result[pop] = curr</code>",
+                    "✅ Push current index (might be NGE for future elements)",
+                    "💡 Store **indices** in stack, not values, agar index based answer chahiye"
+                ],
                 metrics: { time: "O(N)", space: "O(N)" },
                 timeExplainer: "<strong>Monotonic Stack:</strong><br>• Each element pushed ONCE<br>• Each element popped ONCE<br><br><strong>Total:</strong> <code>O(N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Stack stores indices<br>• Worst Case: Decreasing order [5,4,3,2,1] -> Stack holds all N elements.<br><strong>Aux:</strong> <code>O(N)</code>",
@@ -96,6 +240,13 @@ const topic_stack = {
                 explanation: "Monotonic Stack! Maintain increasing heights. When current < stack top, pop and calc area: height[top] * (current_idx - stack.peek() - 1)."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Wait kyun?</strong> Rectangle tabhi finalize hoga jab choti height aayegi (boundary)",
+                    "⚡ Increasing Stack: <code>while h < height[stack.top]</code> → Pop!",
+                    "🔄 Calc Area: <code>height[popped] * (current_i - new_top - 1)</code>",
+                    "✅ Push current index. Add Sentinel sets boundaries auto.",
+                    "💡 -1 Sentinel stack start mein zaroor add karein for easy width calc"
+                ],
                 metrics: { time: "O(N)", space: "O(N)" },
                 timeExplainer: "<strong>Monotonic Increasing Stack:</strong><br>• Each element pushed ONCE<br>• Each element popped ONCE<br><br><strong>Total:</strong> <code>O(N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Stack stores indices<br>• Worst Case: Increasing order [1,2,3...N] -> Stack holds all N elements.<br><strong>Aux:</strong> <code>O(N)</code>",
@@ -152,6 +303,13 @@ const topic_stack = {
                 explanation: "Stack stores indices (Decreasing). When current > top, we found a right wall. Pop top (Floor). New Top is Left Wall. Water = (min(L, R) - Floor) * Dist."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Horizontal Slicing kyun?</strong> Stack boundaries (Left & Right) ke beech paani bharta hai",
+                    "⚡ Decreasing Stack: <code>h > height[stack.top]</code> → Puddle found!",
+                    "🔄 Floor = Pop(). Height = <code>min(Left, Right) - Floor</code>",
+                    "✅ Width = <code>Right - Left - 1</code>. Add water.",
+                    "💡 Two Pointer approach is usually better (O(1) space), but this is good concept"
+                ],
                 metrics: { time: "O(N)", space: "O(N)" },
                 timeExplainer: "<strong>Monotonic Decreasing Stack:</strong><br>• Each bar pushed ONCE<br>• Each bar popped ONCE<br><br><strong>Total:</strong> <code>O(N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Stack stores indices<br>• Worst Case: Decreasing order.<br><strong>Aux:</strong> <code>O(N)</code>",
@@ -214,6 +372,13 @@ const topic_stack = {
                 explanation: "Stack! Push Right (->). Check Left (<-) against stack."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Collision Logic?</strong> Only Right (→) and Left (←) collide",
+                    "⚡ Stack: Stores stable/right-moving asteroids",
+                    "🔄 Loop: <code>while stack.top > 0 and curr < 0:</code> → Crush!",
+                    "✅ If <code>abs(curr) > abs(top)</code>, pop stack & continue. Else destroy curr.",
+                    "💡 Loop end pe agar curr survive kiya, toh push"
+                ],
                 metrics: { time: "O(N)", space: "O(N)" },
                 timeExplainer: "<strong>Simulation:</strong><br>• Each asteroid processed once<br>• Stack push/pop = O(1) each<br><br><strong>Total:</strong> <code>O(N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Stack stores survivors<br>• Worst: No collisions (all same direction) = <code>O(N)</code>",

@@ -24,6 +24,7 @@ SCRIPT_ORDER = [
     'data/concepts/trees_concepts.js',
     'data/concepts/complexity_concepts.js',
     'data/concepts/stack_concepts.js',
+    'data/concepts/backtracking_concepts.js',
     # Combiner
     'data/index.js',
 ]

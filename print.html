@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Principal Prep | Pattern-Wise Print</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 10mm;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Pro Text', -apple-system, sans-serif;
+            font-size: 9px;
+            line-height: 1.4;
+            color: #1e293b;
+        }
+
+        @media screen {
+            body {
+                background: #64748b;
+                padding: 15px;
+            }
+
+            .pattern-page {
+                margin-bottom: 20px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            }
+
+            .controls {
+                position: fixed;
+                top: 10px;
+                right: 10px;
+                z-index: 1000;
+                display: flex;
+                gap: 8px;
+            }
+
+            .btn {
+                background: #8b5cf6;
+                color: white;
+                border: none;
+                padding: 12px 20px;
+                border-radius: 6px;
+                font-weight: 600;
+                cursor: pointer;
+                font-size: 13px;
+                text-decoration: none;
+            }
+
+            .btn.back {
+                background: #1e293b;
+            }
+        }
+
+        @media print {
+            .controls {
+                display: none !important;
+            }
+
+            .pattern-page {
+                page-break-after: always;
+            }
+
+            .pattern-page:last-child {
+                page-break-after: auto;
+            }
+
+            .question-block {
+                page-break-inside: avoid;
+            }
+        }
+
+        .pattern-page {
+            width: 210mm;
+            min-height: 280mm;
+            background: #fff;
+            padding: 8mm;
+        }
+
+        /* Pattern Header */
+        .pattern-header {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .pattern-header h1 {
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+
+        .pattern-header .desc {
+            font-size: 10px;
+            color: #94a3b8;
+        }
+
+        /* When to Apply Box */
+        .when-box {
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            border-radius: 6px;
+            padding: 10px 12px;
+            margin-bottom: 10px;
+        }
+
+        .when-box h3 {
+            color: #16a34a;
+            font-size: 10px;
+            margin-bottom: 6px;
+        }
+
+        .when-box ul {
+            list-style: none;
+            font-size: 8px;
+        }
+
+        .when-box li {
+            margin-bottom: 3px;
+            padding-left: 12px;
+            position: relative;
+        }
+
+        .when-box li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #16a34a;
+        }
+
+        /* Template Box */
+        .template-box {
+            background: #0f172a;
+            border-radius: 6px;
+            padding: 10px 12px;
+            margin-bottom: 12px;
+        }
+
+        .template-box h3 {
+            color: #fbbf24;
+            font-size: 10px;
+            margin-bottom: 6px;
+        }
+
+        .template-box pre {
+            color: #e2e8f0;
+            font-family: 'SF Mono', Consolas, monospace;
+            font-size: 8px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+        }
+
+        /* Question Block */
+        .question-block {
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        .question-header {
+            background: #f8fafc;
+            padding: 8px 12px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .question-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .question-meta {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .tag {
+            background: #e2e8f0;
+            color: #475569;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 7px;
+        }
+
+        .tag.must-do {
+            background: #fef2f2;
+            color: #dc2626;
+            font-weight: 600;
+        }
+
+        .tag.important {
+            background: #fffbeb;
+            color: #d97706;
+        }
+
+        .tag.time {
+            background: #f0f9ff;
+            color: #0284c7;
+        }
+
+        /* Code */
+        .code-block {
+            background: #1e293b;
+            padding: 10px 12px;
+        }
+
+        .code-block pre {
+            color: #e2e8f0;
+            font-family: 'SF Mono', Consolas, monospace;
+            font-size: 8px;
+            line-height: 1.45;
+            white-space: pre-wrap;
+        }
+
+        /* Crux */
+        .crux-block {
+            background: #fefce8;
+            border-top: 1px solid #fde047;
+            padding: 6px 12px;
+            font-size: 8px;
+        }
+
+        .crux-block strong {
+            color: #a16207;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="controls">
+        <a href="index.html" class="btn back">← Back</a>
+        <button class="btn" onclick="window.print()">🖨️ Print All Patterns</button>
+    </div>
+
+    <div id="container"></div>
+
+    <script src="data.js?v=5"></script>
+    <script>
+        const container = document.getElementById('container');
+
+        function esc(t) {
+            return (t || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        // Collect all patterns from all topics
+        const patternMap = new Map();
+
+        const allTopics = ['arrays', 'binary_search', 'linked_list', 'stack', 'trees', 'graphs', 'dp', 'heap_trie', 'backtracking'];
+
+        allTopics.forEach(topicKey => {
+            const topic = prepData[topicKey];
+            if (!topic) return;
+
+            // Get patterns from mentalModel
+            if (topic.mentalModel?.patterns) {
+                topic.mentalModel.patterns.forEach(p => {
+                    if (!patternMap.has(p.algo)) {
+                        patternMap.set(p.algo, {
+                            name: p.algo,
+                            use: p.use,
+                            time: p.time,
+                            space: p.space,
+                            template: p.template,
+                            topic: topic.title,
+                            whenToApply: [],
+                            questions: []
+                        });
+                    }
+                });
+            }
+
+            // Get whenToApply hints
+            if (topic.mentalModel?.whenToApply) {
+                topic.mentalModel.whenToApply.forEach(hint => {
+                    // Try to match to a pattern
+                    patternMap.forEach((pattern, key) => {
+                        if (hint.label.toLowerCase().includes(key.toLowerCase().split(' ')[0]) ||
+                            hint.desc.toLowerCase().includes(key.toLowerCase())) {
+                            pattern.whenToApply.push(hint);
+                        }
+                    });
+                });
+            }
+
+            // Add questions to their patterns based on tags
+            if (topic.questions) {
+                topic.questions.forEach(q => {
+                    if (!q.learn?.code) return;
+
+                    const qTags = q.tags || [];
+                    let matched = false;
+
+                    // Match to pattern by tags
+                    patternMap.forEach((pattern, key) => {
+                        const keyLower = key.toLowerCase();
+                        qTags.forEach(tag => {
+                            if (tag.toLowerCase().includes(keyLower.split(' ')[0]) ||
+                                keyLower.includes(tag.toLowerCase())) {
+                                pattern.questions.push({ ...q, fromTopic: topic.title });
+                                matched = true;
+                            }
+                        });
+                    });
+
+                    // If no match, add to a general category based on topic
+                    if (!matched) {
+                        const topicPattern = topic.title + ' Pattern';
+                        if (!patternMap.has(topicPattern)) {
+                            patternMap.set(topicPattern, {
+                                name: topicPattern,
+                                use: 'General ' + topic.title + ' problems',
+                                time: 'Varies',
+                                space: 'Varies',
+                                template: '',
+                                topic: topic.title,
+                                whenToApply: topic.mentalModel?.whenToApply || [],
+                                questions: []
+                            });
+                        }
+                        patternMap.get(topicPattern).questions.push({ ...q, fromTopic: topic.title });
+                    }
+                });
+            }
+        });
+
+        // Create pages for patterns that have questions
+        patternMap.forEach((pattern, patternName) => {
+            if (pattern.questions.length === 0) return;
+
+            const page = document.createElement('div');
+            page.className = 'pattern-page';
+
+            let html = `
+                <div class="pattern-header">
+                    <h1>🎯 ${patternName}</h1>
+                    <div class="desc">${pattern.use} • Time: ${pattern.time} • Space: ${pattern.space}</div>
+                </div>
+            `;
+
+            // When to Apply
+            if (pattern.whenToApply.length > 0) {
+                html += `
+                    <div class="when-box">
+                        <h3>✅ When to Apply This Pattern</h3>
+                        <ul>
+                            ${pattern.whenToApply.slice(0, 4).map(h =>
+                    `<li><strong>${h.label}:</strong> ${h.desc}</li>`
+                ).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+
+            // Template Code
+            if (pattern.template) {
+                html += `
+                    <div class="template-box">
+                        <h3>📝 Core Template</h3>
+                        <pre>${esc(pattern.template)}</pre>
+                    </div>
+                `;
+            }
+
+            // All Questions with Code
+            pattern.questions.forEach(q => {
+                let code = q.learn.code;
+                code = code.replace(/##### [^\n]+\n/g, ''); // Remove headers
+
+                const crux = q.learn?.crux
+                    ? q.learn.crux.replace(/<[^>]*>/g, '').substring(0, 150)
+                    : '';
+
+                const diffClass = q.difficulty === 'Must Do' ? 'must-do' :
+                    q.difficulty === 'Important' ? 'important' : '';
+
+                html += `
+                    <div class="question-block">
+                        <div class="question-header">
+                            <div class="question-title">${q.title}</div>
+                            <div class="question-meta">
+                                <span class="tag">${q.fromTopic}</span>
+                                ${q.learn?.metrics ? `<span class="tag time">${q.learn.metrics.time}</span>` : ''}
+                                <span class="tag ${diffClass}">${q.difficulty || 'Practice'}</span>
+                            </div>
+                        </div>
+                        ${crux ? `<div class="crux-block"><strong>💡 Crux:</strong> ${crux}</div>` : ''}
+                        <div class="code-block">
+                            <pre>${esc(code)}</pre>
+                        </div>
+                    </div>
+                `;
+            });
+
+            page.innerHTML = html;
+            container.appendChild(page);
+        });
+    </script>
+</body>
+
+</html>

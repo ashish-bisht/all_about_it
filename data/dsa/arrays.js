@@ -9,13 +9,134 @@ const topic_arrays = {
     icon: "fas fa-layer-group",
     mentalModel: {
         whenToApply: [
-            { label: "Sorted Data", desc: "Classic usage (Two Pointers/Binary Search)." },
-            { label: "Contiguous Subarrays", desc: "Think <span class='code-snippet'>Sliding Window</span>." },
-            { label: "Lookups", desc: "High speed? Think <span class='code-snippet'>Hash Map</span>." }
+            { label: "🔍 Fast Lookup", desc: "Need O(1) lookup? → HashMap (Two Sum, Subarray Sum K)" },
+            { label: "📊 Sorted Data", desc: "Array sorted? → Two Pointers from ends (3Sum, Container Water)" },
+            { label: "📐 Contiguous Subarray", desc: "Max/Min subarray? → Kadane's or Sliding Window" },
+            { label: "🪟 K Window", desc: "Fixed/variable window? → Sliding Window technique" },
+            { label: "↔️ Prefix/Suffix", desc: "Need left+right info? → Prefix/Suffix arrays (Product Except Self)" },
+            { label: "📅 Intervals", desc: "Overlapping ranges? → Sort by start, track end (Merge Intervals)" }
         ],
+        patterns: [
+            { algo: "HashMap Lookup", use: "Find pair/triplet with sum", time: "O(N)", space: "O(N)", template: "if target-num in map: found!" },
+            { algo: "Two Pointers", use: "Sorted array pair finding", time: "O(N)", space: "O(1)", template: "left=0, right=n-1, move based on sum" },
+            { algo: "Sliding Window (Fixed)", use: "Max sum of k elements", time: "O(N)", space: "O(1)", template: "add right, remove left when size>k" },
+            { algo: "Sliding Window (Variable)", use: "Longest/shortest with condition", time: "O(N)", space: "O(K)", template: "expand right, shrink left while invalid" },
+            { algo: "Kadane's Algorithm", use: "Max subarray sum", time: "O(N)", space: "O(1)", template: "curr = max(num, curr+num)" },
+            { algo: "Prefix Sum", use: "Subarray sum queries", time: "O(N)", space: "O(N)", template: "prefix[i] = prefix[i-1] + arr[i]" },
+            { algo: "Dutch National Flag", use: "3-way partition (0,1,2)", time: "O(N)", space: "O(1)", template: "low, mid, high pointers" },
+            { algo: "Interval Merge", use: "Overlapping intervals", time: "O(N log N)", space: "O(N)", template: "sort by start, merge if overlap" }
+        ],
+        decisionTree: `
+<div style="background:#1e293b; padding:25px; border-radius:16px; margin:15px 0; border:1px solid rgba(255,255,255,0.1);">
+<h4 style="color:#a78bfa; margin-bottom:20px; text-align:center; font-size:1.1rem;">🧠 Arrays Pattern Recognition</h4>
+<div style="font-family:monospace; font-size:0.85rem; line-height:1.8;">
+<pre style="color:#e2e8f0; text-align:left; margin:0;">
+                    ┌─────────────────────────┐
+                    │ "Array problem type?"   │
+                    └───────────┬─────────────┘
+                                │
+    ┌───────────────────────────┼───────────────────────────┐
+    ▼                           ▼                           ▼
+┌────────────┐          ┌─────────────┐          ┌──────────────┐
+│ FIND PAIR  │          │  SUBARRAY   │          │  INTERVALS   │
+│ with sum   │          │  max/min    │          │  overlapping │
+└─────┬──────┘          └──────┬──────┘          └──────┬───────┘
+      │                        │                        │
+      ▼                        ▼                        ▼
+┌───────────────┐      ┌─────────────────┐      ┌──────────────┐
+│ Sorted?       │      │ Contiguous?     │      │ Sort by start│
+│ → Two Pointer │      │ → Kadane's      │      │ Track max end│
+│ Unsorted?     │      │ Fixed window?   │      └──────────────┘
+│ → HashMap     │      │ → Sliding Window│
+└───────────────┘      └─────────────────┘
+
+         "Need left AND right info?"        "3-way partition?"
+              │                                   │
+              ▼                                   ▼
+      ┌───────────────┐                   ┌────────────────┐
+      │ Prefix/Suffix │                   │ Dutch National │
+      │ Two passes    │                   │ Flag Algorithm │
+      │ left→ then ←  │                   │ 0,1,2 sorting  │
+      └───────────────┘                   └────────────────┘
+</pre>
+</div>
+</div>`,
+        codeTemplates: `
+<div style="background:#0f172a; padding:20px; border-radius:12px; margin:15px 0;">
+<h4 style="color:#10b981; margin-bottom:15px;">📝 Arrays Templates</h4>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+1️⃣ Two Sum (HashMap)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def twoSum(nums, target):
+    seen = {}
+    for index, num in enumerate(nums):
+        complement = target - num
+        if complement in seen:
+            return [seen[complement], index]
+        seen[num] = index
+    return []
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+2️⃣ Sliding Window (Variable)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def lengthOfLongestSubstring(s):
+    char_set = set()
+    left = max_len = 0
+    for right in range(len(s)):
+        while s[right] in char_set:
+            char_set.remove(s[left])
+            left += 1
+        char_set.add(s[right])
+        max_len = max(max_len, right - left + 1)
+    return max_len
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+3️⃣ Kadane's Algorithm
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def maxSubArray(nums):
+    max_sum = current_sum = nums[0]
+    for num in nums[1:]:
+        current_sum = max(num, current_sum + num)
+        max_sum = max(max_sum, current_sum)
+    return max_sum
+</pre>
+</details>
+
+<details>
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+4️⃣ Merge Intervals
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def merge(intervals):
+    intervals.sort(key=lambda x: x[0])
+    merged = [intervals[0]]
+    for start, end in intervals[1:]:
+        if start <= merged[-1][1]:
+            merged[-1][1] = max(merged[-1][1], end)
+        else:
+            merged.append([start, end])
+    return merged
+</pre>
+</details>
+</div>`,
         safetyCheck: [
-            { label: "Edge Cases", desc: "Always handle <span class='code-snippet'>if not nums</span> first." },
-            { label: "Space Trade-off", desc: "Use <span class='code-snippet'>O(N)</span> space to get <span class='code-snippet'>O(1)</span> lookup." }
+            { label: "🔍 Empty array!", desc: "<code>if not nums: return</code> — Always check first!" },
+            { label: "📍 Index bounds!", desc: "Two pointers: <code>while left < right</code> not <code><=</code>" },
+            { label: "🔄 Duplicate skip!", desc: "3Sum: <code>while left < right and nums[left] == nums[left-1]: left += 1</code>" },
+            { label: "📋 Copy issue!", desc: "When storing result, use <code>result.append(nums[:])</code>" },
+            { label: "⚡ Shrink window!", desc: "Sliding window: shrink with <code>while</code> not <code>if</code>" },
+            { label: "🔢 Overflow!", desc: "Product problems: track both max and min (negatives flip sign)" }
         ]
     },
     questions: [
@@ -58,6 +179,13 @@ const topic_arrays = {
                 explanation: "Sort first! Fix one element, use two pointers on rest. Skip duplicates by checking if current == previous. This is THE standard pattern for multi-pointer problems. O(n²) time!"
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Sort kyun?</strong> Two pointers tabhi kaam karte hain jab sorted ho",
+                    "⚡ 3Sum = Fix anchor + 2Sum: <code>target = -nums[i]</code>",
+                    "🔄 <code>if sum < 0: L++</code> (zyada chahiye) else <code>R--</code> (kam chahiye)",
+                    "✅ <code>sum == 0</code> → found triplet! Skip duplicates both sides",
+                    "💡 O(N²) best possible kyunki output itself can be O(N²)"
+                ],
                 metrics: { time: "O(N²)", space: "O(1)" },
                 timeExplainer: "<strong>Time: O(N²)</strong><br>• Sorting takes O(N log N).<br>• We iterate N times (Anchor).<br>• Inside loop, max O(N) work (Two Pointers).<br>Total = N * N = O(N²).",
                 spaceExplainer: "<strong>Space: O(1)</strong><br>We only use pointers (left, right, index). Ignoring output array space.",
@@ -205,6 +333,13 @@ const topic_arrays = {
                 explanation: "Kadane's is GENIUS! Keep running sum. If it goes negative, reset to 0 (or current element). Track global max. O(n) time, O(1) space. Foundation for many DP problems!"
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Current < 0 toh fresh start kyun?</strong> Negative sum aage ka contribution kam karega",
+                    "⚡ Decision: <code>max(num, current + num)</code> — extend ya restart?",
+                    "🔄 Har step pe: <code>global_max = max(global_max, current)</code>",
+                    "✅ Single pass O(N) mein answer mil jaata hai",
+                    "💡 All negatives? <code>max_sum = nums[0]</code> se start karo, 0 se nahi!"
+                ],
                 metrics: { time: "O(N)", space: "O(1)" },
                 timeExplainer: "<strong>Time Complexity: O(N)</strong><br>We iterate through the array exactly once (Single Pass). Each element is visited and processed in constant time.",
                 spaceExplainer: "<strong>Space Complexity: O(1)</strong><br>We only use two variables (`current_sum` and `global_max`) to track the state, regardless of the input array size.",
@@ -286,6 +421,13 @@ const topic_arrays = {
                 explanation: "Prefix × Suffix magic! First pass: prefix[i] = product of all left elements. Second pass: suffix from right. Result[i] = prefix[i] × suffix[i]. O(n) time! Microsoft/Amazon favorite."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Division banned kyun?</strong> Zero se divide hoga toh crash",
+                    "⚡ Prefix-Suffix trick: <code>result[i] = left[0..i-1] × right[i+1..n]</code>",
+                    "🔄 Pass 1: prefix product build; Pass 2: suffix multiply",
+                    "✅ Single variable <code>suffix</code> enough — O(1) extra space",
+                    "💡 Zeros? Prefix-Suffix naturally handles — ek zero toh baaki 0"
+                ],
                 metrics: { time: "O(N)", space: "O(1)" },
                 timeExplainer: "<strong>Time Analysis:</strong><br>• <code>2 passes</code> through the array<br>• First pass: Build prefix products<br>• Second pass: Multiply with suffix products<br><br><strong>Total:</strong> <code>O(2N)</code> = <code>O(N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Output array not counted as extra space<br>• Only one variable <code>suffix_product</code> used<br><br><strong>Result:</strong> <code>O(1)</code> auxiliary space",
@@ -361,6 +503,13 @@ const topic_arrays = {
                 explanation: "Two pointers is ELITE! Start from both ends with left_max, right_max. Water at position = min(left_max, right_max) - height. Move smaller pointer inward. O(n) time, O(1) space!"
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Chhoti side kyun process?</strong> Water level min(left, right) se decide hota hai",
+                    "⚡ <code>if height[L] < height[R]</code> → left side ka water CONFIRMED hai",
+                    "🔄 <code>water += L_max - height[L]</code> (agar positive ho toh)",
+                    "✅ Update max: <code>L_max = max(L_max, height[L])</code> wall hai toh",
+                    "💡 O(1) space kyunki sirf 2 pointers + 2 max variables"
+                ],
                 metrics: { time: "O(N)", space: "O(1)" },
                 timeExplainer: "<strong>Time: O(N)</strong><br>We process each element exactly once using two pointers meeting in the middle.",
                 spaceExplainer: "<strong>Space: O(1)</strong><br>Only constant extra space used for pointers and max height variables.",
@@ -604,6 +753,13 @@ print(trapping_rain_water([0,1,0,2,1,0,1,3,2,1,2,1]))`
                 explanation: "SORT FIRST by start time! Then iterate: if current.start <= last.end, they overlap - merge. Else, add current to result. O(n log n) for sort, O(n) for merge. Standard interval pattern!"
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Sort kyun?</strong> Overlapping check tabhi easy hai jab start time se sorted ho",
+                    "⚡ <code>if curr_start <= last_end</code> → OVERLAP! Merge: <code>max(ends)</code>",
+                    "🔄 Non-overlapping? Simply append to result",
+                    "✅ Single pass after sort — O(N log N) total",
+                    "💡 [1,10] + [2,5] = [1,10] — chhota andar hai, end change mat karo"
+                ],
                 metrics: { time: "O(N log N)", space: "O(N)" },
                 timeExplainer: "<strong>Time Breakdown:</strong><br>• Sorting: <code>O(N log N)</code><br>• Single pass to merge: <code>O(N)</code><br><br><strong>Total:</strong> <code>O(N log N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Result array to store merged intervals<br>• Worst case: no merges = <code>O(N)</code>",
@@ -652,6 +808,13 @@ return merged`
                 explanation: "Min Heap FTW! Sort by start time. For each meeting, if heap top (earliest end) < current start, reuse room (pop heap). Always push current end time. Heap size = rooms needed. O(n log n)!"
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>MinHeap kyun?</strong> Earliest ending meeting track karna hai for room reuse",
+                    "⚡ <code>if new_start >= heap[0]</code> → room free! <code>heappop</code>",
+                    "🔄 <code>heappush(end)</code> always — new meeting occupy kar rahi hai",
+                    "✅ <code>len(heap)</code> = max rooms needed at any point",
+                    "💡 [1,5] + [5,10] reuse allowed — >= check, not >"
+                ],
                 metrics: { time: "O(N log N)", space: "O(N)" },
                 timeExplainer: "<strong>Time Breakdown:</strong><br>• Sorting: <code>O(N log N)</code><br>• Heap operations: <code>O(N log N)</code><br><br><strong>Total:</strong> <code>O(N log N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Min-Heap stores end times<br>• Worst case: all meetings overlap = <code>O(N)</code>",
@@ -700,6 +863,13 @@ return len(heap)`
                 explanation: "HashMap + Sliding Window! Store char → index. When duplicate found, jump LEFT pointer to max(left, map[char] + 1). Track max length. This is THE 'Hello World' of sliding window! O(n)."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Sliding Window kyun?</strong> Contiguous substring chahiye",
+                    "⚡ <code>while char in set: remove s[L], L++</code> duplicate hatao",
+                    "🔄 <code>set.add(char)</code> expand; <code>max_len = R - L + 1</code>",
+                    "✅ Set ensures O(1) duplicate check",
+                    "💡 HashMap trick: <code>L = max(L, last_idx[char]+1)</code> for O(1) shrink"
+                ],
                 metrics: { time: "O(N)", space: "O(N)" },
                 timeExplainer: "<strong>Time: O(N)</strong><br>We traverse the string once. Each character is added to the Set once and removed at most once (2N ops = O(N)).",
                 spaceExplainer: "<strong>Space: O(N)</strong><br>In worst case (all unique), the Set stores all N characters.",
@@ -806,6 +976,13 @@ return len(heap)`
                 explanation: "Dutch National Flag Algorithm! 3 Pointers: Low (0 boundary), Mid (Scanner), High (2 boundary). If 0: swap(low, mid), low++, mid++. If 1: mid++. If 2: swap(mid, high), high--."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Dutch National Flag kyun?</strong> 3-way partition single pass mein",
+                    "⚡ 3 pointers: <code>L</code> (0s boundary), <code>R</code> (2s boundary), <code>i</code> (current)",
+                    "🔄 0 → swap with L, both move; 2 → swap with R, only R moves; 1 → skip",
+                    "✅ <code>i <= R</code> tak loop — R ke baad sab 2s sorted hai",
+                    "💡 i++ nahi karte swap 2 pe kyunki swapped element check karna hai"
+                ],
                 metrics: { time: "O(N)", space: "O(1)" },
                 code: `def sortColors(nums):
 l, r = 0, len(nums)-1
@@ -955,6 +1132,13 @@ while i <= r:
                 explanation: "XR = Prefix XOR. We want subarray ending at i with XOR K. So `XR ^ K` must exist previously? Yes. like Two Sum: Check map for `XR ^ K`. Add count."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Prefix XOR kyun?</strong> Subarray XOR [i..j] = Prefix[j] ^ Prefix[i-1]",
+                    "⚡ Formula: <code>XR ^ K = Target</code> check karna hai map mein",
+                    "🔄 <code>map[xor]++</code> store count of this prefix XOR occurrence",
+                    "✅ <code>count += map[XR ^ K]</code> — purane positions mil gaye jaha required XOR banta hai",
+                    "💡 <code>map = {0: 1}</code> handle subarray starting from index 0"
+                ],
                 metrics: { time: "O(N)", space: "O(N)" },
                 code: `def solve(A, B):
 cnt = 0
@@ -982,6 +1166,13 @@ return cnt`
                 explanation: "Standard variable sliding window! Expand right, add to Map. While len(Map) > K, shrink left (decrement/remove from Map). Update max_len."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Map for window kyun?</strong> Count distinct characters track karna hai",
+                    "⚡ Expand Right: <code>map[char]++</code>; If unique, distinct count badhega",
+                    "🔄 Shrink Left: <code>while len(map) > K</code> → remove chars until valid",
+                    "✅ <code>max_len = max(len, R-L+1)</code> only when window is valid",
+                    "💡 <code>del map[char]</code> jab count 0 ho jaye — tabhi distinct kam hoga"
+                ],
                 metrics: { time: "O(N)", space: "O(K)" },
                 code: `def lengthOfLongestSubstringKDistinct(s, k):
 map = {}

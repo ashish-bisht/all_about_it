@@ -9,12 +9,146 @@ const topic_heap_trie = {
     icon: "fas fa-sitemap",
     mentalModel: {
         whenToApply: [
-            { label: "Top K Elements", desc: "Heap. O(N log K)." },
-            { label: "Prefix Search", desc: "Trie. O(L) lookup." }
+            { label: "🏆 Top K Elements", desc: "Find K largest/smallest → Min-Heap of size K" },
+            { label: "🔀 Merge K Streams", desc: "Merge K sorted lists → Min-Heap with (val, idx, node)" },
+            { label: "🔤 Prefix Search", desc: "Autocomplete, word search → Trie (O(L) lookup)" },
+            { label: "⊕ Max XOR", desc: "Find max XOR pair → Binary Trie with opposite-bit path" },
+            { label: "📊 Streaming Data", desc: "Maintain K best in stream → Min-Heap (VIP room analogy)" }
         ],
+        patterns: [
+            { algo: "Kth Largest (Min-Heap)", use: "Top K elements", time: "O(N log K)", space: "O(K)", template: "Min-heap size K, root = Kth largest" },
+            { algo: "Merge K Lists", use: "Merge sorted streams", time: "O(N log K)", space: "O(K)", template: "(val, idx, node) tuple for tie-break" },
+            { algo: "Trie Insert/Search", use: "Prefix matching", time: "O(L)", space: "O(N×L)", template: "children={}, isEnd=False per node" },
+            { algo: "Binary Trie", use: "Max XOR pair", time: "O(N × 32)", space: "O(N × 32)", template: "Store bits, traverse opposite path" },
+            { algo: "Heapify", use: "Build heap from array", time: "O(N)", space: "O(1)", template: "heapq.heapify(arr) - NOT O(N log N)!" }
+        ],
+        decisionTree: `
+<div style="background:#1e293b; padding:25px; border-radius:16px; margin:15px 0; border:1px solid rgba(255,255,255,0.1);">
+<h4 style="color:#a78bfa; margin-bottom:20px; text-align:center; font-size:1.1rem;">🧠 Heap & Trie Pattern Recognition</h4>
+<div style="font-family:monospace; font-size:0.85rem; line-height:1.8;">
+<pre style="color:#e2e8f0; text-align:left; margin:0;">
+              ┌───────────────────────────┐
+              │ "What's the core need?"   │
+              └─────────────┬─────────────┘
+                            │
+      ┌─────────────────────┼─────────────────────┐
+      ▼                     ▼                     ▼
+┌───────────────┐    ┌───────────────┐    ┌───────────────┐
+│   TOP K /     │    │ MERGE SORTED  │    │   PREFIX /    │
+│   STREAMING   │    │   LISTS       │    │   STRINGS     │
+└───────┬───────┘    └───────┬───────┘    └───────┬───────┘
+        │                    │                    │
+        ▼                    ▼                    ▼
+  ┌───────────────┐    ┌───────────────┐    ┌───────────────┐
+  │ K LARGEST?    │    │ Min-Heap with │    │ Autocomplete? │
+  │ → MIN-HEAP    │    │ K heads       │    │ → TRIE        │
+  │   size K      │    │ (val,idx,node)│    │               │
+  │               │    │               │    │ XOR max?      │
+  │ K SMALLEST?   │    │ Pop min,      │    │ → Binary Trie │
+  │ → MAX-HEAP    │    │ push next     │    │               │
+  └───────────────┘    └───────────────┘    └───────────────┘
+
+  ┌─────────────────────────────────────────────────────────┐
+  │ 🎯 VIP ROOM ANALOGY:                                    │
+  │ • Room capacity = K                                     │
+  │ • Bouncer (min-heap root) = Kth largest                │
+  │ • New person richer than bouncer? Kick bouncer out!     │
+  └─────────────────────────────────────────────────────────┘
+</pre>
+</div>
+</div>`,
+        codeTemplates: `
+<div style="background:#0f172a; padding:20px; border-radius:12px; margin:15px 0;">
+<h4 style="color:#10b981; margin-bottom:15px;">📝 Heap & Trie Templates</h4>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+1️⃣ Kth Largest (Min-Heap size K)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+import heapq
+class KthLargest:
+    def __init__(self, k, nums):
+        self.k, self.heap = k, []
+        for n in nums: self.add(n)
+    def add(self, val):
+        if len(self.heap) < self.k:
+            heapq.heappush(self.heap, val)
+        elif val > self.heap[0]:
+            heapq.heapreplace(self.heap, val)
+        return self.heap[0]  # Kth largest = min of top K
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+2️⃣ Merge K Sorted Lists
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def mergeKLists(lists):
+    pq = []
+    for i, l in enumerate(lists):
+        if l: heapq.heappush(pq, (l.val, i, l))  # i = tie-breaker!
+    dummy = curr = ListNode()
+    while pq:
+        val, i, node = heapq.heappop(pq)
+        curr.next = node
+        curr = curr.next
+        if node.next:
+            heapq.heappush(pq, (node.next.val, i, node.next))
+    return dummy.next
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+3️⃣ Trie Implementation
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+class TrieNode:
+    def __init__(self):
+        self.children = {}
+        self.isEnd = False
+class Trie:
+    def __init__(self):
+        self.root = TrieNode()
+    def insert(self, word):
+        cur = self.root
+        for c in word:
+            if c not in cur.children:
+                cur.children[c] = TrieNode()
+            cur = cur.children[c]
+        cur.isEnd = True
+    def search(self, word):
+        cur = self.root
+        for c in word:
+            if c not in cur.children: return False
+            cur = cur.children[c]
+        return cur.isEnd  # Must be end of word!
+</pre>
+</details>
+
+<details>
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+4️⃣ XOR Trick (Single Number)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+# A ^ A = 0, A ^ 0 = A
+def singleNumber(nums):
+    result = 0
+    for num in nums:
+        result ^= num
+    return result
+</pre>
+</details>
+</div>`,
         safetyCheck: [
-            { label: "K-th Largest", desc: "Use Min-Heap of size K." },
-            { label: "Trie Node", desc: "Remember `is_end` flag." }
+            { label: "🔄 Min vs Max Heap!", desc: "Kth LARGEST → MIN-heap. Python heapq is min-heap by default." },
+            { label: "⚠️ Tuple tie-breaker!", desc: "Merge K Lists: Use <code>(val, idx, node)</code> — nodes can't be compared!" },
+            { label: "🔚 isEnd flag!", desc: "Trie: Don't forget <code>isEnd = True</code> at word end" },
+            { label: "📏 Prefix vs Word!", desc: "startsWith → just traverse. search → must check isEnd" },
+            { label: "⚡ Heapify is O(N)!", desc: "<code>heapq.heapify()</code> is O(N), NOT O(N log N)" },
+            { label: "📦 Heap size K!", desc: "For top K, only keep K elements in heap, not all N" }
         ]
     },
     questions: [
@@ -32,6 +166,13 @@ const topic_heap_trie = {
                 explanation: "Min-Heap of size K! The root holds the K-th largest. If new val > root, pop root and push new val. Keep top K elements in the club; root is the 'bouncer' (smallest of the top K)."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Min-Heap why?</strong> Don't sort! Hume sirf top K largest elements ka 'club' maintain karna hai",
+                    "⚡ <code>MinHeap(k)</code>: Root is smallest member of Top-K club (bouncer)",
+                    "🔄 If <code>new_val > root</code>: <code>heapreplace(val)</code> — chhota bahar, bada andar",
+                    "✅ Heap size K constant rakhna hai stream mein",
+                    "💡 Kth Largest = <code>MinHeap.root</code> (smallest of the giants)"
+                ],
                 metrics: { time: "O(log K)", space: "O(K)" },
                 timeExplainer: "<strong>Min-Heap:</strong><br>• Add element: <code>O(log K)</code><br>• Maintain size K<br><br><strong>Total:</strong> <code>O(log K)</code> per add",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Heap stores exactly K elements<br>• Ignore infinite stream history<br><br><strong>Result:</strong> <code>O(K)</code>",
@@ -68,6 +209,13 @@ def add(self, val):
                 explanation: "Min-Heap! Put all K heads in heap. Pop min, add to result, push next node from that list. O(N log K)."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Heap Merge logic?</strong> Race track! Har list ka head race mein hai",
+                    "⚡ Min-Heap stores <code>(val, idx, node)</code> of all list heads",
+                    "🔄 Pop smallest: Add to result. Push <code>node.next</code> from THAT list",
+                    "✅ Runs until heap is empty (all nodes processed)",
+                    "💡 Tuple <code>(val, i, node)</code> mein 'i' tie-breaker hai (node comparison crash rokne ke liye)"
+                ],
                 metrics: { time: "O(N log K)", space: "O(K)" },
                 timeExplainer: "<strong>Heap Merge:</strong><br>• Heap size K (one per list)<br>• Process all N nodes<br>• Push/Pop is log K<br><br><strong>Total:</strong> <code>O(N log K)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Heap stores K nodes<br>• Output list not counted (if returning new)<br><br><strong>Result:</strong> <code>O(K)</code>",
@@ -106,6 +254,15 @@ return dummy.next`
                 explanation: "Trie! Nodes represent characters. Path from root spells word. Shared prefixes share nodes (Space efficient)."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Trie Structure?</strong> String sharing space save karta hai (prefix 'app' shared by 'apple', 'app')",
+                    "⚡ Node: <code>children = {}</code>, <code>isEnd = False</code>",
+                    "🔄 Insert: Loop chars. If not in children, create new Node. Last node marked <code>isEnd=True</code>",
+                    "✅ Search: Traverse path. If broken -> False. At end, check <code>isEnd</code>",
+                    "💡 Prefix Search? Same as search, but don't check <code>isEnd</code>",
+                    "<code>startsWith: traverse; return True if reached</code>",
+                    "Path from root spells prefix"
+                ],
                 metrics: { time: "O(L)", space: "O(N*L)" },
                 timeExplainer: "<strong>Prefix Tree:</strong><br>• Traversal depends only on word length L<br>• Independent of total words N<br><br><strong>Total:</strong> <code>O(L)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Worst: No common prefixes<br>• <code>N</code> words of length <code>L</code><br><br><strong>Total:</strong> <code>O(N×L)</code> nodes",
@@ -160,6 +317,13 @@ def startsWith(self, prefix):
                 explanation: "Insert all numbers into a Binary Trie. For each number, try to traverse the opposite bit path to maximize XOR."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Bit Trie kyun?</strong> XOR maximize karne ke liye 'opposite' bit chahiye (1^0=1)",
+                    "⚡ Insert nums as 32-bit binary strings (MSB to LSB)",
+                    "🔄 Query: For each bit, try going opposite direction (if 1 go 0). If blocked, go same.",
+                    "✅ Successful opposite moves = higher XOR value",
+                    "💡 O(N) approach compared to O(N²) brute force"
+                ],
                 metrics: { time: "O(N * 32)", space: "O(N * 32)" },
                 code: `# Trie Implementation needed`
             }
@@ -178,6 +342,13 @@ def startsWith(self, prefix):
                 explanation: "A ^ A = 0. A ^ 0 = A. XORing all numbers cancels out pairs, leaving the single number."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>XOR Magic?</strong> Compare pairs without Sort/Set",
+                    "⚡ Property: <code>A ^ A = 0</code> (Pairs vanish) and <code>A ^ 0 = A</code>",
+                    "🔄 Loop: XOR all numbers together",
+                    "✅ Result: Jo single hai wahi bachega, baaki sab 0 ban jayenge",
+                    "💡 O(N) time & O(1) space — best solution possible"
+                ],
                 metrics: { time: "O(N)", space: "O(1)" },
                 code: `def singleNumber(nums):
 res = 0
@@ -199,6 +370,13 @@ return res`
                 explanation: "O(N)! Sift-down from the last non-leaf node up to root. Lower levels have less work."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>O(N) vs O(NlogN)?</strong> Build Heap from bottom-up is faster (Sift Level-by-Level)",
+                    "⚡ Start: Last non-leaf node (index <code>N//2 - 1</code>)",
+                    "🔄 Loop Backwards: Call <code>sift_down(i)</code> for each node upto root",
+                    "✅ Why O(N)? Most nodes are leaves (0 work). Work decreases as levels go up.",
+                    "💡 <code>push</code> N times is O(NlogN). This is efficient batch build."
+                ],
                 metrics: { time: "O(N)", space: "O(1)" },
                 code: `import heapq
 def heapify(arr):

@@ -15,13 +15,134 @@ const topic_arrays = {
     icon: "fas fa-layer-group",
     mentalModel: {
         whenToApply: [
-            { label: "Sorted Data", desc: "Classic usage (Two Pointers/Binary Search)." },
-            { label: "Contiguous Subarrays", desc: "Think <span class='code-snippet'>Sliding Window</span>." },
-            { label: "Lookups", desc: "High speed? Think <span class='code-snippet'>Hash Map</span>." }
+            { label: "🔍 Fast Lookup", desc: "Need O(1) lookup? → HashMap (Two Sum, Subarray Sum K)" },
+            { label: "📊 Sorted Data", desc: "Array sorted? → Two Pointers from ends (3Sum, Container Water)" },
+            { label: "📐 Contiguous Subarray", desc: "Max/Min subarray? → Kadane's or Sliding Window" },
+            { label: "🪟 K Window", desc: "Fixed/variable window? → Sliding Window technique" },
+            { label: "↔️ Prefix/Suffix", desc: "Need left+right info? → Prefix/Suffix arrays (Product Except Self)" },
+            { label: "📅 Intervals", desc: "Overlapping ranges? → Sort by start, track end (Merge Intervals)" }
         ],
+        patterns: [
+            { algo: "HashMap Lookup", use: "Find pair/triplet with sum", time: "O(N)", space: "O(N)", template: "if target-num in map: found!" },
+            { algo: "Two Pointers", use: "Sorted array pair finding", time: "O(N)", space: "O(1)", template: "left=0, right=n-1, move based on sum" },
+            { algo: "Sliding Window (Fixed)", use: "Max sum of k elements", time: "O(N)", space: "O(1)", template: "add right, remove left when size>k" },
+            { algo: "Sliding Window (Variable)", use: "Longest/shortest with condition", time: "O(N)", space: "O(K)", template: "expand right, shrink left while invalid" },
+            { algo: "Kadane's Algorithm", use: "Max subarray sum", time: "O(N)", space: "O(1)", template: "curr = max(num, curr+num)" },
+            { algo: "Prefix Sum", use: "Subarray sum queries", time: "O(N)", space: "O(N)", template: "prefix[i] = prefix[i-1] + arr[i]" },
+            { algo: "Dutch National Flag", use: "3-way partition (0,1,2)", time: "O(N)", space: "O(1)", template: "low, mid, high pointers" },
+            { algo: "Interval Merge", use: "Overlapping intervals", time: "O(N log N)", space: "O(N)", template: "sort by start, merge if overlap" }
+        ],
+        decisionTree: `
+<div style="background:#1e293b; padding:25px; border-radius:16px; margin:15px 0; border:1px solid rgba(255,255,255,0.1);">
+<h4 style="color:#a78bfa; margin-bottom:20px; text-align:center; font-size:1.1rem;">🧠 Arrays Pattern Recognition</h4>
+<div style="font-family:monospace; font-size:0.85rem; line-height:1.8;">
+<pre style="color:#e2e8f0; text-align:left; margin:0;">
+                    ┌─────────────────────────┐
+                    │ "Array problem type?"   │
+                    └───────────┬─────────────┘
+                                │
+    ┌───────────────────────────┼───────────────────────────┐
+    ▼                           ▼                           ▼
+┌────────────┐          ┌─────────────┐          ┌──────────────┐
+│ FIND PAIR  │          │  SUBARRAY   │          │  INTERVALS   │
+│ with sum   │          │  max/min    │          │  overlapping │
+└─────┬──────┘          └──────┬──────┘          └──────┬───────┘
+      │                        │                        │
+      ▼                        ▼                        ▼
+┌───────────────┐      ┌─────────────────┐      ┌──────────────┐
+│ Sorted?       │      │ Contiguous?     │      │ Sort by start│
+│ → Two Pointer │      │ → Kadane's      │      │ Track max end│
+│ Unsorted?     │      │ Fixed window?   │      └──────────────┘
+│ → HashMap     │      │ → Sliding Window│
+└───────────────┘      └─────────────────┘
+
+         "Need left AND right info?"        "3-way partition?"
+              │                                   │
+              ▼                                   ▼
+      ┌───────────────┐                   ┌────────────────┐
+      │ Prefix/Suffix │                   │ Dutch National │
+      │ Two passes    │                   │ Flag Algorithm │
+      │ left→ then ←  │                   │ 0,1,2 sorting  │
+      └───────────────┘                   └────────────────┘
+</pre>
+</div>
+</div>`,
+        codeTemplates: `
+<div style="background:#0f172a; padding:20px; border-radius:12px; margin:15px 0;">
+<h4 style="color:#10b981; margin-bottom:15px;">📝 Arrays Templates</h4>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+1️⃣ Two Sum (HashMap)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def twoSum(nums, target):
+    seen = {}
+    for index, num in enumerate(nums):
+        complement = target - num
+        if complement in seen:
+            return [seen[complement], index]
+        seen[num] = index
+    return []
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+2️⃣ Sliding Window (Variable)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def lengthOfLongestSubstring(s):
+    char_set = set()
+    left = max_len = 0
+    for right in range(len(s)):
+        while s[right] in char_set:
+            char_set.remove(s[left])
+            left += 1
+        char_set.add(s[right])
+        max_len = max(max_len, right - left + 1)
+    return max_len
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+3️⃣ Kadane's Algorithm
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def maxSubArray(nums):
+    max_sum = current_sum = nums[0]
+    for num in nums[1:]:
+        current_sum = max(num, current_sum + num)
+        max_sum = max(max_sum, current_sum)
+    return max_sum
+</pre>
+</details>
+
+<details>
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+4️⃣ Merge Intervals
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def merge(intervals):
+    intervals.sort(key=lambda x: x[0])
+    merged = [intervals[0]]
+    for start, end in intervals[1:]:
+        if start <= merged[-1][1]:
+            merged[-1][1] = max(merged[-1][1], end)
+        else:
+            merged.append([start, end])
+    return merged
+</pre>
+</details>
+</div>`,
         safetyCheck: [
-            { label: "Edge Cases", desc: "Always handle <span class='code-snippet'>if not nums</span> first." },
-            { label: "Space Trade-off", desc: "Use <span class='code-snippet'>O(N)</span> space to get <span class='code-snippet'>O(1)</span> lookup." }
+            { label: "🔍 Empty array!", desc: "<code>if not nums: return</code> — Always check first!" },
+            { label: "📍 Index bounds!", desc: "Two pointers: <code>while left < right</code> not <code><=</code>" },
+            { label: "🔄 Duplicate skip!", desc: "3Sum: <code>while left < right and nums[left] == nums[left-1]: left += 1</code>" },
+            { label: "📋 Copy issue!", desc: "When storing result, use <code>result.append(nums[:])</code>" },
+            { label: "⚡ Shrink window!", desc: "Sliding window: shrink with <code>while</code> not <code>if</code>" },
+            { label: "🔢 Overflow!", desc: "Product problems: track both max and min (negatives flip sign)" }
         ]
     },
     questions: [
@@ -64,6 +185,13 @@ const topic_arrays = {
                 explanation: "Sort first! Fix one element, use two pointers on rest. Skip duplicates by checking if current == previous. This is THE standard pattern for multi-pointer problems. O(n²) time!"
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Sort kyun?</strong> Two pointers tabhi kaam karte hain jab sorted ho",
+                    "⚡ 3Sum = Fix anchor + 2Sum: <code>target = -nums[i]</code>",
+                    "🔄 <code>if sum < 0: L++</code> (zyada chahiye) else <code>R--</code> (kam chahiye)",
+                    "✅ <code>sum == 0</code> → found triplet! Skip duplicates both sides",
+                    "💡 O(N²) best possible kyunki output itself can be O(N²)"
+                ],
                 metrics: { time: "O(N²)", space: "O(1)" },
                 timeExplainer: "<strong>Time: O(N²)</strong><br>• Sorting takes O(N log N).<br>• We iterate N times (Anchor).<br>• Inside loop, max O(N) work (Two Pointers).<br>Total = N * N = O(N²).",
                 spaceExplainer: "<strong>Space: O(1)</strong><br>We only use pointers (left, right, index). Ignoring output array space.",
@@ -211,6 +339,13 @@ const topic_arrays = {
                 explanation: "Kadane's is GENIUS! Keep running sum. If it goes negative, reset to 0 (or current element). Track global max. O(n) time, O(1) space. Foundation for many DP problems!"
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Current < 0 toh fresh start kyun?</strong> Negative sum aage ka contribution kam karega",
+                    "⚡ Decision: <code>max(num, current + num)</code> — extend ya restart?",
+                    "🔄 Har step pe: <code>global_max = max(global_max, current)</code>",
+                    "✅ Single pass O(N) mein answer mil jaata hai",
+                    "💡 All negatives? <code>max_sum = nums[0]</code> se start karo, 0 se nahi!"
+                ],
                 metrics: { time: "O(N)", space: "O(1)" },
                 timeExplainer: "<strong>Time Complexity: O(N)</strong><br>We iterate through the array exactly once (Single Pass). Each element is visited and processed in constant time.",
                 spaceExplainer: "<strong>Space Complexity: O(1)</strong><br>We only use two variables (`current_sum` and `global_max`) to track the state, regardless of the input array size.",
@@ -292,6 +427,13 @@ const topic_arrays = {
                 explanation: "Prefix × Suffix magic! First pass: prefix[i] = product of all left elements. Second pass: suffix from right. Result[i] = prefix[i] × suffix[i]. O(n) time! Microsoft/Amazon favorite."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Division banned kyun?</strong> Zero se divide hoga toh crash",
+                    "⚡ Prefix-Suffix trick: <code>result[i] = left[0..i-1] × right[i+1..n]</code>",
+                    "🔄 Pass 1: prefix product build; Pass 2: suffix multiply",
+                    "✅ Single variable <code>suffix</code> enough — O(1) extra space",
+                    "💡 Zeros? Prefix-Suffix naturally handles — ek zero toh baaki 0"
+                ],
                 metrics: { time: "O(N)", space: "O(1)" },
                 timeExplainer: "<strong>Time Analysis:</strong><br>• <code>2 passes</code> through the array<br>• First pass: Build prefix products<br>• Second pass: Multiply with suffix products<br><br><strong>Total:</strong> <code>O(2N)</code> = <code>O(N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Output array not counted as extra space<br>• Only one variable <code>suffix_product</code> used<br><br><strong>Result:</strong> <code>O(1)</code> auxiliary space",
@@ -367,6 +509,13 @@ const topic_arrays = {
                 explanation: "Two pointers is ELITE! Start from both ends with left_max, right_max. Water at position = min(left_max, right_max) - height. Move smaller pointer inward. O(n) time, O(1) space!"
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Chhoti side kyun process?</strong> Water level min(left, right) se decide hota hai",
+                    "⚡ <code>if height[L] < height[R]</code> → left side ka water CONFIRMED hai",
+                    "🔄 <code>water += L_max - height[L]</code> (agar positive ho toh)",
+                    "✅ Update max: <code>L_max = max(L_max, height[L])</code> wall hai toh",
+                    "💡 O(1) space kyunki sirf 2 pointers + 2 max variables"
+                ],
                 metrics: { time: "O(N)", space: "O(1)" },
                 timeExplainer: "<strong>Time: O(N)</strong><br>We process each element exactly once using two pointers meeting in the middle.",
                 spaceExplainer: "<strong>Space: O(1)</strong><br>Only constant extra space used for pointers and max height variables.",
@@ -610,6 +759,13 @@ print(trapping_rain_water([0,1,0,2,1,0,1,3,2,1,2,1]))`
                 explanation: "SORT FIRST by start time! Then iterate: if current.start <= last.end, they overlap - merge. Else, add current to result. O(n log n) for sort, O(n) for merge. Standard interval pattern!"
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Sort kyun?</strong> Overlapping check tabhi easy hai jab start time se sorted ho",
+                    "⚡ <code>if curr_start <= last_end</code> → OVERLAP! Merge: <code>max(ends)</code>",
+                    "🔄 Non-overlapping? Simply append to result",
+                    "✅ Single pass after sort — O(N log N) total",
+                    "💡 [1,10] + [2,5] = [1,10] — chhota andar hai, end change mat karo"
+                ],
                 metrics: { time: "O(N log N)", space: "O(N)" },
                 timeExplainer: "<strong>Time Breakdown:</strong><br>• Sorting: <code>O(N log N)</code><br>• Single pass to merge: <code>O(N)</code><br><br><strong>Total:</strong> <code>O(N log N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Result array to store merged intervals<br>• Worst case: no merges = <code>O(N)</code>",
@@ -658,6 +814,13 @@ return merged`
                 explanation: "Min Heap FTW! Sort by start time. For each meeting, if heap top (earliest end) < current start, reuse room (pop heap). Always push current end time. Heap size = rooms needed. O(n log n)!"
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>MinHeap kyun?</strong> Earliest ending meeting track karna hai for room reuse",
+                    "⚡ <code>if new_start >= heap[0]</code> → room free! <code>heappop</code>",
+                    "🔄 <code>heappush(end)</code> always — new meeting occupy kar rahi hai",
+                    "✅ <code>len(heap)</code> = max rooms needed at any point",
+                    "💡 [1,5] + [5,10] reuse allowed — >= check, not >"
+                ],
                 metrics: { time: "O(N log N)", space: "O(N)" },
                 timeExplainer: "<strong>Time Breakdown:</strong><br>• Sorting: <code>O(N log N)</code><br>• Heap operations: <code>O(N log N)</code><br><br><strong>Total:</strong> <code>O(N log N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Min-Heap stores end times<br>• Worst case: all meetings overlap = <code>O(N)</code>",
@@ -706,6 +869,13 @@ return len(heap)`
                 explanation: "HashMap + Sliding Window! Store char → index. When duplicate found, jump LEFT pointer to max(left, map[char] + 1). Track max length. This is THE 'Hello World' of sliding window! O(n)."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Sliding Window kyun?</strong> Contiguous substring chahiye",
+                    "⚡ <code>while char in set: remove s[L], L++</code> duplicate hatao",
+                    "🔄 <code>set.add(char)</code> expand; <code>max_len = R - L + 1</code>",
+                    "✅ Set ensures O(1) duplicate check",
+                    "💡 HashMap trick: <code>L = max(L, last_idx[char]+1)</code> for O(1) shrink"
+                ],
                 metrics: { time: "O(N)", space: "O(N)" },
                 timeExplainer: "<strong>Time: O(N)</strong><br>We traverse the string once. Each character is added to the Set once and removed at most once (2N ops = O(N)).",
                 spaceExplainer: "<strong>Space: O(N)</strong><br>In worst case (all unique), the Set stores all N characters.",
@@ -812,6 +982,13 @@ return len(heap)`
                 explanation: "Dutch National Flag Algorithm! 3 Pointers: Low (0 boundary), Mid (Scanner), High (2 boundary). If 0: swap(low, mid), low++, mid++. If 1: mid++. If 2: swap(mid, high), high--."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Dutch National Flag kyun?</strong> 3-way partition single pass mein",
+                    "⚡ 3 pointers: <code>L</code> (0s boundary), <code>R</code> (2s boundary), <code>i</code> (current)",
+                    "🔄 0 → swap with L, both move; 2 → swap with R, only R moves; 1 → skip",
+                    "✅ <code>i <= R</code> tak loop — R ke baad sab 2s sorted hai",
+                    "💡 i++ nahi karte swap 2 pe kyunki swapped element check karna hai"
+                ],
                 metrics: { time: "O(N)", space: "O(1)" },
                 code: `def sortColors(nums):
 l, r = 0, len(nums)-1
@@ -961,6 +1138,13 @@ while i <= r:
                 explanation: "XR = Prefix XOR. We want subarray ending at i with XOR K. So `XR ^ K` must exist previously? Yes. like Two Sum: Check map for `XR ^ K`. Add count."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Prefix XOR kyun?</strong> Subarray XOR [i..j] = Prefix[j] ^ Prefix[i-1]",
+                    "⚡ Formula: <code>XR ^ K = Target</code> check karna hai map mein",
+                    "🔄 <code>map[xor]++</code> store count of this prefix XOR occurrence",
+                    "✅ <code>count += map[XR ^ K]</code> — purane positions mil gaye jaha required XOR banta hai",
+                    "💡 <code>map = {0: 1}</code> handle subarray starting from index 0"
+                ],
                 metrics: { time: "O(N)", space: "O(N)" },
                 code: `def solve(A, B):
 cnt = 0
@@ -988,6 +1172,13 @@ return cnt`
                 explanation: "Standard variable sliding window! Expand right, add to Map. While len(Map) > K, shrink left (decrement/remove from Map). Update max_len."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Map for window kyun?</strong> Count distinct characters track karna hai",
+                    "⚡ Expand Right: <code>map[char]++</code>; If unique, distinct count badhega",
+                    "🔄 Shrink Left: <code>while len(map) > K</code> → remove chars until valid",
+                    "✅ <code>max_len = max(len, R-L+1)</code> only when window is valid",
+                    "💡 <code>del map[char]</code> jab count 0 ho jaye — tabhi distinct kam hoga"
+                ],
                 metrics: { time: "O(N)", space: "O(K)" },
                 code: `def lengthOfLongestSubstringKDistinct(s, k):
 map = {}
@@ -1019,13 +1210,163 @@ const topic_binary_search = {
     icon: "fas fa-search",
     mentalModel: {
         whenToApply: [
-            { label: "Sorted Data", desc: "Classic usage (Find X)." },
-            { label: "Monotonic Functions", desc: "F(x) goes F, F, T, T. (BS on Answer)." },
-            { label: "Rotated Structures", desc: "Finding pivots/cliffs." }
+            { label: "🔍 Sorted Data", desc: "Array sorted? → Classic Binary Search" },
+            { label: "📈 Monotonic Function", desc: "F(x) goes F,F,F,T,T,T? → Binary Search on Answer" },
+            { label: "🔄 Rotated Array", desc: "Sorted but rotated? → Find which half is sorted" },
+            { label: "⚖️ Min-Max / Max-Min", desc: "Optimize extremes? → BS on Answer + Greedy check" },
+            { label: "✂️ Partition", desc: "Split 2 arrays optimally? → BS on smaller + auto-calc other" }
         ],
+        patterns: [
+            { algo: "Classic BS", use: "Find target in sorted array", time: "O(log N)", space: "O(1)", template: "while l<=r: mid=(l+r)//2" },
+            { algo: "Rotated Array BS", use: "Search in rotated sorted", time: "O(log N)", space: "O(1)", template: "Find sorted half, check target range" },
+            { algo: "BS on Answer", use: "Min speed, max distance", time: "O(N log M)", space: "O(1)", template: "Search [lo, hi], check if feasible(mid)" },
+            { algo: "Min-Max / Max-Min", use: "Aggressive Cows, Books", time: "O(N log D)", space: "O(1)", template: "BS distance + greedy placement" },
+            { algo: "Partition BS", use: "Median of 2 sorted", time: "O(log min(m,n))", space: "O(1)", template: "Cut smaller, calc j automatically" }
+        ],
+        decisionTree: `
+<div style="background:#1e293b; padding:25px; border-radius:16px; margin:15px 0; border:1px solid rgba(255,255,255,0.1);">
+<h4 style="color:#a78bfa; margin-bottom:20px; text-align:center; font-size:1.1rem;">🧠 Binary Search Pattern Recognition</h4>
+<div style="font-family:monospace; font-size:0.85rem; line-height:1.8;">
+<pre style="color:#e2e8f0; text-align:left; margin:0;">
+                 ┌──────────────────────────┐
+                 │ "What are you searching?"│
+                 └────────────┬─────────────┘
+                              │
+       ┌──────────────────────┼──────────────────────┐
+       ▼                      ▼                      ▼
+┌─────────────┐        ┌─────────────┐        ┌─────────────┐
+│ TARGET in   │        │ ANSWER/     │        │ PARTITION   │
+│ sorted array│        │ SPEED/DIST  │        │ 2 arrays    │
+└──────┬──────┘        └──────┬──────┘        └──────┬──────┘
+       │                      │                      │
+       ▼                      ▼                      ▼
+ "Is it rotated?"       "Can you check         "Use smaller for
+       │               if answer works?"         BS, calc other"
+       │                      │                      │
+  ┌────┴────┐                 ▼                      ▼
+  ▼         ▼         ┌─────────────┐        ┌─────────────┐
+┌─────┐ ┌───────┐     │ BS on range │        │ Median of   │
+│ NO  │ │  YES  │     │ [lo, hi]    │        │ 2 sorted    │
+│     │ │       │     │ is_feasible │        │ arrays      │
+└──┬──┘ └───┬───┘     └─────────────┘        └─────────────┘
+   │        │
+   ▼        ▼
+Classic  Rotated
+  BS       BS
+         ┌────────────────────┐
+         │ nums[l]==nums[m]== │
+         │ nums[r]? → Shrink! │
+         └────────────────────┘
+</pre>
+</div>
+</div>`,
+        codeTemplates: `
+<div style="background:#0f172a; padding:20px; border-radius:12px; margin:15px 0;">
+<h4 style="color:#10b981; margin-bottom:15px;">📝 Binary Search Templates</h4>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+1️⃣ Classic Binary Search
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def binary_search(nums, target):
+    left, right = 0, len(nums) - 1
+    while left <= right:
+        mid = left + (right - left) // 2  # Prevent overflow!
+        if nums[mid] == target:
+            return mid
+        elif nums[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    return -1
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+2️⃣ BS on Answer (Koko Bananas)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def minEatingSpeed(piles, h):
+    def can_finish(speed):
+        return sum((p + speed - 1) // speed for p in piles) <= h
+    
+    left, right = 1, max(piles)
+    while left <= right:
+        mid = left + (right - left) // 2
+        if can_finish(mid):
+            right = mid - 1  # Try slower
+        else:
+            left = mid + 1   # Need faster
+    return left
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+3️⃣ Rotated Array Search
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def search(nums, target):
+    low, high = 0, len(nums) - 1
+    while low <= high:
+        mid = low + (high - low) // 2
+        if nums[mid] == target: return True
+        # Handle duplicates (fog)
+        if nums[low] == nums[mid] == nums[high]:
+            low += 1; high -= 1
+            continue
+        # Left sorted
+        if nums[low] <= nums[mid]:
+            if nums[low] <= target < nums[mid]:
+                high = mid - 1
+            else:
+                low = mid + 1
+        # Right sorted
+        else:
+            if nums[mid] < target <= nums[high]:
+                low = mid + 1
+            else:
+                high = mid - 1
+    return False
+</pre>
+</details>
+
+<details>
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+4️⃣ Maximize Minimum (Aggressive Cows)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def aggressiveCows(stalls, k):
+    stalls.sort()  # MUST SORT!
+    def can_place(min_dist):
+        count, last = 1, stalls[0]
+        for s in stalls[1:]:
+            if s - last >= min_dist:
+                count += 1
+                last = s
+        return count >= k
+    
+    left, right, ans = 1, stalls[-1] - stalls[0], 1
+    while left <= right:
+        mid = left + (right - left) // 2
+        if can_place(mid):
+            ans = mid
+            left = mid + 1  # Try larger
+        else:
+            right = mid - 1
+    return ans
+</pre>
+</details>
+</div>`,
         safetyCheck: [
-            { label: "Overflow", desc: "Never use <code>(L+R)//2</code>. Always use <span class='code-snippet'>L + (R-L)//2</span>." },
-            { label: "Infinite Loops", desc: "If <code>high = mid</code> → use <span class='code-snippet'>while L < R</span>." }
+            { label: "⚠️ Overflow!", desc: "<code>mid = left + (right - left) // 2</code> NOT <code>(left + right) // 2</code>" },
+            { label: "🔄 Infinite Loop!", desc: "If <code>high = mid</code>, use <code>while left < right</code> not <code><=</code>" },
+            { label: "🌫️ Duplicates Fog!", desc: "When <code>nums[l]==nums[m]==nums[r]</code>, shrink: <code>l++, r--</code>" },
+            { label: "📊 Sort First!", desc: "Aggressive Cows: <code>stalls.sort()</code> before BS!" },
+            { label: "🎯 Answer vs Index!", desc: "BS on Answer: return <code>left</code> (answer). Classic: return <code>mid</code> (index)" },
+            { label: "♾️ Virtual Infinity!", desc: "Partition problems: Use <code>float('-inf')</code> and <code>float('inf')</code> for edges" }
         ]
     },
     questions: [
@@ -1048,6 +1389,13 @@ const topic_binary_search = {
                 explanation: "Duplicates create 'fog'! When nums[low] == nums[mid] == nums[high], we can't tell which side is sorted. Solution: Shrink window (low++, high--) until fog clears. Worst case O(n)!"
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Sorted Half kyun?</strong> Array rotated hai, par ek half HAMESHA sorted hoga",
+                    "⚡ Identify Sorted Half: <code>if nums[L] <= nums[mid]</code> (Left) else Right",
+                    "🔄 Range Check: <code>if L <= target < M</code> (Left mein hai?)",
+                    "✅ Eliminate other half: <code>high = mid - 1</code> or <code>low = mid + 1</code>",
+                    "💡 Duplicates? Fog clears by shrinking <code>L++</code> and <code>R--</code>"
+                ],
                 metrics: { time: "Avg O(log N)", space: "O(1)" },
                 timeExplainer: "<strong>Time Analysis:</strong><br>• <strong>Best/Avg:</strong> <code>O(log N)</code> - Standard binary search<br>• <strong>Worst:</strong> <code>O(N)</code> - All duplicates<br><br><strong>Why?</strong> Duplicates create 'fog' requiring linear scan",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Iterative approach with 3 pointers<br>• No recursion stack<br><br><strong>Result:</strong> <code>O(1)</code>",
@@ -1111,6 +1459,13 @@ return False`
                 explanation: "Binary Search on ANSWER! Search space = [1, max(piles)]. For each speed, calculate hours. If ≤ h, try slower (right = mid - 1). If > h, must go faster (left = mid + 1). Classic pattern!"
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>BS on Answer kyun?</strong> Speed 1 to Max ho sakti hai (Monotonic Range)",
+                    "⚡ Predicate: <code>can_eat(speed) <= H</code> hours check karo",
+                    "🔄 Binary Search Speed: <code>[1, max(piles)]</code>",
+                    "✅ If feasible (<= H), try slower (store ans, go Left). Else go Right.",
+                    "💡 Formula: <code>ceil(p / speed)</code> is equivalent to <code>(p + s - 1) // s</code>"
+                ],
                 metrics: { time: "O(N log M)", space: "O(1)" },
                 timeExplainer: "<strong>Time Analysis:</strong><br>• Binary search range: <code>log M</code> iterations<br>• Each check: <code>O(N)</code> to sum hours<br><br><strong>Total:</strong> <code>O(N log M)</code> where M = max(piles)",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Only variables for binary search<br>• No extra arrays<br><br><strong>Result:</strong> <code>O(1)</code>",
@@ -1160,6 +1515,13 @@ return min_speed`
                 explanation: "SORT + BS on Answer! Sort stalls. Binary search on distance [1, max-min]. For each distance, greedily try to place K cows. If successful, try larger distance (left = mid + 1). Min-Max pattern!"
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Max-Min logic?</strong> Hamesha 'Maximize the Minimum distance' = BS on Answer",
+                    "⚡ Sort Stalls: Distances check karne ke liye order zaroori hai",
+                    "🔄 Range: <code>[1, max-min]</code>. Check: <code>can_place(min_dist)</code>",
+                    "✅ Greedy Check: Place first cow, then next if <code>dist >= mid</code>",
+                    "💡 Valid? Try bigger gap (Right). Invalid? Shrink gap (Left)."
+                ],
                 metrics: { time: "O(N log N)", space: "O(1)" },
                 timeExplainer: "<strong>Time Breakdown:</strong><br>• Sorting stalls: <code>O(N log N)</code><br>• Binary search × greedy check: <code>O(N log D)</code><br><br><strong>Total:</strong> <code>O(N log N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• In-place sorting possible<br>• Only variables for counting<br><br><strong>Result:</strong> <code>O(1)</code>",
@@ -1219,6 +1581,13 @@ return ans`
                 explanation: "Partition + Virtual Infinity! BS on smaller array (cut at i). Calculate j for larger array: j = (m+n+1)/2 - i. Valid when maxLeft_X ≤ minRight_Y and maxLeft_Y ≤ minRight_X. Handle edges with ±∞!"
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Partition kyun?</strong> Left halves ka total size total/2 hona chahiye",
+                    "⚡ BS on Smaller Array: Cut <code>nums1</code> at <code>i</code>, adjust <code>nums2</code> cut at <code>j</code>",
+                    "🔄 Partition Validity: <code>maxLeft1 <= minRight2</code> and <code>maxLeft2 <= minRight1</code>",
+                    "✅ Found? Calc median from boundary max/mins. Else adjust cut.",
+                    "💡 Total len (M+N) odd/even handle karne ke liye (M+N+1)//2 use karo"
+                ],
                 metrics: { time: "O(log min(N,M))", space: "O(1)" },
                 timeExplainer: "<strong>Time Analysis:</strong><br>• Binary search on smaller array<br>• Always pick smaller for partitioning<br><br><strong>Total:</strong> <code>O(log min(N, M))</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Only partition pointers<br>• No extra arrays<br><br><strong>Result:</strong> <code>O(1)</code>",
@@ -1276,11 +1645,142 @@ const topic_linked_list = {
     icon: "fas fa-network-wired",
     mentalModel: {
         whenToApply: [
-            { label: "Wiring not Calculating", desc: "Don't think numbers. Think <strong>wires</strong>. Always draw pointers." }
+            { label: "🎯 O(1) Cache", desc: "LRU/LFU Cache → HashMap + Doubly Linked List" },
+            { label: "🔄 Cycle Detection", desc: "Find loop → Floyd's Slow/Fast pointers" },
+            { label: "✂️ Reversal", desc: "Reverse K groups, halves → Use prev/curr/next pointers" },
+            { label: "📋 Deep Copy", desc: "Clone with random → HashMap or Interleaving" },
+            { label: "🏃 Two Pointers", desc: "Find middle, palindrome → Slow/Fast technique" }
         ],
+        patterns: [
+            { algo: "LRU Cache", use: "O(1) get/put with eviction", time: "O(1)", space: "O(N)", template: "HashMap{key→node} + DLL (head=recent, tail=old)" },
+            { algo: "Floyd's Algorithm", use: "Cycle detection + start", time: "O(N)", space: "O(1)", template: "slow/fast meet, reset slow to head, both move 1" },
+            { algo: "K-Group Reversal", use: "Reverse every K nodes", time: "O(N)", space: "O(1)", template: "get_kth, reverse inner, rewire anchors" },
+            { algo: "Interleaving Clone", use: "Deep copy O(1) space", time: "O(N)", space: "O(1)", template: "Weave copies → link randoms → unweave" },
+            { algo: "Palindrome Check", use: "O(1) space check", time: "O(N)", space: "O(1)", template: "Find mid → reverse 2nd half → compare" }
+        ],
+        decisionTree: `
+<div style="background:#1e293b; padding:25px; border-radius:16px; margin:15px 0; border:1px solid rgba(255,255,255,0.1);">
+<h4 style="color:#a78bfa; margin-bottom:20px; text-align:center; font-size:1.1rem;">🧠 Linked List Pattern Recognition</h4>
+<div style="font-family:monospace; font-size:0.85rem; line-height:1.8;">
+<pre style="color:#e2e8f0; text-align:left; margin:0;">
+              ┌──────────────────────────────┐
+              │ "Linked List problem type?"  │
+              └──────────────┬───────────────┘
+                             │
+     ┌───────────────────────┼───────────────────────┐
+     ▼                       ▼                       ▼
+┌──────────────┐      ┌──────────────┐      ┌──────────────┐
+│ CYCLE/LOOP   │      │  REVERSAL    │      │  CACHE/      │
+│  Problems    │      │  Problems    │      │  DESIGN      │
+└──────┬───────┘      └──────┬───────┘      └──────┬───────┘
+       │                     │                     │
+       ▼                     ▼                     ▼
+ ┌───────────────┐    ┌───────────────┐    ┌───────────────┐
+ │ Floyd's Algo  │    │ Use DUMMY!    │    │ HashMap +     │
+ │               │    │               │    │ Doubly LL     │
+ │ Slow = 1 step │    │ prev=None     │    │               │
+ │ Fast = 2 step │    │ curr=head     │    │ _add() _del() │
+ │               │    │ loop: swap    │    │ helpers       │
+ │ Meet? → Reset │    │               │    │               │
+ └───────────────┘    └───────────────┘    └───────────────┘
+
+         "Need to find middle?"
+              │
+              ▼
+      ┌───────────────────────┐
+      │ SLOW/FAST pointers    │
+      │ When fast reaches end │
+      │ slow is at middle!    │
+      └───────────────────────┘
+</pre>
+</div>
+</div>`,
+        codeTemplates: `
+<div style="background:#0f172a; padding:20px; border-radius:12px; margin:15px 0;">
+<h4 style="color:#10b981; margin-bottom:15px;">📝 Linked List Templates</h4>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+1️⃣ LRU Cache (DLL + HashMap)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+class LRUCache:
+    def __init__(self, cap):
+        self.cap, self.cache = cap, {}
+        self.head, self.tail = Node(0,0), Node(0,0)
+        self.head.next, self.tail.prev = self.tail, self.head
+    def _remove(self, node):
+        node.prev.next, node.next.prev = node.next, node.prev
+    def _add(self, node):
+        node.prev, node.next = self.head, self.head.next
+        self.head.next.prev = node
+        self.head.next = node
+    def get(self, key):
+        if key in self.cache:
+            self._remove(self.cache[key])
+            self._add(self.cache[key])
+            return self.cache[key].val
+        return -1
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+2️⃣ Floyd's Cycle Detection
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def detectCycle(head):
+    slow, fast = head, head
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+        if slow == fast:
+            slow = head  # Reset!
+            while slow != fast:
+                slow = slow.next
+                fast = fast.next
+            return slow  # Cycle start
+    return None
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+3️⃣ Reverse Linked List
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def reverse(head):
+    prev, curr = None, head
+    while curr:
+        next_temp = curr.next
+        curr.next = prev
+        prev = curr
+        curr = next_temp
+    return prev
+</pre>
+</details>
+
+<details>
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+4️⃣ Find Middle (Slow/Fast)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def findMiddle(head):
+    slow, fast = head, head
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+    return slow  # Middle node
+</pre>
+</details>
+</div>`,
         safetyCheck: [
-            { label: "Sentinel Nodes", desc: "Use <code>dummy -> head</code>. It solves 90% of edge cases like inserting at head." },
-            { label: "Runner Tech", desc: "Use Fast/Slow pointers for cycles and midpoints." }
+            { label: "🔗 Use DUMMY!", desc: "<code>dummy = ListNode(0, head)</code> — Handles edge cases at head" },
+            { label: "📍 Save next first!", desc: "Before changing <code>curr.next</code>, save <code>temp = curr.next</code>" },
+            { label: "🔄 Check null!", desc: "<code>while fast and fast.next</code> — Both conditions needed!" },
+            { label: "⚠️ Delete from map!", desc: "LRU: When evicting, <code>del cache[lru.key]</code> — Often forgotten!" },
+            { label: "🔍 Phase 2 reset!", desc: "Floyd's: Reset <code>slow = head</code> AFTER meeting, not before" },
+            { label: "↩️ Restore list!", desc: "After palindrome check, reverse back to restore original" }
         ]
     },
     questions: [
@@ -1303,6 +1803,13 @@ const topic_linked_list = {
                 explanation: "Doubly LL + HashMap! HashMap for O(1) lookup. DLL for O(1) removal/insertion at head/tail. Get: move to head. Put: if full, remove tail. Add to head. #1 design question!"
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>DLL + Map kyun?</strong> O(1) delete/add chahiye (DLL) aur O(1) lookup (Map)",
+                    "⚡ <code>get(k)</code>: Map lookup node OR return -1. Move node to Head (Most Recent)",
+                    "🔄 <code>put(k, v)</code>: If exists, update val & move head. Else add new head. If full, delete tail",
+                    "✅ Helper: <code>_remove(node)</code> removes from list, <code>_add(node)</code> adds to list head",
+                    "💡 Tail = Least Recent, Head = Most Recent"
+                ],
                 metrics: { time: "O(1)", space: "O(N)" },
                 timeExplainer: "<strong>Time Analysis:</strong><br>• <code>get()</code>: HashMap lookup = <code>O(1)</code><br>• <code>put()</code>: Map + DLL operations = <code>O(1)</code><br><br><strong>All operations:</strong> <code>O(1)</code> average",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• HashMap: <code>O(N)</code> for N key-value pairs<br>• Doubly Linked List: <code>O(N)</code> nodes<br><br><strong>Total:</strong> <code>O(N)</code>",
@@ -1371,6 +1878,13 @@ def put(self, key, value):
                 explanation: "Pointer management! For each group: connect prev_group.next to new head. Connect new tail to next_group. Edge cases: < K nodes at end (don't reverse)."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Reverse per group kyun?</strong> Problem says 'k nodes' at a time",
+                    "⚡ Check length: <code>kth = get_kth(group_prev, k)</code> — agar k nodes nahi, toh stop!",
+                    "🔄 Reverse: Standard reverse logic inside the group range",
+                    "✅ Rewire: <code>group_prev.next = kth</code> (new head); <code>group_start.next = next_group</code>",
+                    "💡 Dummy Node bahut zaroori hai to handle head change easily"
+                ],
                 metrics: { time: "O(N)", space: "O(1)" },
                 timeExplainer: "<strong>Time Analysis:</strong><br>• Visit each node once<br>• Reversal within groups is O(K)<br><br><strong>Total:</strong> <code>O(N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Only pointers for manipulation<br>• No extra data structures<br><br><strong>Result:</strong> <code>O(1)</code>",
@@ -1428,6 +1942,13 @@ return dummy.next`
                 explanation: "Floyd's Math! After slow/fast meet, reset slow to head. Move both by 1 step. They meet AT cycle start! Proven by math."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Floyd Cycle kyun?</strong> O(N) time aur O(1) space — HashSet O(N) space leta hai",
+                    "⚡ Phase 1: <code>slow/fast</code> collision detect karo",
+                    "🔄 Phase 2: <code>slow = head</code>, move both 1 step. Collision point = Cycle Start",
+                    "✅ Why works? Math proves <code>dist(head, start) == dist(meet, start)</code>",
+                    "💡 Start milne pe ruk jao, wahi loop entry hai"
+                ],
                 metrics: { time: "O(N)", space: "O(1)" },
                 timeExplainer: "<strong>Floyd's Algorithm:</strong><br>• Phase 1: Detect cycle = <code>O(N)</code><br>• Phase 2: Find start = <code>O(N)</code><br><br><strong>Total:</strong> <code>O(N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Only 2 pointers: slow, fast<br>• No HashSet needed!<br><br><strong>Result:</strong> <code>O(1)</code>",
@@ -1474,6 +1995,13 @@ return None`
                 explanation: "HashMap is cleaner! Interleaving works (O(1) space) but is trickier. Both are accepted."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Interleaving kyun?</strong> O(1) space trick! Node ke bagal mein copy rakho",
+                    "⚡ Weave: <code>A -> A' -> B -> B'</code>",
+                    "🔄 Random: <code>curr.next.random = curr.random.next</code> — easy navigation",
+                    "✅ Unweave: <code>curr.next = curr.next.next</code> — restore original list",
+                    "💡 HashMap approach is simpler (O(N) space) but interleaving is 'cool' optimization"
+                ],
                 metrics: { time: "O(N)", space: "O(1) (Interleaving)" },
                 timeExplainer: "<strong>3-Pass Algorithm:</strong><br>• Pass 1: Weave copies = <code>O(N)</code><br>• Pass 2: Link randoms = <code>O(N)</code><br>• Pass 3: Unweave = <code>O(N)</code><br><br><strong>Total:</strong> <code>O(N)</code>",
                 spaceExplainer: "<strong>Interleaving Method:</strong><br>• Insert copies inline<br>• No HashMap needed<br><br><strong>Result:</strong> <code>O(1)</code> extra space",
@@ -1526,6 +2054,13 @@ return new_head`
                 explanation: "Find mid + Reverse! Use slow/fast to find middle. Reverse second half. Compare halves. Optional: reverse back."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Middle Reverse kyun?</strong> Array mein convert kiya toh O(N) space lagega",
+                    "⚡ <code>fast/slow</code> se mid find karo",
+                    "🔄 Reverse <code>slow.next</code> (second half)",
+                    "✅ 2 pointers: <code>left=head, right=tail</code> — match karo",
+                    "💡 Restore list (optional) — dobara reverse karke original state laao"
+                ],
                 metrics: { time: "O(N)", space: "O(1)" },
                 timeExplainer: "<strong>Time Breakdown:</strong><br>• Find middle: <code>O(N/2)</code><br>• Reverse second half: <code>O(N/2)</code><br>• Compare: <code>O(N/2)</code><br><br><strong>Total:</strong> <code>O(N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• No extra array for reversal<br>• In-place manipulation<br><br><strong>Result:</strong> <code>O(1)</code>",
@@ -1572,11 +2107,148 @@ const topic_stack = {
     icon: "fas fa-layer-group",
     mentalModel: {
         whenToApply: [
-            { label: "Delayed Processing", desc: "Put it in stack, wait for trigger (Next Greater/Smaller)." }
+            { label: "📈 Next Greater/Smaller", desc: "Find next larger or smaller element → Monotonic Stack" },
+            { label: "📊 Rectangle Area", desc: "Max rectangle in histogram → Monotonic Increasing Stack" },
+            { label: "💧 Trapping Water", desc: "Water between bars → Decreasing Stack (horizontal slicing)" },
+            { label: "💥 Collision/Matching", desc: "Parentheses, Asteroids → Stack simulation" },
+            { label: "⏳ Delayed Processing", desc: "Wait for future info to resolve current element" }
         ],
+        patterns: [
+            { algo: "NGE (Decreasing Stack)", use: "Next Greater Element", time: "O(N)", space: "O(N)", template: "while stack and arr[top] < curr: pop, resolve" },
+            { algo: "NSE (Increasing Stack)", use: "Next Smaller Element", time: "O(N)", space: "O(N)", template: "while stack and arr[top] > curr: pop, resolve" },
+            { algo: "Histogram Rectangle", use: "Max rectangle area", time: "O(N)", space: "O(N)", template: "Increasing stack + sentinel, width = i - stack[-1] - 1" },
+            { algo: "Trapping Rain Water", use: "Water between bars", time: "O(N)", space: "O(N)", template: "Decreasing stack, floor = pop, water = min(L,R) - floor" },
+            { algo: "Stack Simulation", use: "Collisions, matching", time: "O(N)", space: "O(N)", template: "Push stable, battle on conflict" }
+        ],
+        decisionTree: `
+<div style="background:#1e293b; padding:25px; border-radius:16px; margin:15px 0; border:1px solid rgba(255,255,255,0.1);">
+<h4 style="color:#a78bfa; margin-bottom:20px; text-align:center; font-size:1.1rem;">🧠 Stack Pattern Recognition</h4>
+<div style="font-family:monospace; font-size:0.85rem; line-height:1.8;">
+<pre style="color:#e2e8f0; text-align:left; margin:0;">
+              ┌──────────────────────────────┐
+              │ "What are you looking for?"  │
+              └──────────────┬───────────────┘
+                             │
+     ┌───────────────────────┼───────────────────────┐
+     ▼                       ▼                       ▼
+┌──────────────┐      ┌──────────────┐      ┌──────────────┐
+│ NEXT GREATER │      │ AREA/RANGE   │      │  MATCHING/   │
+│    ELEMENT   │      │  PROBLEMS    │      │  COLLISION   │
+└──────┬───────┘      └──────┬───────┘      └──────┬───────┘
+       │                     │                     │
+       ▼                     ▼                     ▼
+ ┌───────────────┐    ┌───────────────┐    ┌───────────────┐
+ │ DECREASING    │    │ Histogram?    │    │ Parentheses?  │
+ │ Stack         │    │ → INCREASING  │    │ Asteroids?    │
+ │               │    │ Stack         │    │ → Simulate!   │
+ │ Pop when      │    │               │    │               │
+ │ curr > top    │    │ Water Trap?   │    │ Push stable,  │
+ └───────────────┘    │ → DECREASING  │    │ battle on     │
+                      │ Stack         │    │ conflict      │
+                      └───────────────┘    └───────────────┘
+
+  ┌─────────────────────────────────────────────────────────┐
+  │ 🔑 KEY INSIGHT: Stack stores UNRESOLVED elements        │
+  │    When conflict occurs → POP and RESOLVE!             │
+  │    Remaining in stack → No answer (-1 or default)       │
+  └─────────────────────────────────────────────────────────┘
+</pre>
+</div>
+</div>`,
+        codeTemplates: `
+<div style="background:#0f172a; padding:20px; border-radius:12px; margin:15px 0;">
+<h4 style="color:#10b981; margin-bottom:15px;">📝 Stack Templates</h4>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+1️⃣ Next Greater Element (NGE)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def nextGreaterElement(arr):
+    n = len(arr)
+    result = [-1] * n
+    stack = []  # Store INDICES
+    
+    for current_index in range(n):
+        # Pop all smaller elements
+        while stack and arr[stack[-1]] < arr[current_index]:
+            smaller_index = stack.pop()
+            result[smaller_index] = arr[current_index]
+        stack.append(current_index)
+    return result
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+2️⃣ Largest Rectangle in Histogram
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def largestRectangleArea(heights):
+    heights.append(0)  # Sentinel to clear stack
+    stack = [-1]       # Sentinel for left boundary
+    max_area = 0
+    
+    for i, h in enumerate(heights):
+        while stack[-1] != -1 and h < heights[stack[-1]]:
+            height = heights[stack.pop()]
+            width = i - stack[-1] - 1
+            max_area = max(max_area, height * width)
+        stack.append(i)
+    return max_area
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+3️⃣ Trapping Rain Water (Stack)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def trap(height):
+    stack = []  # Decreasing stack
+    water = 0
+    
+    for i, h in enumerate(height):
+        while stack and h > height[stack[-1]]:
+            floor = stack.pop()
+            if not stack: break  # No left wall
+            left = stack[-1]
+            width = i - left - 1
+            bounded_h = min(height[left], h) - height[floor]
+            water += width * bounded_h
+        stack.append(i)
+    return water
+</pre>
+</details>
+
+<details>
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+4️⃣ Asteroid Collision
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def asteroidCollision(asteroids):
+    stack = []
+    for current in asteroids:
+        while stack and current < 0 < stack[-1]:
+            if abs(current) > stack[-1]:
+                stack.pop(); continue
+            elif abs(current) == stack[-1]:
+                stack.pop(); break
+            else:
+                break
+        else:
+            stack.append(current)
+    return stack
+</pre>
+</details>
+</div>`,
         safetyCheck: [
-            { label: "Empty Stack", desc: "Always check `if stack` before peeking." },
-            { label: "Decr vs Incr", desc: "Next Greater -> Decreasing Stack. <br>Next Smaller -> Increasing Stack." }
+            { label: "📋 Store INDICES!", desc: "Always store indices in stack, not values: <code>stack.append(i)</code>" },
+            { label: "🔍 Check empty!", desc: "<code>if stack</code> before <code>stack[-1]</code> or <code>stack.pop()</code>" },
+            { label: "📉 Decreasing = NGE!", desc: "Next GREATER → Decreasing stack (pop when curr > top)" },
+            { label: "📈 Increasing = NSE!", desc: "Next SMALLER → Increasing stack (pop when curr < top)" },
+            { label: "🚨 Sentinel trick!", desc: "Append 0 to force-clear stack at end (Histogram)" },
+            { label: "⚠️ Width formula!", desc: "Rectangle width = <code>i - stack[-1] - 1</code> (not i - popped)" }
         ]
     },
     questions: [
@@ -1599,6 +2271,13 @@ const topic_stack = {
                 explanation: "Monotonic Stack! Traverse right to left (or store indices). If current > stack.top, current is NGE for top. Stack maintains decreasing order. O(n)!"
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Monotonic Stack kyun?</strong> Right side ka pehla bada number chahiye in O(N)",
+                    "⚡ <code>while stack and arr[stack[-1]] < curr</code> → Found a greater element!",
+                    "🔄 Pop stack index, update result -> <code>result[pop] = curr</code>",
+                    "✅ Push current index (might be NGE for future elements)",
+                    "💡 Store **indices** in stack, not values, agar index based answer chahiye"
+                ],
                 metrics: { time: "O(N)", space: "O(N)" },
                 timeExplainer: "<strong>Monotonic Stack:</strong><br>• Each element pushed ONCE<br>• Each element popped ONCE<br><br><strong>Total:</strong> <code>O(N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Stack stores indices<br>• Worst Case: Decreasing order [5,4,3,2,1] -> Stack holds all N elements.<br><strong>Aux:</strong> <code>O(N)</code>",
@@ -1659,6 +2338,13 @@ const topic_stack = {
                 explanation: "Monotonic Stack! Maintain increasing heights. When current < stack top, pop and calc area: height[top] * (current_idx - stack.peek() - 1)."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Wait kyun?</strong> Rectangle tabhi finalize hoga jab choti height aayegi (boundary)",
+                    "⚡ Increasing Stack: <code>while h < height[stack.top]</code> → Pop!",
+                    "🔄 Calc Area: <code>height[popped] * (current_i - new_top - 1)</code>",
+                    "✅ Push current index. Add Sentinel sets boundaries auto.",
+                    "💡 -1 Sentinel stack start mein zaroor add karein for easy width calc"
+                ],
                 metrics: { time: "O(N)", space: "O(N)" },
                 timeExplainer: "<strong>Monotonic Increasing Stack:</strong><br>• Each element pushed ONCE<br>• Each element popped ONCE<br><br><strong>Total:</strong> <code>O(N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Stack stores indices<br>• Worst Case: Increasing order [1,2,3...N] -> Stack holds all N elements.<br><strong>Aux:</strong> <code>O(N)</code>",
@@ -1715,6 +2401,13 @@ const topic_stack = {
                 explanation: "Stack stores indices (Decreasing). When current > top, we found a right wall. Pop top (Floor). New Top is Left Wall. Water = (min(L, R) - Floor) * Dist."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Horizontal Slicing kyun?</strong> Stack boundaries (Left & Right) ke beech paani bharta hai",
+                    "⚡ Decreasing Stack: <code>h > height[stack.top]</code> → Puddle found!",
+                    "🔄 Floor = Pop(). Height = <code>min(Left, Right) - Floor</code>",
+                    "✅ Width = <code>Right - Left - 1</code>. Add water.",
+                    "💡 Two Pointer approach is usually better (O(1) space), but this is good concept"
+                ],
                 metrics: { time: "O(N)", space: "O(N)" },
                 timeExplainer: "<strong>Monotonic Decreasing Stack:</strong><br>• Each bar pushed ONCE<br>• Each bar popped ONCE<br><br><strong>Total:</strong> <code>O(N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Stack stores indices<br>• Worst Case: Decreasing order.<br><strong>Aux:</strong> <code>O(N)</code>",
@@ -1777,6 +2470,13 @@ const topic_stack = {
                 explanation: "Stack! Push Right (->). Check Left (<-) against stack."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Collision Logic?</strong> Only Right (→) and Left (←) collide",
+                    "⚡ Stack: Stores stable/right-moving asteroids",
+                    "🔄 Loop: <code>while stack.top > 0 and curr < 0:</code> → Crush!",
+                    "✅ If <code>abs(curr) > abs(top)</code>, pop stack & continue. Else destroy curr.",
+                    "💡 Loop end pe agar curr survive kiya, toh push"
+                ],
                 metrics: { time: "O(N)", space: "O(N)" },
                 timeExplainer: "<strong>Simulation:</strong><br>• Each asteroid processed once<br>• Stack push/pop = O(1) each<br><br><strong>Total:</strong> <code>O(N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Stack stores survivors<br>• Worst: No collisions (all same direction) = <code>O(N)</code>",
@@ -1845,11 +2545,154 @@ const topic_trees = {
     icon: "fas fa-tree",
     mentalModel: {
         whenToApply: [
-            { label: "Leap of Faith", desc: "Assume `solve(root.left)` works. Combine results." }
+            { label: "🔄 LCA Problems", desc: "Find common ancestor → Bubble-up DFS or BST property" },
+            { label: "📈 Path Sum/Max", desc: "Track global vs local → Split (update global) + Flow (return)" },
+            { label: "🏗️ Construction", desc: "Build from traversals → Preorder=root, Inorder=split" },
+            { label: "📦 Serialize", desc: "Tree ↔ String → Preorder + null markers 'N'" },
+            { label: "🔥 Multi-direction", desc: "Need to go UP? → Convert to Graph (parent pointers)" },
+            { label: "🎯 BST Property", desc: "Sorted tree → left < root < right, use for O(H) search" }
         ],
+        patterns: [
+            { algo: "LCA (Binary Tree)", use: "Common ancestor", time: "O(N)", space: "O(H)", template: "if root==p or q: return root; combine L/R" },
+            { algo: "LCA (BST)", use: "Common ancestor BST", time: "O(H)", space: "O(1)", template: "both < root: left; both > root: right; else: split!" },
+            { algo: "Max Path Sum", use: "Any-to-any path", time: "O(N)", space: "O(H)", template: "global = split, return = flow" },
+            { algo: "Serialize/Deserialize", use: "Tree to string", time: "O(N)", space: "O(N)", template: "preorder + 'N' markers + iterator" },
+            { algo: "Construct Tree", use: "Pre+In to tree", time: "O(N)", space: "O(N)", template: "pre=root, inorder=split, use hashmap" },
+            { algo: "Tree to Graph", use: "Burn tree, multi-dir", time: "O(N)", space: "O(N)", template: "Build adj list with parent links, BFS" }
+        ],
+        decisionTree: `
+<div style="background:#1e293b; padding:25px; border-radius:16px; margin:15px 0; border:1px solid rgba(255,255,255,0.1);">
+<h4 style="color:#a78bfa; margin-bottom:20px; text-align:center; font-size:1.1rem;">🧠 Tree Pattern Recognition</h4>
+<div style="font-family:monospace; font-size:0.85rem; line-height:1.8;">
+<pre style="color:#e2e8f0; text-align:left; margin:0;">
+              ┌──────────────────────────────┐
+              │ "What type of tree problem?" │
+              └──────────────┬───────────────┘
+                             │
+     ┌───────────────────────┼───────────────────────┐
+     ▼                       ▼                       ▼
+┌──────────────┐      ┌──────────────┐      ┌──────────────┐
+│    SEARCH    │      │  CONSTRUCT   │      │  PATH/SUM    │
+│  LCA/Find    │      │  Build Tree  │      │   Problems   │
+└──────┬───────┘      └──────┬───────┘      └──────┬───────┘
+       │                     │                     │
+       ▼                     ▼                     ▼
+  ┌─────────────┐      ┌─────────────┐      ┌─────────────┐
+  │ BST?        │      │ Pre + In?   │      │ Global vs   │
+  │ → O(H) walk │      │ → Pre=root  │      │ Local!      │
+  │             │      │   In=split  │      │             │
+  │ Binary?     │      │             │      │ Split: L+R  │
+  │ → Bubble-up │      │ Serialize?  │      │ Flow: max() │
+  └─────────────┘      │ → Pre + 'N' │      └─────────────┘
+                       └─────────────┘
+
+       "Need to go UP the tree?"
+              │
+              ▼
+      ┌───────────────────┐
+      │ Convert to Graph! │
+      │ Parent pointers   │
+      │ + BFS from start  │
+      └───────────────────┘
+</pre>
+</div>
+</div>`,
+        codeTemplates: `
+<div style="background:#0f172a; padding:20px; border-radius:12px; margin:15px 0;">
+<h4 style="color:#10b981; margin-bottom:15px;">📝 Tree Templates</h4>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+1️⃣ LCA Binary Tree (Bubble-up)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def lowestCommonAncestor(root, p, q):
+    if not root or root == p or root == q:
+        return root
+    left = lowestCommonAncestor(root.left, p, q)
+    right = lowestCommonAncestor(root.right, p, q)
+    if left and right: return root  # I am LCA
+    return left if left else right
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+2️⃣ Max Path Sum (Global vs Local)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def maxPathSum(root):
+    max_sum = float('-inf')
+    def dfs(node):
+        nonlocal max_sum
+        if not node: return 0
+        left = max(dfs(node.left), 0)   # Clamp negatives!
+        right = max(dfs(node.right), 0)
+        # SPLIT: Update global (L + root + R)
+        max_sum = max(max_sum, node.val + left + right)
+        # FLOW: Return to parent (max path through me)
+        return node.val + max(left, right)
+    dfs(root)
+    return max_sum
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+3️⃣ Serialize/Deserialize
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def serialize(root):
+    vals = []
+    def dfs(node):
+        if not node: vals.append("N"); return
+        vals.append(str(node.val))
+        dfs(node.left); dfs(node.right)
+    dfs(root)
+    return ",".join(vals)
+
+def deserialize(data):
+    vals = iter(data.split(","))
+    def build():
+        val = next(vals)
+        if val == "N": return None
+        node = TreeNode(int(val))
+        node.left, node.right = build(), build()
+        return node
+    return build()
+</pre>
+</details>
+
+<details>
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+4️⃣ Tree to Graph (Burn Tree)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def burnTree(root, start):
+    graph = defaultdict(list)
+    def buildGraph(node):
+        if not node: return
+        if node.left:
+            graph[node.val].append(node.left.val)
+            graph[node.left.val].append(node.val)
+            buildGraph(node.left)
+        if node.right:
+            graph[node.val].append(node.right.val)
+            graph[node.right.val].append(node.val)
+            buildGraph(node.right)
+    buildGraph(root)
+    # BFS from start
+    return bfs_from(graph, start)
+</pre>
+</details>
+</div>`,
         safetyCheck: [
-            { label: "Base Cases", desc: "Always handle `if not root` first." },
-            { label: "Global vs Local", desc: "Pass down (Param) or Bubble up (Return)?" }
+            { label: "🔍 Base case!", desc: "<code>if not root: return None/0</code> — Always first!" },
+            { label: "🌳 Height vs Nodes!", desc: "Space = O(H) for recursion. H = log N (balanced), H = N (skewed)" },
+            { label: "📈 Clamp negatives!", desc: "Max path: <code>left = max(dfs(left), 0)</code> — Ignore negative subtrees" },
+            { label: "🔄 Global vs Local!", desc: "Split updates global (L+R), Flow returns to parent (max one branch)" },
+            { label: "📋 Use Iterator!", desc: "Deserialize: <code>iter()</code> not index — avoids O(N) slicing" },
+            { label: "↕️ Need parent?", desc: "Tree only goes down. For UP: convert to graph or track parent" }
         ]
     },
     questions: [
@@ -1872,6 +2715,13 @@ const topic_trees = {
                 explanation: "Recursive DFS! Base: if root == p or q or null, return root. Recurse left/right. If both return node, I am LCA. If one, return that."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>DFS bubbling kyun?</strong> Bottom-up check karna hai — kahan mil rahe hain?",
+                    "⚡ Base Case: <code>if root in [p, q, null]: return root</code> — found one target or hit end",
+                    "🔄 Recurse: <code>left = dfs(L), right = dfs(R)</code>",
+                    "✅ <code>if left and right: return root</code> → Current node is split point (LCA)",
+                    "💡 <code>else: return left or right</code> → Pass found target up"
+                ],
                 metrics: { time: "O(N)", space: "O(H)" },
                 timeExplainer: "<strong>DFS Traversal:</strong><br>• Visit every node once<br>• Recurse Left and Right<br><br><strong>Total:</strong> <code>O(N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Recursion Stack depth = Tree Height<br>• Skewed Tree: <code>O(N)</code><br>• Balanced Tree: <code>O(log N)</code><br><br><strong>Result:</strong> <code>O(H)</code>",
@@ -1902,6 +2752,13 @@ return left if left else right`
                 explanation: "Preorder + null markers! Serialize: '1,2,N,N,3'. Deserialize: Iterator. If 'N' return None. Else create node, recurse."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Preorder kyun?</strong> Root pehle process hota hai — easy to rebuild",
+                    "⚡ Serialize: <code>vals.append(str(val))</code> else <code>append('N')</code> for null structure",
+                    "🔄 Deserialize: Use <code>iterator</code> (next()) — global index management se better",
+                    "✅ <code>val = next(); if 'N' return None</code> else create Node & recurse",
+                    "💡 Inorder kaam nahi karega kyunki root ambiguous hota hai string mein"
+                ],
                 metrics: { time: "O(N)", space: "O(H)" },
                 timeExplainer: "<strong>Preorder Traversal:</strong><br>• Visit all nodes to serialize: <code>O(N)</code><br>• Deserialize visits all nodes: <code>O(N)</code><br><br><strong>Total:</strong> <code>O(N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Recursion Stack: <code>O(H)</code><br>• Output String/Array: <code>O(N)</code><br><br><strong>Result:</strong> <code>O(N)</code>",
@@ -1947,6 +2804,13 @@ def deserialize(self, data):
                 explanation: "Global vs Local! At each node: global_max = max(global_max, node + left + right). Return upward: node + max(left, right)."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Split vs Flow kyun?</strong> Path U-turn le sakta hai (split) ya upar ja sakta hai (flow)",
+                    "⚡ Split (Local): <code>root + left + right</code> → update global max",
+                    "🔄 Flow (Return): <code>root + max(left, right)</code> → parent ko extend karne ke liye",
+                    "✅ Clamp negatives: <code>max(dfs(), 0)</code> — negative path mat lo",
+                    "💡 Global variable <code>self.max_sum</code> track karta hai best U-turn path"
+                ],
                 metrics: { time: "O(N)", space: "O(H)" },
                 timeExplainer: "<strong>DFS Postorder:</strong><br>• Compute max path for each node<br>• Visit every node exactly once<br><br><strong>Total:</strong> <code>O(N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Recursion Stack depth = Tree Height<br>• Worst case (Skewed): <code>O(N)</code><br><br><strong>Result:</strong> <code>O(H)</code>",
@@ -1982,6 +2846,13 @@ def maxPathSum(self, root):
                 explanation: "Preorder[0] is Root. Find Root in Inorder. Left of it is LeftSubtree, Right is RightSubtree."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Pre + In logic?</strong> Pre[0] is Root. Inorder mein Root split karta hai L/R ko",
+                    "⚡ Hashmap: <code>in_map = {val: idx}</code> for O(1) loopups of split index",
+                    "🔄 <code>mid = in_map[root_val]</code>; Recurse <code>build(is, mid-1)</code> then <code>build(mid+1, ie)</code>",
+                    "✅ Preorder iterator global rakho — apne aap next node dega",
+                    "💡 Important: Left subtree pehle build karo (Preorder rule)"
+                ],
                 metrics: { time: "O(N)", space: "O(N)" },
                 timeExplainer: "<strong>Time Breakdown:</strong><br>• HashMap construction: <code>O(N)</code><br>• Recursive Tree Building: <code>O(N)</code><br><br><strong>Total:</strong> <code>O(N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• HashMap stores N indices<br>• Recursion Stack: <code>O(H)</code><br><br><strong>Total:</strong> <code>O(N)</code>",
@@ -2020,6 +2891,13 @@ return build(0, len(inorder) - 1)`
                 explanation: "Track (row, col). Store in `Map[col]`. Sort by Col, then Row, then Val."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Coordinates kyun?</strong> (row, col) chahiye grouping ke liye",
+                    "⚡ BFS: Store <code>(node, row, col)</code> tuple in queue",
+                    "🔄 Map: <code>cols[c].append((r, val))</code> — col key hai, (row, val) value",
+                    "✅ Sort: Pehle Column, phir Row, phir Value (overlapping case)",
+                    "💡 BFS levels automatically row sort karte hain, bas value sort chahiye"
+                ],
                 metrics: { time: "O(N log N)", space: "O(N)" },
                 timeExplainer: "<strong>BFS + Sorting:</strong><br>• BFS Traversal: <code>O(N)</code><br>• Sorting nodes in same column: <code>O(N log N)</code><br><br><strong>Total:</strong> <code>O(N log N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Map stores all nodes<br>• Queue for BFS<br><br><strong>Result:</strong> <code>O(N)</code>",
@@ -2061,6 +2939,13 @@ return res`
                 explanation: "Use BST Property! If both p and q < root, go Left. If both > root, go Right. The first node where they SPLIT (one small, one big) is the LCA. O(H) time, O(1) space (iterative)."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>BST Property use kyun?</strong> O(H) vs O(N) — data sorted hai!",
+                    "⚡ Logic: Agar dono P, Q < Root → Go Left. Agar dono > Root → Go Right",
+                    "🔄 Split Point: Jab ek chhota aur ek bada ho → Wohi LCA hai!",
+                    "✅ Iterative: Space O(1) ho jaata hai recursion stack ke bina",
+                    "💡 Binary Search jaisa: discard half tree every step"
+                ],
                 metrics: { time: "O(H)", space: "O(1)" },
                 code: `def lowestCommonAncestor(root, p, q):
 while root:
@@ -2086,6 +2971,13 @@ while root:
                 explanation: "Postorder Tuple! Each node needs from children: (Min_Val, Max_Val, Size, Is_BST). If Left is BST & Right is BST & MaxLeft < Node < MinRight -> Current is BST."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Postorder Tuple kyun?</strong> Valid BST check karne ke liye children ka min/max chahiye",
+                    "⚡ Return: <code>(min, max, size)</code> up the tree",
+                    "🔄 Check: <code>L.max < Node < R.min</code> — agar ye true hai toh valid MST",
+                    "✅ Size: <code>L.size + R.size + 1</code>. Update global max if valid",
+                    "💡 Invalid? Return <code>(inf, -inf)</code> taaki parent range check fail ho"
+                ],
                 metrics: { time: "O(N)", space: "O(H)" },
                 code: `def largestBST(root):
 # Return: (min_val, max_val, size)
@@ -2117,6 +3009,13 @@ return postorder(root)[2]`
                 explanation: "Convert to Graph! Tree nodes only point down. To burn UP, we need Parent pointers (or Adj List). Then run BFS from start node to find max distance."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Graph conversion kyun?</strong> Tree pointers only down jaate hain, burn UP bhi hota hai",
+                    "⚡ Map: <code>parent_map[node] = parent</code> — backward edge create karo",
+                    "🔄 BFS: Start from Target node, spread radially (Up, Left, Right)",
+                    "✅ Max Distance: Level 0 se start karo, last reachable node time dega",
+                    "💡 Visited Set zaroori hai cycle/revisit avoid karne ke liye"
+                ],
                 metrics: { time: "O(N)", space: "O(N)" },
                 code: `def amountOfTime(root, start):
 graph = defaultdict(list)
@@ -2161,26 +3060,154 @@ const topic_graphs = {
     icon: "fas fa-project-diagram",
     mentalModel: {
         whenToApply: [
-            { label: "Shortest Path (No weights)", desc: "BFS (Layer by layer)." },
-            { label: "Shortest Path (Weights)", desc: "Dijkstra (Priority Queue)." },
-            { label: "Dependencies", desc: "Topo Sort (Kahn's Algo)." },
-            { label: "Connectivity", desc: "Union-Find (DSU)." },
-            { label: "Graph Traversal (DFS/BFS)", desc: "Explore all nodes/edges, useful for connectivity checks." },
-            { label: "Minimum Spanning Tree", desc: "Kruskal or Prim to connect all nodes with minimal total weight." },
-            { label: "Max Flow / Min Cut", desc: "Ford‑Fulkerson or Edmonds‑Karp for network flow problems." },
-            { label: "Cycle Detection", desc: "Union‑Find or DFS back‑edge detection." }
+            { label: "🛤️ Shortest Path (Unweighted)", desc: "BFS (Level by level). O(V+E)" },
+            { label: "⚖️ Shortest Path (Weighted)", desc: "Dijkstra (Priority Queue). No negative edges!" },
+            { label: "📋 Dependencies", desc: "Topological Sort (Kahn's BFS or DFS)" },
+            { label: "🔗 Connectivity", desc: "Union-Find (DSU). O(α(N)) per op" },
+            { label: "🌳 MST", desc: "Kruskal (sort edges + UF) or Prim (min-heap)" },
+            { label: "🔄 Cycle Detection", desc: "DFS back-edge or Union-Find" }
         ],
         patterns: [
-            { algo: "BFS", use: "Unweighted shortest path / level order", time: "O(V+E)", space: "O(V)" },
-            { algo: "DFS", use: "Connectivity, topological sort", time: "O(V+E)", space: "O(V)" },
-            { algo: "Dijkstra", use: "Weighted shortest path", time: "O((V+E) log V)", space: "O(V)" },
-            { algo: "Kruskal", use: "Minimum Spanning Tree", time: "O(E log E)", space: "O(V)" },
-            { algo: "Union‑Find", use: "Cycle detection / DSU problems", time: "≈ O(α(N)) per op", space: "O(N)" }
+            { algo: "BFS", use: "Unweighted shortest path / level order", time: "O(V+E)", space: "O(V)", template: "queue + visited set, pop front" },
+            { algo: "DFS", use: "Connectivity, topological sort", time: "O(V+E)", space: "O(V)", template: "recursion/stack + visited" },
+            { algo: "Dijkstra", use: "Weighted shortest path", time: "O((V+E) log V)", space: "O(V)", template: "min-heap (dist, node), relax edges" },
+            { algo: "Kruskal", use: "Minimum Spanning Tree", time: "O(E log E)", space: "O(V)", template: "sort edges + Union-Find" },
+            { algo: "Union‑Find", use: "Cycle detection / DSU problems", time: "≈ O(α(N)) per op", space: "O(N)", template: "find(x) with path compression, union by rank" },
+            { algo: "Topo Sort", use: "Course schedule, build order", time: "O(V+E)", space: "O(V)", template: "Kahn's BFS: indegree=0 first" }
         ],
+        decisionTree: `
+<div style="background:#1e293b; padding:25px; border-radius:16px; margin:15px 0; border:1px solid rgba(255,255,255,0.1);">
+<h4 style="color:#a78bfa; margin-bottom:20px; text-align:center; font-size:1.1rem;">🧠 Graph Pattern Recognition</h4>
+<div style="font-family:monospace; font-size:0.85rem; line-height:1.8;">
+<pre style="color:#e2e8f0; text-align:left; margin:0;">
+              ┌──────────────────────────────┐
+              │ "What's the graph problem?"  │
+              └──────────────┬───────────────┘
+                             │
+     ┌───────────────────────┼───────────────────────┐
+     ▼                       ▼                       ▼
+┌──────────────┐      ┌──────────────┐      ┌──────────────┐
+│  SHORTEST    │      │ CONNECTIVITY │      │ DEPENDENCY/  │
+│    PATH      │      │  / GROUPING  │      │   ORDERING   │
+└──────┬───────┘      └──────┬───────┘      └──────┬───────┘
+       │                     │                     │
+       ▼                     ▼                     ▼
+ ┌───────────────┐    ┌───────────────┐    ┌───────────────┐
+ │ Weighted?     │    │ Components?   │    │ Topological   │
+ │ → DIJKSTRA    │    │ → DFS/BFS     │    │ Sort!         │
+ │               │    │ → Union-Find  │    │               │
+ │ Unweighted?   │    │               │    │ Kahn's BFS:   │
+ │ → BFS         │    │ MST?          │    │ indegree = 0  │
+ │               │    │ → Kruskal     │    │ first         │
+ └───────────────┘    └───────────────┘    └───────────────┘
+
+  ┌─────────────────────────────────────────────────────────┐
+  │ 🔑 VISITED TRACKING:                                    │
+  │ • BFS: Mark visited WHEN ADDING to queue (not pop)     │
+  │ • DFS: Mark visited at START of visit                  │
+  │ • This prevents duplicates and saves time!              │
+  └─────────────────────────────────────────────────────────┘
+</pre>
+</div>
+</div>`,
+        codeTemplates: `
+<div style="background:#0f172a; padding:20px; border-radius:12px; margin:15px 0;">
+<h4 style="color:#10b981; margin-bottom:15px;">📝 Graph Templates</h4>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+1️⃣ BFS (Shortest Path Unweighted)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+from collections import deque
+def bfs(graph, start):
+    visited = {start}
+    queue = deque([(start, 0)])  # (node, distance)
+    while queue:
+        node, dist = queue.popleft()
+        for neighbor in graph[node]:
+            if neighbor not in visited:
+                visited.add(neighbor)  # Mark BEFORE push!
+                queue.append((neighbor, dist + 1))
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+2️⃣ Dijkstra (Weighted Shortest Path)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+import heapq
+def dijkstra(graph, start):
+    dist = {start: 0}
+    heap = [(0, start)]
+    while heap:
+        d, node = heapq.heappop(heap)
+        if d > dist.get(node, float('inf')): continue
+        for neighbor, weight in graph[node]:
+            new_dist = d + weight
+            if new_dist < dist.get(neighbor, float('inf')):
+                dist[neighbor] = new_dist
+                heapq.heappush(heap, (new_dist, neighbor))
+    return dist
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+3️⃣ Union-Find (DSU)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+class UnionFind:
+    def __init__(self, n):
+        self.parent = list(range(n))
+        self.rank = [0] * n
+    def find(self, x):
+        if self.parent[x] != x:
+            self.parent[x] = self.find(self.parent[x])  # Path compression
+        return self.parent[x]
+    def union(self, x, y):
+        px, py = self.find(x), self.find(y)
+        if px == py: return False  # Already connected
+        if self.rank[px] < self.rank[py]: px, py = py, px
+        self.parent[py] = px
+        if self.rank[px] == self.rank[py]: self.rank[px] += 1
+        return True
+</pre>
+</details>
+
+<details>
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+4️⃣ Topological Sort (Kahn's BFS)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+from collections import deque
+def topoSort(numCourses, prerequisites):
+    graph = defaultdict(list)
+    indegree = [0] * numCourses
+    for course, prereq in prerequisites:
+        graph[prereq].append(course)
+        indegree[course] += 1
+    queue = deque([i for i in range(numCourses) if indegree[i] == 0])
+    order = []
+    while queue:
+        node = queue.popleft()
+        order.append(node)
+        for neighbor in graph[node]:
+            indegree[neighbor] -= 1
+            if indegree[neighbor] == 0:
+                queue.append(neighbor)
+    return order if len(order) == numCourses else []  # [] = cycle!
+</pre>
+</details>
+</div>`,
         safetyCheck: [
-            { label: "No BFS for Shortest Path", desc: "Use Dijkstra instead of BFS when edges have weights." },
-            { label: "Visited Tracking", desc: "Mark visited immediately upon pushing to queue to avoid duplicates." },
-            { label: "Do Not Mutate Graph During Traversal", desc: "If you need to modify, work on a copy or track changes separately." }
+            { label: "🛑 Mark visited EARLY!", desc: "BFS: Add to visited BEFORE pushing to queue, not when popping" },
+            { label: "⚖️ No negative edges!", desc: "Dijkstra fails with negative edges. Use Bellman-Ford instead" },
+            { label: "🔄 Cycle = no topo sort!", desc: "If output length < V, there's a cycle" },
+            { label: "📊 Build graph first!", desc: "Convert edge list to adjacency list before traversal" },
+            { label: "🔗 Path compression!", desc: "Union-Find: Always use <code>find()</code> to update parent" },
+            { label: "📍 Multi-source BFS!", desc: "Rotten oranges: Add ALL sources to queue initially" }
         ]
     },
     questions: [
@@ -2198,6 +3225,13 @@ const topic_graphs = {
                 explanation: "The core problem is **SIMULTANEOUS** expansion. All rotten oranges affect neighbors at `t=1`. DFS goes deep on one orange (sequential) effectively calculating 'distance from ONE root', which is wrong here. We need 'min distance from ANY root' -> BFS."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>BFS kyun?</strong> Simultaneous spread chahiye — sab rotten ek saath affect karte hain",
+                    "⚡ Multi-source BFS: <code>queue = all rotten cells</code> initially",
+                    "🔄 Level by level: <code>time++</code> per BFS level, not per cell",
+                    "✅ End: <code>if any fresh left → -1</code>, else return time",
+                    "💡 DFS galat kyun? DFS sequential hai, BFS parallel spread simulate karta hai"
+                ],
                 metrics: { time: "O(N×M)", space: "O(N×M)" },
                 timeExplainer: `
                     <h4 style="color:#c026d3;">⏱️ Time Complexity: O(N×M)</h4>
@@ -2444,6 +3478,13 @@ def orangesRotting(grid):
                 explanation: "Topo Sort (Kahn's)! Build graph. Calculate Indegrees. Q = [Indegree 0]. Process Q, reduce neighbor indegrees. If processed count == N, true."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Topo Sort kyun?</strong> Dependencies hai — pehle prereq complete karo",
+                    "⚡ Kahn's (BFS): <code>indegree[i]=0</code> matlab no dependency, start from these",
+                    "🔄 Jab course complete: <code>indegree[neighbor]--</code>; if 0, add to queue",
+                    "✅ <code>processed == n</code> means sab courses possible",
+                    "💡 Cycle detect: agar processed < n, cycle hai — impossible!"
+                ],
                 metrics: { time: "O(V+E)", space: "O(V+E)" },
                 timeExplainer: `
                     <h4 style="color:#c026d3;">⏱️ Time Complexity: O(V + E)</h4>
@@ -2665,6 +3706,13 @@ def course_schedule(num_courses, prerequisites):
                 explanation: "Dijkstra! Weighted edges require Priority Queue. BFS is for unweighted. Visit nodes in increasing order of cost."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Dijkstra kyun?</strong> Weighted edges hai — simple BFS won't work",
+                    "⚡ MinHeap: <code>heappop</code> gives node with MINIMUM cost first",
+                    "🔄 <code>if node already visited: skip</code> — already found shortest",
+                    "✅ First time reaching node = shortest path (greedy works!)",
+                    "💡 Negative weights? Dijkstra fails — use Bellman-Ford"
+                ],
                 metrics: { time: "O(E log V)", space: "O(V+E)" },
                 timeExplainer: `
                     <h4 style="color:#c026d3;">⏱️ Time Complexity: O(E log V)</h4>
@@ -2910,6 +3958,13 @@ def course_schedule(num_courses, prerequisites):
                 explanation: "All work! But DSU (Union-Find) is the most elegant for 'connectivity' and 'components'. Initialize N parents. Union connected nodes. Count unique parents."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Union-Find kyun?</strong> Connectivity check — 'same group?' O(1) mein",
+                    "⚡ Path compression: <code>parent[x] = find(parent[x])</code> tree flat karta hai",
+                    "🔄 Union by rank: chhota tree bade mein merge — height controlled",
+                    "✅ Count components: unique <code>find(i)</code> values count karo",
+                    "💡 DFS/BFS bhi chalega but Union-Find cleaner for dynamic connectivity"
+                ],
                 metrics: { time: "O(N²×α(N))", space: "O(N)" },
                 timeExplainer: `
                     <h4 style="color:#c026d3;">⏱️ Time Complexity: O(N² × α(N))</h4>
@@ -3087,6 +4142,13 @@ def course_schedule(num_courses, prerequisites):
                 explanation: "DFS + HashMap! Map stores `OldNode -> NewNode`. If node in map, return stored copy (handles cycles). Else create, add to map, recurse."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>HashMap kyun?</strong> Cycle handle karna hai — same node dobara aaye toh existing clone return karo",
+                    "⚡ <code>old_to_new[node]</code> = mapping from original → clone",
+                    "🔄 DFS: clone bana, map mein daal, neighbors recursively clone karo",
+                    "✅ Base: <code>if node in map: return map[node]</code> — already cloned",
+                    "💡 BFS bhi chalega — same hashmap logic, just iterative"
+                ],
                 metrics: { time: "O(V+E)", space: "O(V)" },
                 timeExplainer: `
                     <h4 style="color:#c026d3;">⏱️ Time Complexity: O(V + E)</h4>
@@ -3263,6 +4325,13 @@ def cloneGraph(node):
                 explanation: "2-Coloring (Bipartite Check)! Use BFS/DFS. Assign color 0/1. If neighbor has SAME color -> False. If neighbor unvisited -> Assign opposite color."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>2-Coloring kyun?</strong> Bipartite = 2 groups with no same-group edges",
+                    "⚡ BFS/DFS: alternate colors assign karo — <code>0, 1, 0, 1...</code>",
+                    "🔄 <code>if neighbor same color → NOT bipartite!</code>",
+                    "✅ All nodes colored without conflict → bipartite hai",
+                    "💡 Multiple components? Start BFS from each unvisited node"
+                ],
                 metrics: { time: "O(V+E)", space: "O(V)" },
                 timeExplainer: `
                     <h4 style="color:#c026d3;">⏱️ Time Complexity: O(V + E)</h4>
@@ -3425,6 +4494,13 @@ def isBipartite(graph):
                 explanation: "Need 2 Sets! 1. Visited (Global), 2. RecursionStack (Current Path). If node in RecursionStack -> Cycle detected. If in Visited but not Stack -> Safe (Cross Edge)."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>2 Sets kyun?</strong> visited(global) vs rec_stack(current path) — back edge detect karta hai",
+                    "⚡ <code>if node in rec_stack → CYCLE!</code> — same path pe wapas aaye",
+                    "🔄 Enter: <code>rec_stack.add</code>; Exit: <code>rec_stack.remove</code> (backtrack)",
+                    "✅ <code>if node in visited but not in stack → cross edge, safe</code>",
+                    "💡 Undirected graph? Single visited set enough — no direction matters"
+                ],
                 metrics: { time: "O(V+E)", space: "O(V)" },
                 timeExplainer: `
                     <h4 style="color:#c026d3;">⏱️ Time Complexity: O(V + E)</h4>
@@ -3616,12 +4692,212 @@ const topic_dp = {
     icon: "fas fa-braille",
     mentalModel: {
         whenToApply: [
-            { label: "Overlapping Subproblems", desc: "Solving the same small problem again and again? Memoize it." },
-            { label: "Optimal Substructure", desc: "Can you build the answer from answers of smaller inputs?" }
+            { label: "🔄 Overlapping Subproblems", desc: "Same small problem solved repeatedly → Memoize it!" },
+            { label: "🏗️ Optimal Substructure", desc: "Optimal solution built from optimal sub-solutions" },
+            { label: "📊 Counting Ways", desc: "How many ways to reach X? → DP addition" },
+            { label: "⚖️ Optimization", desc: "Min/Max value? → DP with min()/max()" },
+            { label: "✅ Decision Making", desc: "Take or skip? → Compare both choices" }
         ],
+        patterns: [
+            { algo: "1D Linear", use: "House Robber, Climbing Stairs", time: "O(N)", space: "O(1)", template: "dp[i] = f(dp[i-1], dp[i-2])" },
+            { algo: "0/1 Knapsack", use: "Subset Sum, Partition Equal", time: "O(N×W)", space: "O(W)", template: "Take: dp[j-w]+v, Skip: dp[j]" },
+            { algo: "Unbounded Knapsack", use: "Coin Change, Rod Cutting", time: "O(N×W)", space: "O(W)", template: "for coin: dp[j] = min(dp[j], dp[j-coin]+1)" },
+            { algo: "LCS/LIS", use: "Longest Common/Increasing", time: "O(N²) or O(N log N)", space: "O(N)", template: "match: dp[i-1][j-1]+1, else: max(skip)" },
+            { algo: "Grid DP", use: "Unique Paths, Min Path Sum", time: "O(M×N)", space: "O(N)", template: "dp[i][j] = f(dp[i-1][j], dp[i][j-1])" },
+            { algo: "Interval DP", use: "Burst Balloons, MCM", time: "O(N³)", space: "O(N²)", template: "for len, for i, for k in (i,j)" }
+        ],
+        decisionTree: `
+<div style="background:#1e293b; padding:25px; border-radius:16px; margin:15px 0; border:1px solid rgba(255,255,255,0.1);">
+<h4 style="color:#a78bfa; margin-bottom:20px; text-align:center; font-size:1.1rem;">🧠 DP Pattern Recognition (Recursive Thinking)</h4>
+<div style="font-family:monospace; font-size:0.85rem; line-height:1.8;">
+<pre style="color:#e2e8f0; text-align:left; margin:0;">
+              ┌──────────────────────────────┐
+              │ "What type of DP problem?"   │
+              └──────────────┬───────────────┘
+                             │
+     ┌───────────────────────┼───────────────────────┐
+     ▼                       ▼                       ▼
+┌──────────────┐      ┌──────────────┐      ┌──────────────┐
+│  SEQUENCE    │      │   KNAPSACK   │      │    GRID      │
+│  Problems    │      │   Problems   │      │   Problems   │
+└──────┬───────┘      └──────┬───────┘      └──────┬───────┘
+       │                     │                     │
+       ▼                     ▼                     ▼
+ ┌───────────────┐    ┌───────────────┐    ┌───────────────┐
+ │ LIS/LCS?      │    │ 0/1? Use item │    │ solve(i, j)   │
+ │ solve(i, j)   │    │ ONCE only     │    │               │
+ │               │    │               │    │ return from   │
+ │ match? +1     │    │ Unbounded?    │    │ solve(i-1, j) │
+ │ else max()    │    │ Can REUSE     │    │ solve(i, j-1) │
+ └───────────────┘    └───────────────┘    └───────────────┘
+
+  ┌─────────────────────────────────────────────────────────┐
+  │ 🔥 UNIVERSAL RECURSIVE TEMPLATE:                        │
+  │                                                         │
+  │   def solve(i, ...):                                    │
+  │       if BASE_CASE: return 0                            │
+  │       if (i, ...) in memo: return memo[(i, ...)]        │
+  │                                                         │
+  │       take = value + solve(NEXT_STATE_AFTER_TAKE)       │
+  │       skip = solve(NEXT_STATE_AFTER_SKIP)               │
+  │                                                         │
+  │       memo[(i, ...)] = max(take, skip)  # or min        │
+  │       return memo[(i, ...)]                             │
+  └─────────────────────────────────────────────────────────┘
+
+       "Counting ways vs Optimization?"
+              │
+       ┌──────┴──────┐
+       ▼             ▼
+  ┌─────────────┐   ┌─────────────┐
+  │ COUNTING    │   │ OPTIMIZATION│
+  │ return      │   │ return      │
+  │ solve(a) +  │   │ max/min(    │
+  │ solve(b)    │   │  take, skip │
+  └─────────────┘   │ )           │
+                    └─────────────┘
+</pre>
+</div>
+</div>`,
+        codeTemplates: `
+<div style="background:#0f172a; padding:20px; border-radius:12px; margin:15px 0;">
+<h4 style="color:#10b981; margin-bottom:15px;">📝 DP Templates (Memoization)</h4>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+1️⃣ House Robber (Take/Skip)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def rob(nums):
+    memo = {}
+    def solve(i):
+        if i >= len(nums): return 0
+        if i in memo: return memo[i]
+        
+        take = nums[i] + solve(i + 2)  # Take current, skip next
+        skip = solve(i + 1)             # Skip current
+        
+        memo[i] = max(take, skip)
+        return memo[i]
+    return solve(0)
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+2️⃣ Coin Change (Unbounded)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def coinChange(coins, amount):
+    memo = {}
+    def solve(remaining):
+        if remaining == 0: return 0
+        if remaining < 0: return float('inf')
+        if remaining in memo: return memo[remaining]
+        
+        min_coins = float('inf')
+        for coin in coins:
+            min_coins = min(min_coins, solve(remaining - coin) + 1)
+        
+        memo[remaining] = min_coins
+        return min_coins
+    
+    ans = solve(amount)
+    return ans if ans != float('inf') else -1
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+3️⃣ LCS (Longest Common Subsequence)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def lcs(text1, text2):
+    memo = {}
+    def solve(i, j):
+        if i == len(text1) or j == len(text2): return 0
+        if (i, j) in memo: return memo[(i, j)]
+        
+        if text1[i] == text2[j]:
+            memo[(i, j)] = 1 + solve(i + 1, j + 1)  # Match!
+        else:
+            memo[(i, j)] = max(solve(i + 1, j), solve(i, j + 1))  # Skip
+        
+        return memo[(i, j)]
+    return solve(0, 0)
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+4️⃣ 0/1 Knapsack
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def knapsack(weights, values, capacity):
+    memo = {}
+    def solve(i, remaining):
+        if i == len(weights) or remaining == 0: return 0
+        if (i, remaining) in memo: return memo[(i, remaining)]
+        
+        skip = solve(i + 1, remaining)  # Skip current item
+        take = 0
+        if weights[i] <= remaining:
+            take = values[i] + solve(i + 1, remaining - weights[i])
+        
+        memo[(i, remaining)] = max(take, skip)
+        return memo[(i, remaining)]
+    return solve(0, capacity)
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+5️⃣ Unique Paths (Grid DP)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def uniquePaths(m, n):
+    memo = {}
+    def solve(i, j):
+        if i == m - 1 and j == n - 1: return 1  # Reached destination
+        if i >= m or j >= n: return 0           # Out of bounds
+        if (i, j) in memo: return memo[(i, j)]
+        
+        # Can only go DOWN or RIGHT
+        memo[(i, j)] = solve(i + 1, j) + solve(i, j + 1)
+        return memo[(i, j)]
+    return solve(0, 0)
+</pre>
+</details>
+
+<details>
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+6️⃣ Longest Increasing Subsequence (LIS)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def lengthOfLIS(nums):
+    memo = {}
+    def solve(i, prev_idx):
+        if i == len(nums): return 0
+        if (i, prev_idx) in memo: return memo[(i, prev_idx)]
+        
+        skip = solve(i + 1, prev_idx)  # Skip current
+        take = 0
+        if prev_idx == -1 or nums[i] > nums[prev_idx]:
+            take = 1 + solve(i + 1, i)  # Take current
+        
+        memo[(i, prev_idx)] = max(take, skip)
+        return memo[(i, prev_idx)]
+    return solve(0, -1)
+</pre>
+</details>
+</div>`,
         safetyCheck: [
-            { label: "State Definition", desc: "Clearly define what `dp[i]` represents." },
-            { label: "Base Cases", desc: "Don't forget `dp[0]` initialization." }
+            { label: "📝 Define dp[i]!", desc: "Clearly write what dp[i] represents BEFORE coding" },
+            { label: "🔢 Base cases!", desc: "<code>dp[0]</code> initialization — don't skip!" },
+            { label: "🔄 Loop direction!", desc: "0/1 Knapsack: REVERSE loop. Unbounded: FORWARD loop" },
+            { label: "⚡ Space optimize!", desc: "2D → 1D: Use only prev row. Often just 2 variables!" },
+            { label: "📊 Counting vs Opt!", desc: "Counting: <code>+=</code>. Optimization: <code>min()/max()</code>" },
+            { label: "🎯 Don't overthink!", desc: "Most DP = Take vs Skip: <code>max(take, skip)</code>" }
         ]
     },
     questions: [
@@ -3639,6 +4915,13 @@ const topic_dp = {
                 explanation: "At each house: Either ROB it (take money + skip previous) OR SKIP it (keep previous max). Compare and take maximum!"
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Adjacent ban kyun?</strong> Ek chorr ke ek lootna hai",
+                    "⚡ Choice: <code>Rob current + nums[i-2]</code> OR <code>Skip current (keep prev)</code>",
+                    "🔄 <code>new_rob = max(rob1 + n, rob2)</code> transition",
+                    "✅ Space optimization: Sirf 2 variables <code>rob1, rob2</code> chahiye",
+                    "💡 Greedy fail karega: [2, 100, 2] — greedy takes 2+2=4, optimal is 100!"
+                ],
                 metrics: { time: "O(N)", space: "O(1)" },
                 timeExplainer: `<strong>Time Breakdown:</strong><br>
                     • Single pass through all N houses<br>
@@ -3780,6 +5063,13 @@ print(rob([100]))         # 100 (single house)`
                 explanation: "Patience Sorting! Maintain a 'tails' array. For each x, replace the first element in tails >= x. If x is largest, append. Len(tails) is answer."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>NlogN kaise?</strong> Patience sorting — solitaire card game strategy",
+                    "⚡ <code>tails</code> array: smallest ending element for LIS of length i+1",
+                    "🔄 Binary Search: Find insertion point of current num in <code>tails</code>",
+                    "✅ Extend: append if largest; Replace: existing bada element chote se replace karo",
+                    "💡 Replace kyun? Smaller ending value gives better chance to extend later!"
+                ],
                 metrics: { time: "O(N²)", space: "O(N²)" },
                 timeExplainer: `<strong style="color:#f59e0b;">⏱️ Time Complexity Deep Dive</strong>
                 
@@ -3995,6 +5285,13 @@ print(lengthOfLIS([0,1,0,3,2,3]))       # 4 → [0,1,2,3]`
                 explanation: "2D Grid! If chars match: `1 + dp[i-1][j-1]`. If no match: `max(dp[i-1][j], dp[i][j-1])` (carry forward best result)."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>2D DP kyun?</strong> String matching mein indices (i, j) track karne padte hain",
+                    "⚡ <code>if s1[i] == s2[j]</code> → MATCH! <code>1 + dp[i-1][j-1]</code> (diagonal)",
+                    "🔄 <code>else</code> → NO MATCH! <code>max(dp[i-1][j], dp[i][j-1])</code> (retain best previous)",
+                    "✅ Base case: dp[0][0] = 0 (empty strings match nothing)",
+                    "💡 Space Opt? Sirf <code>prev_row</code> aur <code>curr_row</code> chahiye (O(N) space)"
+                ],
                 metrics: { time: "O(M × N)", space: "O(M × N)" },
                 timeExplainer: `<strong style="color:#f59e0b;">⏱️ Time Complexity Deep Dive</strong>
                 
@@ -4204,6 +5501,13 @@ print(longestCommonSubsequence("abcde", "ace"))  # 3 → "ace"`
                 explanation: "Greedy fails (e.g., Coins [1,3,4], Target 6. Greedy 4+1+1 (3 coins). Optimal 3+3 (2 coins)). Use DP: solve for amount 1, then 2..."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Unbounded Knapsack kyun?</strong> Coins infinite supply mein hain",
+                    "⚡ <code>dp[a] = min(dp[a], 1 + dp[a - coin])</code> — try all coins",
+                    "🔄 Init <code>dp = [inf]</code>, default <code>dp[0]=0</code> (0 coin for 0 amount)",
+                    "✅ <code>dp[amount] > amount</code>? Return -1 (impossible)",
+                    "💡 Loop order: <code>for coin in coins</code> bahar kyun? Reduce repetitive permutations (perf boost)"
+                ],
                 metrics: { time: "O(A × C)", space: "O(A × C)" },
                 timeExplainer: `<strong style="color:#f59e0b;">⏱️ Time Complexity Deep Dive</strong>
                 
@@ -4417,6 +5721,13 @@ print(coinChange([2], 3))       # -1 → impossible`
                 explanation: "Brute Force is O(2^N). We need DP! dp[i] = True if dp[j] is True AND s[j:i] in dict. Iterate i from 1 to N, j from 0 to i."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Cut points kyun?</strong> String ko valid words mein split karna hai",
+                    "⚡ <code>if dp[j] and s[j:i] in dict</code> → Valid segment found!",
+                    "🔄 <code>dp[i] = True</code> — current prefix ends with a valid word",
+                    "✅ Return <code>dp[n]</code> — pura string segmented hai ya nahi",
+                    "💡 O(N²) loop nested but efficient — inner loop checks previous cuts"
+                ],
                 metrics: { time: "O(N³)", space: "O(N)" },
                 timeExplainer: `
                     <div class="space-y-3">
@@ -4798,6 +6109,13 @@ return dp[n]`
                 explanation: "If Total Sum is odd, impossible. Else, find subset with sum = Total/2. This is 0/1 Knapsack."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Target Sum kyun?</strong> Equal partition = Subset Sum with target <code>Total/2</code>",
+                    "⚡ <code>if sum % 2 != 0</code> → Odd sum divide nahi ho sakta, return False",
+                    "🔄 0/1 Knapsack logic: Iterate BACKWARDS <code>range(target, num-1, -1)</code>",
+                    "✅ <code>dp[t] = dp[t] or dp[t - num]</code> — can we make sum 't'?",
+                    "💡 Backwards loop zaroori hai for 1D array to avoid reusing same element"
+                ],
                 metrics: { time: "O(N × Sum)", space: "O(Sum)" },
                 timeExplainer: `
                     <div class="space-y-3">
@@ -5146,6 +6464,13 @@ return dp[target]`
                 explanation: "2D DP. If match: dp[i-1][j-1]. If mismatch: 1 + min(Insert, Delete, Replace)."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Min Operations kyun?</strong> Transform word1 to word2 in cheapest way",
+                    "⚡ If mismatch: <code>1 + min(Insert, Delete, Replace)</code>",
+                    "🔄 Insert = <code>dp[i][j-1]</code>, Delete = <code>dp[i-1][j]</code>, Replace = <code>dp[i-1][j-1]</code>",
+                    "✅ Base case: dp[i][0] = i (delete all), dp[0][j] = j (insert all)",
+                    "💡 Replace is diagonal move, others are straight moves"
+                ],
                 metrics: { time: "O(M×N)", space: "O(M×N)" },
                 timeExplainer: `
                     <div class="space-y-3">
@@ -5483,12 +6808,146 @@ const topic_heap_trie = {
     icon: "fas fa-sitemap",
     mentalModel: {
         whenToApply: [
-            { label: "Top K Elements", desc: "Heap. O(N log K)." },
-            { label: "Prefix Search", desc: "Trie. O(L) lookup." }
+            { label: "🏆 Top K Elements", desc: "Find K largest/smallest → Min-Heap of size K" },
+            { label: "🔀 Merge K Streams", desc: "Merge K sorted lists → Min-Heap with (val, idx, node)" },
+            { label: "🔤 Prefix Search", desc: "Autocomplete, word search → Trie (O(L) lookup)" },
+            { label: "⊕ Max XOR", desc: "Find max XOR pair → Binary Trie with opposite-bit path" },
+            { label: "📊 Streaming Data", desc: "Maintain K best in stream → Min-Heap (VIP room analogy)" }
         ],
+        patterns: [
+            { algo: "Kth Largest (Min-Heap)", use: "Top K elements", time: "O(N log K)", space: "O(K)", template: "Min-heap size K, root = Kth largest" },
+            { algo: "Merge K Lists", use: "Merge sorted streams", time: "O(N log K)", space: "O(K)", template: "(val, idx, node) tuple for tie-break" },
+            { algo: "Trie Insert/Search", use: "Prefix matching", time: "O(L)", space: "O(N×L)", template: "children={}, isEnd=False per node" },
+            { algo: "Binary Trie", use: "Max XOR pair", time: "O(N × 32)", space: "O(N × 32)", template: "Store bits, traverse opposite path" },
+            { algo: "Heapify", use: "Build heap from array", time: "O(N)", space: "O(1)", template: "heapq.heapify(arr) - NOT O(N log N)!" }
+        ],
+        decisionTree: `
+<div style="background:#1e293b; padding:25px; border-radius:16px; margin:15px 0; border:1px solid rgba(255,255,255,0.1);">
+<h4 style="color:#a78bfa; margin-bottom:20px; text-align:center; font-size:1.1rem;">🧠 Heap & Trie Pattern Recognition</h4>
+<div style="font-family:monospace; font-size:0.85rem; line-height:1.8;">
+<pre style="color:#e2e8f0; text-align:left; margin:0;">
+              ┌───────────────────────────┐
+              │ "What's the core need?"   │
+              └─────────────┬─────────────┘
+                            │
+      ┌─────────────────────┼─────────────────────┐
+      ▼                     ▼                     ▼
+┌───────────────┐    ┌───────────────┐    ┌───────────────┐
+│   TOP K /     │    │ MERGE SORTED  │    │   PREFIX /    │
+│   STREAMING   │    │   LISTS       │    │   STRINGS     │
+└───────┬───────┘    └───────┬───────┘    └───────┬───────┘
+        │                    │                    │
+        ▼                    ▼                    ▼
+  ┌───────────────┐    ┌───────────────┐    ┌───────────────┐
+  │ K LARGEST?    │    │ Min-Heap with │    │ Autocomplete? │
+  │ → MIN-HEAP    │    │ K heads       │    │ → TRIE        │
+  │   size K      │    │ (val,idx,node)│    │               │
+  │               │    │               │    │ XOR max?      │
+  │ K SMALLEST?   │    │ Pop min,      │    │ → Binary Trie │
+  │ → MAX-HEAP    │    │ push next     │    │               │
+  └───────────────┘    └───────────────┘    └───────────────┘
+
+  ┌─────────────────────────────────────────────────────────┐
+  │ 🎯 VIP ROOM ANALOGY:                                    │
+  │ • Room capacity = K                                     │
+  │ • Bouncer (min-heap root) = Kth largest                │
+  │ • New person richer than bouncer? Kick bouncer out!     │
+  └─────────────────────────────────────────────────────────┘
+</pre>
+</div>
+</div>`,
+        codeTemplates: `
+<div style="background:#0f172a; padding:20px; border-radius:12px; margin:15px 0;">
+<h4 style="color:#10b981; margin-bottom:15px;">📝 Heap & Trie Templates</h4>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+1️⃣ Kth Largest (Min-Heap size K)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+import heapq
+class KthLargest:
+    def __init__(self, k, nums):
+        self.k, self.heap = k, []
+        for n in nums: self.add(n)
+    def add(self, val):
+        if len(self.heap) < self.k:
+            heapq.heappush(self.heap, val)
+        elif val > self.heap[0]:
+            heapq.heapreplace(self.heap, val)
+        return self.heap[0]  # Kth largest = min of top K
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+2️⃣ Merge K Sorted Lists
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def mergeKLists(lists):
+    pq = []
+    for i, l in enumerate(lists):
+        if l: heapq.heappush(pq, (l.val, i, l))  # i = tie-breaker!
+    dummy = curr = ListNode()
+    while pq:
+        val, i, node = heapq.heappop(pq)
+        curr.next = node
+        curr = curr.next
+        if node.next:
+            heapq.heappush(pq, (node.next.val, i, node.next))
+    return dummy.next
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+3️⃣ Trie Implementation
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+class TrieNode:
+    def __init__(self):
+        self.children = {}
+        self.isEnd = False
+class Trie:
+    def __init__(self):
+        self.root = TrieNode()
+    def insert(self, word):
+        cur = self.root
+        for c in word:
+            if c not in cur.children:
+                cur.children[c] = TrieNode()
+            cur = cur.children[c]
+        cur.isEnd = True
+    def search(self, word):
+        cur = self.root
+        for c in word:
+            if c not in cur.children: return False
+            cur = cur.children[c]
+        return cur.isEnd  # Must be end of word!
+</pre>
+</details>
+
+<details>
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+4️⃣ XOR Trick (Single Number)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+# A ^ A = 0, A ^ 0 = A
+def singleNumber(nums):
+    result = 0
+    for num in nums:
+        result ^= num
+    return result
+</pre>
+</details>
+</div>`,
         safetyCheck: [
-            { label: "K-th Largest", desc: "Use Min-Heap of size K." },
-            { label: "Trie Node", desc: "Remember `is_end` flag." }
+            { label: "🔄 Min vs Max Heap!", desc: "Kth LARGEST → MIN-heap. Python heapq is min-heap by default." },
+            { label: "⚠️ Tuple tie-breaker!", desc: "Merge K Lists: Use <code>(val, idx, node)</code> — nodes can't be compared!" },
+            { label: "🔚 isEnd flag!", desc: "Trie: Don't forget <code>isEnd = True</code> at word end" },
+            { label: "📏 Prefix vs Word!", desc: "startsWith → just traverse. search → must check isEnd" },
+            { label: "⚡ Heapify is O(N)!", desc: "<code>heapq.heapify()</code> is O(N), NOT O(N log N)" },
+            { label: "📦 Heap size K!", desc: "For top K, only keep K elements in heap, not all N" }
         ]
     },
     questions: [
@@ -5506,6 +6965,13 @@ const topic_heap_trie = {
                 explanation: "Min-Heap of size K! The root holds the K-th largest. If new val > root, pop root and push new val. Keep top K elements in the club; root is the 'bouncer' (smallest of the top K)."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Min-Heap why?</strong> Don't sort! Hume sirf top K largest elements ka 'club' maintain karna hai",
+                    "⚡ <code>MinHeap(k)</code>: Root is smallest member of Top-K club (bouncer)",
+                    "🔄 If <code>new_val > root</code>: <code>heapreplace(val)</code> — chhota bahar, bada andar",
+                    "✅ Heap size K constant rakhna hai stream mein",
+                    "💡 Kth Largest = <code>MinHeap.root</code> (smallest of the giants)"
+                ],
                 metrics: { time: "O(log K)", space: "O(K)" },
                 timeExplainer: "<strong>Min-Heap:</strong><br>• Add element: <code>O(log K)</code><br>• Maintain size K<br><br><strong>Total:</strong> <code>O(log K)</code> per add",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Heap stores exactly K elements<br>• Ignore infinite stream history<br><br><strong>Result:</strong> <code>O(K)</code>",
@@ -5542,6 +7008,13 @@ def add(self, val):
                 explanation: "Min-Heap! Put all K heads in heap. Pop min, add to result, push next node from that list. O(N log K)."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Heap Merge logic?</strong> Race track! Har list ka head race mein hai",
+                    "⚡ Min-Heap stores <code>(val, idx, node)</code> of all list heads",
+                    "🔄 Pop smallest: Add to result. Push <code>node.next</code> from THAT list",
+                    "✅ Runs until heap is empty (all nodes processed)",
+                    "💡 Tuple <code>(val, i, node)</code> mein 'i' tie-breaker hai (node comparison crash rokne ke liye)"
+                ],
                 metrics: { time: "O(N log K)", space: "O(K)" },
                 timeExplainer: "<strong>Heap Merge:</strong><br>• Heap size K (one per list)<br>• Process all N nodes<br>• Push/Pop is log K<br><br><strong>Total:</strong> <code>O(N log K)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Heap stores K nodes<br>• Output list not counted (if returning new)<br><br><strong>Result:</strong> <code>O(K)</code>",
@@ -5580,6 +7053,15 @@ return dummy.next`
                 explanation: "Trie! Nodes represent characters. Path from root spells word. Shared prefixes share nodes (Space efficient)."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Trie Structure?</strong> String sharing space save karta hai (prefix 'app' shared by 'apple', 'app')",
+                    "⚡ Node: <code>children = {}</code>, <code>isEnd = False</code>",
+                    "🔄 Insert: Loop chars. If not in children, create new Node. Last node marked <code>isEnd=True</code>",
+                    "✅ Search: Traverse path. If broken -> False. At end, check <code>isEnd</code>",
+                    "💡 Prefix Search? Same as search, but don't check <code>isEnd</code>",
+                    "<code>startsWith: traverse; return True if reached</code>",
+                    "Path from root spells prefix"
+                ],
                 metrics: { time: "O(L)", space: "O(N*L)" },
                 timeExplainer: "<strong>Prefix Tree:</strong><br>• Traversal depends only on word length L<br>• Independent of total words N<br><br><strong>Total:</strong> <code>O(L)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Worst: No common prefixes<br>• <code>N</code> words of length <code>L</code><br><br><strong>Total:</strong> <code>O(N×L)</code> nodes",
@@ -5634,6 +7116,13 @@ def startsWith(self, prefix):
                 explanation: "Insert all numbers into a Binary Trie. For each number, try to traverse the opposite bit path to maximize XOR."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Bit Trie kyun?</strong> XOR maximize karne ke liye 'opposite' bit chahiye (1^0=1)",
+                    "⚡ Insert nums as 32-bit binary strings (MSB to LSB)",
+                    "🔄 Query: For each bit, try going opposite direction (if 1 go 0). If blocked, go same.",
+                    "✅ Successful opposite moves = higher XOR value",
+                    "💡 O(N) approach compared to O(N²) brute force"
+                ],
                 metrics: { time: "O(N * 32)", space: "O(N * 32)" },
                 code: `# Trie Implementation needed`
             }
@@ -5652,6 +7141,13 @@ def startsWith(self, prefix):
                 explanation: "A ^ A = 0. A ^ 0 = A. XORing all numbers cancels out pairs, leaving the single number."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>XOR Magic?</strong> Compare pairs without Sort/Set",
+                    "⚡ Property: <code>A ^ A = 0</code> (Pairs vanish) and <code>A ^ 0 = A</code>",
+                    "🔄 Loop: XOR all numbers together",
+                    "✅ Result: Jo single hai wahi bachega, baaki sab 0 ban jayenge",
+                    "💡 O(N) time & O(1) space — best solution possible"
+                ],
                 metrics: { time: "O(N)", space: "O(1)" },
                 code: `def singleNumber(nums):
 res = 0
@@ -5673,6 +7169,13 @@ return res`
                 explanation: "O(N)! Sift-down from the last non-leaf node up to root. Lower levels have less work."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>O(N) vs O(NlogN)?</strong> Build Heap from bottom-up is faster (Sift Level-by-Level)",
+                    "⚡ Start: Last non-leaf node (index <code>N//2 - 1</code>)",
+                    "🔄 Loop Backwards: Call <code>sift_down(i)</code> for each node upto root",
+                    "✅ Why O(N)? Most nodes are leaves (0 work). Work decreases as levels go up.",
+                    "💡 <code>push</code> N times is O(NlogN). This is efficient batch build."
+                ],
                 metrics: { time: "O(N)", space: "O(1)" },
                 code: `import heapq
 def heapify(arr):
@@ -5696,12 +7199,184 @@ const topic_backtracking = {
     icon: "fas fa-chess-queen",
     mentalModel: {
         whenToApply: [
-            { label: "Find ALL", desc: "Combinations, Permutations, Subsets." },
-            { label: "Constraints", desc: "N is small (<= 20)." }
+            { label: "🎯 ALL Solutions", desc: "Find ALL permutations, combinations, subsets, paths." },
+            { label: "🔢 Small N (≤ 20)", desc: "Exponential time OK when N is small." },
+            { label: "🚫 Constraint Satisfaction", desc: "N-Queens, Sudoku, Graph Coloring - place items with rules." },
+            { label: "🔍 Decision Tree", desc: "Each step = make a choice → explore → undo (CHOOSE-EXPLORE-UNCHOOSE)." }
         ],
+        patterns: [
+            { algo: "Subsets (Pick/No-Pick)", use: "Generate all 2^N subsets", time: "O(2^N × N)", space: "O(N)", template: "backtrack(i+1) for both PICK and SKIP" },
+            { algo: "Permutations (Swap)", use: "Generate all N! arrangements", time: "O(N × N!)", space: "O(N)", template: "swap(start, i) → recurse → swap back" },
+            { algo: "Combinations (Bounded)", use: "Choose k items from n", time: "O(C(n,k) × k)", space: "O(k)", template: "Loop j from start, recurse with j+1" },
+            { algo: "Unbounded (Combination Sum)", use: "Reuse elements allowed", time: "O(N^(T/M))", space: "O(T/M)", template: "PICK stays at i, SKIP moves to i+1" },
+            { algo: "Grid DFS (Word Search)", use: "Find path in 2D matrix", time: "O(M×N × 3^L)", space: "O(L)", template: "mark # → 4 dirs → unmark" },
+            { algo: "Constraint Satisfaction", use: "N-Queens, Sudoku", time: "O(N!) / O(9^M)", space: "O(N)", template: "Check constraints → place → recurse → remove" }
+        ],
+        decisionTree: `
+<div style="background:#1e293b; padding:25px; border-radius:16px; margin:15px 0; border:1px solid rgba(255,255,255,0.1);">
+<h4 style="color:#a78bfa; margin-bottom:20px; text-align:center; font-size:1.1rem;">🧠 Pattern Recognition Flowchart</h4>
+<div style="font-family:monospace; font-size:0.85rem; line-height:2;">
+<div style="text-align:center; color:#fbbf24; font-weight:bold; margin-bottom:15px;">
+"Problem kya maang raha hai?"
+</div>
+<pre style="color:#e2e8f0; text-align:left;">
+                    ┌─────────────────┐
+                    │ "Find ALL ___"? │
+                    └────────┬────────┘
+                             │
+         ┌───────────────────┼───────────────────┐
+         ▼                   ▼                   ▼
+  ┌─────────────┐    ┌─────────────┐    ┌──────────────┐
+  │  SUBSETS    │    │ PERMUTATIONS│    │ COMBINATIONS │
+  │  "2^N"      │    │   "N!"      │    │   "C(n,k)"   │
+  └─────┬───────┘    └──────┬──────┘    └──────┬───────┘
+        │                   │                   │
+        ▼                   ▼                   ▼
+┌───────────────┐  ┌───────────────┐  ┌────────────────┐
+│ Pick/No-Pick  │  │     SWAP      │  │ Loop j=start   │
+│ i+1 for both  │  │ swap→rec→swap │  │ Recurse j+1    │
+└───────────────┘  └───────────────┘  └────────────────┘
+
+         "Elements REUSABLE?"          "2D Grid?"
+              │                            │
+    ┌─────────┴─────────┐        ┌────────┴────────┐
+    ▼                   ▼        │                 │
+ ┌──────┐          ┌───────┐    ▼                 ▼
+ │ YES  │          │  NO   │  ┌────────┐    ┌──────────┐
+ └──┬───┘          └───┬───┘  │  YES   │    │ CONSTRAINT│
+    │                  │      └───┬────┘    │ PROBLEM  │
+    ▼                  ▼          ▼         └────┬─────┘
+┌────────────┐  ┌──────────┐ ┌─────────┐   ┌────────────┐
+│PICK: stay i│  │PICK: i+1 │ │Grid DFS │   │ N-Queens/  │
+│SKIP: i+1   │  │SKIP: i+1 │ │mark→exp→│   │ Sudoku     │
+└────────────┘  └──────────┘ │unmark   │   │ Use SETS   │
+                             └─────────┘   └────────────┘
+</pre>
+</div>
+</div>`,
+        codeTemplates: `
+<div style="background:#0f172a; padding:20px; border-radius:12px; margin:15px 0;">
+<h4 style="color:#10b981; margin-bottom:15px;">📝 Universal Templates (Copy-Paste Ready)</h4>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+1️⃣ Subset Pattern (Pick/No-Pick)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def subsets(nums):
+    result = []
+    def backtrack(index, current):
+        if index == len(nums):
+            result.append(current[:])  # COPY!
+            return
+        # PICK
+        current.append(nums[index])
+        backtrack(index + 1, current)
+        current.pop()  # Backtrack
+        # NO-PICK
+        backtrack(index + 1, current)
+    backtrack(0, [])
+    return result
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+2️⃣ Permutation Pattern (Swap)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def permute(nums):
+    result = []
+    def backtrack(start):
+        if start == len(nums):
+            result.append(nums[:])
+            return
+        for i in range(start, len(nums)):
+            nums[start], nums[i] = nums[i], nums[start]  # Swap
+            backtrack(start + 1)
+            nums[start], nums[i] = nums[i], nums[start]  # Unswap
+    backtrack(0)
+    return result
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+3️⃣ Combination Sum Pattern (Unbounded)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def combinationSum(candidates, target):
+    result = []
+    def backtrack(index, path, current_sum):
+        if current_sum == target:
+            result.append(path[:])
+            return
+        if index >= len(candidates) or current_sum > target:
+            return
+        # PICK (stay at index)
+        path.append(candidates[index])
+        backtrack(index, path, current_sum + candidates[index])
+        path.pop()
+        # SKIP (move to index+1)
+        backtrack(index + 1, path, current_sum)
+    backtrack(0, [], 0)
+    return result
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+4️⃣ Grid DFS Pattern (Word Search)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def exist(board, word):
+    ROWS, COLS = len(board), len(board[0])
+    def dfs(row, col, char_index):
+        if char_index == len(word): return True
+        if (row < 0 or row >= ROWS or col < 0 or col >= COLS 
+            or board[row][col] != word[char_index]):
+            return False
+        original = board[row][col]
+        board[row][col] = '#'  # Mark
+        found = (dfs(row+1,col,char_index+1) or dfs(row-1,col,char_index+1) or
+                 dfs(row,col+1,char_index+1) or dfs(row,col-1,char_index+1))
+        board[row][col] = original  # Unmark
+        return found
+    return any(dfs(r,c,0) for r in range(ROWS) for c in range(COLS))
+</pre>
+</details>
+
+<details>
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+5️⃣ Constraint Pattern (N-Queens)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def solveNQueens(n):
+    cols, pos_diag, neg_diag = set(), set(), set()
+    result, positions = [], [-1] * n
+    def backtrack(row):
+        if row == n:
+            result.append(['.'*c + 'Q' + '.'*(n-c-1) for c in positions])
+            return
+        for col in range(n):
+            if col in cols or (row+col) in pos_diag or (row-col) in neg_diag:
+                continue
+            cols.add(col); pos_diag.add(row+col); neg_diag.add(row-col)
+            positions[row] = col
+            backtrack(row + 1)
+            cols.remove(col); pos_diag.remove(row+col); neg_diag.remove(row-col)
+    backtrack(0)
+    return result
+</pre>
+</details>
+</div>`,
         safetyCheck: [
-            { label: "Reference Bug", desc: "Use `res.append(path[:])` (Copy)." },
-            { label: "Undo Step", desc: "Always backtrack: `path.pop()` after recursion." }
+            { label: "📋 COPY the list!", desc: "<code>result.append(path[:])</code> — Without copy, all entries point to same mutating list!" },
+            { label: "↩️ ALWAYS undo!", desc: "<code>path.pop()</code> or <code>swap back</code> — Forgetting backtrack = corrupted state for other branches." },
+            { label: "🔢 Index logic!", desc: "Subsets: i+1 both | Permute: swap | Unbounded: PICK stays at i, SKIP goes i+1" },
+            { label: "⚡ Prune early!", desc: "Check constraints BEFORE recursing: <code>if sum > target: return</code>" },
+            { label: "🔄 Short-circuit OR!", desc: "Grid DFS: <code>return dfs(...) or dfs(...)</code> — Stop if any path succeeds." },
+            { label: "📍 Mark & Unmark!", desc: "Grid: <code>board[r][c]='#'</code> before, restore original after exploring." }
         ]
     },
     questions: [
@@ -5711,130 +7386,718 @@ const topic_backtracking = {
             leetcodeUrl: "https://leetcode.com/problems/n-queens/",
             difficulty: "Must Do",
             priority: "🔴",
-            tags: ["Classic Backtracking"],
+            tags: ["Classic Backtracking", "Constraint Satisfaction"],
             quiz: {
-                description: "Place N queens safely. Optimized check?",
-                options: ["Loop to check attacks", "3 Sets (cols, diag+, diag-)", "Bitmasking", "Random"],
+                description: "Place N queens on N×N board such that no two attack each other. How to check if position is safe in O(1)?",
+                options: ["Loop through all queens", "3 Sets (cols, posDiag, negDiag)", "Check 8 directions", "2D visited array"],
                 correct: 1,
-                explanation: "3 Sets! Track occupied Columns, Pos Diagonals (r+c), and Neg Diagonals (r-c). O(1) safety check."
+                explanation: "3 Sets! Track: columns (col), positive diagonals (row+col), negative diagonals (row-col). Each is O(1) lookup!"
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>3 Sets kyun?</strong> O(1) mein attack check — loop se O(N) lagta",
+                    "⚡ <code>cols, posDiag(r+c), negDiag(r-c)</code> — same diagonal = same sum/diff",
+                    "🔄 Row-by-row: <code>for col in range(N)</code> try karo, constraint check karo",
+                    "✅ <code>if row == N</code> → solution found! Board save karo",
+                    "💡 Backtrack: <code>sets.remove(col)</code> — next column try karne ke liye"
+                ],
                 metrics: { time: "O(N!)", space: "O(N)" },
-                timeExplainer: "<strong>Backtracking:</strong><br>• 1st row: N choice<br>• 2nd row: N-2 choice...<br>• Upper bound <code>N!</code><br><br><strong>Total:</strong> <code>O(N!)</code>",
-                spaceExplainer: "<strong>Space Analysis:</strong><br>• 3 Sets for constraints: <code>O(N)</code><br>• Recursion Stack: <code>O(N)</code><br><br><strong>Result:</strong> <code>O(N)</code>",
-                visual: "<span><strong>Visual: Laser Beams</strong><br>Sets block vertical and diagonal lines.</span>",
-                crux: "<strong>Pattern:</strong> Loop cols in current row.<br>1. Check safe (Sets).<br>2. Add to Sets. Recurse.<br>3. Remove from Sets (Backtrack).",
-                trap: "<strong>Diagonal Math:</strong> PosDiag = r+c. NegDiag = r-c.",
-                dryRun: ["Row 0, Col 0. Safe. Recurse Row 1.", "Row 1, Col 0 (Col Block). Col 1 (Diag Block)..."],
-                codeTitle: "Python Solution",
+                timeExplainer: `<strong>Time Complexity: O(N!)</strong><br><br>
+<div style="background:#0f172a; padding:15px; border-radius:8px;">
+<strong style="color:#fbbf24;">Row-by-row placement:</strong><br><br>
+• Row 0: <code>N</code> possible columns<br>
+• Row 1: <code>~N-2</code> safe columns (1 col + 2 diags blocked)<br>
+• Row 2: <code>~N-4</code> safe columns<br>
+• ...<br><br>
+<strong style="color:#10b981;">Upper bound ≈ N × (N-2) × (N-4) × ... ≈ N!</strong>
+</div>
+
+<div style="background:rgba(245,158,11,0.1); padding:15px; border-radius:8px; margin-top:10px;">
+<strong style="color:#fbbf24;">Example N=4:</strong><br>
+Row 0: 4 choices → Row 1: ~2 choices → ...<br>
+Total ≈ 4! = 24 (actual solutions = 2)
+</div>`,
+
+                spaceExplainer: `<strong>Space Complexity: O(N)</strong><br><br>
+<div style="background:#0f172a; padding:15px; border-radius:8px;">
+<table style="width:100%; color:#e2e8f0;">
+<tr><td style="padding:8px 0;"><strong style="color:#10b981;">✓ columns set</strong></td><td>O(N) - max N columns</td></tr>
+<tr><td style="padding:8px 0;"><strong style="color:#10b981;">✓ posDiag set</strong></td><td>O(N) - one active per row</td></tr>
+<tr><td style="padding:8px 0;"><strong style="color:#10b981;">✓ negDiag set</strong></td><td>O(N) - one active per row</td></tr>
+<tr><td style="padding:8px 0;"><strong style="color:#10b981;">✓ Recursion Stack</strong></td><td>O(N) - max N rows deep</td></tr>
+</table>
+</div>
+
+<div style="background:rgba(16,185,129,0.1); padding:12px; border-radius:8px; margin-top:10px;">
+<strong style="color:#10b981;">💡 No 2D board needed!</strong><br>
+Just track queen column for each row: <code>queen_positions[row] = col</code>
+</div>`,
+
+                visual: `<div style="text-align:left; font-family: monospace; font-size: 0.85rem; line-height: 1.6;">
+<strong style="color:#fbbf24;">♛ "Laser Beams" Visualization (N=4):</strong>
+<pre style="color: var(--text-muted); margin-top:10px;">
+When Queen placed at (row=1, col=2):
+
+     0   1   2   3
+   ┌───┬───┬───┬───┐
+ 0 │   │ ↖ │ ↑ │ ↗ │   ← Attacked by diagonals & column
+   ├───┼───┼───┼───┤
+ 1 │ ← │ ← │ ♛ │ → │   ← Queen at (1, 2)
+   ├───┼───┼───┼───┤
+ 2 │   │ ↙ │ ↓ │ ↘ │   ← Attacked below
+   ├───┼───┼───┼───┤
+ 3 │ ↙ │   │ ↓ │   │ ↘
+   └───┴───┴───┴───┘
+
+<strong style="color:#10b981;">3 SETS track these attacks:</strong>
+┌────────────────────────────────────────────┐
+│ columns:  {2}        ← Column 2 blocked    │
+│ posDiag:  {3}        ← row+col = 1+2 = 3   │
+│ negDiag:  {-1}       ← row-col = 1-2 = -1  │
+└────────────────────────────────────────────┘
+
+Same diagonal formula for ANY cell:
+• (0,1): posDiag = 0+1 = 1, negDiag = 0-1 = -1 ← BLOCKED!
+• (2,3): posDiag = 2+3 = 5, negDiag = 2-3 = -1 ← BLOCKED!
+• (3,1): posDiag = 3+1 = 4, negDiag = 3-1 = 2  ← SAFE ✓
+</pre>
+</div>`,
+
+                crux: `<strong>The 3-Sets Constraint Pattern:</strong><br><br>
+<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:15px 0;">
+<div style="background:rgba(239,68,68,0.1); padding:15px; border-radius:8px; text-align:center;">
+<div style="font-size:1.5rem; margin-bottom:8px;">📍</div>
+<strong style="color:#ef4444;">columns</strong><br>
+<code style="font-size:0.8rem;">col</code><br>
+<small style="color:gray;">Vertical attack</small>
+</div>
+<div style="background:rgba(16,185,129,0.1); padding:15px; border-radius:8px; text-align:center;">
+<div style="font-size:1.5rem; margin-bottom:8px;">↗</div>
+<strong style="color:#10b981;">posDiag</strong><br>
+<code style="font-size:0.8rem;">row + col</code><br>
+<small style="color:gray;">↗ diagonal attack</small>
+</div>
+<div style="background:rgba(139,92,246,0.1); padding:15px; border-radius:8px; text-align:center;">
+<div style="font-size:1.5rem; margin-bottom:8px;">↘</div>
+<strong style="color:#8b5cf6;">negDiag</strong><br>
+<code style="font-size:0.8rem;">row - col</code><br>
+<small style="color:gray;">↘ diagonal attack</small>
+</div>
+</div>
+
+<div style="background:#0f172a; padding:15px; border-radius:8px;">
+<strong style="color:#fbbf24;">💡 Why row+col and row-col?</strong><br><br>
+<code>↗ Diagonal:</code> All cells have SAME (row + col)<br>
+<code>↘ Diagonal:</code> All cells have SAME (row - col)<br><br>
+<strong style="color:#10b981;">No need to check rows!</strong> We place exactly 1 queen per row.
+</div>`,
+
+                trap: `<strong>⚠️ Common Mistakes:</strong><br><br>
+
+<div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); padding:15px; border-radius:8px; margin-bottom:15px;">
+<strong style="color:#f87171;">❌ Mistake 1: Wrong diagonal formula</strong>
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
+<div style="background:#0f172a; padding:10px; border-radius:6px;">
+<span style="color:#ef4444;">Wrong:</span><br>
+<code style="color:#f87171;">posDiag = row * col</code><br>
+<small style="color:gray;">Doesn't identify same diagonal!</small>
+</div>
+<div style="background:#0f172a; padding:10px; border-radius:6px;">
+<span style="color:#10b981;">Correct:</span><br>
+<code style="color:#34d399;">posDiag = row + col</code><br>
+<code style="color:#34d399;">negDiag = row - col</code>
+</div>
+</div>
+</div>
+
+<div style="background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.3); padding:15px; border-radius:8px; margin-bottom:15px;">
+<strong style="color:#fbbf24;">❌ Mistake 2: Forgetting to remove from sets!</strong><br>
+<code style="color:#fbbf24;">columns.remove(col)  # MUST do after recursion!</code><br>
+<small style="color:gray;">Without this, sets stay polluted for other branches</small>
+</div>
+
+<div style="background:rgba(139,92,246,0.1); border:1px solid rgba(139,92,246,0.3); padding:15px; border-radius:8px;">
+<strong style="color:#a78bfa;">❌ Mistake 3: Building board wrong</strong><br>
+<code style="color:#a78bfa;">'.' * col + 'Q' + '.' * (n - col - 1)</code><br>
+<small style="color:gray;">Queen at position 'col', dots before and after</small>
+</div>`,
+
+                dryRun: [
+                    "<strong>Input:</strong> N = 4",
+                    "Initialize: columns={}, posDiag={}, negDiag={}, queen_positions=[-1,-1,-1,-1]",
+                    "<code>backtrack(row=0)</code> → Try each column",
+                    "<strong style='color:#10b981;'>row=0, col=0:</strong> Safe! Add to sets",
+                    "&nbsp;&nbsp;columns={0}, posDiag={0}, negDiag={0}",
+                    "&nbsp;&nbsp;queen_positions=[0,-1,-1,-1]",
+                    "&nbsp;&nbsp;<code>backtrack(row=1)</code>",
+                    "&nbsp;&nbsp;<strong style='color:#ef4444;'>row=1, col=0:</strong> 0 in columns ❌",
+                    "&nbsp;&nbsp;<strong style='color:#ef4444;'>row=1, col=1:</strong> (1+1)=2 not in posDiag, but (1-1)=0 in negDiag ❌",
+                    "&nbsp;&nbsp;<strong style='color:#10b981;'>row=1, col=2:</strong> Safe!",
+                    "&nbsp;&nbsp;&nbsp;&nbsp;columns={0,2}, posDiag={0,3}, negDiag={0,-1}",
+                    "&nbsp;&nbsp;&nbsp;&nbsp;<code>backtrack(row=2)</code>",
+                    "&nbsp;&nbsp;&nbsp;&nbsp;... all columns blocked for row 2 ❌",
+                    "&nbsp;&nbsp;Backtrack: Remove col=2 from sets",
+                    "&nbsp;&nbsp;<strong style='color:#10b981;'>row=1, col=3:</strong> Safe! Continue...",
+                    "... eventually finds solution ...",
+                    "<strong>Solution 1:</strong> ['.Q..', '...Q', 'Q...', '..Q.']",
+                    "<strong>Solution 2:</strong> ['..Q.', 'Q...', '...Q', '.Q..']"
+                ],
+                codeTitle: "Python Solution (3-Sets)",
                 code: `def solveNQueens(n):
-cols = set()
-posDiag = set() # r+c
-negDiag = set() # r-c
-res = []
-board = [-1]*n # row -> col mapping
+    """
+    Place N queens on N×N board with no attacks.
+    Time: O(N!), Space: O(N)
+    """
+    columns = set()      # Columns with queens
+    pos_diagonals = set()  # row + col values
+    neg_diagonals = set()  # row - col values
+    
+    result = []
+    queen_positions = [-1] * n  # queen_positions[row] = col
+    
+    def backtrack(row):
+        # Base case: All queens placed!
+        if row == n:
+            # Build the board
+            board = []
+            for r in range(n):
+                col = queen_positions[r]
+                line = '.' * col + 'Q' + '.' * (n - col - 1)
+                board.append(line)
+            result.append(board)
+            return
+        
+        # Try each column in current row
+        for col in range(n):
+            # Check if position is safe
+            if (col in columns or 
+                (row + col) in pos_diagonals or 
+                (row - col) in neg_diagonals):
+                continue  # Not safe, skip
+            
+            # === PLACE QUEEN ===
+            columns.add(col)
+            pos_diagonals.add(row + col)
+            neg_diagonals.add(row - col)
+            queen_positions[row] = col
+            
+            # Recurse to next row
+            backtrack(row + 1)
+            
+            # === REMOVE QUEEN (Backtrack) ===
+            columns.remove(col)
+            pos_diagonals.remove(row + col)
+            neg_diagonals.remove(row - col)
+    
+    backtrack(0)
+    return result`,
+                codeDetailed: `def solveNQueens_detailed(n):
+    """
+    N-QUEENS with 3-Sets O(1) Constraint Check
+    
+    WHY 3 SETS?
+    - Queen attacks: row, column, both diagonals
+    - We go row-by-row, so row is automatically unique
+    - Need to track: column, ↗ diagonal, ↘ diagonal
+    
+    DIAGONAL MATH:
+    - ↗ diagonal: All cells have same (row + col)
+      Example: (0,2), (1,1), (2,0) all have row+col = 2
+    - ↘ diagonal: All cells have same (row - col)
+      Example: (0,0), (1,1), (2,2) all have row-col = 0
+    """
+    columns = set()
+    pos_diagonals = set()  # row + col
+    neg_diagonals = set()  # row - col
+    
+    result = []
+    queen_positions = [-1] * n
+    
+    def backtrack(current_row):
+        # === BASE CASE ===
+        # All N rows filled = valid solution!
+        if current_row == n:
+            board = []
+            for row in range(n):
+                col = queen_positions[row]
+                # Build row string: dots before Q, Q, dots after
+                row_str = '.' * col + 'Q' + '.' * (n - col - 1)
+                board.append(row_str)
+            result.append(board)
+            return
+        
+        # === TRY EACH COLUMN ===
+        for col in range(n):
+            # O(1) safety check using sets
+            pos_diag = current_row + col
+            neg_diag = current_row - col
+            
+            if col in columns:
+                continue  # Column attacked
+            if pos_diag in pos_diagonals:
+                continue  # ↗ Diagonal attacked
+            if neg_diag in neg_diagonals:
+                continue  # ↘ Diagonal attacked
+            
+            # === PLACE QUEEN ===
+            columns.add(col)
+            pos_diagonals.add(pos_diag)
+            neg_diagonals.add(neg_diag)
+            queen_positions[current_row] = col
+            
+            # === RECURSE ===
+            backtrack(current_row + 1)
+            
+            # === BACKTRACK ===
+            # Remove queen to try other positions
+            columns.remove(col)
+            pos_diagonals.remove(pos_diag)
+            neg_diagonals.remove(neg_diag)
+    
+    backtrack(0)
+    return result
 
-def backtrack(r):
-    if r == n:
-        # Build string board
-        temp = []
-        for i in range(n):
-            line = "." * board[i] + "Q" + "." * (n - board[i] - 1)
-            temp.append(line)
-        res.append(temp)
-        return
-
-    for c in range(n):
-        if c in cols or (r+c) in posDiag or (r-c) in negDiag:
-            continue
-        
-        cols.add(c); posDiag.add(r+c); negDiag.add(r-c)
-        board[r] = c
-        
-        backtrack(r + 1)
-        
-        cols.remove(c); posDiag.remove(r+c); negDiag.remove(r-c)
-        
-backtrack(0)
-return res`
+# Test
+for solution in solveNQueens_detailed(4):
+    for row in solution:
+        print(row)
+    print()
+# Output:
+# .Q..
+# ...Q
+# Q...
+# ..Q.
+#
+# ..Q.
+# Q...
+# ...Q
+# .Q..`
             }
         },
         {
             id: "permutations",
             title: "Permutations",
-            difficulty: "Good to Do",
-            priority: "🟢",
-            tags: ["Swapping"],
+            leetcodeUrl: "https://leetcode.com/problems/permutations/",
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["Swapping", "In-place"],
             quiz: {
-                description: "Generate all permutations of [1,2,3].",
-                options: ["Iterative", "Backtracking with 'visited' set", "Backtracking with Swapping", "All"],
+                description: "Generate all permutations of [1,2,3]. Most space-efficient approach?",
+                options: ["Iterative with queue", "Backtracking with 'visited' set", "Backtracking with Swapping", "Dynamic Programming"],
                 correct: 2,
-                explanation: "Swapping is space efficient! Swap `nums[start]` with `nums[i]`, recurse, then Swap Back (Backtrack)."
+                explanation: "Swapping is most space efficient! No extra visited set needed. Swap nums[start] with nums[i], recurse, then Swap Back (Backtrack)."
             },
             learn: {
-                metrics: { time: "O(N * N!)", space: "O(N)" },
-                timeExplainer: "<strong>Permutations:</strong><br>• <code>N!</code> permutations<br>• Each takes <code>O(N)</code> to copy<br><br><strong>Total:</strong> <code>O(N × N!)</code>",
-                spaceExplainer: "<strong>Space Analysis:</strong><br>• Recursion Stack: <code>O(N)</code><br>• Output list size: <code>N!</code><br><br><strong>Result:</strong> <code>O(N)</code> aux",
-                visual: "<span><strong>Visual: Shuffling Chairs</strong><br>Fix 1st pos, shuffle rest. Then swap and repeat.</span>",
-                crux: "<strong>Swap Pattern:</strong><br>1. Loop `i` from `start` to `end`.<br>2. Swap `nums[start], nums[i]`.<br>3. Recurse `start + 1`.<br>4. Swap back.",
-                trap: "<strong>Copy Ref:</strong> `res.append(nums[:])` is mandatory.",
-                dryRun: ["Start=0. Swap(0,0). [1,2,3]. Recurse 1.", "Start=1. Swap(1,1). [1,2,3]. Recurse 2. Append.", "Backtrack. Swap(1,2). [1,3,2]."],
-                codeTitle: "Python Solution",
+                quickAlgo: [
+                    "🎯 <strong>Swap kyun?</strong> In-place permutation — extra array nahi chahiye",
+                    "⚡ <code>for i in range(start, n): swap(start, i)</code> — har element ko start pe try karo",
+                    "🔄 <code>backtrack(start+1)</code> → baaki array permute karo",
+                    "✅ <code>start == n</code> → ek permutation complete, copy and save",
+                    "💡 Duplicates? Sort first, skip if <code>nums[i] == nums[i-1]</code>"
+                ],
+                metrics: { time: "O(N × N!)", space: "O(N)" },
+                timeExplainer: `<strong>Why O(N × N!)?</strong><br><br>
+<div style="background:#0f172a; padding:15px; border-radius:8px; margin:10px 0;">
+<strong style="color:#fbbf24;">Step-by-step breakdown:</strong><br><br>
+• Position 0: <code>N</code> choices<br>
+• Position 1: <code>N-1</code> choices<br>
+• Position 2: <code>N-2</code> choices<br>
+• ...<br>
+• Position N-1: <code>1</code> choice<br><br>
+<strong style="color:#10b981;">Total permutations = N × (N-1) × ... × 1 = N!</strong>
+</div>
+
+<div style="background:rgba(245,158,11,0.1); padding:15px; border-radius:8px; margin-top:10px;">
+<strong style="color:#fbbf24;">+ O(N) per permutation</strong><br>
+Each permutation: copy array to result = O(N)<br><br>
+<strong>Final: O(N × N!)</strong>
+</div>
+
+<strong style="color:#a78bfa;">Example n=3:</strong><br>
+• Permutations = 3! = 6<br>
+• Copy cost = 3 each<br>
+• Total ≈ 6 × 3 = 18 operations`,
+
+                spaceExplainer: `<strong>Space Complexity: O(N)</strong><br><br>
+<div style="background:#0f172a; padding:15px; border-radius:8px;">
+<table style="width:100%; color:#e2e8f0;">
+<tr><td style="padding:8px 0;"><strong style="color:#10b981;">✓ Recursion Stack</strong></td><td>O(N) - depth = N levels</td></tr>
+<tr><td style="padding:8px 0;"><strong style="color:#10b981;">✓ In-place Swapping</strong></td><td>O(1) - no extra array!</td></tr>
+<tr><td style="padding:8px 0;"><strong style="color:#8b5cf6;">Output (not counted)</strong></td><td>O(N! × N) - result storage</td></tr>
+</table>
+</div>
+
+<div style="background:rgba(16,185,129,0.1); padding:12px; border-radius:8px; margin-top:10px;">
+<strong style="color:#10b981;">💡 Swapping Advantage:</strong><br>
+"Visited set" approach uses O(N) extra space.<br>
+Swapping approach: <strong>TRUE in-place!</strong>
+</div>`,
+
+                visual: `<div style="text-align:left; font-family: monospace; font-size: 0.85rem; line-height: 1.6;">
+<strong style="color:#fbbf24;">🪑 "Musical Chairs" Visualization:</strong>
+<pre style="color: var(--text-muted); margin-top:10px;">
+nums = [1, 2, 3]       start = 0
+
+"Position 0 pe kaun baithega?"
+    ↓
+┌───────────────────────────────────────────┐
+│  i=0: Swap(0,0)    i=1: Swap(0,1)    i=2: Swap(0,2)  │
+│  [1, 2, 3]         [2, 1, 3]         [3, 2, 1]       │
+│      ↓                 ↓                 ↓           │
+│  start=1           start=1           start=1        │
+│  "Pos 1 pe kaun?"  "Pos 1 pe kaun?" "Pos 1 pe kaun?"│
+└───────────────────────────────────────────┘
+
+Taking [1,2,3] branch (start=1):
+┌─────────────────────────────────┐
+│  i=1: Swap(1,1)    i=2: Swap(1,2)  │
+│  [1, 2, 3]         [1, 3, 2]       │
+│      ↓                 ↓           │
+│  start=2           start=2        │
+│  ✅ ADD [1,2,3]    ✅ ADD [1,3,2] │
+└─────────────────────────────────┘
+
+Same process for [2,1,3] and [3,2,1] branches...
+
+<strong style="color:#10b981;">Final 6 permutations:</strong>
+[1,2,3], [1,3,2], [2,1,3], [2,3,1], [3,1,2], [3,2,1]
+</pre>
+</div>`,
+
+                crux: `<strong>The Swap-Recurse-Unswap Pattern:</strong><br><br>
+<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:15px 0;">
+<div style="background:rgba(16,185,129,0.1); padding:15px; border-radius:8px; text-align:center;">
+<div style="font-size:1.5rem; margin-bottom:8px;">1️⃣</div>
+<strong style="color:#10b981;">SWAP</strong><br>
+<code style="font-size:0.8rem;">nums[start], nums[i] = nums[i], nums[start]</code><br>
+<small style="color:gray;">Position 'start' pe element 'i' try karo</small>
+</div>
+<div style="background:rgba(139,92,246,0.1); padding:15px; border-radius:8px; text-align:center;">
+<div style="font-size:1.5rem; margin-bottom:8px;">2️⃣</div>
+<strong style="color:#8b5cf6;">RECURSE</strong><br>
+<code style="font-size:0.8rem;">backtrack(start + 1)</code><br>
+<small style="color:gray;">Next position fix karo</small>
+</div>
+<div style="background:rgba(239,68,68,0.1); padding:15px; border-radius:8px; text-align:center;">
+<div style="font-size:1.5rem; margin-bottom:8px;">3️⃣</div>
+<strong style="color:#ef4444;">UNSWAP</strong><br>
+<code style="font-size:0.8rem;">nums[start], nums[i] = nums[i], nums[start]</code><br>
+<small style="color:gray;">Wapas original state</small>
+</div>
+</div>
+
+<div style="background:#0f172a; padding:15px; border-radius:8px;">
+<strong style="color:#fbbf24;">💡 Key Insight:</strong><br>
+Loop <code>i</code> from <code>start</code> to <code>n-1</code><br>
+→ Har element ko ek baar 'start' position pe try karo!
+</div>`,
+
+                trap: `<strong>⚠️ Common Mistakes:</strong><br><br>
+
+<div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); padding:15px; border-radius:8px; margin-bottom:15px;">
+<strong style="color:#f87171;">❌ Mistake 1: Bhool gaye copy banana!</strong>
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
+<div style="background:#0f172a; padding:10px; border-radius:6px;">
+<span style="color:#ef4444;">Wrong:</span><br>
+<code style="color:#f87171;">res.append(nums)</code>
+</div>
+<div style="background:#0f172a; padding:10px; border-radius:6px;">
+<span style="color:#10b981;">Correct:</span><br>
+<code style="color:#34d399;">res.append(nums[:])</code>
+</div>
+</div>
+<small style="color:gray;">Without copy, all entries point to same mutating list!</small>
+</div>
+
+<div style="background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.3); padding:15px; border-radius:8px; margin-bottom:15px;">
+<strong style="color:#fbbf24;">❌ Mistake 2: Bhool gaye swap back karna!</strong><br>
+<code style="color:#fbbf24;">nums[start], nums[i] = nums[i], nums[start]  // Swap BACK!</code><br>
+<small style="color:gray;">Without swap back, array corrupted for other branches</small>
+</div>
+
+<div style="background:rgba(139,92,246,0.1); border:1px solid rgba(139,92,246,0.3); padding:15px; border-radius:8px;">
+<strong style="color:#a78bfa;">❌ Mistake 3: Loop range galat!</strong><br>
+<code style="color:#a78bfa;">for i in range(start, len(nums)):</code> ✅<br>
+<code style="color:#ef4444;">for i in range(0, len(nums)):</code> ❌ (duplicates!)<br>
+<small style="color:gray;">i=start se start karo, 0 se nahi!</small>
+</div>`,
+
+                dryRun: [
+                    "<strong>Input:</strong> nums = [1, 2, 3]",
+                    "<code>backtrack(0)</code> → Loop i = 0 to 2",
+                    "<strong style='color:#10b981;'>i=0:</strong> Swap(0,0) → [1,2,3] (no change)",
+                    "&nbsp;&nbsp;<code>backtrack(1)</code> → Loop i = 1 to 2",
+                    "&nbsp;&nbsp;<strong style='color:#10b981;'>i=1:</strong> Swap(1,1) → [1,2,3]",
+                    "&nbsp;&nbsp;&nbsp;&nbsp;<code>backtrack(2)</code> → Loop i = 2 to 2",
+                    "&nbsp;&nbsp;&nbsp;&nbsp;<strong style='color:#10b981;'>i=2:</strong> Swap(2,2) → [1,2,3]",
+                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>backtrack(3)</code> → start==len ✅ ADD <strong>[1,2,3]</strong>",
+                    "&nbsp;&nbsp;&nbsp;&nbsp;Swap back(2,2) → [1,2,3]",
+                    "&nbsp;&nbsp;Swap back(1,1) → [1,2,3]",
+                    "&nbsp;&nbsp;<strong style='color:#fbbf24;'>i=2:</strong> Swap(1,2) → [1,<strong>3</strong>,<strong>2</strong>]",
+                    "&nbsp;&nbsp;&nbsp;&nbsp;<code>backtrack(2)</code> → ✅ ADD <strong>[1,3,2]</strong>",
+                    "&nbsp;&nbsp;Swap back(1,2) → [1,2,3]",
+                    "Swap back(0,0) → [1,2,3]",
+                    "<strong style='color:#fbbf24;'>i=1:</strong> Swap(0,1) → [<strong>2</strong>,<strong>1</strong>,3]",
+                    "&nbsp;&nbsp;... continues → ✅ ADD <strong>[2,1,3]</strong>, <strong>[2,3,1]</strong>",
+                    "<strong style='color:#ef4444;'>i=2:</strong> Swap(0,2) → [<strong>3</strong>,2,<strong>1</strong>]",
+                    "&nbsp;&nbsp;... continues → ✅ ADD <strong>[3,2,1]</strong>, <strong>[3,1,2]</strong>",
+                    "<strong>Final Result:</strong> [[1,2,3], [1,3,2], [2,1,3], [2,3,1], [3,2,1], [3,1,2]]"
+                ],
+                codeTitle: "Python Solution (Swapping)",
                 code: `def permute(nums):
-res = []
-def backtrack(start):
-    if start == len(nums):
-        res.append(nums[:])
-        return
+    """
+    Generate all permutations using in-place swapping
+    Time: O(N × N!), Space: O(N) for recursion stack
+    """
+    res = []
+
+    def backtrack(start):
+        # Base case: All positions fixed
+        if start == len(nums):
+            res.append(nums[:])  # COPY!
+            return
+
+        # Try each element at 'start' position
+        for i in range(start, len(nums)):
+            # 1. SWAP: Put nums[i] at position 'start'
+            nums[start], nums[i] = nums[i], nums[start]
+
+            # 2. RECURSE: Fix remaining positions
+            backtrack(start + 1)
+
+            # 3. UNSWAP: Restore for next iteration
+            nums[start], nums[i] = nums[i], nums[start]
+
+    backtrack(0)
+    return res
+
+# Alternative: Using visited set (more space)
+def permute_visited(nums):
+    res = []
+    used = [False] * len(nums)
+    path = []
     
-    for i in range(start, len(nums)):
-        nums[start], nums[i] = nums[i], nums[start]
-        backtrack(start + 1)
-        nums[start], nums[i] = nums[i], nums[start]
-        
-backtrack(0)
-return res`
+    def backtrack():
+        if len(path) == len(nums):
+            res.append(path[:])
+            return
+        for i in range(len(nums)):
+            if used[i]: continue
+            used[i] = True
+            path.append(nums[i])
+            backtrack()
+            path.pop()
+            used[i] = False
+    
+    backtrack()
+    return res`,
+                codeDetailed: `def permute_detailed(nums):
+    """
+    Detailed step-by-step explanation
+    
+    CORE IDEA:
+    - "Position 0 pe kaun baithega?"
+    - Try each element at position 0
+    - Then recursively fill position 1, 2, ...
+    
+    WHY SWAPPING WORKS:
+    - No extra visited set needed!
+    - Elements before 'start' are FIXED
+    - Elements from 'start' onwards are AVAILABLE
+    - Swapping temporarily moves an element to 'start'
+    """
+    res = []
+
+    def backtrack(start):
+        # BASE CASE: All N positions are fixed
+        # We have a complete permutation!
+        if start == len(nums):
+            # CRITICAL: Make a copy!
+            # nums is being modified in-place
+            res.append(nums[:])
+            return
+
+        # RECURSIVE CASE: Try each available element at 'start'
+        # Available elements = nums[start], nums[start+1], ..., nums[n-1]
+        for i in range(start, len(nums)):
+            # === STEP 1: SWAP ===
+            # Temporarily place nums[i] at position 'start'
+            # Now nums[start] is "fixed" for this branch
+            nums[start], nums[i] = nums[i], nums[start]
+            
+            # === STEP 2: RECURSE ===
+            # With nums[start] fixed, fill remaining positions
+            backtrack(start + 1)
+            
+            # === STEP 3: UNSWAP (Backtrack) ===
+            # Restore original order before trying next element
+            # This is ESSENTIAL - otherwise array stays corrupted!
+            nums[start], nums[i] = nums[i], nums[start]
+
+    backtrack(0)
+    return res
+
+# Test
+print(permute_detailed([1, 2, 3]))
+# Output: [[1,2,3], [1,3,2], [2,1,3], [2,3,1], [3,1,2], [3,2,1]]`
             }
         },
         {
             id: "subsets",
             title: "Subsets",
             leetcodeUrl: "https://leetcode.com/problems/subsets/",
-            difficulty: "Good to Do",
-            priority: "🟡",
-            tags: ["Pick/No-Pick"],
+            difficulty: "Must Do",
+            priority: "🔴",
+            tags: ["Pick/No-Pick", "Power Set"],
             quiz: {
-                description: "Generate power set. Core decision?",
+                description: "Generate power set of [1,2,3]. Core decision at each element?",
                 options: ["Loop n times", "Include or Exclude current element", "Swap adjacent", "Bit manipulation only"],
                 correct: 1,
-                explanation: "Pick/No-Pick! For every element, you have 2 choices: Include it in current subset OR Skip it. 2^N total."
+                explanation: "Pick/No-Pick! For every element, you have 2 choices: Include it in current subset OR Skip it. 2^N total subsets."
             },
             learn: {
-                metrics: { time: "O(2^N)", space: "O(N)" },
-                timeExplainer: "<strong>Exponential:</strong><br>• Each element has 2 choices (Yes/No)<br>• Total <code>2^N</code> subsets<br>• Copying takes O(N)<br><br><strong>Total:</strong> <code>O(N × 2^N)</code>",
-                spaceExplainer: "<strong>Space Analysis:</strong><br>• Stack depth: <code>O(N)</code><br>• Result size: <code>2^N</code><br><br><strong>Aux:</strong> <code>O(N)</code>",
-                visual: "<span><strong>Visual: The Fork</strong><br>At index i: Left Path (Include), Right Path (Exclude).</span>",
-                crux: "<strong>Pattern:</strong> `dfs(i, current_path)`<br>1. Include `nums[i]` -> Recurse `i+1`<br>2. Exclude `nums[i]` (Pop) -> Recurse `i+1`",
-                trap: "<strong>Base Case:</strong> Add to results at START of function, because every node in decision tree is a valid subset.",
-                dryRun: ["dfs(0, []). Add [].", "Include 1. dfs(1, [1]). Add [1].", "Exclude 1. dfs(1, [])..."],
-                codeTitle: "Python Solution",
+                quickAlgo: [
+                    "🎯 <strong>Pick/Skip kyun?</strong> Har element ke 2 choices — include ya exclude",
+                    "⚡ <code>path.append(nums[i])</code> PICK, <code>backtrack(i+1)</code>",
+                    "🔄 <code>path.pop()</code> SKIP — ye backtrack hai, not separate call",
+                    "✅ <code>i == len(nums)</code> → <code>result.append(path[:])</code> — COPY zaruri!",
+                    "💡 Duplicates? Sort + <code>if i>start and nums[i]==nums[i-1]: skip</code>"
+                ],
+                metrics: { time: "O(2^N × N)", space: "O(N)" },
+                timeExplainer: `<strong>Exponential Growth:</strong><br>
+• Each element has 2 choices (Pick/No-Pick)<br>
+• Total subsets = <code>2^N</code><br>
+• Copying each subset takes <code>O(N)</code><br><br>
+<strong>Total:</strong> <code>O(N × 2^N)</code>`,
+                spaceExplainer: `<strong>Space Analysis:</strong><br>
+• Recursion stack depth: <code>O(N)</code><br>
+• Current path array: <code>O(N)</code><br>
+• Output: <code>2^N</code> subsets (not counted as aux)<br><br>
+<strong>Aux Space:</strong> <code>O(N)</code>`,
+                visual: `<div style="text-align:left; font-family: monospace; font-size: 0.85rem; line-height: 1.8;">
+<pre style="color: var(--text-muted);">
+                    []
+                    |
+        "Element 1 ko LUN ya NA LUN?"
+                /           \\
+            PICK 1        NO-PICK 1
+              [1]             []
+               |               |
+         "2 LUN?"        "2 LUN?"
+         /     \\          /     \\
+     [1,2]    [1]       [2]     []
+       |       |         |       |
+   "3 LUN?" "3 LUN?"  "3 LUN?" "3 LUN?"
+    / \\      / \\       / \\      / \\
+[1,2,3][1,2][1,3][1] [2,3][2] [3] []
+</pre>
+</div>`,
+                crux: `<strong>The 3-Step Pattern:</strong><br>
+<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:15px 0;">
+<div style="background:rgba(16,185,129,0.1); padding:12px; border-radius:8px; text-align:center;">
+<strong style="color:#10b981;">1. PICK</strong><br>
+<code>current.append(nums[i])</code>
+</div>
+<div style="background:rgba(139,92,246,0.1); padding:12px; border-radius:8px; text-align:center;">
+<strong style="color:#8b5cf6;">2. EXPLORE</strong><br>
+<code>backtrack(i + 1)</code>
+</div>
+<div style="background:rgba(239,68,68,0.1); padding:12px; border-radius:8px; text-align:center;">
+<strong style="color:#ef4444;">3. UNPICK</strong><br>
+<code>current.pop()</code>
+</div>
+</div>
+Then call backtrack(i+1) again for NO-PICK path.`,
+                trap: `<strong>❌ Common Bug: Not Making a COPY!</strong><br><br>
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+<div style="background:#0f172a; padding:12px; border-radius:8px;">
+<span style="color:#ef4444;">❌ WRONG:</span><br>
+<code style="color:#f87171;">result.append(current)</code><br>
+<small style="color:gray;">All entries point to same list!</small>
+</div>
+<div style="background:#0f172a; padding:12px; border-radius:8px;">
+<span style="color:#10b981;">✅ CORRECT:</span><br>
+<code style="color:#34d399;">result.append(current[:])</code><br>
+<small style="color:gray;">Independent copy created!</small>
+</div>
+</div>`,
+                dryRun: [
+                    "<strong>Input:</strong> nums = [1,2,3]",
+                    "<code>backtrack(0, [])</code> → PICK 1 → <code>current = [1]</code>",
+                    "<code>backtrack(1, [1])</code> → PICK 2 → <code>current = [1,2]</code>",
+                    "<code>backtrack(2, [1,2])</code> → PICK 3 → <code>current = [1,2,3]</code>",
+                    "<code>backtrack(3, [1,2,3])</code> → Base case! ✅ ADD <strong>[1,2,3]</strong>",
+                    "<code>pop()</code> → <code>current = [1,2]</code>",
+                    "<code>backtrack(3, [1,2])</code> → Base case! ✅ ADD <strong>[1,2]</strong>",
+                    "<code>pop()</code> → <code>current = [1]</code>, PICK 3 → <code>current = [1,3]</code>",
+                    "... continues for all 8 subsets",
+                    "<strong>Final:</strong> [[], [1], [2], [1,2], [3], [1,3], [2,3], [1,2,3]]"
+                ],
+                codeTitle: "Python Solution (Pick/No-Pick)",
                 code: `def subsets(nums):
-    res = []
-    def backtrack(i, path):
-        if i == len(nums):
-            res.append(path[:])
+    """
+    Generate all subsets using Pick/No-Pick backtracking
+    Time: O(2^n × n), Space: O(n)
+    """
+    result = []
+    
+    def backtrack(index, current):
+        # Base case: processed all elements
+        if index == len(nums):
+            result.append(current[:])  # COPY!
             return
         
-        # Choice 1: Include
-        path.append(nums[i])
-        backtrack(i + 1, path)
+        # PICK current element
+        current.append(nums[index])
+        backtrack(index + 1, current)
+        current.pop()  # Backtrack
         
-        # Choice 2: Exclude (Backtrack)
-        path.pop()
-        backtrack(i + 1, path)
-        
+        # NO-PICK current element
+        backtrack(index + 1, current)
+    
     backtrack(0, [])
-    return res`
+    return result
+
+# Alternative: Iterative approach
+def subsets_iterative(nums):
+    result = [[]]
+    for num in nums:
+        result += [subset + [num] for subset in result]
+    return result`,
+                codeDetailed: `def subsets_detailed(nums):
+    """
+    Detailed version with step-by-step explanation
+    """
+    result = []
+    
+    def backtrack(index, current):
+        # Base case: We've made decisions for all elements
+        # Every path through the decision tree is a valid subset
+        if index == len(nums):
+            # CRITICAL: Append a COPY, not the reference!
+            # current is a mutable list - without [:], 
+            # all entries in result would point to same list
+            result.append(current[:])
+            return
+        
+        # === DECISION 1: PICK current element ===
+        current.append(nums[index])  # Add to current subset
+        backtrack(index + 1, current)  # Explore with this element
+        
+        # === BACKTRACK: Undo the choice ===
+        current.pop()  # Remove to explore "no-pick" path
+        
+        # === DECISION 2: NO-PICK current element ===
+        # current is now clean (without nums[index])
+        backtrack(index + 1, current)  # Explore without this element
+    
+    # Start from index 0 with empty subset
+    backtrack(0, [])
+    return result
+
+# Test with dry run
+print(subsets_detailed([1, 2, 3]))
+# Output: [[], [3], [2], [2,3], [1], [1,3], [1,2], [1,2,3]]`
             }
         },
         {
@@ -5843,39 +8106,275 @@ return res`
             leetcodeUrl: "https://leetcode.com/problems/combination-sum/",
             difficulty: "Must Do",
             priority: "🔴",
-            tags: ["Unbounded Knapsack"],
+            tags: ["Unbounded Knapsack", "Reuse Allowed"],
             quiz: {
-                description: "Reuse elements allowed. How to handle logic?",
-                options: ["Pass index i+1", "Pass index i (Stay)", "Use a set", "Sort array"],
+                description: "Candidates = [2,3,6,7], Target = 7. Elements can be reused. Key logic?",
+                options: ["Pass index i+1 always", "Pass index i (Stay) when picking", "Use a visited set", "Sort and use binary search"],
                 correct: 1,
-                explanation: "Pass `i`! Since we can reuse the same element, we recurse with the SAME index. Only increment when we choose to SKIP."
+                explanation: "Pass `i` (Stay)! Since we can reuse the same element unlimited times, we recurse with SAME index when picking. Only increment to i+1 when we SKIP."
             },
             learn: {
-                metrics: { time: "O(2^T)", space: "O(T)" },
-                timeExplainer: "<strong>Branching Factor:</strong><br>• Depends on Target T and min(candidates)<br>• Roughly O(Candidates ^ (T/min))",
-                spaceExplainer: "<strong>Space Analysis:</strong><br>• Recursion depth = Max number of elements in sum (T/min)",
-                visual: "<span><strong>Visual: Infinite Supply</strong><br>You can grab the same coin multiple times until you bust (sum > target).</span>",
-                crux: "<strong>Reuse Pattern:</strong><br>• Include: `dfs(i, current_sum + nums[i])` (Stay at `i`)<br>• Skip: `dfs(i + 1, current_sum)`",
-                trap: "<strong>Negative Numbers:</strong> If candidates had negatives, this would infinite loop!",
-                dryRun: ["Target=7. Cands=[2,3].", "Use 2. Rem=5. Recurse(i=0).", "Use 2. Rem=3. ..."],
-                codeTitle: "Python Solution",
+                quickAlgo: [
+                    "🎯 <strong>Unlimited use kyun?</strong> <code>backtrack(i, ...)</code> not i+1 — same element repeat allowed",
+                    "⚡ Pruning: <code>if target < 0: return</code> — exceeded, no point continuing",
+                    "🔄 <code>for i in range(start, n)</code> — start ensures no duplicates like [2,3] and [3,2]",
+                    "✅ <code>target == 0</code> → valid combination found!",
+                    "💡 Sorted array helps: <code>if cand > target: break</code> — early exit"
+                ],
+                metrics: { time: "O(N^(T/M))", space: "O(T/M)" },
+                timeExplainer: `<strong>Time Complexity: O(N^(T/M))</strong><br><br>
+<div style="background:#0f172a; padding:15px; border-radius:8px;">
+<strong style="color:#fbbf24;">Variables:</strong><br>
+• N = number of candidates<br>
+• T = target sum<br>
+• M = minimum candidate value<br><br>
+
+<strong style="color:#10b981;">Why T/M?</strong><br>
+Maximum depth of recursion = T/M<br>
+(If min candidate is 2 and target is 7, max depth = 7/2 ≈ 3)
+</div>
+
+<div style="background:rgba(245,158,11,0.1); padding:15px; border-radius:8px; margin-top:10px;">
+<strong style="color:#fbbf24;">Example: candidates=[2,3], target=7</strong><br>
+• Min = 2, so max depth = 7/2 ≈ 3-4 levels<br>
+• At each level, N choices<br>
+• Total ≈ N^(T/M) = 2^3 = 8 nodes (roughly)
+</div>
+
+<strong style="color:#a78bfa;">Note:</strong> Often written as O(2^T) upper bound`,
+
+                spaceExplainer: `<strong>Space Complexity: O(T/M)</strong><br><br>
+<div style="background:#0f172a; padding:15px; border-radius:8px;">
+<table style="width:100%; color:#e2e8f0;">
+<tr><td style="padding:8px 0;"><strong style="color:#10b981;">✓ Recursion Stack</strong></td><td>O(T/M) - max elements in a valid combination</td></tr>
+<tr><td style="padding:8px 0;"><strong style="color:#10b981;">✓ Current Path</strong></td><td>O(T/M) - same bound</td></tr>
+<tr><td style="padding:8px 0;"><strong style="color:#8b5cf6;">Output</strong></td><td>Varies based on valid combinations</td></tr>
+</table>
+</div>
+
+<div style="background:rgba(16,185,129,0.1); padding:12px; border-radius:8px; margin-top:10px;">
+<strong style="color:#10b981;">💡 Example:</strong><br>
+target=7, min candidate=2<br>
+Max path length = 7/2 ≈ 3 (like [2,2,3])<br>
+So space = O(3) = O(T/M)
+</div>`,
+
+                visual: `<div style="text-align:left; font-family: monospace; font-size: 0.85rem; line-height: 1.6;">
+<strong style="color:#fbbf24;">🪙 "Unlimited Coins" Visualization:</strong>
+<pre style="color: var(--text-muted); margin-top:10px;">
+candidates = [2, 3], target = 7
+
+             backtrack(i=0, sum=0)
+             "2 LUN ya NA LUN?"
+                /           \\
+         PICK 2            SKIP 2
+        sum=2              (move to i=1)
+        i=0 (STAY!)         
+           |                  |
+    "Phir se 2 LUN?"     "3 LUN ya NA LUN?"
+         /     \\              /        \\
+    PICK 2   SKIP 2       PICK 3     SKIP 3
+    sum=4    (i=1)        sum=3      (done)
+    i=0                   i=1
+       |                    |
+  "Phir se 2?"         "Phir se 3?"
+     /    \\                 |
+  PICK 2  SKIP           PICK 3
+  sum=6                  sum=6
+  i=0                    i=1
+     |                     |
+  PICK 2?              PICK 3?
+  sum=8 ❌             sum=9 ❌
+  (>target)            (>target)
+  
+✅ Valid paths: [2,2,3] (sum=7), [7] (if 7 in candidates)
+</pre>
+</div>`,
+
+                crux: `<strong>The Stay vs Move Pattern (Unbounded Knapsack):</strong><br><br>
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin:15px 0;">
+<div style="background:rgba(16,185,129,0.15); padding:20px; border-radius:12px; border:2px solid rgba(16,185,129,0.3);">
+<div style="font-size:1.5rem; margin-bottom:10px;">✅ PICK (LUN)</div>
+<strong style="color:#10b981;">Stay at same index!</strong><br><br>
+<code style="font-size:0.85rem; background:#0f172a; padding:8px; border-radius:4px; display:block;">
+path.append(candidates[i])<br>
+backtrack(<strong style="color:#10b981;">i</strong>, path, sum + candidates[i])<br>
+path.pop()
+</code><br>
+<small style="color:gray;">Element reuse allowed → i stays same</small>
+</div>
+<div style="background:rgba(239,68,68,0.15); padding:20px; border-radius:12px; border:2px solid rgba(239,68,68,0.3);">
+<div style="font-size:1.5rem; margin-bottom:10px;">❌ SKIP (NA LUN)</div>
+<strong style="color:#ef4444;">Move to next index!</strong><br><br>
+<code style="font-size:0.85rem; background:#0f172a; padding:8px; border-radius:4px; display:block;">
+backtrack(<strong style="color:#ef4444;">i + 1</strong>, path, sum)
+</code><br>
+<small style="color:gray;">Done with this element forever → i+1</small>
+</div>
+</div>
+
+<div style="background:#0f172a; padding:15px; border-radius:8px;">
+<strong style="color:#fbbf24;">⚡ Key Difference from Subsets:</strong><br>
+Subsets: Both paths use <code>i+1</code><br>
+Combination Sum: PICK uses <code>i</code>, SKIP uses <code>i+1</code>
+</div>`,
+
+                trap: `<strong>⚠️ Common Mistakes:</strong><br><br>
+
+<div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); padding:15px; border-radius:8px; margin-bottom:15px;">
+<strong style="color:#f87171;">❌ Mistake 1: Using i+1 for PICK call</strong>
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
+<div style="background:#0f172a; padding:10px; border-radius:6px;">
+<span style="color:#ef4444;">Wrong:</span><br>
+<code style="color:#f87171;">backtrack(i+1, sum+val)</code><br>
+<small style="color:gray;">Can't reuse elements!</small>
+</div>
+<div style="background:#0f172a; padding:10px; border-radius:6px;">
+<span style="color:#10b981;">Correct:</span><br>
+<code style="color:#34d399;">backtrack(i, sum+val)</code><br>
+<small style="color:gray;">Stay at i for reuse</small>
+</div>
+</div>
+</div>
+
+<div style="background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.3); padding:15px; border-radius:8px; margin-bottom:15px;">
+<strong style="color:#fbbf24;">❌ Mistake 2: Forgetting sum > target check</strong><br>
+<code style="color:#fbbf24;">if sum > target: return  # MUST have this!</code><br>
+<small style="color:gray;">Without this, infinite recursion if min candidate taken repeatedly</small>
+</div>
+
+<div style="background:rgba(139,92,246,0.1); border:1px solid rgba(139,92,246,0.3); padding:15px; border-radius:8px;">
+<strong style="color:#a78bfa;">❌ Mistake 3: Negative candidates</strong><br>
+<small style="color:gray;">If candidates had negative numbers → infinite loop!<br>
+sum would never exceed target. Problem guarantees positive numbers.</small>
+</div>`,
+
+                dryRun: [
+                    "<strong>Input:</strong> candidates = [2, 3], target = 7",
+                    "<code>backtrack(0, [], 0)</code> → sum=0 < 7, continue",
+                    "<strong style='color:#10b981;'>PICK 2:</strong> path=[2], sum=2",
+                    "&nbsp;&nbsp;<code>backtrack(0, [2], 2)</code> → stay at i=0",
+                    "&nbsp;&nbsp;<strong style='color:#10b981;'>PICK 2:</strong> path=[2,2], sum=4",
+                    "&nbsp;&nbsp;&nbsp;&nbsp;<code>backtrack(0, [2,2], 4)</code>",
+                    "&nbsp;&nbsp;&nbsp;&nbsp;<strong style='color:#10b981;'>PICK 2:</strong> path=[2,2,2], sum=6",
+                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>backtrack(0, [2,2,2], 6)</code>",
+                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong style='color:#10b981;'>PICK 2:</strong> sum=8 > 7 ❌ return",
+                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong style='color:#ef4444;'>SKIP 2:</strong> move to i=1",
+                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong style='color:#10b981;'>PICK 3:</strong> sum=9 > 7 ❌ return",
+                    "&nbsp;&nbsp;&nbsp;&nbsp;pop() → path=[2,2]",
+                    "&nbsp;&nbsp;&nbsp;&nbsp;<strong style='color:#ef4444;'>SKIP 2:</strong> move to i=1, path=[2,2], sum=4",
+                    "&nbsp;&nbsp;&nbsp;&nbsp;<strong style='color:#10b981;'>PICK 3:</strong> path=[2,2,3], sum=7 ✅ <strong>ADD [2,2,3]</strong>",
+                    "&nbsp;&nbsp;... backtrack continues ...",
+                    "&nbsp;&nbsp;<strong style='color:#ef4444;'>SKIP all 2s:</strong> → try [3,...]",
+                    "&nbsp;&nbsp;<strong style='color:#10b981;'>PICK 3:</strong> path=[3], sum=3",
+                    "&nbsp;&nbsp;&nbsp;&nbsp;<strong style='color:#10b981;'>PICK 3:</strong> path=[3,3], sum=6",
+                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong style='color:#10b981;'>PICK 3:</strong> sum=9 > 7 ❌",
+                    "<strong>Final Result:</strong> [[2,2,3], [7]] (if 7 was in candidates)"
+                ],
+                codeTitle: "Python Solution (Unbounded Knapsack)",
                 code: `def combinationSum(candidates, target):
+    """
+    Find all unique combinations that sum to target.
+    Elements can be reused unlimited times.
+    Time: O(N^(T/M)), Space: O(T/M)
+    """
     res = []
-    def backtrack(i, cur, total):
-        if total == target:
-            res.append(cur.copy())
+
+    def backtrack(i, current_path, current_sum):
+        # Base Case 1: Found valid combination!
+        if current_sum == target:
+            res.append(current_path[:])  # COPY!
             return
-        if i >= len(candidates) or total > target:
+        
+        # Base Case 2: Invalid - out of bounds or exceeded
+        if i >= len(candidates) or current_sum > target:
+            return
+
+        # CHOICE 1: PICK (LUN) - Stay at index i
+        current_path.append(candidates[i])
+        backtrack(i, current_path, current_sum + candidates[i])
+        
+        # BACKTRACK: Undo the choice
+        current_path.pop()
+
+        # CHOICE 2: SKIP (NA LUN) - Move to i+1
+        backtrack(i + 1, current_path, current_sum)
+
+    backtrack(0, [], 0)
+    return res
+
+# Test
+print(combinationSum([2,3,6,7], 7))
+# Output: [[2,2,3], [7]]`,
+                codeDetailed: `def combinationSum_detailed(candidates, target):
+    """
+    UNBOUNDED KNAPSACK Pattern:
+    - Same as 0/1 Knapsack, but elements can be reused
+    - Key difference: PICK stays at 'i', doesn't move to 'i+1'
+    
+    WHY STAY AT i?
+    - [2,3], target=7
+    - If we need [2,2,3], we must pick '2' multiple times
+    - Staying at i=0 allows: pick 2, pick 2 again, then move on
+    
+    WHY SKIP MOVES TO i+1?
+    - Once we decide "no more 2s", we're done with index 0
+    - Move to index 1 (element 3) permanently
+    """
+    res = []
+
+    def backtrack(i, path, current_sum):
+        # === BASE CASE 1: SUCCESS ===
+        # We found a valid combination!
+        if current_sum == target:
+            res.append(path[:])  # Make a copy
+            return
+        
+        # === BASE CASE 2: FAILURE ===
+        # Out of candidates OR sum exceeded target
+        if i >= len(candidates) or current_sum > target:
+            return
+
+        # === CHOICE 1: PICK current element ===
+        # Key: We can pick it AGAIN, so stay at index i
+        path.append(candidates[i])
+        backtrack(i, path, current_sum + candidates[i])  # i, not i+1!
+        
+        # === BACKTRACK ===
+        # Remove the element we just added
+        path.pop()
+
+        # === CHOICE 2: SKIP current element ===
+        # We're done with this element forever, move to next
+        backtrack(i + 1, path, current_sum)  # i+1, move on!
+
+    backtrack(0, [], 0)
+    return res
+
+# Comparison with Combination Sum II (no reuse):
+def combinationSum2(candidates, target):
+    """
+    In Combination Sum II, each element used ONCE
+    So PICK also uses i+1, not i
+    """
+    candidates.sort()  # Sort to handle duplicates
+    res = []
+    
+    def backtrack(i, path, total):
+        if total == target:
+            res.append(path[:])
+            return
+        if total > target:
             return
             
-        # Choice 1: Include (Reuse i)
-        cur.append(candidates[i])
-        backtrack(i, cur, total + candidates[i])
-        
-        # Choice 2: Skip (Move to i+1)
-        cur.pop()
-        backtrack(i + 1, cur, total)
-        
+        for j in range(i, len(candidates)):
+            # Skip duplicates at same level
+            if j > i and candidates[j] == candidates[j-1]:
+                continue
+            path.append(candidates[j])
+            backtrack(j + 1, path, total + candidates[j])  # j+1, not j!
+            path.pop()
+    
     backtrack(0, [], 0)
     return res`
             }
@@ -5886,44 +8385,293 @@ return res`
             leetcodeUrl: "https://leetcode.com/problems/word-search/",
             difficulty: "Must Do",
             priority: "🔴",
-            tags: ["Grid DFS"],
+            tags: ["Grid DFS", "Backtracking"],
             quiz: {
-                description: "Find string in grid (adjacent cells). Constraint?",
-                options: ["Any cell can be used twice", "Visited cells cannot be reused in current path", "Diagonals allowed", "Only right/down"],
+                description: "Find 'ABCCED' in 2D grid. Can same cell be visited twice in one path?",
+                options: ["Yes, any cell can be reused", "No, but can use in different paths", "Only adjacent cells matter", "Diagonals allowed"],
                 correct: 1,
-                explanation: "Path constraint! You cannot visit the same cell twice IN THE SAME PATH. Mark visited, recurse, then unmark (backtrack)."
+                explanation: "No reuse in SAME path! Mark cell as visited (#), explore 4 directions, then UNMARK (backtrack). Cell can be used in different paths though."
             },
             learn: {
-                metrics: { time: "O(N*M * 4^L)", space: "O(L)" },
-                timeExplainer: "<strong>DFS from Every Cell:</strong><br>• N*M starting points<br>• 4 directions<br>• Depth L (word len)<br><br><strong>Total:</strong> <code>O(N×M × 3^L)</code> (3 dirs effectively)",
-                spaceExplainer: "<strong>Space Analysis:</strong><br>• Recursion stack depth = L (Length of word)",
-                visual: "<span><strong>Visual: The Snake</strong><br>The snake crawls on the grid. If it hits a dead end, it retreats (undoes move).</span>",
-                crux: "<strong>Grid Backtracking:</strong><br>1. Check boundaries & match.<br>2. Mark `#` (visited).<br>3. Explore 4 dirs.<br>4. AES: Restore original char.",
-                trap: "<strong>Early Exit:</strong> If ANY direction implies True, return True immediately. Don't explore others.",
-                dryRun: ["Grid 'A','B'. Target 'AB'.", "dfs(0,0) matches 'A'. Mark '#'.", "dfs(0,1) matches 'B'. Valid!"],
-                codeTitle: "Python Solution",
+                quickAlgo: [
+                    "🎯 <strong>Grid DFS kyun?</strong> 4-directional path finding with backtracking",
+                    "⚡ <code>board[r][c] = '#'</code> MARK before recursing — avoid revisit",
+                    "🔄 4 directions: <code>short-circuit OR</code> → <code>return dfs() or dfs() or...</code>",
+                    "✅ <code>idx == len(word)</code> → found! Return True immediately",
+                    "💡 <code>board[r][c] = temp</code> UNMARK after — other paths bhi try karenge"
+                ],
+                metrics: { time: "O(M×N × 3^L)", space: "O(L)" },
+                timeExplainer: `<strong>Time Complexity: O(M×N × 3^L)</strong><br><br>
+<div style="background:#0f172a; padding:15px; border-radius:8px;">
+<strong style="color:#fbbf24;">Breaking it down:</strong><br><br>
+• <strong style="color:#10b981;">M × N</strong> = Grid cells (each can be starting point)<br>
+• <strong style="color:#10b981;">3^L</strong> = DFS branching factor<br><br>
+
+<strong style="color:#a78bfa;">Why 3, not 4?</strong><br>
+First cell: 4 directions possible<br>
+But after that: 3 directions (can't go back to where we came from!)
+</div>
+
+<div style="background:rgba(245,158,11,0.1); padding:15px; border-radius:8px; margin-top:10px;">
+<strong style="color:#fbbf24;">Example:</strong><br>
+Grid = 3×4, Word = "ABCDEF" (L=6)<br>
+Time ≈ 12 × 3^6 = 12 × 729 ≈ 8748 operations
+</div>`,
+
+                spaceExplainer: `<strong>Space Complexity: O(L)</strong><br><br>
+<div style="background:#0f172a; padding:15px; border-radius:8px;">
+<table style="width:100%; color:#e2e8f0;">
+<tr><td style="padding:8px 0;"><strong style="color:#10b981;">✓ Recursion Stack</strong></td><td>O(L) - max depth = word length</td></tr>
+<tr><td style="padding:8px 0;"><strong style="color:#10b981;">✓ In-place Marking</strong></td><td>O(1) - no extra grid needed!</td></tr>
+</table>
+</div>
+
+<div style="background:rgba(16,185,129,0.1); padding:12px; border-radius:8px; margin-top:10px;">
+<strong style="color:#10b981;">💡 Space Optimization:</strong><br>
+We mark visited cells by replacing with '#'<br>
+No separate visited[][] array needed!
+</div>`,
+
+                visual: `<div style="text-align:left; font-family: monospace; font-size: 0.85rem; line-height: 1.6;">
+<strong style="color:#fbbf24;">🐍 "The Snake" Visualization:</strong>
+<pre style="color: var(--text-muted); margin-top:10px;">
+Grid:                  Finding "ABC"
+┌───┬───┬───┬───┐
+│ A │ B │ C │ E │      Step 1: Start at (0,0), char='A' ✓
+├───┼───┼───┼───┤              Mark A → #
+│ S │ F │ C │ S │      
+├───┼───┼───┼───┤      ┌───┬───┬───┬───┐
+│ A │ D │ E │ E │      │ # │ B │ C │ E │  🐍 at A
+└───┴───┴───┴───┘      ├───┼───┼───┼───┤
+                       │ S │ F │ C │ S │
+                       └───┴───┴───┴───┘
+
+Step 2: Move right to (0,1), char='B' ✓
+        Mark B → #
+        
+┌───┬───┬───┬───┐      Step 3: Move right to (0,2), char='C' ✓
+│ # │ # │ C │ E │              Mark C → #
+├───┼───┼───┼───┤      
+│ S │ F │ C │ S │      ┌───┬───┬───┬───┐
+└───┴───┴───┴───┘      │ # │ # │ # │ E │  🐍 found "ABC" ✅
+                       └───┴───┴───┴───┘
+
+If dead end → Unmark and try another direction
+(Snake retreats and tries different path)
+</pre>
+</div>`,
+
+                crux: `<strong>The Mark-Explore-Unmark Pattern:</strong><br><br>
+<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:15px 0;">
+<div style="background:rgba(239,68,68,0.1); padding:15px; border-radius:8px; text-align:center;">
+<div style="font-size:1.2rem; margin-bottom:8px;">0️⃣</div>
+<strong style="color:#ef4444;">CHECK</strong><br>
+<small style="color:gray;">Bounds & Match</small>
+</div>
+<div style="background:rgba(16,185,129,0.1); padding:15px; border-radius:8px; text-align:center;">
+<div style="font-size:1.2rem; margin-bottom:8px;">1️⃣</div>
+<strong style="color:#10b981;">MARK</strong><br>
+<code style="font-size:0.75rem;">board[r][c]='#'</code>
+</div>
+<div style="background:rgba(139,92,246,0.1); padding:15px; border-radius:8px; text-align:center;">
+<div style="font-size:1.2rem; margin-bottom:8px;">2️⃣</div>
+<strong style="color:#8b5cf6;">EXPLORE</strong><br>
+<small style="color:gray;">4 Directions</small>
+</div>
+<div style="background:rgba(245,158,11,0.1); padding:15px; border-radius:8px; text-align:center;">
+<div style="font-size:1.2rem; margin-bottom:8px;">3️⃣</div>
+<strong style="color:#fbbf24;">UNMARK</strong><br>
+<code style="font-size:0.75rem;">board[r][c]=temp</code>
+</div>
+</div>
+
+<div style="background:#0f172a; padding:15px; border-radius:8px;">
+<strong style="color:#fbbf24;">4 Directions:</strong><br>
+<code>dfs(r+1, c) or dfs(r-1, c) or dfs(r, c+1) or dfs(r, c-1)</code><br><br>
+<strong style="color:#10b981;">💡 Use OR short-circuit:</strong> If any direction returns True, stop immediately!
+</div>`,
+
+                trap: `<strong>⚠️ Common Mistakes:</strong><br><br>
+
+<div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); padding:15px; border-radius:8px; margin-bottom:15px;">
+<strong style="color:#f87171;">❌ Mistake 1: Forgetting to UNMARK!</strong>
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
+<div style="background:#0f172a; padding:10px; border-radius:6px;">
+<span style="color:#ef4444;">Wrong:</span><br>
+<code style="color:#f87171; font-size:0.8rem;">board[r][c] = '#'<br>return dfs(...)</code><br>
+<small style="color:gray;">Cell stays marked forever!</small>
+</div>
+<div style="background:#0f172a; padding:10px; border-radius:6px;">
+<span style="color:#10b981;">Correct:</span><br>
+<code style="color:#34d399; font-size:0.8rem;">temp = board[r][c]<br>board[r][c] = '#'<br>res = dfs(...)<br>board[r][c] = temp</code>
+</div>
+</div>
+</div>
+
+<div style="background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.3); padding:15px; border-radius:8px; margin-bottom:15px;">
+<strong style="color:#fbbf24;">❌ Mistake 2: Not using short-circuit OR</strong><br>
+<code style="color:#fbbf24;">return dfs(r+1,c) or dfs(r-1,c) or ...</code> ✅<br>
+<small style="color:gray;">If first direction works, skip others! Much faster.</small>
+</div>
+
+<div style="background:rgba(139,92,246,0.1); border:1px solid rgba(139,92,246,0.3); padding:15px; border-radius:8px;">
+<strong style="color:#a78bfa;">❌ Mistake 3: Wrong order of checks</strong><br>
+<code style="color:#a78bfa;">if i == len(word): return True  # Check SUCCESS first!</code><br>
+<code style="color:#a78bfa;">if out_of_bounds or mismatch: return False</code><br>
+<small style="color:gray;">Check base case BEFORE bounds check!</small>
+</div>`,
+
+                dryRun: [
+                    "<strong>Input:</strong> board = [['A','B'],['C','D']], word = 'ABCD'",
+                    "<code>exist(board, 'ABCD')</code> → Try each cell as start",
+                    "<strong style='color:#10b981;'>Start (0,0):</strong> board[0][0]='A' == word[0] ✓",
+                    "&nbsp;&nbsp;Mark: board[0][0] = '#'",
+                    "&nbsp;&nbsp;<code>dfs(0, 0, 0)</code> → i=0 matches, explore 4 dirs",
+                    "&nbsp;&nbsp;<strong style='color:#8b5cf6;'>Try RIGHT (0,1):</strong> board[0][1]='B' == word[1] ✓",
+                    "&nbsp;&nbsp;&nbsp;&nbsp;Mark: board[0][1] = '#'",
+                    "&nbsp;&nbsp;&nbsp;&nbsp;<code>dfs(0, 1, 1)</code> → explore from B",
+                    "&nbsp;&nbsp;&nbsp;&nbsp;<strong style='color:#8b5cf6;'>Try DOWN (1,1):</strong> board[1][1]='D' != word[2]='C' ❌",
+                    "&nbsp;&nbsp;&nbsp;&nbsp;<strong style='color:#8b5cf6;'>Try LEFT (0,0):</strong> board[0][0]='#' (visited) ❌",
+                    "&nbsp;&nbsp;&nbsp;&nbsp;All directions failed from B",
+                    "&nbsp;&nbsp;&nbsp;&nbsp;Unmark: board[0][1] = 'B'",
+                    "&nbsp;&nbsp;<strong style='color:#ef4444;'>RIGHT failed,</strong> try DOWN (1,0)",
+                    "&nbsp;&nbsp;<strong style='color:#8b5cf6;'>Try DOWN (1,0):</strong> board[1][0]='C' == word[1]='B' ❌",
+                    "&nbsp;&nbsp;Unmark: board[0][0] = 'A'",
+                    "<strong style='color:#fbbf24;'>Start (0,0) failed.</strong> Try next cell...",
+                    "... continues trying other starting positions ...",
+                    "<strong>Final:</strong> Return True if any path found, else False"
+                ],
+                codeTitle: "Python Solution (Grid Backtracking)",
                 code: `def exist(board, word):
+    """
+    Find if word exists in grid via adjacent cells.
+    Time: O(M×N × 3^L), Space: O(L)
+    """
     ROWS, COLS = len(board), len(board[0])
     
-    def dfs(r, c, i):
-        if i == len(word): return True
-        if (r < 0 or c < 0 or r >= ROWS or c >= COLS or 
-            board[r][c] != word[i]):
+    def dfs(row, col, char_index):
+        # Base Case 1: Found complete word!
+        if char_index == len(word):
+            return True
+        
+        # Base Case 2: Out of bounds or mismatch
+        if (row < 0 or row >= ROWS or 
+            col < 0 or col >= COLS or 
+            board[row][col] != word[char_index]):
             return False
-            
-        temp = board[r][c]
-        board[r][c] = "#" # Mark
         
-        res = (dfs(r+1, c, i+1) or dfs(r-1, c, i+1) or
-               dfs(r, c+1, i+1) or dfs(r, c-1, i+1))
-               
-        board[r][c] = temp # Unmark
-        return res
+        # MARK: Save char and mark as visited
+        original_char = board[row][col]
+        board[row][col] = '#'
         
-    for r in range(ROWS):
-        for c in range(COLS):
-            if dfs(r, c, 0): return True
-    return False`
+        # EXPLORE: Try all 4 directions (short-circuit OR)
+        found = (dfs(row+1, col, char_index+1) or   # Down
+                 dfs(row-1, col, char_index+1) or   # Up
+                 dfs(row, col+1, char_index+1) or   # Right
+                 dfs(row, col-1, char_index+1))     # Left
+        
+        # UNMARK: Restore for other paths
+        board[row][col] = original_char
+        
+        return found
+    
+    # Try each cell as starting point
+    for row in range(ROWS):
+        for col in range(COLS):
+            if dfs(row, col, 0):
+                return True
+    return False`,
+                codeDetailed: `def exist_detailed(board, word):
+    """
+    GRID BACKTRACKING Pattern:
+    
+    WHY MARK AND UNMARK?
+    - Same cell can't be used twice in ONE path
+    - But can be used in DIFFERENT paths
+    - Mark '#' prevents revisiting in current DFS
+    - Unmark allows reuse when we backtrack
+    
+    WHY SHORT-CIRCUIT OR?
+    - dfs(...) or dfs(...) or ...
+    - If first returns True, others don't execute
+    - Massive optimization for early termination
+    """
+    ROWS, COLS = len(board), len(board[0])
+    
+    def dfs(row, col, char_index):
+        # === BASE CASE 1: SUCCESS ===
+        # We've matched entire word!
+        if char_index == len(word):
+            return True
+        
+        # === BASE CASE 2: FAILURE ===
+        # Out of grid bounds
+        if row < 0 or row >= ROWS or col < 0 or col >= COLS:
+            return False
+        
+        # Current cell doesn't match required char
+        if board[row][col] != word[char_index]:
+            return False
+        
+        # === MARK AS VISITED ===
+        # Save original char, replace with '#'
+        # This prevents revisiting in current path
+        original_char = board[row][col]
+        board[row][col] = '#'
+        
+        # === EXPLORE 4 DIRECTIONS ===
+        # Use OR for short-circuit evaluation
+        # If any direction succeeds, return True immediately
+        found = (
+            dfs(row + 1, col, char_index + 1) or  # Down
+            dfs(row - 1, col, char_index + 1) or  # Up  
+            dfs(row, col + 1, char_index + 1) or  # Right
+            dfs(row, col - 1, char_index + 1)     # Left
+        )
+        
+        # === UNMARK (BACKTRACK) ===
+        # Restore original char for other paths
+        # This is CRITICAL - cell can be used in other paths
+        board[row][col] = original_char
+        
+        return found
+    
+    # Try every cell as potential starting point
+    for row in range(ROWS):
+        for col in range(COLS):
+            # If first char matches, start DFS
+            if dfs(row, col, 0):
+                return True
+    
+    return False
+
+# Cleaner version using direction array:
+def exist_clean(board, word):
+    ROWS, COLS = len(board), len(board[0])
+    DIRECTIONS = [(0,1), (1,0), (0,-1), (-1,0)]  # Right, Down, Left, Up
+    
+    def dfs(row, col, char_index):
+        if char_index == len(word): 
+            return True
+        if not (0 <= row < ROWS and 0 <= col < COLS): 
+            return False
+        if board[row][col] != word[char_index]: 
+            return False
+        
+        original_char = board[row][col]
+        board[row][col] = '#'
+        
+        for delta_row, delta_col in DIRECTIONS:
+            if dfs(row + delta_row, col + delta_col, char_index + 1):
+                board[row][col] = original_char
+                return True
+        
+        board[row][col] = original_char
+        return False
+    
+    return any(dfs(row, col, 0) 
+               for row in range(ROWS) 
+               for col in range(COLS))`
             }
         },
         {
@@ -5931,42 +8679,342 @@ return res`
             title: "Sudoku Solver",
             leetcodeUrl: "https://leetcode.com/problems/sudoku-solver/",
             difficulty: "Bonus",
-            priority: "🟢",
-            tags: ["Hard"],
+            priority: "🟡",
+            tags: ["Hard", "Constraint Satisfaction"],
             quiz: {
-                description: "Fill 9x9 grid. How to optimize?",
-                options: ["Try 1-9 sequentially", "Constraint Propagation", "Random Guessing", "Genetic Algo"],
-                correct: 0,
-                explanation: "Backtracking! Find empty cell. Try 1-9. Check validity (Row, Col, 3x3 Box). If valid, recurse. If stuck, backtrack."
+                description: "Fill empty cells in 9×9 Sudoku grid. What's the key constraint to check?",
+                options: ["Only row uniqueness", "Row + Column", "Row + Column + 3×3 Box", "Random fill and verify"],
+                correct: 2,
+                explanation: "3 Constraints! Each number 1-9 must appear exactly once in: (1) Row, (2) Column, (3) 3×3 Box. Backtrack when any constraint violated."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Constraint propagation kyun?</strong> 3 checks: row, col, 3x3 box",
+                    "⚡ <code>box_idx = (r//3)*3 + c//3</code> — 9 boxes indexed 0-8",
+                    "🔄 Find empty cell → try 1-9 → <code>if valid: place and recurse</code>",
+                    "✅ No empty cell left → solved! Return True",
+                    "💡 <code>board[r][c] = '.'</code> backtrack if recursion returns False"
+                ],
                 metrics: { time: "O(9^M)", space: "O(M)" },
-                timeExplainer: "<strong>Exponential:</strong><br>• M empty cells<br>• 9 choices each<br><br><strong>Worst Case:</strong> NP-Complete.",
-                spaceExplainer: "<strong>Space:</strong> Recursion depth M (number of empty cells).",
-                visual: "<span><strong>Visual: Filling the Void</strong><br>Place 1. Stuck? Change to 2. Stuck? Change to 3...</span>",
-                crux: "<strong>Validity Check:</strong><br>• Row `board[r][c]`<br>• Col `board[r][c]`<br>• Box `3*(r//3) + c//3`",
-                trap: "<strong>Return Value:</strong> Must return `True` when solved to stop other branches from overwriting solution!",
-                dryRun: ["Find empty (0,2).", "Try '1'. Check rules. OK. Recurse.", "Downstream fails? Change '1' to '2'."],
-                codeTitle: "Python Solution",
-                code: `def solveSudoku(board):
-    def isValid(r, c, k):
-        for i in range(9):
-            if board[r][i] == k: return False
-            if board[i][c] == k: return False
-            if board[3*(r//3) + i//3][3*(c//3) + i%3] == k: return False
-        return True
+                timeExplainer: `<strong>Time Complexity: O(9^M)</strong><br><br>
+<div style="background:#0f172a; padding:15px; border-radius:8px;">
+<strong style="color:#fbbf24;">Where M = number of empty cells</strong><br><br>
+• Each empty cell: up to 9 choices<br>
+• M empty cells to fill<br>
+• Worst case: try all combinations<br><br>
+<strong style="color:#ef4444;">Upper bound = 9^M</strong>
+</div>
 
-    def solve():
+<div style="background:rgba(16,185,129,0.1); padding:15px; border-radius:8px; margin-top:10px;">
+<strong style="color:#10b981;">💡 Pruning helps a LOT!</strong><br>
+Early constraint checks eliminate most branches.<br>
+Typical Sudoku: ~17 given → ~64 empty → still fast!
+</div>`,
+
+                spaceExplainer: `<strong>Space Complexity: O(M)</strong><br><br>
+<div style="background:#0f172a; padding:15px; border-radius:8px;">
+<table style="width:100%; color:#e2e8f0;">
+<tr><td style="padding:8px 0;"><strong style="color:#10b981;">✓ Recursion Stack</strong></td><td>O(M) - max M empty cells deep</td></tr>
+<tr><td style="padding:8px 0;"><strong style="color:#10b981;">✓ In-place Modification</strong></td><td>O(1) - modify board directly</td></tr>
+</table>
+</div>
+
+<div style="background:rgba(245,158,11,0.1); padding:12px; border-radius:8px; margin-top:10px;">
+<strong style="color:#fbbf24;">Optimization:</strong> Use 3 sets (rows, cols, boxes)<br>
+for O(1) validity check instead of O(9) loop.
+</div>`,
+
+                visual: `<div style="text-align:left; font-family: monospace; font-size: 0.8rem; line-height: 1.5;">
+<strong style="color:#fbbf24;">🔢 Sudoku 3-Constraint Visualization:</strong>
+<pre style="color: var(--text-muted); margin-top:10px;">
+Filling cell (row=0, col=2):
+
+     0   1   2   3   4   5   6   7   8
+   ┌───┬───┬───┬───┬───┬───┬───┬───┬───┐
+ 0 │ 5 │ 3 │ ? │ . │ 7 │ . │ . │ . │ . │  ← ROW 0: has 5,3,7
+   ├───┼───┼───┼───┼───┼───┼───┼───┼───┤
+ 1 │ 6 │ . │ . │ 1 │ 9 │ 5 │ . │ . │ . │
+   ├───┼───┼───┼───┼───┼───┼───┼───┼───┤
+ 2 │ . │ 9 │ 8 │ . │ . │ . │ . │ 6 │ . │
+   ├───┴───┴───┼───┴───┴───┼───┴───┴───┤
+               ↑
+            COL 2: has 8
+   
+   ┌───────────┐
+   │ 5 │ 3 │ ? │  ← BOX 0 (top-left 3×3)
+   │ 6 │ . │ . │     Already has: 5, 3, 6, 9, 8
+   │ . │ 9 │ 8 │
+   └───────────┘
+
+<strong style="color:#10b981;">Valid choices for (0,2):</strong>
+Row 0 blocks: {5, 3, 7}
+Col 2 blocks: {8}
+Box 0 blocks: {5, 3, 6, 9, 8}
+Combined: {3, 5, 6, 7, 8, 9}
+<strong style="color:#fbbf24;">Available: {1, 2, 4} → Try 1 first!</strong>
+
+<strong style="color:#a78bfa;">Box Index Formula:</strong>
+box_index = (row // 3) * 3 + (col // 3)
+For (0, 2): (0//3)*3 + (2//3) = 0*3 + 0 = Box 0
+</pre>
+</div>`,
+
+                crux: `<strong>The 3-Constraint Check Pattern:</strong><br><br>
+<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:15px 0;">
+<div style="background:rgba(239,68,68,0.1); padding:15px; border-radius:8px; text-align:center;">
+<div style="font-size:1.5rem; margin-bottom:8px;">➡️</div>
+<strong style="color:#ef4444;">ROW</strong><br>
+<code style="font-size:0.75rem;">board[row][0..8]</code><br>
+<small style="color:gray;">Check all 9 columns</small>
+</div>
+<div style="background:rgba(16,185,129,0.1); padding:15px; border-radius:8px; text-align:center;">
+<div style="font-size:1.5rem; margin-bottom:8px;">⬇️</div>
+<strong style="color:#10b981;">COLUMN</strong><br>
+<code style="font-size:0.75rem;">board[0..8][col]</code><br>
+<small style="color:gray;">Check all 9 rows</small>
+</div>
+<div style="background:rgba(139,92,246,0.1); padding:15px; border-radius:8px; text-align:center;">
+<div style="font-size:1.5rem; margin-bottom:8px;">⬜</div>
+<strong style="color:#8b5cf6;">3×3 BOX</strong><br>
+<code style="font-size:0.7rem;">box_row = 3*(row//3)</code><br>
+<code style="font-size:0.7rem;">box_col = 3*(col//3)</code>
+</div>
+</div>
+
+<div style="background:#0f172a; padding:15px; border-radius:8px;">
+<strong style="color:#fbbf24;">💡 Box Cell Access:</strong><br>
+<code>for i in range(9):</code><br>
+<code>&nbsp;&nbsp;box_row + i // 3, box_col + i % 3</code><br><br>
+This iterates all 9 cells in the 3×3 box!
+</div>`,
+
+                trap: `<strong>⚠️ Common Mistakes:</strong><br><br>
+
+<div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); padding:15px; border-radius:8px; margin-bottom:15px;">
+<strong style="color:#f87171;">❌ Mistake 1: Not returning True when solved!</strong>
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
+<div style="background:#0f172a; padding:10px; border-radius:6px;">
+<span style="color:#ef4444;">Wrong:</span><br>
+<code style="color:#f87171; font-size:0.8rem;">if solve(): pass</code><br>
+<small style="color:gray;">Solution gets overwritten!</small>
+</div>
+<div style="background:#0f172a; padding:10px; border-radius:6px;">
+<span style="color:#10b981;">Correct:</span><br>
+<code style="color:#34d399; font-size:0.8rem;">if solve(): return True</code><br>
+<small style="color:gray;">Propagate success up!</small>
+</div>
+</div>
+</div>
+
+<div style="background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.3); padding:15px; border-radius:8px; margin-bottom:15px;">
+<strong style="color:#fbbf24;">❌ Mistake 2: Wrong box index formula</strong><br>
+<code style="color:#34d399;">box_row = 3 * (row // 3)</code> ✅<br>
+<code style="color:#f87171;">box_row = row // 3</code> ❌<br>
+<small style="color:gray;">Must multiply by 3 to get actual row index!</small>
+</div>
+
+<div style="background:rgba(139,92,246,0.1); border:1px solid rgba(139,92,246,0.3); padding:15px; border-radius:8px;">
+<strong style="color:#a78bfa;">❌ Mistake 3: Forgetting to reset cell on backtrack</strong><br>
+<code style="color:#a78bfa;">board[row][col] = '.'  # MUST reset!</code><br>
+<small style="color:gray;">Without this, wrong values stay and corrupt other branches</small>
+</div>`,
+
+                dryRun: [
+                    "<strong>Input:</strong> 9×9 Sudoku with empty cells marked '.'",
+                    "<code>solve()</code> → Find first empty cell",
+                    "<strong style='color:#10b981;'>Found empty:</strong> (row=0, col=2)",
+                    "Loop: Try digits '1' to '9'",
+                    "&nbsp;&nbsp;<strong style='color:#fbbf24;'>Try '1':</strong> isValid(0, 2, '1')?",
+                    "&nbsp;&nbsp;&nbsp;&nbsp;Check row 0: '1' not in row ✓",
+                    "&nbsp;&nbsp;&nbsp;&nbsp;Check col 2: '1' not in col ✓",
+                    "&nbsp;&nbsp;&nbsp;&nbsp;Check box 0: '1' not in box ✓",
+                    "&nbsp;&nbsp;<strong style='color:#10b981;'>Valid!</strong> board[0][2] = '1'",
+                    "&nbsp;&nbsp;<code>solve()</code> → Find next empty (0, 3)",
+                    "&nbsp;&nbsp;&nbsp;&nbsp;Try '1': Already 1 in row 0 ❌",
+                    "&nbsp;&nbsp;&nbsp;&nbsp;Try '2': Valid! Place and recurse...",
+                    "&nbsp;&nbsp;&nbsp;&nbsp;... continues recursively ...",
+                    "&nbsp;&nbsp;Eventually hits dead end (no valid digit)",
+                    "&nbsp;&nbsp;<strong style='color:#ef4444;'>Backtrack:</strong> board[0][2] = '.'",
+                    "&nbsp;&nbsp;<strong style='color:#fbbf24;'>Try '2':</strong> Continue with next digit...",
+                    "... continues until solved ...",
+                    "<strong>All cells filled:</strong> return True ✅"
+                ],
+                codeTitle: "Python Solution (Backtracking)",
+                code: `def solveSudoku(board):
+    """
+    Solve Sudoku by filling empty cells with valid digits.
+    Time: O(9^M), Space: O(M) where M = empty cells
+    """
+    
+    def is_valid(row, col, digit):
+        # Check row
+        for c in range(9):
+            if board[row][c] == digit:
+                return False
+        
+        # Check column
         for r in range(9):
-            for c in range(9):
-                if board[r][c] == ".":
-                    for k in "123456789":
-                        if isValid(r, c, k):
-                            board[r][c] = k
-                            if solve(): return True
-                            board[r][c] = "."
+            if board[r][col] == digit:
+                return False
+        
+        # Check 3x3 box
+        box_row = 3 * (row // 3)
+        box_col = 3 * (col // 3)
+        for i in range(9):
+            r = box_row + i // 3
+            c = box_col + i % 3
+            if board[r][c] == digit:
+                return False
+        
+        return True
+    
+    def solve():
+        # Find next empty cell
+        for row in range(9):
+            for col in range(9):
+                if board[row][col] == '.':
+                    # Try each digit 1-9
+                    for digit in '123456789':
+                        if is_valid(row, col, digit):
+                            # Place digit
+                            board[row][col] = digit
+                            
+                            # Recurse
+                            if solve():
+                                return True  # Solved!
+                            
+                            # Backtrack
+                            board[row][col] = '.'
+                    
+                    # No valid digit found
                     return False
-        return True # Solved
+        
+        # No empty cells = solved!
+        return True
+    
+    solve()`,
+                codeDetailed: `def solveSudoku_detailed(board):
+    """
+    SUDOKU SOLVER with Backtracking
+    
+    STRATEGY:
+    1. Find first empty cell ('.')
+    2. Try digits 1-9
+    3. For each digit, check 3 constraints
+    4. If valid, place and recurse
+    5. If recursion fails, backtrack (reset to '.')
+    6. If no digit works, return False
+    7. If no empty cells, puzzle solved!
+    
+    WHY BACKTRACKING WORKS:
+    - We explore all possibilities systematically
+    - Early pruning via constraint checks
+    - Guaranteed to find solution if exists
+    """
+    
+    def is_valid(row, col, digit):
+        """
+        Check if placing 'digit' at (row, col) is valid.
+        Must check: row, column, and 3x3 box.
+        """
+        # === CHECK ROW ===
+        # Scan all columns in this row
+        for c in range(9):
+            if board[row][c] == digit:
+                return False
+        
+        # === CHECK COLUMN ===
+        # Scan all rows in this column
+        for r in range(9):
+            if board[r][col] == digit:
+                return False
+        
+        # === CHECK 3x3 BOX ===
+        # Find top-left corner of box
+        box_row_start = 3 * (row // 3)  # 0, 3, or 6
+        box_col_start = 3 * (col // 3)  # 0, 3, or 6
+        
+        # Check all 9 cells in box
+        for delta_row in range(3):
+            for delta_col in range(3):
+                r = box_row_start + delta_row
+                c = box_col_start + delta_col
+                if board[r][c] == digit:
+                    return False
+        
+        return True
+    
+    def solve():
+        """
+        Main backtracking function.
+        Returns True if puzzle solved, False otherwise.
+        """
+        # Find next empty cell
+        for row in range(9):
+            for col in range(9):
+                if board[row][col] == '.':
+                    # Try each digit 1-9
+                    for digit in '123456789':
+                        if is_valid(row, col, digit):
+                            # === PLACE DIGIT ===
+                            board[row][col] = digit
+                            
+                            # === RECURSE ===
+                            if solve():
+                                return True  # Puzzle solved!
+                            
+                            # === BACKTRACK ===
+                            # Solution not found, undo placement
+                            board[row][col] = '.'
+                    
+                    # Tried all digits, none worked
+                    return False
+        
+        # No empty cells left = puzzle solved!
+        return True
+    
+    solve()
+
+# Optimized version using sets for O(1) lookup:
+def solveSudoku_optimized(board):
+    rows = [set() for _ in range(9)]
+    cols = [set() for _ in range(9)]
+    boxes = [set() for _ in range(9)]
+    
+    # Initialize sets with existing values
+    for row in range(9):
+        for col in range(9):
+            if board[row][col] != '.':
+                digit = board[row][col]
+                rows[row].add(digit)
+                cols[col].add(digit)
+                boxes[(row // 3) * 3 + col // 3].add(digit)
+    
+    def solve():
+        for row in range(9):
+            for col in range(9):
+                if board[row][col] == '.':
+                    box_idx = (row // 3) * 3 + col // 3
+                    for digit in '123456789':
+                        if (digit not in rows[row] and 
+                            digit not in cols[col] and 
+                            digit not in boxes[box_idx]):
+                            # Place
+                            board[row][col] = digit
+                            rows[row].add(digit)
+                            cols[col].add(digit)
+                            boxes[box_idx].add(digit)
+                            
+                            if solve(): return True
+                            
+                            # Backtrack
+                            board[row][col] = '.'
+                            rows[row].remove(digit)
+                            cols[col].remove(digit)
+                            boxes[box_idx].remove(digit)
+                    return False
+        return True
+    
     solve()`
             }
         }
@@ -8165,6 +11213,658 @@ const topic_stack_concepts = {
 };
 
 
+// ========== data/concepts/backtracking_concepts.js ==========
+// Backtracking Concepts data
+// Complete Mastery Guide
+
+const topic_backtracking_concepts = {
+    id: "backtracking_concepts",
+    title: "🔥 Backtracking Mastery",
+    description: "The Ultimate Guide - Hamesha Ke Liye!",
+    color: "#f59e0b",
+    icon: "fas fa-undo",
+    type: "guide",
+    sections: [
+        {
+            id: "core-concept",
+            title: "🎯 Core Concept",
+            icon: "fas fa-bullseye",
+            content: `
+                <div class="flashcard">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-bullseye"></i>
+                            What is Backtracking?
+                        </div>
+                        <div class="badges">
+                            <span class="badge badge-must" style="background:#ef4444; color:white;">FOUNDATION</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="big-quote" style="font-size: 1.4rem; font-weight: 600; text-align: center; padding: 30px; background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(239, 68, 68, 0.1)); border-radius: 12px; border: 2px solid var(--border); margin: 30px 0; line-height: 1.8;">
+                            "Try karo → Agar galat raha toh wapas aao → Doosra option try karo"
+                        </div>
+                        
+                        <div style="background: rgba(245, 158, 11, 0.1); padding: 25px; border-radius: 12px; border-left: 4px solid #f59e0b; margin: 25px 0;">
+                            <h4 style="margin-bottom:15px; color:#fbbf24;"><i class="fas fa-star"></i> The 3-Step Pattern (ALWAYS!)</h4>
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                                <div style="background: rgba(16, 185, 129, 0.1); padding: 20px; border-radius: 12px; text-align:center;">
+                                    <div style="font-size:2rem; margin-bottom:10px;">1️⃣</div>
+                                    <strong style="color:#10b981;">CHOOSE</strong>
+                                    <p style="font-size:0.9rem; color:gray; margin-top:8px;">Make a decision</p>
+                                </div>
+                                <div style="background: rgba(139, 92, 246, 0.1); padding: 20px; border-radius: 12px; text-align:center;">
+                                    <div style="font-size:2rem; margin-bottom:10px;">2️⃣</div>
+                                    <strong style="color:#8b5cf6;">EXPLORE</strong>
+                                    <p style="font-size:0.9rem; color:gray; margin-top:8px;">Recursively explore</p>
+                                </div>
+                                <div style="background: rgba(239, 68, 68, 0.1); padding: 20px; border-radius: 12px; text-align:center;">
+                                    <div style="font-size:2rem; margin-bottom:10px;">3️⃣</div>
+                                    <strong style="color:#ef4444;">UNCHOOSE</strong>
+                                    <p style="font-size:0.9rem; color:gray; margin-top:8px;">Undo (backtrack)</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <h3 style="margin: 30px 0 15px 0; color: #fbbf24;">
+                            <i class="fas fa-code"></i> Universal Template
+                        </h3>
+                        
+                        <div style="background: #0f172a; border-radius: 12px; padding: 20px;">
+                            <pre style="color: #e2e8f0; font-family: 'Consolas', monospace; font-size: 0.9rem; line-height: 1.6;">def backtrack(state):
+    if is_solution(state):
+        process_solution(state)
+        return
+    
+    for choice in get_choices(state):
+        # CHOOSE
+        make_choice(choice, state)
+        
+        # EXPLORE
+        backtrack(state)
+        
+        # UNCHOOSE (backtrack)
+        undo_choice(choice, state)</pre>
+                        </div>
+                        
+                        <h3 style="margin: 30px 0 15px 0; color: #fbbf24;">
+                            <i class="fas fa-balance-scale"></i> Backtracking vs Other Techniques
+                        </h3>
+                        
+                        <table style="width:100%; border-collapse: collapse; border-radius: 12px; overflow: hidden;">
+                            <thead>
+                                <tr style="background: linear-gradient(135deg, #f59e0b, #fbbf24);">
+                                    <th style="padding: 15px; text-align: left; color: black;">Technique</th>
+                                    <th style="padding: 15px; text-align: left; color: black;">When to Use</th>
+                                    <th style="padding: 15px; text-align: left; color: black;">Example</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155; color: #fbbf24;"><strong>Backtracking</strong></td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155;">Generate ALL possibilities</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155;">Permutations, N-Queens</td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155; color: #8b5cf6;"><strong>DP</strong></td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155;">Overlapping subproblems</td>
+                                    <td style="padding: 12px; border-bottom: 1px solid #334155;">Knapsack, LCS</td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 12px; color: #10b981;"><strong>Greedy</strong></td>
+                                    <td style="padding: 12px;">Local optimal → Global</td>
+                                    <td style="padding: 12px;">Activity selection</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>`
+        },
+        {
+            id: "pattern-recognition",
+            title: "🧠 5 Patterns",
+            icon: "fas fa-puzzle-piece",
+            content: `
+                <div class="flashcard">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-puzzle-piece"></i>
+                            The 5 Backtracking Patterns
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p style="color: gray; margin-bottom: 25px;">
+                            <strong>95% backtracking problems</strong> in 5 patterns ke andar aate hain. Pattern pehchaan lo!
+                        </p>
+                        
+                        <!-- Pattern 1: Subset -->
+                        <div style="background: rgba(139, 92, 246, 0.05); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 16px; padding: 25px; margin-bottom: 20px;">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+                                <span style="background: #8b5cf6; color: white; padding: 6px 12px; border-radius: 8px; font-weight: 700;">1</span>
+                                <h3 style="color: #a78bfa; margin: 0;">SUBSET Pattern (Pick/No-Pick)</h3>
+                            </div>
+                            <p style="color: gray; margin-bottom: 15px;"><strong>Pehchaan:</strong> "Find all subsets/combinations" | Each element: include OR exclude</p>
+                            <div style="background: #0f172a; padding: 12px; border-radius: 8px; font-family: Consolas; color: #7dd3fc; font-size: 0.9rem;">
+                                current.append(arr[index])  # PICK<br>
+                                backtrack(index + 1, current)<br>
+                                current.pop()               # Backtrack<br><br>
+                                backtrack(index + 1, current)  # NO-PICK
+                            </div>
+                            <p style="margin-top: 12px; color: gray; font-size: 0.9rem;">
+                                <strong>Problems:</strong> Subsets, Subset Sum, Combination Sum
+                            </p>
+                            <p style="color: #a78bfa; font-size: 0.85rem;"><strong>Time:</strong> O(2^n) | <strong>Space:</strong> O(n)</p>
+                        </div>
+                        
+                        <!-- Pattern 2: Permutation -->
+                        <div style="background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 16px; padding: 25px; margin-bottom: 20px;">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+                                <span style="background: #f59e0b; color: white; padding: 6px 12px; border-radius: 8px; font-weight: 700;">2</span>
+                                <h3 style="color: #fbbf24; margin: 0;">PERMUTATION Pattern (Swapping)</h3>
+                            </div>
+                            <p style="color: gray; margin-bottom: 15px;"><strong>Pehchaan:</strong> "Find all arrangements" | Order MATTERS | All elements used</p>
+                            <div style="background: #0f172a; padding: 12px; border-radius: 8px; font-family: Consolas; color: #7dd3fc; font-size: 0.9rem;">
+                                for i in range(index, len(arr)):<br>
+                                &nbsp;&nbsp;arr[index], arr[i] = arr[i], arr[index]  # Swap<br>
+                                &nbsp;&nbsp;backtrack(index + 1)<br>
+                                &nbsp;&nbsp;arr[index], arr[i] = arr[i], arr[index]  # Swap back
+                            </div>
+                            <p style="margin-top: 12px; color: gray; font-size: 0.9rem;">
+                                <strong>Problems:</strong> Permutations, Permutations II, Letter Case Permutation
+                            </p>
+                            <p style="color: #fbbf24; font-size: 0.85rem;"><strong>Time:</strong> O(n! × n) | <strong>Space:</strong> O(n)</p>
+                        </div>
+                        
+                        <!-- Pattern 3: Combination -->
+                        <div style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 16px; padding: 25px; margin-bottom: 20px;">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+                                <span style="background: #ef4444; color: white; padding: 6px 12px; border-radius: 8px; font-weight: 700;">3</span>
+                                <h3 style="color: #f87171; margin: 0;">COMBINATION Pattern (Start Index)</h3>
+                            </div>
+                            <p style="color: gray; margin-bottom: 15px;"><strong>Pehchaan:</strong> "Find combinations of size k" | Order doesn't matter | Avoid duplicates</p>
+                            <div style="background: #0f172a; padding: 12px; border-radius: 8px; font-family: Consolas; color: #7dd3fc; font-size: 0.9rem;">
+                                for i in range(start, len(arr)):<br>
+                                &nbsp;&nbsp;current.append(arr[i])<br>
+                                &nbsp;&nbsp;backtrack(i + 1, current)  # i+1: no reuse<br>
+                                &nbsp;&nbsp;# backtrack(i, ...)       # i: unlimited use<br>
+                                &nbsp;&nbsp;current.pop()
+                            </div>
+                            <p style="margin-top: 12px; color: gray; font-size: 0.9rem;">
+                                <strong>Problems:</strong> Combinations, Combination Sum I/II, Generate Parentheses
+                            </p>
+                            <p style="color: #f87171; font-size: 0.85rem;"><strong>Time:</strong> O(C(n,k) × k) | <strong>Space:</strong> O(k)</p>
+                        </div>
+                        
+                        <!-- Pattern 4: Grid -->
+                        <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 16px; padding: 25px; margin-bottom: 20px;">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+                                <span style="background: #10b981; color: white; padding: 6px 12px; border-radius: 8px; font-weight: 700;">4</span>
+                                <h3 style="color: #34d399; margin: 0;">GRID Pattern (DFS Backtracking)</h3>
+                            </div>
+                            <p style="color: gray; margin-bottom: 15px;"><strong>Pehchaan:</strong> 2D matrix | Explore paths/neighbors | 4 directions</p>
+                            <div style="background: #0f172a; padding: 12px; border-radius: 8px; font-family: Consolas; color: #7dd3fc; font-size: 0.9rem;">
+                                visited[r][c] = True  # Mark<br>
+                                for dr, dc in [(0,1),(1,0),(0,-1),(-1,0)]:<br>
+                                &nbsp;&nbsp;backtrack(r + dr, c + dc, state)<br>
+                                visited[r][c] = False  # Unmark (backtrack)
+                            </div>
+                            <p style="margin-top: 12px; color: gray; font-size: 0.9rem;">
+                                <strong>Problems:</strong> Word Search, Number of Islands, Rat in Maze
+                            </p>
+                            <p style="color: #34d399; font-size: 0.85rem;"><strong>Time:</strong> O(4^(m×n)) | <strong>Space:</strong> O(m×n)</p>
+                        </div>
+                        
+                        <!-- Pattern 5: Constraint -->
+                        <div style="background: rgba(34, 211, 238, 0.05); border: 1px solid rgba(34, 211, 238, 0.2); border-radius: 16px; padding: 25px;">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+                                <span style="background: #22d3ee; color: black; padding: 6px 12px; border-radius: 8px; font-weight: 700;">5</span>
+                                <h3 style="color: #22d3ee; margin: 0;">CONSTRAINT Pattern (Validation)</h3>
+                            </div>
+                            <p style="color: gray; margin-bottom: 15px;"><strong>Pehchaan:</strong> Multiple rules to satisfy | Check validity at each step | Early pruning</p>
+                            <div style="background: #0f172a; padding: 12px; border-radius: 8px; font-family: Consolas; color: #7dd3fc; font-size: 0.9rem;">
+                                for col in range(n):<br>
+                                &nbsp;&nbsp;if is_valid(row, col):  # Check constraints<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;place(row, col)<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;backtrack(row + 1)<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;remove(row, col)
+                            </div>
+                            <p style="margin-top: 12px; color: gray; font-size: 0.9rem;">
+                                <strong>Problems:</strong> N-Queens, Sudoku Solver, Graph Coloring
+                            </p>
+                            <p style="color: #22d3ee; font-size: 0.85rem;"><strong>Time:</strong> O(n!) with pruning | <strong>Space:</strong> O(n²)</p>
+                        </div>
+                    </div>
+                </div>`
+        },
+        {
+            id: "decision-tree",
+            title: "🌳 Decision Tree",
+            icon: "fas fa-sitemap",
+            content: `
+                <div class="flashcard">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-sitemap"></i>
+                            Pattern Selection Guide
+                        </div>
+                        <div class="badges">
+                            <span class="badge" style="background:#10b981; color:white;">INTERVIEW QUICK-PICK</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div style="background: #0f172a; padding: 25px; border-radius: 12px; font-family: Consolas; color: #e2e8f0; line-height: 2;">
+                            <pre style="color: #e2e8f0;">
+                     START
+                       |
+        "Problem mein kya chahiye?"
+                       |
+       ┌───────────────┴───────────────┐
+       ↓                               ↓
+  ALL possibilities              OPTIMAL solution
+       |                               |
+       ↓                               ↓
+  BACKTRACKING                     DP/GREEDY
+       |
+       ├── Order matters? ─────→ PERMUTATION
+       │
+       ├── Size k select? ─────→ COMBINATION  
+       │
+       ├── All subsets? ───────→ SUBSET (Pick/No-Pick)
+       │
+       ├── Grid/Path explore? ─→ GRID DFS
+       │
+       └── Rules/Constraints? ─→ CONSTRAINT SATISFACTION
+                            </pre>
+                        </div>
+                        
+                        <h3 style="margin: 30px 0 15px 0; color: #fbbf24;">
+                            <i class="fas fa-key"></i> Quick Keywords Mapping
+                        </h3>
+                        
+                        <table style="width:100%; border-collapse: collapse; border-radius: 12px; overflow: hidden;">
+                            <thead>
+                                <tr style="background: linear-gradient(135deg, #f59e0b, #fbbf24);">
+                                    <th style="padding: 12px; text-align: left; color: black;">Keyword in Problem</th>
+                                    <th style="padding: 12px; text-align: left; color: black;">→ Pattern</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="background: #1e293b;"><td style="padding: 10px; border-bottom: 1px solid #334155;">"all subsets", "power set"</td><td style="padding: 10px; border-bottom: 1px solid #334155; color: #a78bfa;">SUBSET</td></tr>
+                                <tr style="background: #1e293b;"><td style="padding: 10px; border-bottom: 1px solid #334155;">"all permutations", "arrangements"</td><td style="padding: 10px; border-bottom: 1px solid #334155; color: #fbbf24;">PERMUTATION</td></tr>
+                                <tr style="background: #1e293b;"><td style="padding: 10px; border-bottom: 1px solid #334155;">"combinations of size k", "choose k"</td><td style="padding: 10px; border-bottom: 1px solid #334155; color: #f87171;">COMBINATION</td></tr>
+                                <tr style="background: #1e293b;"><td style="padding: 10px; border-bottom: 1px solid #334155;">"find path", "word exists in grid"</td><td style="padding: 10px; border-bottom: 1px solid #334155; color: #34d399;">GRID DFS</td></tr>
+                                <tr style="background: #1e293b;"><td style="padding: 10px;">"place n items", "satisfy rules"</td><td style="padding: 10px; color: #22d3ee;">CONSTRAINT</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>`
+        },
+        {
+            id: "templates",
+            title: "📝 Templates",
+            icon: "fas fa-file-code",
+            content: `
+                <div class="flashcard">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-file-code"></i>
+                            Ready-to-Use Templates
+                        </div>
+                        <div class="badges">
+                            <span class="badge" style="background:#8b5cf6; color:white;">COPY-PASTE</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        
+                        <!-- Template 1: Subsets -->
+                        <div style="margin-bottom: 30px;">
+                            <h4 style="color: #a78bfa; margin-bottom: 15px;"><i class="fas fa-layer-group"></i> Template 1: Subset Generation</h4>
+                            <div style="background: #0f172a; border-radius: 12px; padding: 20px;">
+                                <pre style="color: #e2e8f0; font-family: 'Consolas', monospace; font-size: 0.85rem; line-height: 1.6;">def subsets(nums):
+    result = []
+    
+    def backtrack(index, current):
+        if index == len(nums):
+            result.append(current[:])  # COPY!
+            return
+        
+        # PICK
+        current.append(nums[index])
+        backtrack(index + 1, current)
+        current.pop()  # Backtrack
+        
+        # NO-PICK
+        backtrack(index + 1, current)
+    
+    backtrack(0, [])
+    return result
+# Time: O(2^n × n), Space: O(n)</pre>
+                            </div>
+                        </div>
+                        
+                        <!-- Template 2: Permutations -->
+                        <div style="margin-bottom: 30px;">
+                            <h4 style="color: #fbbf24; margin-bottom: 15px;"><i class="fas fa-random"></i> Template 2: Permutation (Swapping)</h4>
+                            <div style="background: #0f172a; border-radius: 12px; padding: 20px;">
+                                <pre style="color: #e2e8f0; font-family: 'Consolas', monospace; font-size: 0.85rem; line-height: 1.6;">def permute(nums):
+    result = []
+    
+    def backtrack(index):
+        if index == len(nums):
+            result.append(nums[:])  # COPY!
+            return
+        
+        for i in range(index, len(nums)):
+            nums[index], nums[i] = nums[i], nums[index]  # Swap
+            backtrack(index + 1)
+            nums[index], nums[i] = nums[i], nums[index]  # Swap back
+    
+    backtrack(0)
+    return result
+# Time: O(n! × n), Space: O(n)</pre>
+                            </div>
+                        </div>
+                        
+                        <!-- Template 3: Combinations -->
+                        <div style="margin-bottom: 30px;">
+                            <h4 style="color: #f87171; margin-bottom: 15px;"><i class="fas fa-th"></i> Template 3: Combination (Size k)</h4>
+                            <div style="background: #0f172a; border-radius: 12px; padding: 20px;">
+                                <pre style="color: #e2e8f0; font-family: 'Consolas', monospace; font-size: 0.85rem; line-height: 1.6;">def combine(n, k):
+    result = []
+    
+    def backtrack(start, current):
+        if len(current) == k:
+            result.append(current[:])
+            return
+        
+        for i in range(start, n + 1):
+            current.append(i)
+            backtrack(i + 1, current)  # i+1: avoid reuse
+            current.pop()
+    
+    backtrack(1, [])
+    return result
+# Time: O(C(n,k) × k), Space: O(k)</pre>
+                            </div>
+                        </div>
+                        
+                        <!-- Template 4: Grid DFS -->
+                        <div>
+                            <h4 style="color: #34d399; margin-bottom: 15px;"><i class="fas fa-border-all"></i> Template 4: Grid DFS (Word Search)</h4>
+                            <div style="background: #0f172a; border-radius: 12px; padding: 20px;">
+                                <pre style="color: #e2e8f0; font-family: 'Consolas', monospace; font-size: 0.85rem; line-height: 1.6;">def exist(board, word):
+    rows, cols = len(board), len(board[0])
+    
+    def backtrack(r, c, idx):
+        if idx == len(word): return True
+        if r < 0 or r >= rows or c < 0 or c >= cols: return False
+        if board[r][c] != word[idx]: return False
+        
+        temp = board[r][c]
+        board[r][c] = '#'  # Mark visited
+        
+        found = (backtrack(r+1, c, idx+1) or
+                 backtrack(r-1, c, idx+1) or
+                 backtrack(r, c+1, idx+1) or
+                 backtrack(r, c-1, idx+1))
+        
+        board[r][c] = temp  # Restore (backtrack)
+        return found
+    
+    for i in range(rows):
+        for j in range(cols):
+            if backtrack(i, j, 0): return True
+    return False
+# Time: O(m×n × 4^L), Space: O(L)</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>`
+        },
+        {
+            id: "problems",
+            title: "🎯 Problems",
+            icon: "fas fa-tasks",
+            content: `
+                <div class="flashcard">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-tasks"></i>
+                            Practice Roadmap
+                        </div>
+                        <div class="badges">
+                            <span class="badge" style="background:#10b981; color:white;">LEVEL-WISE</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p style="color: gray; margin-bottom: 25px;">
+                            In order practice karo. Har level ek naya complexity add karta hai!
+                        </p>
+                        
+                        <!-- Level 1 -->
+                        <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 15px;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                <span style="background: #10b981; color: white; padding: 4px 12px; border-radius: 6px; font-weight: 700;">LEVEL 1</span>
+                                <strong style="color: #34d399;">Easy - Basic Patterns</strong>
+                            </div>
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                                <a href="learn.html?topic=backtracking&q=subsets" style="text-decoration:none; background:#1e293b; padding:12px; border-radius:8px; text-align:center; color:#34d399;">Subsets</a>
+                                <a href="learn.html?topic=backtracking&q=permutations" style="text-decoration:none; background:#1e293b; padding:12px; border-radius:8px; text-align:center; color:#34d399;">Permutations</a>
+                                <a href="learn.html?topic=backtracking&q=combinations" style="text-decoration:none; background:#1e293b; padding:12px; border-radius:8px; text-align:center; color:#34d399;">Combinations</a>
+                            </div>
+                        </div>
+                        
+                        <!-- Level 2 -->
+                        <div style="background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 15px;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                <span style="background: #f59e0b; color: white; padding: 4px 12px; border-radius: 6px; font-weight: 700;">LEVEL 2</span>
+                                <strong style="color: #fbbf24;">Medium - Variations</strong>
+                            </div>
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                                <a href="learn.html?topic=backtracking&q=combination-sum" style="text-decoration:none; background:#1e293b; padding:12px; border-radius:8px; text-align:center; color:#fbbf24;">Combination Sum</a>
+                                <a href="learn.html?topic=backtracking&q=permutations-ii" style="text-decoration:none; background:#1e293b; padding:12px; border-radius:8px; text-align:center; color:#fbbf24;">Permutations II</a>
+                                <a href="learn.html?topic=backtracking&q=subsets-ii" style="text-decoration:none; background:#1e293b; padding:12px; border-radius:8px; text-align:center; color:#fbbf24;">Subsets II</a>
+                                <a href="learn.html?topic=backtracking&q=generate-parentheses" style="text-decoration:none; background:#1e293b; padding:12px; border-radius:8px; text-align:center; color:#fbbf24;">Generate ()</a>
+                            </div>
+                        </div>
+                        
+                        <!-- Level 3 -->
+                        <div style="background: rgba(139, 92, 246, 0.05); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 15px;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                <span style="background: #8b5cf6; color: white; padding: 4px 12px; border-radius: 6px; font-weight: 700;">LEVEL 3</span>
+                                <strong style="color: #a78bfa;">Medium-Hard - Grid & Strings</strong>
+                            </div>
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                                <a href="learn.html?topic=backtracking&q=word-search" style="text-decoration:none; background:#1e293b; padding:12px; border-radius:8px; text-align:center; color:#a78bfa;">Word Search</a>
+                                <a href="learn.html?topic=backtracking&q=letter-combinations" style="text-decoration:none; background:#1e293b; padding:12px; border-radius:8px; text-align:center; color:#a78bfa;">Letter Combos</a>
+                            </div>
+                        </div>
+                        
+                        <!-- Level 4 -->
+                        <div style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 12px; padding: 20px;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                <span style="background: #ef4444; color: white; padding: 4px 12px; border-radius: 6px; font-weight: 700;">BOSS</span>
+                                <strong style="color: #f87171;">Hard - Constraint Satisfaction</strong>
+                            </div>
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                                <a href="learn.html?topic=backtracking&q=n-queens" style="text-decoration:none; background:#1e293b; padding:12px; border-radius:8px; text-align:center; color:#f87171;">N-Queens 👑</a>
+                                <a href="learn.html?topic=backtracking&q=sudoku-solver" style="text-decoration:none; background:#1e293b; padding:12px; border-radius:8px; text-align:center; color:#f87171;">Sudoku Solver</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>`
+        },
+        {
+            id: "mistakes",
+            title: "⚠️ Mistakes",
+            icon: "fas fa-exclamation-triangle",
+            content: `
+                <div class="flashcard">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Common Backtracking Mistakes
+                        </div>
+                        <div class="badges">
+                            <span class="badge" style="background:#ef4444; color:white;">MUST AVOID</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        
+                        <!-- Mistake 1 -->
+                        <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                <span style="background: #ef4444; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">1</span>
+                                <strong style="color: #f87171; font-size: 1.1rem;">Not Making a COPY!</strong>
+                            </div>
+                            <p style="color: gray; margin-bottom: 12px;">current list is a reference. Sab entries same list point karengi!</p>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div style="background: #0f172a; padding: 12px; border-radius: 8px;">
+                                    <p style="color: #ef4444; margin-bottom: 8px; font-size: 0.85rem;">❌ WRONG</p>
+                                    <code style="color: #f87171; font-size: 0.85rem;">result.append(current)</code>
+                                </div>
+                                <div style="background: #0f172a; padding: 12px; border-radius: 8px;">
+                                    <p style="color: #10b981; margin-bottom: 8px; font-size: 0.85rem;">✅ RIGHT</p>
+                                    <code style="color: #34d399; font-size: 0.85rem;">result.append(current[:])</code>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Mistake 2 -->
+                        <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                <span style="background: #f59e0b; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">2</span>
+                                <strong style="color: #fbbf24; font-size: 1.1rem;">Forgetting to BACKTRACK!</strong>
+                            </div>
+                            <p style="color: gray; margin-bottom: 12px;">Agar undo nahi kiya, state corrupt ho jayegi!</p>
+                            <div style="background: #0f172a; padding: 12px; border-radius: 8px;">
+                                <code style="color: #fbbf24; font-size: 0.85rem;">
+                                    nums[i], nums[j] = nums[j], nums[i]  # Swap<br>
+                                    backtrack(i + 1)<br>
+                                    nums[i], nums[j] = nums[j], nums[i]  # Swap BACK! ✅
+                                </code>
+                            </div>
+                        </div>
+                        
+                        <!-- Mistake 3 -->
+                        <div style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                <span style="background: #8b5cf6; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">3</span>
+                                <strong style="color: #a78bfa; font-size: 1.1rem;">Not Handling Duplicates</strong>
+                            </div>
+                            <p style="color: gray; margin-bottom: 12px;">[1,1,2] → duplicate permutations without proper check!</p>
+                            <div style="background: #0f172a; padding: 12px; border-radius: 8px;">
+                                <code style="color: #a78bfa; font-size: 0.85rem;">
+                                    nums.sort()  # Sort first!<br>
+                                    if i > start and nums[i] == nums[i-1]:<br>
+                                    &nbsp;&nbsp;continue  # Skip duplicate
+                                </code>
+                            </div>
+                        </div>
+                        
+                        <!-- Mistake 4 -->
+                        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 20px;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                <span style="background: #10b981; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">4</span>
+                                <strong style="color: #34d399; font-size: 1.1rem;">Infinite Loop in Grid</strong>
+                            </div>
+                            <p style="color: gray; margin-bottom: 12px;">Grid DFS mein visited check bhool gaye → infinite recursion!</p>
+                            <div style="background: #0f172a; padding: 12px; border-radius: 8px;">
+                                <code style="color: #34d399; font-size: 0.85rem;">
+                                    if visited[r][c]: return  # MUST check!<br>
+                                    visited[r][c] = True<br>
+                                    # ... explore ...<br>
+                                    visited[r][c] = False  # Backtrack
+                                </code>
+                            </div>
+                        </div>
+                    </div>
+                </div>`
+        },
+        {
+            id: "cheatsheet",
+            title: "📊 Cheatsheet",
+            icon: "fas fa-clipboard-list",
+            content: `
+                <div class="flashcard">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-clipboard-list"></i>
+                            Quick Reference Cheatsheet
+                        </div>
+                        <div class="badges">
+                            <span class="badge" style="background:#22d3ee; color:black;">INTERVIEW READY</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        
+                        <h3 style="color: #fbbf24; margin-bottom: 15px;"><i class="fas fa-bolt"></i> Pattern Summary</h3>
+                        
+                        <table style="width:100%; border-collapse: collapse; border-radius: 12px; overflow: hidden; margin-bottom: 30px;">
+                            <thead>
+                                <tr style="background: linear-gradient(135deg, #f59e0b, #fbbf24);">
+                                    <th style="padding: 12px; text-align: left; color: black;">Pattern</th>
+                                    <th style="padding: 12px; text-align: left; color: black;">Key Code</th>
+                                    <th style="padding: 12px; text-align: left; color: black;">Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 10px; border-bottom: 1px solid #334155; color: #a78bfa;">Subset</td>
+                                    <td style="padding: 10px; border-bottom: 1px solid #334155; font-family: Consolas; font-size: 0.8rem;">pick/no-pick, INDEX+1</td>
+                                    <td style="padding: 10px; border-bottom: 1px solid #334155;">O(2^n)</td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 10px; border-bottom: 1px solid #334155; color: #fbbf24;">Permutation</td>
+                                    <td style="padding: 10px; border-bottom: 1px solid #334155; font-family: Consolas; font-size: 0.8rem;">for i in range(idx, n): swap</td>
+                                    <td style="padding: 10px; border-bottom: 1px solid #334155;">O(n!)</td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 10px; border-bottom: 1px solid #334155; color: #f87171;">Combination</td>
+                                    <td style="padding: 10px; border-bottom: 1px solid #334155; font-family: Consolas; font-size: 0.8rem;">for i in range(start, n): i+1</td>
+                                    <td style="padding: 10px; border-bottom: 1px solid #334155;">O(C(n,k))</td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 10px; border-bottom: 1px solid #334155; color: #34d399;">Grid DFS</td>
+                                    <td style="padding: 10px; border-bottom: 1px solid #334155; font-family: Consolas; font-size: 0.8rem;">visited + 4 directions</td>
+                                    <td style="padding: 10px; border-bottom: 1px solid #334155;">O(4^L)</td>
+                                </tr>
+                                <tr style="background: #1e293b;">
+                                    <td style="padding: 10px; color: #22d3ee;">Constraint</td>
+                                    <td style="padding: 10px; font-family: Consolas; font-size: 0.8rem;">is_valid() + pruning</td>
+                                    <td style="padding: 10px;">O(n!)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <h3 style="color: #fbbf24; margin-bottom: 15px;"><i class="fas fa-check-circle"></i> Debug Checklist</h3>
+                        
+                        <div style="background: #0f172a; padding: 20px; border-radius: 12px;">
+                            <ul style="list-style: none; padding: 0; line-height: 2.2; color: #e2e8f0;">
+                                <li>☐ Am I making a <strong style="color:#10b981;">COPY</strong> when adding to result?</li>
+                                <li>☐ Am I <strong style="color:#fbbf24;">BACKTRACKING</strong> (undoing choices)?</li>
+                                <li>☐ Is my <strong style="color:#a78bfa;">BASE CASE</strong> correct?</li>
+                                <li>☐ Am I handling <strong style="color:#f87171;">DUPLICATES</strong> if needed?</li>
+                                <li>☐ Are my <strong style="color:#22d3ee;">LOOP RANGES</strong> correct (start vs index)?</li>
+                                <li>☐ Have I added <strong style="color:#34d399;">VISITED CHECK</strong> for grid problems?</li>
+                            </ul>
+                        </div>
+                        
+                        <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(239, 68, 68, 0.1)); padding: 25px; border-radius: 12px; border: 2px solid rgba(245, 158, 11, 0.3); margin-top: 25px; text-align: center;">
+                            <h3 style="color: #fbbf24; margin-bottom: 10px;">🎯 The 3 Golden Rules</h3>
+                            <p style="font-size: 1.2rem; line-height: 2;">
+                                <strong style="color:#10b981;">1. CHOOSE</strong> → Make a decision<br>
+                                <strong style="color:#8b5cf6;">2. EXPLORE</strong> → Recurse with that decision<br>
+                                <strong style="color:#ef4444;">3. UNCHOOSE</strong> → Backtrack (undo)
+                            </p>
+                        </div>
+                    </div>
+                </div>`
+        }
+    ]
+};
+
+
 // ========== data/index.js ==========
 // data/index.js
 // Main entry point that loads all topic files and combines them into prepData
@@ -8189,6 +11889,7 @@ const prepData = {
     graphs_concepts: topic_graphs_concepts,
     trees_concepts: topic_trees_concepts,
     complexity_concepts: topic_complexity_concepts,
-    stack_concepts: topic_stack_concepts
+    stack_concepts: topic_stack_concepts,
+    backtracking_concepts: topic_backtracking_concepts
 };
 

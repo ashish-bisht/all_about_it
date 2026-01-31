@@ -43,6 +43,47 @@
     --radius-xl: 28px;
 }
 
+/* --- Premium Scrollbar (Apple Style) --- */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+    transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+/* Firefox Scrollbar */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
+/* --- Text Selection (Brand Accent) --- */
+::selection {
+    background: rgba(94, 92, 230, 0.35);
+    color: var(--text-main);
+}
+
+::-moz-selection {
+    background: rgba(94, 92, 230, 0.35);
+    color: var(--text-main);
+}
+
 /* --- Typography & Base --- */
 * {
     margin: 0;
@@ -62,6 +103,20 @@ body {
     background-image:
         radial-gradient(circle at 50% 0%, rgba(50, 50, 60, 0.4) 0%, transparent 60%);
     background-attachment: fixed;
+    scroll-behavior: smooth;
+}
+
+/* --- Focus States (Accessibility + Premium) --- */
+:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+button:focus-visible,
+a:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 3px;
 }
 
 /* --- Typography --- */

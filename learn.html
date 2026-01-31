@@ -144,6 +144,248 @@
             border: 1px solid var(--border-light);
         }
 
+        /* --- Collapsible Sections (Apple Style) --- */
+        .collapsible-section {
+            margin-top: 25px;
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.02);
+            transition: all 0.3s ease;
+        }
+
+        .collapsible-section:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .collapsible-header {
+            padding: 18px 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.03);
+            user-select: none;
+            transition: all 0.2s ease;
+        }
+
+        .collapsible-header:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .collapsible-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .collapsible-header-icon {
+            font-size: 1.2rem;
+        }
+
+        .collapsible-header-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+
+        .collapsible-arrow {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            transition: transform 0.3s ease;
+        }
+
+        .collapsible-section.open .collapsible-arrow {
+            transform: rotate(180deg);
+        }
+
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .collapsible-section.open .collapsible-content {
+            max-height: 2000px;
+        }
+
+        .collapsible-inner {
+            padding: 24px;
+            border-top: 1px solid var(--border-light);
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        /* Color variants for different section types */
+        .collapsible-section.crux .collapsible-header-icon {
+            color: var(--primary);
+        }
+
+        .collapsible-section.crux {
+            border-left: 3px solid var(--primary);
+        }
+
+        .collapsible-section.trap .collapsible-header-icon {
+            color: var(--danger);
+        }
+
+        .collapsible-section.trap {
+            border-left: 3px solid var(--danger);
+        }
+
+        .collapsible-section.dryrun .collapsible-header-icon {
+            color: var(--warning);
+        }
+
+        .collapsible-section.dryrun {
+            border-left: 3px solid var(--warning);
+        }
+
+        .collapsible-section.visual .collapsible-header-icon {
+            color: #22d3ee;
+        }
+
+        .collapsible-section.visual {
+            border-left: 3px solid #22d3ee;
+        }
+
+        .collapsible-section.mentalmodel .collapsible-header-icon {
+            color: #a78bfa;
+        }
+
+        .collapsible-section.mentalmodel {
+            border-left: 3px solid #8b5cf6;
+            background: linear-gradient(145deg, rgba(28, 28, 30, 0.9) 0%, rgba(44, 44, 46, 0.8) 100%);
+        }
+
+        .collapsible-section.quick-algo {
+            border-left: 3px solid #5e5ce6;
+        }
+
+        /* --- Quick Algo Steps (Mental Map) --- */
+        .quick-algo-section {
+            margin-top: 25px;
+            background: linear-gradient(135deg, rgba(94, 92, 230, 0.08), rgba(139, 92, 246, 0.05));
+            border: 1px solid rgba(94, 92, 230, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            position: relative;
+        }
+
+        .quick-algo-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .quick-algo-icon {
+            font-size: 1.5rem;
+        }
+
+        .quick-algo-title {
+            font-weight: 800;
+            font-size: 1rem;
+            color: var(--text-main);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .quick-algo-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            position: relative;
+        }
+
+        .algo-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            position: relative;
+            padding-left: 8px;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary), #8b5cf6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.85rem;
+            color: white;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(94, 92, 230, 0.3);
+            z-index: 1;
+        }
+
+        .step-content {
+            flex: 1;
+            padding: 8px 0 20px 0;
+            border-left: 2px dashed rgba(94, 92, 230, 0.3);
+            padding-left: 20px;
+            margin-left: -25px;
+            position: relative;
+        }
+
+        .algo-step:last-child .step-content {
+            border-left: none;
+            padding-bottom: 0;
+        }
+
+        .step-text {
+            font-size: 0.95rem;
+            color: var(--text-main);
+            font-weight: 600;
+            line-height: 1.5;
+        }
+
+        .step-text code {
+            background: rgba(0, 0, 0, 0.4);
+            color: #a5f3fc;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .step-hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Arrow connector between steps */
+        .algo-step:not(:last-child)::after {
+            content: "";
+            position: absolute;
+            left: 23px;
+            top: 36px;
+            width: 2px;
+            height: calc(100% - 32px);
+            background: linear-gradient(to bottom, rgba(94, 92, 230, 0.4), rgba(139, 92, 246, 0.2));
+        }
+
+        @media (max-width: 600px) {
+            .quick-algo-section {
+                padding: 18px;
+            }
+
+            .step-number {
+                width: 28px;
+                height: 28px;
+                font-size: 0.75rem;
+            }
+
+            .step-text {
+                font-size: 0.9rem;
+            }
+        }
+
         /* --- Content De-Colorizer (Forces Apple Aesthetic on Data) --- */
         #focus-content div[style*="background"],
         #focus-content table[style*="background"],
@@ -400,6 +642,7 @@
                 <a href="question_list.html" class="nav-link">55 Questions</a>
                 <a href="flashcard.html" class="nav-link">Flashcards</a>
                 <a href="cheatsheet.html" class="nav-link">Cheat Sheet</a>
+                <a href="templates.html" class="nav-link">Templates</a>
                 <a href="game.html" class="nav-link" style="color: #f472b6 !important;">
                     <i class="fas fa-gamepad"></i> Game
                 </a>
@@ -459,6 +702,12 @@
                             </h2>
                         </div>
                         <div style="display:flex; gap:10px; align-items:center;">
+                            <button onclick="event.stopPropagation(); expandAllSections();" class="back-btn" style="padding:6px 12px; font-size:0.8rem;" title="Expand All">
+                                <i class="fas fa-expand-alt"></i>
+                            </button>
+                            <button onclick="event.stopPropagation(); collapseAllSections();" class="back-btn" style="padding:6px 12px; font-size:0.8rem;" title="Collapse All">
+                                <i class="fas fa-compress-alt"></i>
+                            </button>
                             <span class="tile-badge ${q.difficulty === 'Must Do' ? 'must' : (q.difficulty === 'Good to Do' ? 'good' : 'bonus')}">
                                 ${q.difficulty}
                             </span>
@@ -491,45 +740,98 @@
                             </a>
                         </div>` : ''}
 
-                        <!-- Visuals -->
-                         ${learn.visual ? `<div style="background:rgba(0,0,0,0.2); border:1px solid var(--border-light); border-radius:16px; padding:30px; text-align:center; font-size:0.95rem; color:var(--text-muted); margin-bottom:30px;">
-                            ${learn.visual}
+                        <!-- Quick Algo Steps (Mental Map) -->
+                        ${learn.quickAlgo && learn.quickAlgo.length > 0 ? `
+                        <div class="collapsible-section quick-algo" onclick="toggleCollapsible(this)">
+                            <div class="collapsible-header">
+                                <div class="collapsible-header-left">
+                                    <span class="collapsible-header-icon">⚡</span>
+                                    <span class="collapsible-header-title">Quick Mental Map</span>
+                                </div>
+                                <i class="fas fa-chevron-down collapsible-arrow"></i>
+                            </div>
+                            <div class="collapsible-content">
+                                <div class="collapsible-inner" style="padding-top:0;">
+                                    <div class="quick-algo-steps">
+                                        ${learn.quickAlgo.map((step, i) => `
+                                        <div class="algo-step">
+                                            <div class="step-number">${i + 1}</div>
+                                            <div class="step-content">
+                                                <div class="step-text">${step}</div>
+                                            </div>
+                                        </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            </div>
                         </div>` : ''}
 
-                        <!-- Crux -->
+                        <!-- Visuals (Collapsible) -->
+                         ${learn.visual ? `
+                        <div class="collapsible-section visual" onclick="toggleCollapsible(this)">
+                            <div class="collapsible-header">
+                                <div class="collapsible-header-left">
+                                    <span class="collapsible-header-icon">🎯</span>
+                                    <span class="collapsible-header-title">Visual Intuition</span>
+                                </div>
+                                <i class="fas fa-chevron-down collapsible-arrow"></i>
+                            </div>
+                            <div class="collapsible-content">
+                                <div class="collapsible-inner">${learn.visual}</div>
+                            </div>
+                        </div>` : ''}
+
+                        <!-- Crux (Collapsible) -->
                         ${learn.crux ? `
-                        <div class="info-box logic-box">
-                            <span class="box-label" style="color:var(--primary)">💡 The Crux</span>
-                            ${learn.crux}
+                        <div class="collapsible-section crux" onclick="toggleCollapsible(this)">
+                            <div class="collapsible-header">
+                                <div class="collapsible-header-left">
+                                    <span class="collapsible-header-icon">💡</span>
+                                    <span class="collapsible-header-title">The Crux (Key Insight)</span>
+                                </div>
+                                <i class="fas fa-chevron-down collapsible-arrow"></i>
+                            </div>
+                            <div class="collapsible-content">
+                                <div class="collapsible-inner">${learn.crux}</div>
+                            </div>
                         </div>` : ''}
 
-                        <!-- Trap -->
+                        <!-- Trap (Collapsible) -->
                         ${learn.trap ? `
-                        <div class="info-box trap-box">
-                            <span class="box-label" style="color:var(--danger)">⚠️ The Trap</span>
-                            ${learn.trap}
+                        <div class="collapsible-section trap" onclick="toggleCollapsible(this)">
+                            <div class="collapsible-header">
+                                <div class="collapsible-header-left">
+                                    <span class="collapsible-header-icon">⚠️</span>
+                                    <span class="collapsible-header-title">Common Traps & Pitfalls</span>
+                                </div>
+                                <i class="fas fa-chevron-down collapsible-arrow"></i>
+                            </div>
+                            <div class="collapsible-content">
+                                <div class="collapsible-inner">${learn.trap}</div>
+                            </div>
                         </div>` : ''}
                         
-                         <!-- Dry Run -->
+                         <!-- Dry Run (Collapsible) -->
                          ${learn.dryRun ? `
-                        <div style="margin-top:30px;">
-                            <h4 style="margin:0 0 15px 0; color:var(--text-muted); text-transform:uppercase; font-size:0.8rem; letter-spacing:1.5px; font-weight:800;">Principal execution flow</h4>
-                            <div class="dry-run" style="background:rgba(0,0,0,0.1); border:1px solid var(--border-light); border-radius:16px; padding:20px;">
-                                ${Array.isArray(learn.dryRun)
-                        ? learn.dryRun.map(step => `<div class="dry-step" style="padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05); color:var(--text-main); font-size:0.95rem;">${step}</div>`).join('')
+                        <div class="collapsible-section dryrun" onclick="toggleCollapsible(this)">
+                            <div class="collapsible-header">
+                                <div class="collapsible-header-left">
+                                    <span class="collapsible-header-icon">🔄</span>
+                                    <span class="collapsible-header-title">Principal Execution Flow</span>
+                                </div>
+                                <i class="fas fa-chevron-down collapsible-arrow"></i>
+                            </div>
+                            <div class="collapsible-content">
+                                <div class="collapsible-inner">
+                                    ${Array.isArray(learn.dryRun)
+                        ? learn.dryRun.map(step => `<div class="dry-step" style="padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.05); color:var(--text-main); font-size:0.95rem;">${step}</div>`).join('')
                         : learn.dryRun}
+                                </div>
                             </div>
                         </div>` : ''}
 
                         <!-- Code -->
-                         ${learn.code ? `
-                        <details style="margin-top: 40px;">
-                            <summary>${learn.codeTitle || 'Implementation (Clean)'}</summary>
-                            <div style="position:relative;">
-                                <button class="copy-btn" onclick="copyCode('focus-code')">Copy</button>
-                                <pre><code id="focus-code" class="language-python">${escapeHtml(learn.code)}</code></pre>
-                            </div>
-                        </details>` : ''}
+                         ${learn.code ? renderCodeSections(learn.code, learn.codeTitle) : ''}
 
                         <!-- Detailed Code (Optional) -->
                          ${learn.codeDetailed ? `
@@ -567,6 +869,34 @@
                 .replace(/>/g, "&gt;")
                 .replace(/"/g, "&quot;")
                 .replace(/'/g, "&#039;");
+        }
+
+        // Helper to render code sections - splits by ##### headers for multiple approaches
+        function renderCodeSections(code, defaultTitle) {
+            const codeBlocks = code.split(/(?=##### )/);
+            if (codeBlocks.length > 1) {
+                // Multiple approaches - create separate collapsible sections
+                return codeBlocks.filter(block => block.trim()).map((block, idx) => {
+                    const lines = block.split('\n');
+                    const titleMatch = lines[0].match(/##### (.+)/);
+                    const title = titleMatch ? titleMatch[1] : 'Approach ' + (idx + 1);
+                    const codeContent = lines.slice(1).join('\n').trim();
+                    return '<details style="margin-top: ' + (idx === 0 ? '40px' : '15px') + ';">' +
+                        '<summary>📝 ' + title + '</summary>' +
+                        '<div style="position:relative;">' +
+                        '<button class="copy-btn" onclick="copyCode(\'focus-code-' + idx + '\')">Copy</button>' +
+                        '<pre><code id="focus-code-' + idx + '" class="language-python">' + escapeHtml(codeContent) + '</code></pre>' +
+                        '</div></details>';
+                }).join('');
+            } else {
+                // Single code block - original behavior
+                return '<details style="margin-top: 40px;">' +
+                    '<summary>' + (defaultTitle || 'Implementation (Clean)') + '</summary>' +
+                    '<div style="position:relative;">' +
+                    '<button class="copy-btn" onclick="copyCode(\'focus-code\')">Copy</button>' +
+                    '<pre><code id="focus-code" class="language-python">' + escapeHtml(code) + '</code></pre>' +
+                    '</div></details>';
+            }
         }
 
 
@@ -608,6 +938,23 @@
         function toggleExplainer(id) {
             const el = document.getElementById(id + '-explainer');
             if (el) el.style.display = el.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // Toggle collapsible sections
+        function toggleCollapsible(section) {
+            // Stop event from bubbling to prevent multiple triggers
+            event.stopPropagation();
+            section.classList.toggle('open');
+        }
+
+        // Expand all sections
+        function expandAllSections() {
+            document.querySelectorAll('.collapsible-section').forEach(s => s.classList.add('open'));
+        }
+
+        // Collapse all sections
+        function collapseAllSections() {
+            document.querySelectorAll('.collapsible-section').forEach(s => s.classList.remove('open'));
         }
 
         function copyCode(id) {
@@ -692,21 +1039,75 @@
 
                      <!-- Mental Model -->
                     ${currentTopicData.mentalModel ? `
-                    <div class="pattern-card">
-                        <h3 style="margin-top:0; font-size:1.5rem;"><i class="fas fa-brain"></i> Principal's Mental Model</h3>
-                        <div class="pattern-grid">
-                            <div class="pattern-col">
-                                <h4><i class="fas fa-route"></i> When to Apply</h4>
-                                <ul style="padding-left: 20px; line-height: 1.6; color:#cbd5e1;">
-                                    ${currentTopicData.mentalModel.whenToApply.map(item => `<li><strong style="color:#fff;">${item.label}:</strong> ${item.desc}</li>`).join('')}
-                                </ul>
+                    <div class="collapsible-section mentalmodel" onclick="toggleCollapsible(this)">
+                        <div class="collapsible-header">
+                            <div class="collapsible-header-left">
+                                <span class="collapsible-header-icon"><i class="fas fa-brain"></i></span>
+                                <span class="collapsible-title">Principal's Mental Model</span>
                             </div>
-                            <div class="pattern-col">
-                                <h4><i class="fas fa-shield-alt"></i> The "10x" Safety Check</h4>
-                                <ul style="padding-left: 20px; line-height: 1.6; color:#cbd5e1;">
-                                     ${currentTopicData.mentalModel.safetyCheck.map(item => `<li><strong style="color:#fbbf24;">${item.label}:</strong> ${item.desc}</li>`).join('')}
-                                </ul>
+                            <i class="fas fa-chevron-down collapsible-arrow"></i>
+                        </div>
+                        <div class="collapsible-content">
+                            <div class="pattern-grid" style="margin-top:10px;">
+                                <div class="pattern-col" style="background: rgba(139, 92, 246, 0.08); padding:20px; border-radius:16px; border: 1px solid rgba(139, 92, 246, 0.2);">
+                                    <h4 style="color:#a78bfa; margin-bottom:15px; font-size:1rem;"><i class="fas fa-route"></i> When to Apply</h4>
+                                    <ul style="padding-left: 0; line-height: 1.8; color:#e2e8f0; list-style:none;">
+                                        ${currentTopicData.mentalModel.whenToApply.map(item => `
+                                            <li style="margin-bottom:10px; padding:10px 12px; background:rgba(0,0,0,0.2); border-radius:10px; border-left:3px solid #a78bfa;">
+                                                <strong style="color:#fff;">${item.label}</strong><br>
+                                                <span style="color:#94a3b8; font-size:0.9rem;">${item.desc}</span>
+                                            </li>
+                                        `).join('')}
+                                    </ul>
+                                </div>
+                                <div class="pattern-col" style="background: rgba(251, 191, 36, 0.08); padding:20px; border-radius:16px; border: 1px solid rgba(251, 191, 36, 0.2);">
+                                    <h4 style="color:#fbbf24; margin-bottom:15px; font-size:1rem;"><i class="fas fa-shield-alt"></i> Safety Checks</h4>
+                                    <ul style="padding-left: 0; line-height: 1.8; color:#e2e8f0; list-style:none;">
+                                         ${currentTopicData.mentalModel.safetyCheck.map(item => `
+                                            <li style="margin-bottom:10px; padding:10px 12px; background:rgba(0,0,0,0.2); border-radius:10px; border-left:3px solid #fbbf24;">
+                                                <strong style="color:#fbbf24;">${item.label}</strong><br>
+                                                <span style="color:#94a3b8; font-size:0.9rem;">${item.desc}</span>
+                                            </li>
+                                         `).join('')}
+                                    </ul>
+                                </div>
                             </div>
+                            ${currentTopicData.mentalModel.patterns ? `
+                            <div style="margin-top:30px; background: rgba(16, 185, 129, 0.08); padding:20px; border-radius:16px; border: 1px solid rgba(16, 185, 129, 0.2);">
+                                <h4 style="color:#10b981; margin-bottom:15px; font-size:1rem;"><i class="fas fa-table"></i> Pattern Quick Reference</h4>
+                                <div style="overflow-x:auto;">
+                                    <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
+                                        <thead>
+                                            <tr style="background:rgba(16, 185, 129, 0.15);">
+                                                <th style="padding:12px; text-align:left; color:#10b981; font-weight:600;">Pattern</th>
+                                                <th style="padding:12px; text-align:left; color:#10b981; font-weight:600;">Use Case</th>
+                                                <th style="padding:12px; text-align:left; color:#10b981; font-weight:600;">Time</th>
+                                                <th style="padding:12px; text-align:left; color:#10b981; font-weight:600;">Space</th>
+                                                <th style="padding:12px; text-align:left; color:#10b981; font-weight:600;">Key Idea</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${currentTopicData.mentalModel.patterns.map((p, idx) => `
+                                                <tr style="background:${idx % 2 === 0 ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.1)'}">
+                                                    <td style="padding:12px; color:#fff; font-weight:600;">${p.algo}</td>
+                                                    <td style="padding:12px; color:#cbd5e1;">${p.use}</td>
+                                                    <td style="padding:12px;"><code style="background:rgba(251,191,36,0.2); color:#fbbf24; padding:3px 8px; border-radius:6px;">${p.time}</code></td>
+                                                    <td style="padding:12px;"><code style="background:rgba(139,92,246,0.2); color:#a78bfa; padding:3px 8px; border-radius:6px;">${p.space}</code></td>
+                                                    <td style="padding:12px; color:#94a3b8; font-size:0.8rem;">${p.template || ''}</td>
+                                                </tr>
+                                            `).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>` : ''}
+                            ${currentTopicData.mentalModel.decisionTree ? `
+                            <div style="margin-top:30px;">
+                                ${currentTopicData.mentalModel.decisionTree}
+                            </div>` : ''}
+                            ${currentTopicData.mentalModel.codeTemplates ? `
+                            <div style="margin-top:30px;">
+                                ${currentTopicData.mentalModel.codeTemplates}
+                            </div>` : ''}
                         </div>
                     </div>` : ''}
 

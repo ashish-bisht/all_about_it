@@ -9,11 +9,154 @@ const topic_trees = {
     icon: "fas fa-tree",
     mentalModel: {
         whenToApply: [
-            { label: "Leap of Faith", desc: "Assume `solve(root.left)` works. Combine results." }
+            { label: "🔄 LCA Problems", desc: "Find common ancestor → Bubble-up DFS or BST property" },
+            { label: "📈 Path Sum/Max", desc: "Track global vs local → Split (update global) + Flow (return)" },
+            { label: "🏗️ Construction", desc: "Build from traversals → Preorder=root, Inorder=split" },
+            { label: "📦 Serialize", desc: "Tree ↔ String → Preorder + null markers 'N'" },
+            { label: "🔥 Multi-direction", desc: "Need to go UP? → Convert to Graph (parent pointers)" },
+            { label: "🎯 BST Property", desc: "Sorted tree → left < root < right, use for O(H) search" }
         ],
+        patterns: [
+            { algo: "LCA (Binary Tree)", use: "Common ancestor", time: "O(N)", space: "O(H)", template: "if root==p or q: return root; combine L/R" },
+            { algo: "LCA (BST)", use: "Common ancestor BST", time: "O(H)", space: "O(1)", template: "both < root: left; both > root: right; else: split!" },
+            { algo: "Max Path Sum", use: "Any-to-any path", time: "O(N)", space: "O(H)", template: "global = split, return = flow" },
+            { algo: "Serialize/Deserialize", use: "Tree to string", time: "O(N)", space: "O(N)", template: "preorder + 'N' markers + iterator" },
+            { algo: "Construct Tree", use: "Pre+In to tree", time: "O(N)", space: "O(N)", template: "pre=root, inorder=split, use hashmap" },
+            { algo: "Tree to Graph", use: "Burn tree, multi-dir", time: "O(N)", space: "O(N)", template: "Build adj list with parent links, BFS" }
+        ],
+        decisionTree: `
+<div style="background:#1e293b; padding:25px; border-radius:16px; margin:15px 0; border:1px solid rgba(255,255,255,0.1);">
+<h4 style="color:#a78bfa; margin-bottom:20px; text-align:center; font-size:1.1rem;">🧠 Tree Pattern Recognition</h4>
+<div style="font-family:monospace; font-size:0.85rem; line-height:1.8;">
+<pre style="color:#e2e8f0; text-align:left; margin:0;">
+              ┌──────────────────────────────┐
+              │ "What type of tree problem?" │
+              └──────────────┬───────────────┘
+                             │
+     ┌───────────────────────┼───────────────────────┐
+     ▼                       ▼                       ▼
+┌──────────────┐      ┌──────────────┐      ┌──────────────┐
+│    SEARCH    │      │  CONSTRUCT   │      │  PATH/SUM    │
+│  LCA/Find    │      │  Build Tree  │      │   Problems   │
+└──────┬───────┘      └──────┬───────┘      └──────┬───────┘
+       │                     │                     │
+       ▼                     ▼                     ▼
+  ┌─────────────┐      ┌─────────────┐      ┌─────────────┐
+  │ BST?        │      │ Pre + In?   │      │ Global vs   │
+  │ → O(H) walk │      │ → Pre=root  │      │ Local!      │
+  │             │      │   In=split  │      │             │
+  │ Binary?     │      │             │      │ Split: L+R  │
+  │ → Bubble-up │      │ Serialize?  │      │ Flow: max() │
+  └─────────────┘      │ → Pre + 'N' │      └─────────────┘
+                       └─────────────┘
+
+       "Need to go UP the tree?"
+              │
+              ▼
+      ┌───────────────────┐
+      │ Convert to Graph! │
+      │ Parent pointers   │
+      │ + BFS from start  │
+      └───────────────────┘
+</pre>
+</div>
+</div>`,
+        codeTemplates: `
+<div style="background:#0f172a; padding:20px; border-radius:12px; margin:15px 0;">
+<h4 style="color:#10b981; margin-bottom:15px;">📝 Tree Templates</h4>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+1️⃣ LCA Binary Tree (Bubble-up)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def lowestCommonAncestor(root, p, q):
+    if not root or root == p or root == q:
+        return root
+    left = lowestCommonAncestor(root.left, p, q)
+    right = lowestCommonAncestor(root.right, p, q)
+    if left and right: return root  # I am LCA
+    return left if left else right
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+2️⃣ Max Path Sum (Global vs Local)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def maxPathSum(root):
+    max_sum = float('-inf')
+    def dfs(node):
+        nonlocal max_sum
+        if not node: return 0
+        left = max(dfs(node.left), 0)   # Clamp negatives!
+        right = max(dfs(node.right), 0)
+        # SPLIT: Update global (L + root + R)
+        max_sum = max(max_sum, node.val + left + right)
+        # FLOW: Return to parent (max path through me)
+        return node.val + max(left, right)
+    dfs(root)
+    return max_sum
+</pre>
+</details>
+
+<details style="margin-bottom:15px;">
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+3️⃣ Serialize/Deserialize
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def serialize(root):
+    vals = []
+    def dfs(node):
+        if not node: vals.append("N"); return
+        vals.append(str(node.val))
+        dfs(node.left); dfs(node.right)
+    dfs(root)
+    return ",".join(vals)
+
+def deserialize(data):
+    vals = iter(data.split(","))
+    def build():
+        val = next(vals)
+        if val == "N": return None
+        node = TreeNode(int(val))
+        node.left, node.right = build(), build()
+        return node
+    return build()
+</pre>
+</details>
+
+<details>
+<summary style="cursor:pointer; color:#fbbf24; font-weight:bold; padding:10px; background:#1e293b; border-radius:8px;">
+4️⃣ Tree to Graph (Burn Tree)
+</summary>
+<pre style="color:#a5b4fc; padding:15px; background:#1e1b4b; border-radius:8px; margin-top:10px; font-size:0.85rem;">
+def burnTree(root, start):
+    graph = defaultdict(list)
+    def buildGraph(node):
+        if not node: return
+        if node.left:
+            graph[node.val].append(node.left.val)
+            graph[node.left.val].append(node.val)
+            buildGraph(node.left)
+        if node.right:
+            graph[node.val].append(node.right.val)
+            graph[node.right.val].append(node.val)
+            buildGraph(node.right)
+    buildGraph(root)
+    # BFS from start
+    return bfs_from(graph, start)
+</pre>
+</details>
+</div>`,
         safetyCheck: [
-            { label: "Base Cases", desc: "Always handle `if not root` first." },
-            { label: "Global vs Local", desc: "Pass down (Param) or Bubble up (Return)?" }
+            { label: "🔍 Base case!", desc: "<code>if not root: return None/0</code> — Always first!" },
+            { label: "🌳 Height vs Nodes!", desc: "Space = O(H) for recursion. H = log N (balanced), H = N (skewed)" },
+            { label: "📈 Clamp negatives!", desc: "Max path: <code>left = max(dfs(left), 0)</code> — Ignore negative subtrees" },
+            { label: "🔄 Global vs Local!", desc: "Split updates global (L+R), Flow returns to parent (max one branch)" },
+            { label: "📋 Use Iterator!", desc: "Deserialize: <code>iter()</code> not index — avoids O(N) slicing" },
+            { label: "↕️ Need parent?", desc: "Tree only goes down. For UP: convert to graph or track parent" }
         ]
     },
     questions: [
@@ -36,6 +179,13 @@ const topic_trees = {
                 explanation: "Recursive DFS! Base: if root == p or q or null, return root. Recurse left/right. If both return node, I am LCA. If one, return that."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>DFS bubbling kyun?</strong> Bottom-up check karna hai — kahan mil rahe hain?",
+                    "⚡ Base Case: <code>if root in [p, q, null]: return root</code> — found one target or hit end",
+                    "🔄 Recurse: <code>left = dfs(L), right = dfs(R)</code>",
+                    "✅ <code>if left and right: return root</code> → Current node is split point (LCA)",
+                    "💡 <code>else: return left or right</code> → Pass found target up"
+                ],
                 metrics: { time: "O(N)", space: "O(H)" },
                 timeExplainer: "<strong>DFS Traversal:</strong><br>• Visit every node once<br>• Recurse Left and Right<br><br><strong>Total:</strong> <code>O(N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Recursion Stack depth = Tree Height<br>• Skewed Tree: <code>O(N)</code><br>• Balanced Tree: <code>O(log N)</code><br><br><strong>Result:</strong> <code>O(H)</code>",
@@ -66,6 +216,13 @@ return left if left else right`
                 explanation: "Preorder + null markers! Serialize: '1,2,N,N,3'. Deserialize: Iterator. If 'N' return None. Else create node, recurse."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Preorder kyun?</strong> Root pehle process hota hai — easy to rebuild",
+                    "⚡ Serialize: <code>vals.append(str(val))</code> else <code>append('N')</code> for null structure",
+                    "🔄 Deserialize: Use <code>iterator</code> (next()) — global index management se better",
+                    "✅ <code>val = next(); if 'N' return None</code> else create Node & recurse",
+                    "💡 Inorder kaam nahi karega kyunki root ambiguous hota hai string mein"
+                ],
                 metrics: { time: "O(N)", space: "O(H)" },
                 timeExplainer: "<strong>Preorder Traversal:</strong><br>• Visit all nodes to serialize: <code>O(N)</code><br>• Deserialize visits all nodes: <code>O(N)</code><br><br><strong>Total:</strong> <code>O(N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Recursion Stack: <code>O(H)</code><br>• Output String/Array: <code>O(N)</code><br><br><strong>Result:</strong> <code>O(N)</code>",
@@ -111,6 +268,13 @@ def deserialize(self, data):
                 explanation: "Global vs Local! At each node: global_max = max(global_max, node + left + right). Return upward: node + max(left, right)."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Split vs Flow kyun?</strong> Path U-turn le sakta hai (split) ya upar ja sakta hai (flow)",
+                    "⚡ Split (Local): <code>root + left + right</code> → update global max",
+                    "🔄 Flow (Return): <code>root + max(left, right)</code> → parent ko extend karne ke liye",
+                    "✅ Clamp negatives: <code>max(dfs(), 0)</code> — negative path mat lo",
+                    "💡 Global variable <code>self.max_sum</code> track karta hai best U-turn path"
+                ],
                 metrics: { time: "O(N)", space: "O(H)" },
                 timeExplainer: "<strong>DFS Postorder:</strong><br>• Compute max path for each node<br>• Visit every node exactly once<br><br><strong>Total:</strong> <code>O(N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Recursion Stack depth = Tree Height<br>• Worst case (Skewed): <code>O(N)</code><br><br><strong>Result:</strong> <code>O(H)</code>",
@@ -146,6 +310,13 @@ def maxPathSum(self, root):
                 explanation: "Preorder[0] is Root. Find Root in Inorder. Left of it is LeftSubtree, Right is RightSubtree."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Pre + In logic?</strong> Pre[0] is Root. Inorder mein Root split karta hai L/R ko",
+                    "⚡ Hashmap: <code>in_map = {val: idx}</code> for O(1) loopups of split index",
+                    "🔄 <code>mid = in_map[root_val]</code>; Recurse <code>build(is, mid-1)</code> then <code>build(mid+1, ie)</code>",
+                    "✅ Preorder iterator global rakho — apne aap next node dega",
+                    "💡 Important: Left subtree pehle build karo (Preorder rule)"
+                ],
                 metrics: { time: "O(N)", space: "O(N)" },
                 timeExplainer: "<strong>Time Breakdown:</strong><br>• HashMap construction: <code>O(N)</code><br>• Recursive Tree Building: <code>O(N)</code><br><br><strong>Total:</strong> <code>O(N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• HashMap stores N indices<br>• Recursion Stack: <code>O(H)</code><br><br><strong>Total:</strong> <code>O(N)</code>",
@@ -184,6 +355,13 @@ return build(0, len(inorder) - 1)`
                 explanation: "Track (row, col). Store in `Map[col]`. Sort by Col, then Row, then Val."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Coordinates kyun?</strong> (row, col) chahiye grouping ke liye",
+                    "⚡ BFS: Store <code>(node, row, col)</code> tuple in queue",
+                    "🔄 Map: <code>cols[c].append((r, val))</code> — col key hai, (row, val) value",
+                    "✅ Sort: Pehle Column, phir Row, phir Value (overlapping case)",
+                    "💡 BFS levels automatically row sort karte hain, bas value sort chahiye"
+                ],
                 metrics: { time: "O(N log N)", space: "O(N)" },
                 timeExplainer: "<strong>BFS + Sorting:</strong><br>• BFS Traversal: <code>O(N)</code><br>• Sorting nodes in same column: <code>O(N log N)</code><br><br><strong>Total:</strong> <code>O(N log N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Map stores all nodes<br>• Queue for BFS<br><br><strong>Result:</strong> <code>O(N)</code>",
@@ -225,6 +403,13 @@ return res`
                 explanation: "Use BST Property! If both p and q < root, go Left. If both > root, go Right. The first node where they SPLIT (one small, one big) is the LCA. O(H) time, O(1) space (iterative)."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>BST Property use kyun?</strong> O(H) vs O(N) — data sorted hai!",
+                    "⚡ Logic: Agar dono P, Q < Root → Go Left. Agar dono > Root → Go Right",
+                    "🔄 Split Point: Jab ek chhota aur ek bada ho → Wohi LCA hai!",
+                    "✅ Iterative: Space O(1) ho jaata hai recursion stack ke bina",
+                    "💡 Binary Search jaisa: discard half tree every step"
+                ],
                 metrics: { time: "O(H)", space: "O(1)" },
                 code: `def lowestCommonAncestor(root, p, q):
 while root:
@@ -250,6 +435,13 @@ while root:
                 explanation: "Postorder Tuple! Each node needs from children: (Min_Val, Max_Val, Size, Is_BST). If Left is BST & Right is BST & MaxLeft < Node < MinRight -> Current is BST."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Postorder Tuple kyun?</strong> Valid BST check karne ke liye children ka min/max chahiye",
+                    "⚡ Return: <code>(min, max, size)</code> up the tree",
+                    "🔄 Check: <code>L.max < Node < R.min</code> — agar ye true hai toh valid MST",
+                    "✅ Size: <code>L.size + R.size + 1</code>. Update global max if valid",
+                    "💡 Invalid? Return <code>(inf, -inf)</code> taaki parent range check fail ho"
+                ],
                 metrics: { time: "O(N)", space: "O(H)" },
                 code: `def largestBST(root):
 # Return: (min_val, max_val, size)
@@ -281,6 +473,13 @@ return postorder(root)[2]`
                 explanation: "Convert to Graph! Tree nodes only point down. To burn UP, we need Parent pointers (or Adj List). Then run BFS from start node to find max distance."
             },
             learn: {
+                quickAlgo: [
+                    "🎯 <strong>Graph conversion kyun?</strong> Tree pointers only down jaate hain, burn UP bhi hota hai",
+                    "⚡ Map: <code>parent_map[node] = parent</code> — backward edge create karo",
+                    "🔄 BFS: Start from Target node, spread radially (Up, Left, Right)",
+                    "✅ Max Distance: Level 0 se start karo, last reachable node time dega",
+                    "💡 Visited Set zaroori hai cycle/revisit avoid karne ke liye"
+                ],
                 metrics: { time: "O(N)", space: "O(N)" },
                 code: `def amountOfTime(root, start):
 graph = defaultdict(list)
