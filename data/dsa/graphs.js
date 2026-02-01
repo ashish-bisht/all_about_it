@@ -175,11 +175,18 @@ def topoSort(numCourses, prerequisites):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>BFS kyun?</strong> Simultaneous spread chahiye — sab rotten ek saath affect karte hain",
-                    "⚡ Multi-source BFS: <code>queue = all rotten cells</code> initially",
-                    "🔄 Level by level: <code>time++</code> per BFS level, not per cell",
-                    "✅ End: <code>if any fresh left → -1</code>, else return time",
-                    "💡 DFS galat kyun? DFS sequential hai, BFS parallel spread simulate karta hai"
+                    "q = deque(); fresh = 0",
+                    "for r, c in grid:                  # 🎯 Multi-source BFS: Add ALL rotten",
+                    "    if grid[r][c] == 2: q.append((r,c,0))",
+                    "    if grid[r][c] == 1: fresh += 1",
+                    "while q:",
+                    "    r, c, time = q.popleft()",
+                    "    for dr, dc in dirs:            # ⚡ 4-directional spread",
+                    "        nr, nc = r+dr, c+dc",
+                    "        if valid(nr,nc) and grid[nr][nc] == 1:",
+                    "            grid[nr][nc] = 2; fresh -= 1",
+                    "            q.append((nr, nc, time+1)) # 🔄 Level = Time",
+                    "return time if fresh == 0 else -1  # ✅ Check all rotted"
                 ],
                 metrics: { time: "O(N×M)", space: "O(N×M)" },
                 timeExplainer: `
@@ -428,11 +435,17 @@ def orangesRotting(grid):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Topo Sort kyun?</strong> Dependencies hai — pehle prereq complete karo",
-                    "⚡ Kahn's (BFS): <code>indegree[i]=0</code> matlab no dependency, start from these",
-                    "🔄 Jab course complete: <code>indegree[neighbor]--</code>; if 0, add to queue",
-                    "✅ <code>processed == n</code> means sab courses possible",
-                    "💡 Cycle detect: agar processed < n, cycle hai — impossible!"
+                    "indegree = [0] * n; graph = defaultdict(list)",
+                    "for a, b in prereqs:",
+                    "    graph[b].append(a); indegree[a] += 1 # 🎯 Build Graph + Indegrees",
+                    "q = deque([i for i in range(n) if indegree[i] == 0]) # ⚡ Start: No deps",
+                    "count = 0",
+                    "while q:",
+                    "    node = q.popleft(); count += 1",
+                    "    for nei in graph[node]:",
+                    "        indegree[nei] -= 1           # 🔄 Reduce dependency",
+                    "        if indegree[nei] == 0: q.append(nei) # ✅ Unlocked!",
+                    "return count == n                   # 💡 All done = No cycle"
                 ],
                 metrics: { time: "O(V+E)", space: "O(V+E)" },
                 timeExplainer: `
@@ -656,11 +669,19 @@ def course_schedule(num_courses, prerequisites):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Dijkstra kyun?</strong> Weighted edges hai — simple BFS won't work",
-                    "⚡ MinHeap: <code>heappop</code> gives node with MINIMUM cost first",
-                    "🔄 <code>if node already visited: skip</code> — already found shortest",
-                    "✅ First time reaching node = shortest path (greedy works!)",
-                    "💡 Negative weights? Dijkstra fails — use Bellman-Ford"
+                    "dist = {node: inf for node in graph}; dist[src] = 0",
+                    "heap = [(0, src)]                  # 🎯 MinHeap: (cost, node)",
+                    "visited = set()",
+                    "while heap:",
+                    "    cost, node = heappop(heap)",
+                    "    if node in visited: continue   # ⚡ Already found shortest",
+                    "    visited.add(node)",
+                    "    for nei, weight in graph[node]:",
+                    "        new_cost = cost + weight",
+                    "        if new_cost < dist[nei]:   # 🔄 Relaxation",
+                    "            dist[nei] = new_cost",
+                    "            heappush(heap, (new_cost, nei)) # ✅ Push updated",
+                    "return dist                        # 💡 dist[x] = shortest path from src"
                 ],
                 metrics: { time: "O(E log V)", space: "O(V+E)" },
                 timeExplainer: `
@@ -908,11 +929,17 @@ def course_schedule(num_courses, prerequisites):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Union-Find kyun?</strong> Connectivity check — 'same group?' O(1) mein",
-                    "⚡ Path compression: <code>parent[x] = find(parent[x])</code> tree flat karta hai",
-                    "🔄 Union by rank: chhota tree bade mein merge — height controlled",
-                    "✅ Count components: unique <code>find(i)</code> values count karo",
-                    "💡 DFS/BFS bhi chalega but Union-Find cleaner for dynamic connectivity"
+                    "parent = list(range(n)); rank = [0] * n",
+                    "def find(x):                       # 🎯 Path Compression",
+                    "    if parent[x] != x: parent[x] = find(parent[x])",
+                    "    return parent[x]",
+                    "def union(x, y):                   # ⚡ Union by Rank",
+                    "    px, py = find(x), find(y)",
+                    "    if px == py: return False      # 🔄 Already connected (Cycle!)",
+                    "    if rank[px] < rank[py]: px, py = py, px",
+                    "    parent[py] = px",
+                    "    if rank[px] == rank[py]: rank[px] += 1",
+                    "    return True                    # ✅ Merged successfully"
                 ],
                 metrics: { time: "O(N²×α(N))", space: "O(N)" },
                 timeExplainer: `
@@ -1092,11 +1119,16 @@ def course_schedule(num_courses, prerequisites):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>HashMap kyun?</strong> Cycle handle karna hai — same node dobara aaye toh existing clone return karo",
-                    "⚡ <code>old_to_new[node]</code> = mapping from original → clone",
-                    "🔄 DFS: clone bana, map mein daal, neighbors recursively clone karo",
-                    "✅ Base: <code>if node in map: return map[node]</code> — already cloned",
-                    "💡 BFS bhi chalega — same hashmap logic, just iterative"
+                    "old_to_new = {}                    # 🎯 Map original -> clone",
+                    "def dfs(node):",
+                    "    if node in old_to_new:         # ⚡ Already cloned? (Cycle handling)",
+                    "        return old_to_new[node]",
+                    "    clone = Node(node.val)         # 🔄 Create new node",
+                    "    old_to_new[node] = clone       # ✅ Store BEFORE recursing (critical!)",
+                    "    for nei in node.neighbors:",
+                    "        clone.neighbors.append(dfs(nei)) # 💡 Clone neighbors recursively",
+                    "    return clone",
+                    "return dfs(node)"
                 ],
                 metrics: { time: "O(V+E)", space: "O(V)" },
                 timeExplainer: `
@@ -1275,11 +1307,19 @@ def cloneGraph(node):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>2-Coloring kyun?</strong> Bipartite = 2 groups with no same-group edges",
-                    "⚡ BFS/DFS: alternate colors assign karo — <code>0, 1, 0, 1...</code>",
-                    "🔄 <code>if neighbor same color → NOT bipartite!</code>",
-                    "✅ All nodes colored without conflict → bipartite hai",
-                    "💡 Multiple components? Start BFS from each unvisited node"
+                    "color = [-1] * n                   # 🎯 -1 = Unvisited",
+                    "def bfs(start):",
+                    "    q = deque([start]); color[start] = 0",
+                    "    while q:",
+                    "        node = q.popleft()",
+                    "        for nei in graph[node]:",
+                    "            if color[nei] == -1:   # ⚡ Uncolored? Assign opposite",
+                    "                color[nei] = 1 - color[node]",
+                    "                q.append(nei)",
+                    "            elif color[nei] == color[node]: # 🔄 Same color = Conflict!",
+                    "                return False",
+                    "    return True",
+                    "return all(bfs(i) for i in range(n) if color[i] == -1) # ✅ Check all components"
                 ],
                 metrics: { time: "O(V+E)", space: "O(V)" },
                 timeExplainer: `
@@ -1444,11 +1484,17 @@ def isBipartite(graph):
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>2 Sets kyun?</strong> visited(global) vs rec_stack(current path) — back edge detect karta hai",
-                    "⚡ <code>if node in rec_stack → CYCLE!</code> — same path pe wapas aaye",
-                    "🔄 Enter: <code>rec_stack.add</code>; Exit: <code>rec_stack.remove</code> (backtrack)",
-                    "✅ <code>if node in visited but not in stack → cross edge, safe</code>",
-                    "💡 Undirected graph? Single visited set enough — no direction matters"
+                    "visited, rec_stack = set(), set() # 🎯 Global vs Current Path",
+                    "def dfs(node):",
+                    "    visited.add(node)",
+                    "    rec_stack.add(node)            # ⚡ Add to current path",
+                    "    for nei in graph[node]:",
+                    "        if nei not in visited:",
+                    "            if dfs(nei): return True # 🔄 Recursion found cycle",
+                    "        elif nei in rec_stack:     # ✅ Back edge = CYCLE!",
+                    "            return True",
+                    "    rec_stack.remove(node)         # 💡 Backtrack: Remove from path",
+                    "    return False"
                 ],
                 metrics: { time: "O(V+E)", space: "O(V)" },
                 timeExplainer: `

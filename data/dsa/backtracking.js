@@ -939,11 +939,16 @@ print(subsets_detailed([1, 2, 3]))
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Unlimited use kyun?</strong> <code>backtrack(i, ...)</code> not i+1 — same element repeat allowed",
-                    "⚡ Pruning: <code>if target < 0: return</code> — exceeded, no point continuing",
-                    "🔄 <code>for i in range(start, n)</code> — start ensures no duplicates like [2,3] and [3,2]",
-                    "✅ <code>target == 0</code> → valid combination found!",
-                    "💡 Sorted array helps: <code>if cand > target: break</code> — early exit"
+                    "res = []",
+                    "def backtrack(start, path, remain):",
+                    "    if remain == 0:                # 🎯 Found valid combination!",
+                    "        res.append(path[:])",
+                    "        return",
+                    "    for i in range(start, len(cand)):",
+                    "        if cand[i] > remain: break # ⚡ Pruning (sorted array)",
+                    "        path.append(cand[i])       # 🔄 Include",
+                    "        backtrack(i, path, remain - cand[i]) # ✅ i not i+1 (reuse allowed)",
+                    "        path.pop()                 # 💡 Backtrack"
                 ],
                 metrics: { time: "O(N^(T/M))", space: "O(T/M)" },
                 timeExplainer: `<strong>Time Complexity: O(N^(T/M))</strong><br><br>
