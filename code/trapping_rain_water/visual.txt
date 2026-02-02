@@ -1,0 +1,41 @@
+Ekdum solid visual! 🔥
+
+```
+🎯 RAIN WATER TRAPPING
+
+HEIGHT: [4, 2, 0, 3, 2, 5]
+         │  │     │  │  │
+         █        █     █
+         █  █     █  █  █
+         █  █     █  █  █
+         █  █  .  █  █  █
+         L           R
+
+TWO POINTERS APPROACH:
+
+L < R? Move smaller side!
+  ↓
+Compare with MAX
+  ├─ Smaller? TRAP WATER 💧
+  └─ Bigger?  UPDATE MAX
+
+EXAMPLE:
+[4, 2, 0, 3, 2, 5]
+ L              R
+ 
+L(4) < R(5)? YES → process L
+  2 < 4? YES → trap 4-2=2 💧
+  L++
+  
+  0 < 4? YES → trap 4-0=4 💧
+  L++
+  
+  3 < 4? YES → trap 4-3=1 💧
+  ...and so on
+
+💡 MANTRA:
+Chhota side process → Max se compare
+  → Trap or Update → Move pointer!
+```
+
+Mast! 💪

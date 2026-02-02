@@ -184,16 +184,16 @@ def merge(intervals):
                     "ans = []",
                     "for index in range(len(nums) - 2):           # ⚡ Fix first num (Anchor)",
                     "    if index > 0 and nums[index] == nums[index-1]: continue  # Skip dup anchor",
-                    "    left, right = index + 1, len(nums) - 1   # 🔄 Two Pointers on rest",
+                    "    left, right = index + 1, len(nums) - 1   # 🔄 Two Pointers",
                     "    while left < right:",
                     "        total = nums[index] + nums[left] + nums[right]",
-                    "        if total < 0: left += 1              # Need bigger sum",
-                    "        elif total > 0: right -= 1           # Need smaller sum",
-                    "        else:                                 # ✅ Found triplet!",
+                    "        if total == 0:                        # ✅ Found triplet!",
                     "            ans.append([nums[index], nums[left], nums[right]])",
                     "            left += 1; right -= 1",
                     "            while left < right and nums[left] == nums[left-1]: left += 1",
                     "            while left < right and nums[right] == nums[right+1]: right -= 1",
+                    "        elif total < 0: left += 1             # Need bigger sum",
+                    "        else: right -= 1                      # Need smaller sum",
                     "return ans"
                 ],
                 metrics: { time: "O(N²)", space: "O(1)" },
@@ -336,81 +336,86 @@ def merge(intervals):
                 options: [
                     "Check all subarrays O(n³)",
                     "Prefix sums O(n²)",
-                    "Kadane's: currSum = max(arr[i], currSum + arr[i])",
+                    "Kadane's: cur_max = max(prev_max + nums[i], nums[i])",
                     "Divide and Conquer O(n log n)"
                 ],
                 correct: 2,
-                explanation: "Kadane's is GENIUS! Keep running sum. If it goes negative, reset to 0 (or current element). Track global max. O(n) time, O(1) space. Foundation for many DP problems!"
+                explanation: "Kadane's is GENIUS! At each step: continue previous subarray OR start fresh. Track global max. O(n) time, O(1) space. Foundation for many DP problems!"
             },
             learn: {
                 quickAlgo: [
-                    "curr = max_sum = nums[0]         # 🎯 Init with first element (handle all negs)",
-                    "for n in nums[1:]:               # ⚡ Iterate rest",
-                    "    if curr < 0: curr = 0        # 🔄 Reset: Negative sum is a burden",
-                    "    curr += n                    # 💡 Add current element",
-                    "    max_sum = max(max_sum, curr) # ✅ Track global maximum",
-                    "return max_sum"
+                    "prev_max = max_so_far = nums[0]              # 🎯 Init with first element",
+                    "for index in range(1, len(nums)):            # ⚡ Start from 1",
+                    "    cur_max = max(prev_max + nums[index], nums[index])  # 🔄 Continue or fresh?",
+                    "    max_so_far = max(max_so_far, cur_max)    # ✅ Track global maximum",
+                    "    prev_max = cur_max                       # 💡 Update for next iteration",
+                    "return max_so_far"
                 ],
                 metrics: { time: "O(N)", space: "O(1)" },
-                timeExplainer: "<strong>Time Complexity: O(N)</strong><br>We iterate through the array exactly once (Single Pass). Each element is visited and processed in constant time.",
-                spaceExplainer: "<strong>Space Complexity: O(1)</strong><br>We only use two variables (`current_sum` and `global_max`) to track the state, regardless of the input array size.",
-                visual: "<span><strong>Visual: The Reset Button</strong><br>Jab tak <code>current_sum</code> positive hai, wo aage kaam aayega. Jaise hi wo negative hua, wo 'bojh' ban gaya. Use turant 0 karke naya safar shuru karo.</span>",
-                crux: "Contiguous subarray dhoondna hai. Agar pichla sum negative hai, toh wo current number ki value ko kam ਹੀ karega.<br><strong>Strategy:</strong><br>1. <code>current_sum</code> ko track karo.<br>2. DECISION: Kya <code>current + nums[i]</code> better hai ya fresh start <code>nums[i]</code> better hai?<br>3. Har step pe <code>global_max</code> update karo.",
-                trap: "<strong>All Negatives:</strong> Agar array <code>[-5, -2, -3]</code> hai aur tumne <code>max_sum = 0</code> se start kiya, toh answer 0 aayega jo galat hai.<br><strong>Fix:</strong> <code>global_max</code> ko hamesha pehle element (<code>nums[0]</code>) se initialize karo.",
+                timeExplainer: "<strong>Time: O(N)</strong><br>Single pass through array. Each element processed in O(1).",
+                spaceExplainer: "<strong>Space: O(1)</strong><br>Only two variables: <code>prev_max</code> and <code>max_so_far</code>.",
+                visual: `<span><strong>Visual: Continue vs Fresh Start</strong><br>
+<pre style="background:none; border:none; padding:10px; font-size:0.8rem; line-height:1.2;">
+nums = [-2, 1, -3, 4, -1, 2, 1, -5, 4]
+         │  │   │  │
+         ▼  ▼   ▼  ▼
+prev:   -2  1  -2  4   ← Best ending HERE
+max:    -2  1   1  4   ← Global peak (answer!)
+
+Key: cur_max = max(prev + nums[i], nums[i])
+     "Continue"  vs  "Fresh start"
+</pre></span>`,
+                crux: "<strong>Decision at each index:</strong><br>Continue previous subarray (<code>prev_max + nums[i]</code>) OR start fresh (<code>nums[i]</code>)?<br><br><strong>Why?</strong> Negative prev_max is a burden - fresh start better!",
+                strategy: "Track TWO things: <code>prev_max</code> (best ending at previous) and <code>max_so_far</code> (global peak).",
+                trap: "<strong>All Negatives Trap:</strong><br>Array <code>[-5, -2, -3]</code> → Answer is <code>-2</code> (least negative).<br><strong>Fix:</strong> Init with <code>nums[0]</code>, NOT 0!",
                 dryRun: [
                     "<strong>Input:</strong> nums = [-2, 1, -3, 4]",
-                    "1. n=-2: current_sum=-2. global_max=-2. <br><span class='var-highlight'>current_sum < 0</span> -> Reset logic triggers implicitly next step.",
-                    "2. n=1: max(1, -2+1) = 1. current_sum=1. global_max=max(-2, 1) = <span class='var-highlight'>1</span>.",
-                    "3. n=-3: max(-3, 1-3) = -2. current_sum=-2. global_max=1.",
-                    "4. n=4: max(4, -2+4) = 4. current_sum=4. global_max=4."
+                    "<strong>Init:</strong> prev_max = max_so_far = nums[0] = <span class='var-highlight'>-2</span>",
+                    "index=1: cur_max = max(-2+1, 1) = <strong>1</strong>. max_so_far = max(-2, 1) = <span class='var-highlight'>1</span>.",
+                    "index=2: cur_max = max(1-3, -3) = <strong>-2</strong>. max_so_far = 1.",
+                    "index=3: cur_max = max(-2+4, 4) = <strong>4</strong>. max_so_far = <span class='var-highlight'>4</span>.",
+                    "<strong>Return:</strong> 4"
                 ],
                 codeTitle: "Python Solution (Clean)",
-                code: `def max_sub_array(nums):
-    # Initialize with first element
-    max_sum = nums[0]
-    current_sum = nums[0]
+                code: `def maximum_sub_array(nums):
+    prev_max = nums[0]
+    max_so_far = nums[0]
     
-    # Iterate starting from the second element
-    for current_num in nums[1:]:
-        # If current_sum is negative, reset it (start fresh)
-        # Because adding a negative sum to current_num will only make it smaller
-        if current_sum < 0:
-            current_sum = 0
-            
-        current_sum += current_num
-        
-        if current_sum > max_sum:
-            max_sum = current_sum
-            
-    return max_sum`,
-                codeDetailed: `def max_sub_array(nums):
+    for index in range(1, len(nums)):
+        cur_max = max(prev_max + nums[index], nums[index])
+        max_so_far = max(max_so_far, cur_max)
+        prev_max = cur_max
+    
+    return max_so_far`,
+                codeDetailed: `def maximum_sub_array(nums):
     """
     Kadane's Algorithm - Maximum Subarray Sum
     
-    CRUX: Track TWO things separately:
-    1. current_sum: Current subarray sum (can go negative!)
-    2. global_max: Overall best answer found so far (peak value)
+    DECISION at each step:
+    - Continue previous subarray (prev_max + nums[i])
+    - OR start fresh from current element (nums[i])
+    
+    Track TWO things:
+    1. prev_max: Best sum ENDING at previous position
+    2. max_so_far: Global maximum (the answer!)
     """
     
-    # Initialize with first element
-    global_max = nums[0]      # Best answer found so far
-    current_sum = nums[0]     # Current subarray sum
+    prev_max = nums[0]      # Best sum ending at previous
+    max_so_far = nums[0]    # Global peak
     
-    # Iterate from second element
-    for current_num in nums[1:]:
-        # DECISION POINT: Fresh start ya continue?
-        # If adding current element makes sum worse, start fresh
-        current_sum = max(current_num, current_sum + current_num)
-        #                 \\_________/  \\_______________________/
-        #                Fresh          Continue previous
-        #                start          subarray
+    for index in range(1, len(nums)):
+        # DECISION: Continue or fresh start?
+        cur_max = max(prev_max + nums[index], nums[index])
+        #             \\_________________/     \\________/
+        #              Continue subarray      Fresh start
         
-        # Track the peak! (CRUX of Kadane's)
-        # This ensures we don't lose the best answer
-        # even if current_sum becomes negative later
-        global_max = max(global_max, current_sum)
+        # Track the global peak!
+        max_so_far = max(max_so_far, cur_max)
+        
+        # Update for next iteration
+        prev_max = cur_max
     
-    return global_max  # Return peak, not current!`
+    return max_so_far`
             }
         },
         {
@@ -429,75 +434,95 @@ def merge(intervals):
                     "Use logarithms to convert to addition"
                 ],
                 correct: 1,
-                explanation: "Prefix × Suffix magic! First pass: prefix[i] = product of all left elements. Second pass: suffix from right. Result[i] = prefix[i] × suffix[i]. O(n) time! Microsoft/Amazon favorite."
+                explanation: "Prefix × Suffix magic! Pass 1: store left products. Pass 2: multiply with right products. O(n) time, O(1) space!"
             },
             learn: {
                 quickAlgo: [
-                    "n = len(nums); res = [1] * n",
-                    "prefix = 1                         # 🎯 Running product from LEFT",
-                    "for i in range(n):",
-                    "    res[i] = prefix               # ⚡ Store product of all LEFT elements",
-                    "    prefix *= nums[i]",
-                    "suffix = 1                         # 🔄 Running product from RIGHT",
-                    "for i in range(n-1, -1, -1):",
-                    "    res[i] *= suffix              # ✅ Multiply with RIGHT product",
-                    "    suffix *= nums[i]             # 💡 Update suffix",
+                    "res = [1] * len(nums)                        # 🎯 Init with 1s",
+                    "left_product = right_product = 1",
+                    "for index in range(len(nums)):               # ⚡ Left Pass",
+                    "    res[index] *= left_product",
+                    "    left_product *= nums[index]",
+                    "for index in range(len(nums)-1, -1, -1):     # 🔄 Right Pass",
+                    "    res[index] *= right_product",
+                    "    right_product *= nums[index]",
                     "return res"
                 ],
                 metrics: { time: "O(N)", space: "O(1)" },
-                timeExplainer: "<strong>Time: O(N)</strong><br>• <code>2 passes</code> through the array<br>• First pass: Build prefix products<br>• Second pass: Multiply with suffix products<br><br><strong>Total:</strong> <code>O(2N)</code> = <code>O(N)</code>",
-                spaceExplainer: "<strong>Space: O(1)</strong><br>• Output array not counted as extra space<br>• Only one variable <code>suffix_product</code> used<br><br><strong>Result:</strong> <code>O(1)</code> auxiliary space",
-                visual: "<span><strong>Visual: The Sandwich Logic</strong><br>Index <code>i</code> ke liye: (Left se sabka product) × (Right se sabka product). Hum result array mein pehle left side ka maal bharte hain, phir right side se aate waqt subtract kar dete hain.</span>",
-                crux: "Division operator banned hai.<br><strong>Strategy:</strong><br>1. <strong>Left Pass:</strong> <code>result[i]</code> mein 0 se <code>i-1</code> tak ka product store karo.<br>2. <strong>Right Pass:</strong> Ek variable <code>suffix_product</code> maintain karo aur piche se aate waqt <code>result[i]</code> ko usse multiply karo.",
-                trap: "<strong>Zero Handling:</strong> Agar array mein ek <code>0</code> hai, toh baaki sab index zero ho jayenge except the zero's index. Fix: Prefix/Suffix logic handles this naturally.",
+                timeExplainer: "<strong>Time: O(N)</strong><br>Two passes through array: O(2N) = O(N).",
+                spaceExplainer: "<strong>Space: O(1)</strong><br>Output array doesn't count. Only two variables used.",
+                visual: `<span><strong>Visual: Sandwich Product</strong><br>
+<pre style="background:none; border:none; padding:10px; font-size:0.8rem; line-height:1.2;">
+nums = [1, 2, 3, 4]
+
+Left Pass (store products of LEFT elements):
+  res[0] = 1         (nothing on left)
+  res[1] = 1         (1)
+  res[2] = 1×2 = 2   (1,2)
+  res[3] = 1×2×3 = 6 (1,2,3)
+  res = [1, 1, 2, 6]
+
+Right Pass (multiply with RIGHT products):
+  res[3] *= 1       → 6   (nothing on right)
+  res[2] *= 4       → 8   (4)
+  res[1] *= 4×3=12  → 12  (4,3)
+  res[0] *= 12×2=24 → 24  (4,3,2)
+  
+Final: [24, 12, 8, 6]
+</pre></span>`,
+                crux: "<strong>Division banned!</strong><br>res[i] = (product of LEFT elements) × (product of RIGHT elements)<br><br><strong>Two Passes:</strong><br>1. Left → Right: Store left products<br>2. Right → Left: Multiply with right products",
+                strategy: "Use result array to store left products first, then multiply with right products in second pass.",
+                trap: "<strong>Zero Handling:</strong><br>Array <code>[1, 0, 3, 4]</code> → Only index of 0 gets non-zero value.<br>Prefix/Suffix logic handles this naturally!",
                 dryRun: [
                     "<strong>Input:</strong> nums = [1, 2, 3, 4]",
-                    "1. <strong>Prefix Pass:</strong> result = [1, 1, 2, 6] <br>(e.g., index 3 stores 1*2*3)",
-                    "2. <strong>Suffix Pass:</strong> suffix_product start = 1 <br>- i=3: res[3]*1=6. suffix=4. <br>- i=2: res[2]*4=8. suffix=12. <br>- i=1: res[1]*12=12. suffix=24. <br>- i=0: res[0]*24=24",
-                    "<strong>Final:</strong> [24, 12, 8, 6]"
+                    "<strong>Init:</strong> res = [1, 1, 1, 1], left_product = 1",
+                    "<strong>Left Pass:</strong> res = [1, 1, 2, 6]",
+                    "<strong>Right Pass:</strong> right_product=1 → res[3]=6, right=4 → res[2]=8, right=12 → res[1]=12, right=24 → res[0]=24",
+                    "<strong>Return:</strong> [24, 12, 8, 6]"
                 ],
                 codeTitle: "Python Solution (Clean)",
                 code: `def product_except_self(nums):
-    n = len(nums)
-    result = [1] * n
-    
-    # Pass 1: Left to Right
+    res = [1] * len(nums)
+
     left_product = 1
-    for index, num in enumerate(nums):
-        result[index] = left_product
-        left_product *= num
-        
-    # Pass 2: Right to Left
     right_product = 1
-    for index in range(n - 1, -1, -1):
-        result[index] *= right_product
+
+    for index in range(len(nums)):
+        res[index] *= left_product
+        left_product *= nums[index]
+
+    for index in range(len(nums)-1, -1, -1):
+        res[index] *= right_product
         right_product *= nums[index]
-        
-    return result`,
+
+    return res`,
                 codeDetailed: `def product_except_self(nums):
     """
     Product of Array Except Self (Without Division)
     
-    CRUX: Break the problem into LEFT and RIGHT products
-    - result[index] = (product of all left elements) * (product of all right elements)
+    res[i] = (product of all LEFT) × (product of all RIGHT)
+    
+    Two Passes:
+    1. Left → Right: Build left products in res
+    2. Right → Left: Multiply with right products
     """
     
-    n = len(nums)
-    result = [1] * n
+    res = [1] * len(nums)
     
-    # PASS 1: Left to Right (Store Left Products)
     left_product = 1
-    for index, num in enumerate(nums):
-        result[index] = left_product      # Direct assignment (clearer!)
-        left_product *= num               # Update for next iteration
-    
-    # PASS 2: Right to Left (Multiply with Right Products)
     right_product = 1
-    for index in range(n - 1, -1, -1):
-        result[index] *= right_product    # Multiply karna padega (combining left * right)
-        right_product *= nums[index]
     
-    return result`
+    # PASS 1: Left to Right
+    for index in range(len(nums)):
+        res[index] *= left_product   # Store left product
+        left_product *= nums[index]  # Update for next
+    
+    # PASS 2: Right to Left  
+    for index in range(len(nums)-1, -1, -1):
+        res[index] *= right_product  # Multiply with right product
+        right_product *= nums[index] # Update for next
+    
+    return res`
             }
         },
         {
@@ -516,250 +541,133 @@ def merge(intervals):
                     "Stack-based approach O(n)"
                 ],
                 correct: 2,
-                explanation: "Two pointers is ELITE! Start from both ends with left_max, right_max. Water at position = min(left_max, right_max) - height. Move smaller pointer inward. O(n) time, O(1) space!"
+                explanation: "Two pointers is ELITE! Process SMALLER side (water guaranteed there!). O(n) time, O(1) space!"
             },
             learn: {
                 quickAlgo: [
-                    "L, R = 0, len(height) - 1          # 🎯 Two Pointers from ends",
-                    "L_max, R_max = 0, 0                # ⚡ Track max heights seen",
-                    "water = 0",
-                    "while L < R:",
-                    "    if height[L] < height[R]:      # 🔄 Process SMALLER side",
-                    "        if height[L] >= L_max:",
-                    "            L_max = height[L]      # New wall, no water",
-                    "        else:",
-                    "            water += L_max - height[L] # ✅ Valley! Add water",
-                    "        L += 1",
-                    "    else:",
-                    "        if height[R] >= R_max:",
-                    "            R_max = height[R]      # New wall",
-                    "        else:",
-                    "            water += R_max - height[R] # 💡 Water trapped",
-                    "        R -= 1",
-                    "return water"
+                    "left_pointer, right_pointer = 0, len(height) - 1",
+                    "left_max_height = height[0]",
+                    "right_max_height = height[-1]",
+                    "trapped_water = 0",
+                    "while left_pointer < right_pointer:",
+                    "    if height[left_pointer] < height[right_pointer]:  # 🔄 Left chhota",
+                    "        if height[left_pointer] < left_max_height:    # Valley! Pani trap",
+                    "            trapped_water += left_max_height - height[left_pointer]",
+                    "        else: left_max_height = height[left_pointer]  # Naya wall",
+                    "        left_pointer += 1",
+                    "    else:                                              # Right chhota",
+                    "        if height[right_pointer] < right_max_height:  # Valley! Pani trap",
+                    "            trapped_water += right_max_height - height[right_pointer]",
+                    "        else: right_max_height = height[right_pointer] # Naya wall",
+                    "        right_pointer -= 1",
+                    "return trapped_water"
                 ],
                 metrics: { time: "O(N)", space: "O(1)" },
-                timeExplainer: "<strong>Time: O(N)</strong><br>We process each element exactly once using two pointers meeting in the middle.",
-                spaceExplainer: "<strong>Space: O(1)</strong><br>Only constant extra space used for pointers and max height variables.",
-                visual: `<span><strong>Visual: The Water Level</strong><br>Water at position <code>i</code> = <code>min(left_max, right_max) - height[i]</code>.<br>
+                timeExplainer: "<strong>Time: O(N)</strong><br>Each element processed exactly once. Two pointers meet in middle.",
+                spaceExplainer: "<strong>Space: O(1)</strong><br>Only 4 variables: two pointers + two max heights.",
+                visual: `<span><strong>Visual: Water Level Decision</strong><br>
 <pre style="background:none; border:none; padding:10px; font-size:0.8rem; line-height:1.2;">
+Water at i = min(left_max, right_max) - height[i]
+
    LEFT_MAX        RIGHT_MAX
-      |               |
+      │               │
       █               █
-      █       ?       █
+      █   ░░░░░░░░    █    ← Water level = min(L,R)
       █   █   i   █   █
   ════════════════════════
-</pre>
-Smaller wall decides the water level! Kyunki pani MIN height tak hi bharega.</span>`,
-                crux: "Water level choti height se decide hota hai.<br><strong>Strategy:</strong><br>Process the <strong>SMALLER</strong> side (water is guaranteed there!).<br>1. Agar <code>height[left] < height[right]</code>, toh left side ka water confirm hai (kyunki right mein badi wall hai).<br>2. Same logic for right side.",
-                trap: "<strong>Wall vs Valley:</strong><br>Agar current height <code>> max_height</code>, toh wo <strong>Wall</strong> hai (pani nahi rukega, max update karo).<br>Agar choti hai, toh wo <strong>Valley</strong> hai (pani calculate karo).",
+
+KEY INSIGHT: Process SMALLER side!
+- If height[L] < height[R]: LEFT side ka water CONFIRM 
+  (kyunki right mein definitely badi wall hai)
+- No need for min() - directly use left_max!
+</pre></span>`,
+                crux: "<strong>Process SMALLER side!</strong><br>Agar left chhota hai → left ka water confirm (right mein badi wall hai)<br><br><strong>Wall vs Valley:</strong><br>• height >= max → Naya wall (update max)<br>• height < max → Valley (trap water!)",
+                strategy: "Two pointers from ends. Compare heights. Move smaller side inward. Track max on each side.",
+                trap: "<strong>Why no min() needed?</strong><br>We always process smaller side, so opposite side definitely has bigger wall!<br><code>water = local_max - height</code> is enough.",
                 dryRun: [
-                    "<strong>Input:</strong> height = [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]",
-                    "1. L=0, R=11. 0 < 1. Process Left. L_max=0. New Wall. Move L.",
-                    "2. L=1. 1 < 1. Process Left. L_max=1. New Wall. Move L.",
-                    "3. L=2. 0 < 1. Process Left. L_max=1. Valley! Water += 1-0 = 1. Move L.",
-                    "4. ... (Continuing logic where smaller side moves) ...",
-                    "<strong>Final Water:</strong> 6 units"
+                    "<strong>Input:</strong> height = [0, 1, 0, 2]",
+                    "<strong>Init:</strong> L=0, R=3, L_max=0, R_max=2, water=0",
+                    "L=0: h[0]=0 < h[3]=2 → Process Left. h[0]=0 >= L_max=0 → Wall. L_max=0. L++",
+                    "L=1: h[1]=1 < h[3]=2 → Process Left. h[1]=1 >= L_max=0 → Wall. L_max=1. L++",
+                    "L=2: h[2]=0 < h[3]=2 → Process Left. h[2]=0 < L_max=1 → <strong>Valley!</strong> water += 1-0 = <span class='var-highlight'>1</span>. L++",
+                    "<strong>Return:</strong> 1"
                 ],
                 codeTitle: "Python Solution (Clean)",
-                code: `def trapping_rain_water(height):
-    if not height: return 0
+                code: `def trap(height):
+    left_max_height = height[0]
+    right_max_height = height[len(height)-1]
     
     left_pointer = 0
-    right_pointer = len(height) - 1
-
-    left_max_height = height[left_pointer]
-    right_max_height = height[right_pointer]
-
+    right_pointer = len(height)-1
+    
     trapped_water = 0
-
+    
     while left_pointer < right_pointer:
-        # Process the SMALLER side
-        if height[left_pointer] < height[right_pointer]:
-            if height[left_pointer] > left_max_height:
+        
+        if height[left_pointer] < height[right_pointer]:  # Left side chhota
+            if height[left_pointer] < left_max_height:    # Pani trap hoga
+                trapped_water += left_max_height - height[left_pointer]
+            else:                                          # Naya max mila
                 left_max_height = height[left_pointer]
-            else:
-                trapped_water += min(left_max_height, right_max_height) - height[left_pointer]
             left_pointer += 1
-        else:
-            if height[right_pointer] > right_max_height:
+            
+        else:                                              # Right side chhota
+            if height[right_pointer] < right_max_height:  # Pani trap hoga
+                trapped_water += right_max_height - height[right_pointer]
+            else:                                          # Naya max mila
                 right_max_height = height[right_pointer]
-            else:
-                trapped_water += min(left_max_height, right_max_height) - height[right_pointer]
             right_pointer -= 1
-
+    
     return trapped_water`,
-                codeDetailed: `def trapping_rain_water(height):
+                codeDetailed: `def trap(height):
     """
-    Trapping Rain Water - Two Pointers Approach
+    Trapping Rain Water - Two Pointers
     
-    ═══════════════════════════════════════════════════════════════
-    CRUX: Water at position i = min(left_max, right_max) - height[i]
-    ═══════════════════════════════════════════════════════════════
+    CRUX: Water at i = min(left_max, right_max) - height[i]
     
-    STRATEGY: Process the SMALLER side (water is guaranteed there!)
-    
-    Why? Kyunki pani MIN height tak hi bharega:
-         LEFT_MAX        RIGHT_MAX
-            |               |
-            █               █
-            █       ?       █
-            █   █   i   █   █
-        ════════════════════════
-        
-        Water level = min(LEFT_MAX, RIGHT_MAX)
-        Smaller wall decides the water level!
-    
-    Time: O(n), Space: O(1)
+    KEY INSIGHT: Process SMALLER side!
+    - If left < right: Left side has guaranteed water
+      (right definitely has a bigger wall somewhere)
+    - So we can use left_max directly (no min needed!)
     """
     
-    # ════════════════════════════════════════════════════════════
-    # STEP 1: Initialize Two Pointers
-    # ════════════════════════════════════════════════════════════
-    left_pointer = 0                    # Start from left end
-    right_pointer = len(height) - 1    # Start from right end
+    left_max_height = height[0]
+    right_max_height = height[len(height)-1]
     
-    # Visual:
-    # height = [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]
-    #           ↑                                ↑
-    #      left_pointer                   right_pointer
+    left_pointer = 0
+    right_pointer = len(height)-1
     
-    
-    # ════════════════════════════════════════════════════════════
-    # STEP 2: Track Maximum Heights from Both Sides
-    # ════════════════════════════════════════════════════════════
-    left_max_height = height[left_pointer]    # Tallest wall on left so far
-    right_max_height = height[right_pointer]  # Tallest wall on right so far
-    
-    # Initially:
-    # left_max_height = 0 (height at index 0)
-    # right_max_height = 1 (height at index 11)
-    
-    
-    # ════════════════════════════════════════════════════════════
-    # STEP 3: Initialize Water Counter
-    # ════════════════════════════════════════════════════════════
     trapped_water = 0
     
-    
-    # ════════════════════════════════════════════════════════════
-    # STEP 4: Process Elements Until Pointers Meet
-    # ════════════════════════════════════════════════════════════
     while left_pointer < right_pointer:
         
-        # ────────────────────────────────────────────────────────
-        # DECISION: Which side to process?
-        # ────────────────────────────────────────────────────────
-        # Rule: Process the SMALLER side
-        # Why? Because water level is decided by smaller wall
-        
         if height[left_pointer] < height[right_pointer]:
-            # ┌────────────────────────────────────────────────┐
-            # │ LEFT SIDE IS SMALLER - Process Left!          │
-            # └────────────────────────────────────────────────┘
+            # LEFT SIDE CHHOTA - process left
+            # Right mein definitely badi wall hai!
             
-            # Visual:
-            #     █                   █
-            #     █       ?           █
-            #     █   █   L   █       █
-            # ════════════════════════════
-            #         ↑               ↑
-            #    left (small)    right (big)
-            #
-            # LEFT chhota hai, so RIGHT side pe definitely
-            # koi bada wall hai. LEFT ka water CONFIRM hai!
-            
-            # ┌────────────────────────────────────────────────┐
-            # │ Check: Is current bar a NEW WALL or VALLEY?   │
-            # └────────────────────────────────────────────────┘
-            if height[left_pointer] > left_max_height:
-                # Current bar is TALLER - it's a NEW WALL!
-                # Update the left boundary
-                left_max_height = height[left_pointer]
-                
-                # Visual:
-                # Old max:  █
-                # New max:  █ █  ← Update!
-                
-                # No water trapped here (it's a wall, not valley)
-            
+            if height[left_pointer] < left_max_height:
+                # VALLEY! Pani trap hoga
+                trapped_water += left_max_height - height[left_pointer]
             else:
-                # Current bar is SHORTER - it's a VALLEY!
-                # Water will be trapped here
-                
-                # ┌────────────────────────────────────────────┐
-                # │ WATER FORMULA:                             │
-                # │ water = min(left_max, right_max) - height  │
-                # └────────────────────────────────────────────┘
-                
-                # Visual:
-                #     LEFT_MAX                RIGHT_MAX
-                #        |                       |
-                #        █                       █
-                #        █ ░░░                   █
-                #        █ ░i░   ←── water!      █
-                #        █_█_____________________█
-                #
-                # Water level = min(left_max, right_max)
-                # Water at i = water_level - current_height
-                
-                trapped_water += min(left_max_height, right_max_height) - height[left_pointer]
-                
-                # Example:
-                # left_max = 2, right_max = 3, height[i] = 0
-                # water = min(2,3) - 0 = 2 - 0 = 2 units ✅
+                # WALL! Naya max mila
+                left_max_height = height[left_pointer]
             
-            # Move left pointer forward
             left_pointer += 1
             
         else:
-            # ┌────────────────────────────────────────────────┐
-            # │ RIGHT SIDE IS SMALLER/EQUAL - Process Right!  │
-            # └────────────────────────────────────────────────┘
+            # RIGHT SIDE CHHOTA - process right
+            # Left mein definitely badi wall hai!
             
-            # Visual:
-            #         █                   █
-            #         █       ?           █
-            #         █   █       █   R   █
-            # ════════════════════════════════
-            #         ↑                   ↑
-            #    left (big)          right (small)
-            #
-            # RIGHT chhota hai, so LEFT side pe definitely
-            # koi bada wall hai. RIGHT ka water CONFIRM hai!
-            
-            # ┌────────────────────────────────────────────────┐
-            # │ Check: Is current bar a NEW WALL or VALLEY?   │
-            # └────────────────────────────────────────────────┘
-            if height[right_pointer] > right_max_height:
-                # Current bar is TALLER - it's a NEW WALL!
-                right_max_height = height[right_pointer]
-                
-                # No water trapped (it's a wall)
-            
+            if height[right_pointer] < right_max_height:
+                # VALLEY! Pani trap hoga
+                trapped_water += right_max_height - height[right_pointer]
             else:
-                # Current bar is SHORTER - it's a VALLEY!
-                # Water will be trapped here
-                
-                # Visual:
-                #  LEFT_MAX                RIGHT_MAX
-                #     |                       |
-                #     █                       █
-                #     █                   ░░░ █
-                #     █       ←── water! ░i░ █
-                #     █_______________________█
-                
-                trapped_water += min(left_max_height, right_max_height) - height[right_pointer]
+                # WALL! Naya max mila
+                right_max_height = height[right_pointer]
             
-            # Move right pointer backward
             right_pointer -= 1
     
-    # ════════════════════════════════════════════════════════════
-    # STEP 5: Return Total Trapped Water
-    # ════════════════════════════════════════════════════════════
-    return trapped_water
-
-print(trapping_rain_water([0,1,0,2,1,0,1,3,2,1,2,1]))`
+    return trapped_water`
             }
         },
         {
@@ -778,47 +686,93 @@ print(trapping_rain_water([0,1,0,2,1,0,1,3,2,1,2,1]))`
                     "Check every pair O(n²)"
                 ],
                 correct: 1,
-                explanation: "SORT FIRST by start time! Then iterate: if current.start <= last.end, they overlap - merge. Else, add current to result. O(n log n) for sort, O(n) for merge. Standard interval pattern!"
+                explanation: "SORT FIRST by start time! Then check overlap with last merged. O(n log n)!"
             },
             learn: {
                 quickAlgo: [
-                    "intervals.sort(key=lambda x: x[0]) # 🎯 Sort by Start Time",
-                    "merged = [intervals[0]]",
-                    "for curr in intervals[1:]:         # ⚡ Iterate sorted intervals",
-                    "    last = merged[-1]",
-                    "    if curr[0] <= last[1]:         # 🔄 Overlap detected! (curr.start <= last.end)",
-                    "        last[1] = max(last[1], curr[1]) # ✅ Merge: Extend end time",
+                    "intervals.sort(key=lambda x: x[0])        # 🎯 Sort by start",
+                    "result = [intervals[0]]                   # Pehla interval daal diya",
+                    "for index in range(1, len(intervals)):",
+                    "    if result[-1][1] >= intervals[index][0]:  # 🔄 Overlap?",
+                    "        result[-1][1] = max(result[-1][1], intervals[index][1])  # Merge",
                     "    else:",
-                    "        merged.append(curr)        # 💡 No overlap: Add new interval",
-                    "return merged"
+                    "        result.append(intervals[index])   # 💡 No overlap: add new",
+                    "return result"
                 ],
                 metrics: { time: "O(N log N)", space: "O(N)" },
-                timeExplainer: "<strong>Time Breakdown:</strong><br>• Sorting: <code>O(N log N)</code><br>• Single pass to merge: <code>O(N)</code><br><br><strong>Total:</strong> <code>O(N log N)</code>",
-                spaceExplainer: "<strong>Space Analysis:</strong><br>• Result array to store merged intervals<br>• Worst case: no merges = <code>O(N)</code>",
-                visual: "<span><strong>Visual: The Number Line</strong><br>Intervals ko unke start_time se sort karo. Check overlap with previous.</span>",
-                crux: "Bina sorting ke overlap check karna impossible hai.<br><strong>Strategy:</strong><br>1. Sort by start.<br>2. Check if <code>current_start <= last_end</code>.<br>3. Merge by taking <code>max(last_end, current_end)</code>.",
-                trap: "<strong>The Subset Interval:</strong> [1, 10] and [2, 5]. End should stay 10. Always use max().",
-                dryRun: [
-                    "<strong>Input:</strong> [[1, 3], [2, 6], [8, 10]]",
-                    "1. Merged = [[1, 3]]",
-                    "2. [2, 6]: 2 <= 3. Overlap! End = max(3, 6) = 6. Merged=[[1, 6]]",
-                    "3. [8, 10]: 8 > 6. No overlap. Append."
-                ],
-                codeTitle: "Python Solution",
-                code: `def merge_intervals(intervals):
-if not intervals: return []
-intervals.sort(key=lambda x: x[0])
-merged = [intervals[0]]
+                timeExplainer: "<strong>Time: O(N log N)</strong><br>Sorting + single pass merge.",
+                spaceExplainer: "<strong>Space: O(N)</strong><br>Result array. Worst case: no merges.",
+                visual: `<span><strong>Visual: Overlap Check</strong><br>
+<pre style="background:none; border:none; padding:10px; font-size:0.8rem; line-height:1.2;">
+Sorted: [1,3] [2,6] [8,10]
 
-for i in range(1, len(intervals)):
-    start, end = intervals[i]
-    last_end = merged[-1][1]
+[1,3] + [2,6]:
+  1---3
+    2-----6
+  Overlap! (2 <= 3) → Merge: [1,6]
+
+[1,6] + [8,10]:
+  1-------6
+            8--10
+  No overlap! (8 > 6) → Add new
+  
+Result: [[1,6], [8,10]]
+</pre></span>`,
+                crux: "<strong>Sort first!</strong> Then check: <code>result[-1][1] >= intervals[index][0]</code><br><br><strong>Merge formula:</strong> <code>result[-1][1] = max(result[-1][1], current_end)</code>",
+                strategy: "Sort by start. Compare current interval with LAST merged interval.",
+                trap: "<strong>⚠️ Use result[-1] not result[index-1]!</strong><br>result length differs from intervals length!<br><code>result[index-1]</code> → IndexError",
+                dryRun: [
+                    "<strong>Input:</strong> [[1,3], [2,6], [8,10]]",
+                    "<strong>After sort:</strong> Same (already sorted)",
+                    "<strong>Init:</strong> result = [[1,3]]",
+                    "index=1 [2,6]: result[-1][1]=3 >= 2? ✅ Overlap! result[-1][1] = max(3,6) = 6. result=[[1,<span class='var-highlight'>6</span>]]",
+                    "index=2 [8,10]: result[-1][1]=6 >= 8? ❌ No overlap. Append. result=[[1,6], [8,10]]",
+                    "<strong>Return:</strong> [[1,6], [8,10]]"
+                ],
+                codeTitle: "Python Solution (Clean)",
+                code: `def merge_intervals(intervals):
+    intervals.sort(key=lambda x: x[0])  # Start time se sort
+    result = [intervals[0]]  # Pehla interval daal diya
     
-    if start <= last_end:
-        merged[-1][1] = max(last_end, end)
-    else:
-        merged.append([start, end])
-return merged`
+    for index in range(1, len(intervals)):
+        # ⚠️ IMPORTANT: result ki length intervals se CHHOTI hai!
+        # result[index-1] WRONG - IndexError aayega
+        # result[-1] CORRECT - last merged interval check karo
+        
+        if result[-1][1] >= intervals[index][0]:  # Overlap hai?
+            result[-1][1] = max(result[-1][1], intervals[index][1])  # Merge: max end lo
+        else:  # No overlap
+            result.append(intervals[index])  # Naya interval add karo
+    
+    return result`,
+                codeDetailed: `def merge_intervals(intervals):
+    """
+    Merge Overlapping Intervals
+    
+    STRATEGY:
+    1. Sort by start time
+    2. Compare each interval with LAST merged
+    3. If overlap: extend end time
+    4. Else: add as new interval
+    
+    TRAP: Use result[-1], NOT result[index-1]!
+    """
+    
+    intervals.sort(key=lambda x: x[0])
+    result = [intervals[0]]
+    
+    for index in range(1, len(intervals)):
+        # Check overlap with LAST merged interval
+        # NOT result[index-1] - that causes IndexError!
+        
+        if result[-1][1] >= intervals[index][0]:
+            # OVERLAP! Extend end time
+            result[-1][1] = max(result[-1][1], intervals[index][1])
+        else:
+            # NO OVERLAP - add new interval
+            result.append(intervals[index])
+    
+    return result`
             }
         },
         {
@@ -893,109 +847,98 @@ return len(heap)`
                     "Set + Two pointers expanding right",
                     "Binary search on length"
                 ],
-                correct: 1,
-                explanation: "HashMap + Sliding Window! Store char → index. When duplicate found, jump LEFT pointer to max(left, map[char] + 1). Track max length. This is THE 'Hello World' of sliding window! O(n)."
+                correct: 2,
+                explanation: "Set + Sliding Window! Expand right, shrink left if duplicate found. Track max length. O(n) time!"
             },
             learn: {
                 quickAlgo: [
-                    "char_set = set(); L = 0            # 🎯 Set for O(1) duplicate check",
-                    "for R in range(len(s)):",
-                    "    while s[R] in char_set:        # ⚡ Duplicate found!",
-                    "        char_set.remove(s[L])      # 🔄 Shrink window from Left",
-                    "        L += 1",
-                    "    char_set.add(s[R])             # ✅ Add new char",
-                    "    max_len = max(max_len, R-L+1)  # 💡 R-L+1 is current window size",
-                    "return max_len"
+                    "char_set = set(); max_length = 0; left = 0",
+                    "for right in range(len(s)):",
+                    "    if s[right] in char_set:               # 🔄 Duplicate mila!",
+                    "        while s[right] in char_set:        # Jab tak duplicate hai",
+                    "            char_set.remove(s[left])       # Left hata, aage badho",
+                    "            left += 1",
+                    "    char_set.add(s[right])                  # ✅ Current add karo",
+                    "    max_length = max(max_length, right - left + 1)",
+                    "return max_length"
                 ],
                 metrics: { time: "O(N)", space: "O(N)" },
-                timeExplainer: "<strong>Time: O(N)</strong><br>We traverse the string once. Each character is added to the Set once and removed at most once (2N ops = O(N)).",
-                spaceExplainer: "<strong>Space: O(N)</strong><br>In worst case (all unique), the Set stores all N characters.",
-                visual: `<span><strong>Visual: Elastic Window</strong><br>Expand Right. If duplicate found, shrink Left until unique.<br>
+                timeExplainer: "<strong>Time: O(N)</strong><br>Each char added once, removed at most once. 2N ops = O(N).",
+                spaceExplainer: "<strong>Space: O(N)</strong><br>Worst case (all unique): Set stores all N chars.",
+                visual: `<span><strong>Visual: Elastic Window</strong><br>
 <pre style="background:none; border:none; padding:10px; font-size:0.8rem; line-height:1.2;">
- "ppwkew"
-   ^  ^
-   L  R
- Window: [w, k, e] -> Valid
-</pre>
-</span>`,
-                crux: "No Duplicates allowed.<br><strong>Formula:</strong> <code>max_len = max(max_len, R - L + 1)</code>",
-                strategy: "Use a <strong>Set</strong>. If <code>s[right]</code> exists in Set, <code>remove(s[left])</code> and <code>left++</code> until valid.",
-                trap: "<strong>While Loop:</strong> Don't use `if`. Use `while` to remove characters until the duplicate is gone.",
+"abcabcbb"
+    ^  ^
+    L  R
+
+When duplicate found:
+  Shrink LEFT until duplicate gone!
+  
+s[R]='a' already in set → remove s[L], L++
+until 'a' not in set anymore
+</pre></span>`,
+                crux: "<strong>Expand Right, Shrink Left if duplicate!</strong><br><br>Window size formula: <code>right - left + 1</code>",
+                strategy: "Use SET for O(1) lookup. If <code>s[right]</code> in Set → shrink window from left until valid.",
+                trap: "<strong>while not if!</strong><br>Multiple chars may need removal. Ex: 'abcc' → remove 'a', 'b', 'c' to clear duplicate 'c'.",
                 dryRun: [
                     "<strong>Input:</strong> 'abcabcbb'",
-                    "1. R=0('a'): Set={'a'}, Len=1",
-                    "2. R=1('b'): Set={'a','b'}, Len=2",
-                    "3. R=2('c'): Set={'a','b','c'}, Len=3",
-                    "4. R=3('a'): Duplicate 'a'! Remove s[L]('a'), L=1. Set={'b','c'}. Add 'a'. Set={'b','c','a'}. Len=3"
+                    "<strong>Init:</strong> char_set={}, max_length=0, left=0",
+                    "R=0('a'): Not in set. Add. set={'a'}, len=1",
+                    "R=1('b'): Not in set. Add. set={'a','b'}, len=2",
+                    "R=2('c'): Not in set. Add. set={'a','b','c'}, len=<span class='var-highlight'>3</span>",
+                    "R=3('a'): <strong>Duplicate!</strong> Remove s[0]='a', left=1. Add 'a'. set={'b','c','a'}, len=3",
+                    "<strong>Return:</strong> 3"
                 ],
                 codeTitle: "Python Solution (Clean)",
-                code: `def length_of_longest_substring(s):
+                code: `def longest_substring_without_rep(s):
+    
     char_set = set()
-    left = 0
     max_length = 0
+    left = 0
 
     for right in range(len(s)):
-        # Shrink window if duplicate found
-        while s[right] in char_set:
-            char_set.remove(s[left])
-            left += 1
-
-        char_set.add(s[right])
-        max_length = max(max_length, right - left + 1)
-
+        
+        if s[right] in char_set:  # Duplicate mila
+            while s[right] in char_set:  # Jab tak duplicate hai
+                char_set.remove(s[left])  # Left ko hata aage badho
+                left += 1
+        
+        char_set.add(s[right])  # Current add karo
+        max_length = max(max_length, right - left + 1)  # Max update
+       
     return max_length`,
-                codeDetailed: `def length_of_longest_substring(s):
+                codeDetailed: `def longest_substring_without_rep(s):
     """
     Longest Substring Without Repeating Characters
     
-    ═══════════════════════════════════════════════════════════════
-    CRUX: Sliding Window + HashSet
-    ═══════════════════════════════════════════════════════════════
-    
-    STRATEGY: Expand Right, Shrink Left if Invalid
-    1. Maintain a Window [left, right]
-    2. Use a SET to track characters in the current window
-    3. If new char is in Set -> Shrink Left until it's gone
-    4. Update max_length at every valid step
+    STRATEGY: Sliding Window + HashSet
+    - Expand right pointer
+    - If duplicate found: shrink left until valid
+    - Track max window size
     
     Time: O(N), Space: O(N)
     """
+    
     char_set = set()
-    left = 0
     max_length = 0
+    left = 0
 
-    # ════════════════════════════════════════════════════════════
-    # STEP 1: Expand Window (Move Right Pointer)
-    # ════════════════════════════════════════════════════════════
     for right in range(len(s)):
         
-        # ════════════════════════════════════════════════════════════
-        # STEP 2: Handle Duplicates (Shrink Phase)
-        # ════════════════════════════════════════════════════════════
-        # WARNING: Use 'while', not 'if'. We might need to remove 
-        # multiple characters to clear the duplicate.
-        # Example: "abcc", right at second 'c', we remove 'a', 'b', then 'c'.
+        # DUPLICATE CHECK
+        if s[right] in char_set:
+            # Shrink window until duplicate gone
+            while s[right] in char_set:
+                char_set.remove(s[left])
+                left += 1
         
-        while s[right] in char_set:
-            # Remove from logic (Set)
-            char_set.remove(s[left])
-            # Remove from window (Pointer)
-            left += 1
-
-            # Visual:
-            # [a, b, c, a] -> Duplicate 'a'!
-            #  ^        ^
-            #  L        R
-            # Remove 'a', Move L -> [b, c, a] (Valid now)
-
-        # ════════════════════════════════════════════════════════════
-        # STEP 3: Add New Character & Update Max
-        # ════════════════════════════════════════════════════════════
-        char_set.add(s[right])  # Add current char to tracking
+        # Add current char to window
+        char_set.add(s[right])
         
+        # Update max length
         # Window size = right - left + 1
         max_length = max(max_length, right - left + 1)
-
+       
     return max_length`
             }
         },

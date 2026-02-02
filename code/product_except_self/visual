@@ -1,0 +1,35 @@
+
+
+```
+🎯 PRODUCT EXCEPT SELF
+
+ARRAY: [1, 2, 3, 4]
+
+STEP 1: LEFT PRODUCTS →
+res = [1, 1, 1, 1]
+       ↓
+     [1, 1, 2, 6]  (left products)
+      1  1  1×2  1×2×3
+
+STEP 2: RIGHT PRODUCTS ←
+res = [1, 1, 2, 6]
+       ↓
+     [24,12, 8, 6]  (left × right)
+      ×24 ×12 ×4 ×1
+       ↑   ↑   ↑  ↑
+      4×3×2 4×3 4  1
+
+VISUAL:
+[1,  2,  3,  4]
+ ↓   ↓   ↓   ↓
+[24, 12, 8,  6]
+
+For index i:
+LEFT side product × RIGHT side product
+
+💡 MANTRA:
+Pehle LEFT → phir RIGHT → multiply!
+No division, O(n) time!
+```
+
+Mast! 💪
