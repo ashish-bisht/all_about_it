@@ -1262,66 +1262,124 @@ def aggressiveCows(stalls, k):
                     "Multiple targets possible"
                 ],
                 correct: 1,
-                explanation: "Duplicates create 'fog'! When nums[low] == nums[mid] == nums[high], we can't tell which side is sorted. Solution: Shrink window (low++, high--) until fog clears. Worst case O(n)!"
+                explanation: "Duplicates create 'fog'! When all three equal, can't tell which side sorted. Shrink: low++, high--. Worst case O(n)!"
             },
             learn: {
                 quickAlgo: [
-                    "L, R = 0, len(nums)-1",
-                    "while L <= R:",
-                    "    mid = L + (R-L)//2",
-                    "    if nums[mid] == target: return True # 🎯 Found",
-                    "    if nums[L] == nums[mid] == nums[R]: # ⚡ Foggy Duplicates",
-                    "        L += 1; R -= 1; continue        # 🔄 Shrink window",
-                    "    if nums[L] <= nums[mid]:            # ✅ Left Sorted",
-                    "        if nums[L] <= target < nums[mid]: R = mid - 1",
-                    "        else: L = mid + 1",
-                    "    else:                               # 💡 Right Sorted",
-                    "        if nums[mid] < target <= nums[R]: L = mid + 1",
-                    "        else: R = mid - 1",
+                    "left_pointer, right_pointer = 0, len(nums)-1",
+                    "while left_pointer <= right_pointer:            # ⚠️ <= kyunki single element bhi check",
+                    "    mid = left_pointer + (right_pointer - left_pointer)//2",
+                    "    if nums[mid] == target: return True",
+                    "    if nums[left_pointer] == nums[mid] == nums[right_pointer]:  # 🌫️ FOG!",
+                    "        left_pointer += 1; right_pointer -= 1; continue",
+                    "    if nums[left_pointer] <= nums[mid]:         # Left sorted",
+                    "        if nums[left_pointer] <= target < nums[mid]: right_pointer = mid - 1",
+                    "        else: left_pointer = mid + 1",
+                    "    else:                                        # Right sorted",
+                    "        if nums[mid] < target <= nums[right_pointer]: left_pointer = mid + 1",
+                    "        else: right_pointer = mid - 1",
                     "return False"
                 ],
                 metrics: { time: "Avg O(log N)", space: "O(1)" },
-                timeExplainer: "<strong>Time Analysis:</strong><br>• <strong>Best/Avg:</strong> <code>O(log N)</code> - Standard binary search<br>• <strong>Worst:</strong> <code>O(N)</code> - All duplicates<br><br><strong>Why?</strong> Duplicates create 'fog' requiring linear scan",
-                spaceExplainer: "<strong>Space Analysis:</strong><br>• Iterative approach with 3 pointers<br>• No recursion stack<br><br><strong>Result:</strong> <code>O(1)</code>",
-                visual: "<span><strong>Visual: The Foggy Cliff</strong><br>Imagine two slopes. When duplicates appear (1,1,1...), the slopes merge into a flat line ('fog'). You must walk blindly until the fog clears.</span>",
-                crux: "If <code>nums[low] == nums[mid] == nums[high]</code>, we cannot determine which side is sorted.<br><strong>Strategy:</strong> Treat this as 'noise'. Shrink the window from both ends (<code>low++</code>, <code>high--</code>) until the unique numbers appear.",
-                trap: "<strong>Worst Case O(N):</strong> If all elements are duplicates, we end up scanning the whole array linearly.",
+                timeExplainer: "<strong>Time:</strong><br>• Best/Avg: <code>O(log N)</code><br>• Worst (all duplicates): <code>O(N)</code>",
+                spaceExplainer: "<strong>Space: O(1)</strong><br>Only pointers, no extra space.",
+                visual: `<span><strong>Visual: The Foggy Cliff</strong><br>
+<pre style="background:none; border:none; padding:10px; font-size:0.8rem; line-height:1.2;">
+Normal Rotated:          With Duplicates (FOG):
+    /|                     ???
+   / |___                 1 1 1 0 1 1 1
+  /      |                Which side sorted? 🤷
+         
+FOG CONDITION: nums[L] == nums[mid] == nums[R]
+ACTION: Shrink! L++, R--
+</pre></span>`,
+                crux: "<strong>Two steps:</strong><br>1. Clear FOG first (if L==mid==R)<br>2. Then check which side is sorted<br><br><strong>Sorted side check:</strong> <code>nums[left] <= nums[mid]</code> → Left sorted",
+                strategy: "Check target found → Clear fog → Find sorted half → Check if target in range → Move pointer",
+                trap: "<strong>⚠️ Range checks carefully!</strong><br>Left sorted: <code>nums[L] <= target < nums[mid]</code><br>Right sorted: <code>nums[mid] < target <= nums[R]</code><br><br><code>mid</code> already checked agar equal hota toh return ho chuka!",
                 dryRun: [
                     "<strong>Input:</strong> [1, 0, 1, 1, 1], target = 0",
-                    "1. L=0(1), R=4(1), M=2(1). <strong>Collision!</strong> 1==1==1. Action: L++, R--.",
-                    "2. L=1(0), R=3(1), M=2(1). Left sorted? Yes. Target in range? Yes. Action: R = M - 1.",
-                    "3. L=1(0), R=1(0). Match! Return True."
+                    "<strong>Init:</strong> L=0, R=4",
+                    "mid=2: nums[2]=1. Not target. nums[0]=nums[2]=nums[4]=1 → <strong>FOG!</strong> L++, R--",
+                    "L=1, R=3, mid=2: nums[2]=1. Left sorted (nums[1]=0 <= nums[2]=1)? NO!",
+                    "Right sorted: 0 < 0 <= 1? NO. R = mid-1 = 1",
+                    "L=1, R=1, mid=1: nums[1]=0 == target → <strong>Return True</strong>"
                 ],
-                codeTitle: "Python Solution (Principal Grade)",
+                codeTitle: "Python Solution (Clean)",
                 code: `def search(nums, target):
-low, high = 0, len(nums) - 1
+    left_pointer = 0
+    right_pointer = len(nums) - 1
 
-while low <= high:
-    # Principal Habit: Prevent Overflow
-    mid = low + (high - low) // 2
-    
-    if nums[mid] == target: return True
-    
-    # KEY: Handle Duplicates (The Fog)
-    if nums[low] == nums[mid] == nums[high]:
-        low += 1
-        high -= 1
-        continue
+    while left_pointer <= right_pointer:
+        mid = left_pointer + (right_pointer - left_pointer) // 2
+
+        if nums[mid] == target:
+            return True
         
-    # Standard Rotated Logic
-    # Left side is sorted
-    if nums[low] <= nums[mid]:
-        if nums[low] <= target < nums[mid]:
-            high = mid - 1
+        # FOG hatao - can't determine sorted side
+        if nums[left_pointer] == nums[mid] == nums[right_pointer]:
+            left_pointer += 1
+            right_pointer -= 1
+            continue
+        
+        # Check which side is sorted
+        if nums[left_pointer] <= nums[mid]:  # Left sorted
+            if nums[left_pointer] <= target < nums[mid]:
+                right_pointer = mid - 1
+            else:
+                left_pointer = mid + 1
+        else:  # Right sorted
+            if nums[mid] < target <= nums[right_pointer]:
+                left_pointer = mid + 1
+            else:
+                right_pointer = mid - 1
+    
+    return False`,
+                codeDetailed: `def search(nums, target):
+    """
+    Search in Rotated Sorted Array II (with duplicates)
+    
+    STRATEGY:
+    1. Clear FOG if nums[L] == nums[mid] == nums[R]
+    2. Find which side is sorted
+    3. Check if target in sorted range
+    
+    WHY <= in while?
+    - Single element case: L==R, still need to check!
+    """
+    
+    left_pointer = 0
+    right_pointer = len(nums) - 1
+
+    while left_pointer <= right_pointer:
+        mid = left_pointer + (right_pointer - left_pointer) // 2
+
+        if nums[mid] == target:
+            return True
+        
+        # STEP 1: Clear the FOG
+        # When all three equal, can't tell which side sorted!
+        if nums[left_pointer] == nums[mid] == nums[right_pointer]:
+            left_pointer += 1
+            right_pointer -= 1
+            continue
+        
+        # STEP 2: Find sorted half
+        if nums[left_pointer] <= nums[mid]:
+            # LEFT side is sorted
+            # Target in [L, mid)?
+            if nums[left_pointer] <= target < nums[mid]:
+                right_pointer = mid - 1
+            else:
+                left_pointer = mid + 1
         else:
-            low = mid + 1
-    # Right side is sorted
-    else:
-        if nums[mid] < target <= nums[high]:
-            low = mid + 1
-        else:
-            high = mid - 1
-return False`
+            # RIGHT side is sorted
+            # Target in (mid, R]?
+            if nums[mid] < target <= nums[right_pointer]:
+                left_pointer = mid + 1
+            else:
+                right_pointer = mid - 1
+    
+    return False`
             }
         },
         {
@@ -1340,44 +1398,109 @@ return False`
                     "DP on remaining piles"
                 ],
                 correct: 1,
-                explanation: "Binary Search on ANSWER! Search space = [1, max(piles)]. For each speed, calculate hours. If ≤ h, try slower (right = mid - 1). If > h, must go faster (left = mid + 1). Classic pattern!"
+                explanation: "BS on Answer! Search speed range [1, max(piles)]. If hours <= h, try slower. Else go faster."
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>BS on Answer kyun?</strong> Speed 1 to Max ho sakti hai (Monotonic Range)",
-                    "⚡ Predicate: <code>can_eat(speed) <= H</code> hours check karo",
-                    "🔄 Binary Search Speed: <code>[1, max(piles)]</code>",
-                    "✅ If feasible (<= H), try slower (store ans, go Left). Else go Right.",
-                    "💡 Formula: <code>ceil(p / speed)</code> is equivalent to <code>(p + s - 1) // s</code>"
+                    "left_pointer = 1                               # Ek to min khayega koko",
+                    "right_pointer = max(piles)                     # Atleast 1 to khayega hi",
+                    "result = right_pointer",
+                    "while left_pointer <= right_pointer:",
+                    "    koko_current_speed = (left_pointer + right_pointer) // 2",
+                    "    hours_took = 0",
+                    "    for pile in piles:",
+                    "        hours_took += (pile + koko_current_speed - 1) // koko_current_speed",
+                    "    if hours_took <= hours:                    # ✅ Time mein hogaya!",
+                    "        result = koko_current_speed; right_pointer = koko_current_speed - 1",
+                    "    else:                                       # ❌ Time zyada laga",
+                    "        left_pointer = koko_current_speed + 1",
+                    "return result"
                 ],
                 metrics: { time: "O(N log M)", space: "O(1)" },
-                timeExplainer: "<strong>Time Analysis:</strong><br>• Binary search range: <code>log M</code> iterations<br>• Each check: <code>O(N)</code> to sum hours<br><br><strong>Total:</strong> <code>O(N log M)</code> where M = max(piles)",
-                spaceExplainer: "<strong>Space Analysis:</strong><br>• Only variables for binary search<br>• No extra arrays<br><br><strong>Result:</strong> <code>O(1)</code>",
-                visual: "<span><strong>Visual: The Inverse Curve</strong><br>As Speed (x-axis) increases, Hours (y-axis) decreases. <br>We want the <strong>Left-most</strong> point where Hours <= H.</span>",
-                crux: "<strong>1. Search Space:</strong> We don't search the array. We search the range <code>[1, max(piles)]</code>.<br><strong>2. Decision:</strong> If Koko finishes in time, try slower (Left). If fails, go faster (Right).",
-                trap: "<strong>Floating Point Math:</strong> Using `math.ceil` is slow. Use integer ceiling: <code>(p + s - 1) // s</code>.",
-                dryRun: [
-                    "<strong>Input:</strong> piles=[3, 6, 7, 11], h=8. Range [1, 11].",
-                    "1. Mid=6. Hours=6. (OK). Try Slower [1-5].",
-                    "2. Mid=3. Hours=10. (Too Slow). Try Faster [4-5].",
-                    "3. Mid=4. Hours=8. (OK). Try Slower [4-3]. End."
-                ],
-                codeTitle: "Python Solution (Production Grade)",
-                code: `def minEatingSpeed(piles: List[int], h: int) -> int:
-min_speed, max_speed = 1, max(piles)
+                timeExplainer: "<strong>Time: O(N log M)</strong><br>Binary search (log M) × hours calc (N).",
+                spaceExplainer: "<strong>Space: O(1)</strong><br>Only pointers, no extra space.",
+                visual: `<span><strong>Visual: Speed vs Hours (Inverse)</strong><br>
+<pre style="background:none; border:none; padding:10px; font-size:0.8rem; line-height:1.2;">
+Hours
+  ^
+  |  *
+  |    *
+  |      *_____ h (target)
+  |            *
+  +--------------> Speed
+     1        max
 
-def get_hours(speed):
-    return sum((p + speed - 1) // speed for p in piles)
+Find MINIMUM speed where hours <= h
+</pre></span>`,
+                crux: "<strong>BS on ANSWER!</strong><br>Search space: <code>[1, max(piles)]</code><br><br><strong>Decision:</strong><br>• hours <= h → Store result, try slower<br>• hours > h → Need faster speed",
+                strategy: "For each speed, calculate total hours. Binary search for minimum valid speed.",
+                trap: "<strong>Ceiling division without math.ceil:</strong><br><code>(pile + speed - 1) // speed</code><br><br>Faster than <code>math.ceil(pile/speed)</code>!",
+                dryRun: [
+                    "<strong>Input:</strong> piles=[3, 6, 7, 11], hours=8",
+                    "<strong>Init:</strong> left=1, right=11, result=11",
+                    "speed=6: hours_took = 1+1+2+2 = 6 <= 8 ✅ result=6, right=5",
+                    "speed=3: hours_took = 1+2+3+4 = 10 > 8 ❌ left=4",
+                    "speed=4: hours_took = 1+2+2+3 = 8 <= 8 ✅ result=4, right=3",
+                    "left=4 > right=3 → <strong>Return 4</strong>"
+                ],
+                codeTitle: "Python Solution (Clean)",
+                code: `def koko(piles, hours):
+    # Saaf seedhi baat - Koko ko help karo kele khane mein
+    # Take wo sare kele kha le saans lete lete 🍌
     
-while min_speed <= max_speed:
-    mid_speed = min_speed + (max_speed - min_speed) // 2
+    left_pointer = 1            # Ek to min khayega koko
+    right_pointer = max(piles)  # Atleast 1 to khayega hi
+    result = right_pointer
     
-    if get_hours(mid_speed) <= h:
-        max_speed = mid_speed - 1
-    else:
-        min_speed = mid_speed + 1
+    while left_pointer <= right_pointer:
+        # Ab speed try karte hain
+        koko_current_speed = left_pointer + (right_pointer - left_pointer) // 2
         
-return min_speed`
+        # Check karo kitna time lagta hai is speed pe
+        hours_took = 0
+        for pile in piles:
+            hours_took += (pile + koko_current_speed - 1) // koko_current_speed
+        
+        if hours_took <= hours:  # Time mein ho gaya!
+            result = koko_current_speed
+            right_pointer = koko_current_speed - 1  # Aur slow try karo
+        else:  # Time zyada lag raha
+            left_pointer = koko_current_speed + 1  # Speed badhao
+    
+    return result`,
+                codeDetailed: `def koko(piles, hours):
+    """
+    Koko Eating Bananas - BS on Answer
+    
+    Saaf seedhi baat:
+    - Koko ko help karo minimum speed dhundhne mein
+    - Jisse wo hours ke andar sare kele kha le
+    
+    CEILING DIVISION TRICK:
+    (pile + speed - 1) // speed = ceil(pile / speed)
+    """
+    
+    left_pointer = 1
+    right_pointer = max(piles)
+    result = right_pointer
+    
+    while left_pointer <= right_pointer:
+        koko_current_speed = left_pointer + (right_pointer - left_pointer) // 2
+        
+        # Kitna time lagega is speed pe?
+        hours_took = 0
+        for pile in piles:
+            hours_took += (pile + koko_current_speed - 1) // koko_current_speed
+        
+        if hours_took <= hours:
+            # Time mein ho gaya! Store karo, aur slow try karo
+            result = koko_current_speed
+            right_pointer = koko_current_speed - 1
+        else:
+            # Time zyada lag raha, speed badhao
+            left_pointer = koko_current_speed + 1
+    
+    return result`
             }
         },
         {
@@ -1396,54 +1519,139 @@ return min_speed`
                     "Try all combinations"
                 ],
                 correct: 1,
-                explanation: "SORT + BS on Answer! Sort stalls. Binary search on distance [1, max-min]. For each distance, greedily try to place K cows. If successful, try larger distance (left = mid + 1). Min-Max pattern!"
+                explanation: "SORT + BS on Answer! Sort stalls, then binary search on distance. Greedy check for placing."
             },
             learn: {
                 quickAlgo: [
-                    "🎯 <strong>Max-Min logic?</strong> Hamesha 'Maximize the Minimum distance' = BS on Answer",
-                    "⚡ Sort Stalls: Distances check karne ke liye order zaroori hai",
-                    "🔄 Range: <code>[1, max-min]</code>. Check: <code>can_place(min_dist)</code>",
-                    "✅ Greedy Check: Place first cow, then next if <code>dist >= mid</code>",
-                    "💡 Valid? Try bigger gap (Right). Invalid? Shrink gap (Left)."
+                    "stalls.sort()                               # Pehle line mein khada kar sabko",
+                    "left_pointer = 1                            # Ek to minimum door hongi",
+                    "right_pointer = stalls[-1] - stalls[0]      # Max door = first se last tak",
+                    "result = 0",
+                    "while left_pointer <= right_pointer:",
+                    "    cow_ki_doori = (left_pointer + right_pointer) // 2",
+                    "    if can_place_cows(stalls, cows, cow_ki_doori):  # ✅ Sab fit ho gayi?",
+                    "        result = cow_ki_doori                # Ye answer ho sakta hai",
+                    "        left_pointer = cow_ki_doori + 1      # 💡 Aur door try karo",
+                    "    else:                                     # ❌ Fit nahi ho rahi",
+                    "        right_pointer = cow_ki_doori - 1     # Distance kam karo",
+                    "return result"
                 ],
-                metrics: { time: "O(N log N)", space: "O(1)" },
-                timeExplainer: "<strong>Time Breakdown:</strong><br>• Sorting stalls: <code>O(N log N)</code><br>• Binary search × greedy check: <code>O(N log D)</code><br><br><strong>Total:</strong> <code>O(N log N)</code>",
-                spaceExplainer: "<strong>Space Analysis:</strong><br>• In-place sorting possible<br>• Only variables for counting<br><br><strong>Result:</strong> <code>O(1)</code>",
-                visual: "<span><strong>System Design Mapping:</strong> Load Balancing.<br>Imagine Stalls are IP Addresses and Cows are Microservices. Check max safety buffer.</span>",
-                crux: "<strong>'Maximize the Minimum'</strong><br>1. Sort stalls.<br>2. BS on Distance.<br>3. Greedy Check: Can we place K cows with gap >= mid?",
-                trap: "<strong>The Unsorted Array:</strong> The Greedy Check requires stalls to be sorted. Don't forget <code>stalls.sort()</code>.",
+                metrics: { time: "O(N log D)", space: "O(1)" },
+                timeExplainer: "<strong>Time: O(N log D)</strong><br>Sort: O(N log N) + BS (log D) × Greedy (N).",
+                spaceExplainer: "<strong>Space: O(1)</strong><br>Only pointers, no extra space.",
+                visual: `<span><strong>Visual: Cows ko Door Door Rakhna Hai! 🐄</strong><br>
+<pre style="background:none; border:none; padding:10px; font-size:0.8rem; line-height:1.2;">
+Stalls: [1, 2, 4, 8, 9]   Cows: 3
+
+Try distance = 3:
+  1--2--4-----8--9
+  🐄     🐄     🐄
+  ├──3──┤├──4──┤
+  Sab fit! ✅ Aur door try karo!
+
+Try distance = 4:
+  1--2--4-----8--9
+  🐄           🐄 (sirf 2 fit hui)
+  Teesri kahan rakhe? ❌ Distance kam karo
+</pre></span>`,
+                crux: "<strong>Pyari Cows ko Door Door Rakhna Hai!</strong><br>1. Sort stalls (line mein khada kar)<br>2. BS on distance<br>3. Greedy: pehli cow rakh, next tab jab gap >= min_dist",
+                strategy: "Binary search + Greedy validation. Fit ho gayi? Aur door try. Nahi hui? Paas karo.",
+                trap: "<strong>⚠️ SORT BHOOL GAYA?</strong><br>Bina sort ke greedy kaam nahi karega. Galat answer aayega!",
                 dryRun: [
-                    "<strong>Input:</strong> Stalls=[1, 2, 8, 4, 9], K=3.",
-                    "Step 0: SORT -> [1, 2, 4, 8, 9].",
-                    "1. Mid=4. Place@1. Next@8. Count=2. FAIL. Gap too big.",
-                    "2. Mid=2. Place@1. Next@4. Next@8. Count=3. SUCCESS.",
-                    "3. Mid=3. Place@1. Next@4. Next@8. Count=3. SUCCESS."
+                    "<strong>Input:</strong> stalls=[1, 2, 8, 4, 9], cows=3 🐄🐄🐄",
+                    "<strong>Sort pehle:</strong> [1, 2, 4, 8, 9]",
+                    "<strong>Init:</strong> left=1, right=8, result=0",
+                    "distance=4: 🐄@1, next@8, count=2. ❌ Teesri kahan? right=3",
+                    "distance=2: 🐄@1, 🐄@4, 🐄@8. count=3 ✅ result=2, left=3",
+                    "distance=3: 🐄@1, 🐄@4, 🐄@8. count=3 ✅ result=3, left=4",
+                    "left=4 > right=3 → <strong>Return 3</strong>"
                 ],
-                codeTitle: "Python Solution",
-                code: `def aggressiveCows(stalls: List[int], k: int) -> int:
-stalls.sort()
+                codeTitle: "Python Solution (Clean)",
+                code: `def aggressive_cows(stalls, cows):
+    # Pyari cows ko door door rakhna hai
+    # Taake wo ek dusre se ladte na rahe 🐄💢🐄
+    
+    stalls.sort()  # Pehle line mein khada kar sabko
+    
+    left_pointer = 1              # Minimum 1 distance to hogi
+    right_pointer = stalls[-1] - stalls[0]  # Max = first se last
+    result = 0
+    
+    while left_pointer <= right_pointer:
+        # Ye distance try karte hain
+        cow_ki_doori = left_pointer + (right_pointer - left_pointer) // 2
+        
+        if can_place_cows(stalls, cows, cow_ki_doori):
+            # Sab cows fit ho gayi! Store karo
+            result = cow_ki_doori
+            left_pointer = cow_ki_doori + 1  # Aur door try karo
+        else:
+            # Fit nahi ho rahi, distance kam karo
+            right_pointer = cow_ki_doori - 1
+    
+    return result
 
-def can_place(min_dist):
-    count = 1
-    last_pos = stalls[0]
+
+def can_place_cows(stalls, cows, min_dist):
+    # Greedy: pehli cow pehle stall pe, fir jahan gap mile wahan
+    
+    count = 1  # Pehli cow to rakh di
+    last_cow_position = stalls[0]
+    
     for i in range(1, len(stalls)):
-        if stalls[i] - last_pos >= min_dist:
+        if stalls[i] - last_cow_position >= min_dist:
+            # Itni door hai? Cow rakh do! 🐄
             count += 1
-            last_pos = stalls[i]
-            if count == k: return True
-    return False
+            last_cow_position = stalls[i]
+            
+            if count == cows:  # Sab rakh di!
+                return True
+    
+    return False  # Sab nahi rakh paaye 😢`,
+                codeDetailed: `def aggressive_cows(stalls, cows):
+    """
+    Aggressive Cows - Pyari Cows ko Door Door Rakhna Hai!
+    
+    Ye cows aggressive hain, ek dusre se ladti hain
+    Toh sabse door door rakhna hai taake peace rahe 🐄☮️🐄
+    
+    STRATEGY:
+    1. Sort stalls (line mein khada kar)
+    2. BS on distance [1, max-min]
+    3. Greedy check: can we place all cows?
+    """
+    
+    stalls.sort()
+    
+    left_pointer = 1
+    right_pointer = stalls[-1] - stalls[0]
+    result = 0
+    
+    while left_pointer <= right_pointer:
+        cow_ki_doori = left_pointer + (right_pointer - left_pointer) // 2
+        
+        if can_place_cows(stalls, cows, cow_ki_doori):
+            result = cow_ki_doori
+            left_pointer = cow_ki_doori + 1
+        else:
+            right_pointer = cow_ki_doori - 1
+    
+    return result
 
-low, high = 1, stalls[-1] - stalls[0]
-ans = 1
 
-while low <= high:
-    mid = low + (high - low) // 2
-    if can_place(mid):
-        ans = mid
-        low = mid + 1
-    else:
-        high = mid - 1
-return ans`
+def can_place_cows(stalls, cows, min_dist):
+    """Greedy: ek ek karke cow rakho, gap check karo"""
+    count = 1
+    last_cow_position = stalls[0]
+    
+    for i in range(1, len(stalls)):
+        if stalls[i] - last_cow_position >= min_dist:
+            count += 1
+            last_cow_position = stalls[i]
+            if count == cows:
+                return True
+    
+    return False`
             }
         },
         {
