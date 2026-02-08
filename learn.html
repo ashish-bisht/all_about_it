@@ -692,6 +692,32 @@
             // Render content into focus view
             const contentDiv = document.getElementById('focus-content');
 
+            if (q.customHtml) {
+                // System Design Custom Template Mode
+                contentDiv.innerHTML = `
+                    <div class="focus-card" style="max-width: 1000px;">
+                        <div class="focus-header">
+                            <div>
+                                <h2 style="margin:0; font-size:1.8rem; display:flex; align-items:center; gap:12px;">
+                                    <i class="${currentTopicData.icon}" style="color:var(--primary)"></i>
+                                    ${q.title}
+                                </h2>
+                            </div>
+                            <div style="display:flex; gap:10px; align-items:center;">
+                                <span class="tile-badge ${q.difficulty === 'Must Do' ? 'must' : (q.difficulty === 'Good to Do' ? 'good' : 'bonus')}">
+                                    ${q.difficulty}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="focus-body custom-sys-design-body">
+                             ${q.customHtml}
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
             contentDiv.innerHTML = `
                 <div class="focus-card">
                     <div class="focus-header">
@@ -730,6 +756,15 @@
                         
                          ${learn.timeExplainer ? `<div id="focus-time-explainer" class="metric-explainer">${learn.timeExplainer}</div>` : ''}
                          ${learn.spaceExplainer ? `<div id="focus-space-explainer" class="metric-explainer">${learn.spaceExplainer}</div>` : ''}
+
+                        <!-- Deep Dive Button (Senior Engineer Edition) -->
+                        ${q.deepDiveUrl ? `
+                        <div style="margin-bottom: 20px;">
+                            <a href="${q.deepDiveUrl}" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 12px; background:linear-gradient(135deg, #e67e22, #d35400); color:white; padding:18px; border-radius:16px; font-weight:700; text-decoration:none; box-shadow: 0 4px 20px rgba(230, 126, 34, 0.4); transition: all 0.2s;">
+                                <i class="fas fa-file-alt fa-lg"></i>
+                                <span>Open Deep Dive (Senior Engineer Edition)</span>
+                            </a>
+                        </div>` : ''}
 
                         <!-- Visualizer Launch Button -->
                         ${q.visualizerUrl ? `
@@ -1118,7 +1153,7 @@
                     <!-- Question Tiles -->
                     <div class="questions-grid">
                         ${currentTopicData.questions.map((q, idx) => {
-                if (!q.learn) return '';
+                if (!q.learn && !q.customHtml) return '';
                 const priorityClass = q.difficulty === 'Must Do' ? 'must' : (q.difficulty === 'Good to Do' ? 'good' : 'bonus');
                 return `
                             <div class="question-tile ${priorityClass}" data-priority="${q.difficulty}" onclick="openQuestion(${idx})">

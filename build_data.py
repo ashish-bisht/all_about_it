@@ -17,6 +17,14 @@ SCRIPT_ORDER = [
     'data/dsa/dp.js',
     'data/dsa/heap_trie.js',
     'data/dsa/backtracking.js',
+    # System Design
+    'data/systemdesign/scaling_reads.js',
+    'data/systemdesign/scaling_writes.js',
+    'data/systemdesign/realtime_updates.js',
+    'data/systemdesign/dealing_with_contention.js',
+    'data/systemdesign/multi_step_processes.js',
+    'data/systemdesign/handling_large_blobs.js',
+    'data/systemdesign/long_running_tasks.js',
     # Concepts
     'data/concepts/dp_concepts.js',
     'data/concepts/arrays_concepts.js',

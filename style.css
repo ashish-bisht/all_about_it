@@ -755,3 +755,58 @@ ul {
 .game-btn:hover {
     text-shadow: 0 0 10px rgba(244, 114, 182, 0.4);
 }
+/* --- System Design Custom CSS (Senior Engineer Edition) --- */
+.tag-math { background-color: #8e44ad; }
+.tag-logic { background-color: var(--success); }
+.tag-trap { background-color: var(--danger); }
+.tag-pro { background-color: var(--warning); color: #000; } /* Tweaked for dark mode visibility */
+
+.diagram {
+    font-family: "Courier New", Courier, monospace;
+    white-space: pre;
+    background: #2d3436;
+    color: #dfe6e9;
+    padding: 20px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.2;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.highlight { background-color: rgba(255, 238, 186, 0.2); padding: 2px 5px; border-radius: 3px; border-bottom: 2px solid #ffeeba; }
+
+.trap-box {
+    background-color: rgba(255, 69, 58, 0.1) !important;
+    border-left: 5px solid var(--danger) !important;
+    padding: 15px;
+    margin: 15px 0;
+    color: var(--text-main) !important;
+}
+
+.custom-sys-design-body h3 {
+    color: var(--text-muted);
+    margin-top: 25px;
+    border-bottom: 1px solid var(--border-light);
+    padding-bottom: 10px;
+}
+
+.custom-sys-design-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+    font-size: 0.95rem;
+}
+
+.custom-sys-design-body th, 
+.custom-sys-design-body td {
+    border: 1px solid var(--border-light);
+    padding: 12px;
+    text-align: left;
+}
+
+.custom-sys-design-body th {
+    background-color: rgba(255,255,255,0.05);
+    color: var(--primary);
+}
