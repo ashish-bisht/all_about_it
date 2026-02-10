@@ -755,11 +755,26 @@ ul {
 .game-btn:hover {
     text-shadow: 0 0 10px rgba(244, 114, 182, 0.4);
 }
+
 /* --- System Design Custom CSS (Senior Engineer Edition) --- */
-.tag-math { background-color: #8e44ad; }
-.tag-logic { background-color: var(--success); }
-.tag-trap { background-color: var(--danger); }
-.tag-pro { background-color: var(--warning); color: #000; } /* Tweaked for dark mode visibility */
+.tag-math {
+    background-color: #8e44ad;
+}
+
+.tag-logic {
+    background-color: var(--success);
+}
+
+.tag-trap {
+    background-color: var(--danger);
+}
+
+.tag-pro {
+    background-color: var(--warning);
+    color: #000;
+}
+
+/* Tweaked for dark mode visibility */
 
 .diagram {
     font-family: "Courier New", Courier, monospace;
@@ -771,11 +786,16 @@ ul {
     overflow-x: auto;
     font-size: 13px;
     line-height: 1.2;
-    box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
-    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.highlight { background-color: rgba(255, 238, 186, 0.2); padding: 2px 5px; border-radius: 3px; border-bottom: 2px solid #ffeeba; }
+.highlight {
+    background-color: rgba(255, 238, 186, 0.2);
+    padding: 2px 5px;
+    border-radius: 3px;
+    border-bottom: 2px solid #ffeeba;
+}
 
 .trap-box {
     background-color: rgba(255, 69, 58, 0.1) !important;
@@ -799,7 +819,7 @@ ul {
     font-size: 0.95rem;
 }
 
-.custom-sys-design-body th, 
+.custom-sys-design-body th,
 .custom-sys-design-body td {
     border: 1px solid var(--border-light);
     padding: 12px;
@@ -807,6 +827,128 @@ ul {
 }
 
 .custom-sys-design-body th {
-    background-color: rgba(255,255,255,0.05);
+    background-color: rgba(255, 255, 255, 0.05);
     color: var(--primary);
+}
+
+/* --- Topic Progress Bar --- */
+.topic-progress {
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin: 30px 0;
+    backdrop-filter: blur(10px);
+}
+
+.progress-text {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.progress-count {
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.progress-track {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), #8b5cf6, #c026d3);
+    border-radius: 10px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* --- Skip to Practice Button --- */
+.skip-to-practice-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: linear-gradient(135deg, #ff9f0a 0%, #ff6b00 100%);
+    color: #000;
+    padding: 16px 24px;
+    border-radius: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    margin: 20px 0 30px 0;
+    box-shadow: 0 4px 20px rgba(255, 159, 10, 0.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 0.95rem;
+}
+
+.skip-to-practice-btn:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 30px rgba(255, 159, 10, 0.4);
+}
+
+.skip-to-practice-btn i {
+    font-size: 1.1rem;
+}
+
+/* --- Enhanced Question Tiles --- */
+.question-tile.must {
+    border-left: 3px solid var(--danger);
+}
+
+.question-tile.good {
+    border-left: 3px solid var(--warning);
+}
+
+.question-tile.bonus {
+    border-left: 3px solid var(--safe);
+}
+
+.question-tile .tile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+/* Priority glow on hover */
+.question-tile.must:hover {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 0 30px rgba(239, 68, 68, 0.15);
+}
+
+.question-tile.good:hover {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 0 30px rgba(245, 158, 11, 0.15);
+}
+
+.question-tile.bonus:hover {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 0 30px rgba(16, 185, 129, 0.15);
 }

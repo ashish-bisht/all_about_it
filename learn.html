@@ -757,6 +757,13 @@
                          ${learn.timeExplainer ? `<div id="focus-time-explainer" class="metric-explainer">${learn.timeExplainer}</div>` : ''}
                          ${learn.spaceExplainer ? `<div id="focus-space-explainer" class="metric-explainer">${learn.spaceExplainer}</div>` : ''}
 
+                        <!-- Skip to Practice Button -->
+                        ${q.leetcodeUrl ? `
+                        <a href="${q.leetcodeUrl}" target="_blank" class="skip-to-practice-btn">
+                            <i class="fas fa-rocket"></i>
+                            <span>Feeling confident? Practice on LeetCode →</span>
+                        </a>` : ''}
+
                         <!-- Deep Dive Button (Senior Engineer Edition) -->
                         ${q.deepDiveUrl ? `
                         <div style="margin-bottom: 20px;">
@@ -1066,6 +1073,17 @@
                     <div class="header-section">
                         <h1><i class="${currentTopicData.icon}" style="color:var(--primary)"></i> ${currentTopicData.title}</h1>
                         <p style="color: var(--text-muted); font-size:1.1rem; max-width:600px; margin:0 auto;">${currentTopicData.description}</p>
+                    </div>
+
+                    <!-- Topic Progress Bar -->
+                    <div class="topic-progress">
+                        <div class="progress-text">
+                            <span><i class="fas fa-chart-line" style="margin-right:8px; color:var(--primary)"></i>Topic Progress</span>
+                            <span class="progress-count">${currentTopicData.questions.length} questions</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
                     </div>
 
                      <!-- Mental Model -->

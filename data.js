@@ -3039,91 +3039,6 @@ return build(0, len(inorder) - 1)`
             }
         },
         {
-            id: "vertical-order-traversal",
-            title: "Vertical Order Traversal",
-            leetcodeUrl: "https://leetcode.com/problems/vertical-order-traversal-of-a-binary-tree/",
-            difficulty: "Good to Do",
-            priority: "🟡",
-            tags: ["Coordinates"],
-            quiz: {
-                description: "Print nodes by vertical column. Data structure?",
-                options: ["BFS only", "DFS with (row, col) + Sorting", "Inorder", "Level-order"],
-                correct: 1,
-                explanation: "Track (row, col). Store in `Map[col]`. Sort by Col, then Row, then Val."
-            },
-            learn: {
-                quickAlgo: [
-                    "q = deque([root]); res = []",
-                    "while q:",
-                    "    level = []",
-                    "    for _ in range(len(q)):        # 🎯 Freeze size logic for Level Separation",
-                    "        node = q.popleft()",
-                    "        if not node: continue",
-                    "        level.append(node.val)",
-                    "        q.append(node.left)        # ⚡ Queue children for NEXT level",
-                    "        q.append(node.right)",
-                    "    if level: res.append(level)    # ✅ Add level if not empty (handles null children)"
-                ],
-                metrics: { time: "O(N log N)", space: "O(N)" },
-                timeExplainer: "<strong>BFS + Sorting:</strong><br>• BFS Traversal: <code>O(N)</code><br>• Sorting nodes in same column: <code>O(N log N)</code><br><br><strong>Total:</strong> <code>O(N log N)</code>",
-                spaceExplainer: "<strong>Space Analysis:</strong><br>• Map stores all nodes<br>• Queue for BFS<br><br><strong>Result:</strong> <code>O(N)</code>",
-                visual: "<span><strong>Visual: Grid Overlay</strong><br>Left: (r+1, c-1). Right: (r+1, c+1).</span>",
-                crux: "<strong>Grouping + Sorting:</strong><br>1. BFS/DFS to collect `(c, r, val)`.<br>2. Sort.",
-                trap: "<strong>Shadow Nodes:</strong> Nodes can land on same (r, c). Must sort by value.",
-                dryRun: ["(0,0,1)", "(-1,1,2), (1,1,3)", "Sort -> Col -1: [2], Col 0: [1], Col 1: [3]"],
-                codeTitle: "Python Solution",
-                code: `def verticalTraversal(root):
-cols = defaultdict(list)
-q = deque([(root, 0, 0)])
-min_c, max_c = 0, 0
-while q:
-    node, r, c = q.popleft()
-    if node:
-        cols[c].append((r, node.val))
-        min_c = min(min_c, c)
-        max_c = max(max_c, c)
-        q.append((node.left, r+1, c-1))
-        q.append((node.right, r+1, c+1))
-res = []
-for c in range(min_c, max_c + 1):
-    cols[c].sort(key=lambda x: (x[0], x[1]))
-    res.append([x[1] for x in cols[c]])
-return res`
-            }
-        },
-        {
-            id: "lca-bst",
-            title: "LCA in BST",
-            leetcodeUrl: "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/",
-            difficulty: "Good to Do",
-            priority: "🟢",
-            tags: ["BST Property"],
-            quiz: {
-                description: "Find LCA in BST. Optimization?",
-                options: ["Same as Binary Tree (DFS)", "Use BST Property: if split, that's LCA", "Inorder Traversal", "BFS"],
-                correct: 1,
-                explanation: "Use BST Property! If both p and q < root, go Left. If both > root, go Right. The first node where they SPLIT (one small, one big) is the LCA. O(H) time, O(1) space (iterative)."
-            },
-            learn: {
-                quickAlgo: [
-                    "def maxDepth(node):",
-                    "    if not node: return 0              # 🎯 Base Case: Empty tree has depth 0",
-                    "    left_depth = maxDepth(node.left)   # ⚡ Recurse Left",
-                    "    right_depth = maxDepth(node.right) # ⚡ Recurse Right",
-                    "    return 1 + max(left_depth, right_depth) # ✅ My Depth = 1 (Me) + Max(Children)"
-                ],
-                metrics: { time: "O(H)", space: "O(1)" },
-                code: `def lowestCommonAncestor(root, p, q):
-while root:
-    if p.val < root.val and q.val < root.val:
-        root = root.left
-    elif p.val > root.val and q.val > root.val:
-        root = root.right
-    else:
-        return root`
-            }
-        },
-        {
             id: "largest-bst-in-bt",
             title: "Largest BST in Binary Tree",
             leetcodeUrl: "https://practice.geeksforgeeks.org/problems/largest-bst/1",
@@ -3210,6 +3125,91 @@ while q:
             visited.add(nei)
             q.append((nei, time + 1))
 return max_time`
+            }
+        },
+        {
+            id: "vertical-order-traversal",
+            title: "Vertical Order Traversal",
+            leetcodeUrl: "https://leetcode.com/problems/vertical-order-traversal-of-a-binary-tree/",
+            difficulty: "Good to Do",
+            priority: "🟡",
+            tags: ["Coordinates"],
+            quiz: {
+                description: "Print nodes by vertical column. Data structure?",
+                options: ["BFS only", "DFS with (row, col) + Sorting", "Inorder", "Level-order"],
+                correct: 1,
+                explanation: "Track (row, col). Store in `Map[col]`. Sort by Col, then Row, then Val."
+            },
+            learn: {
+                quickAlgo: [
+                    "q = deque([root]); res = []",
+                    "while q:",
+                    "    level = []",
+                    "    for _ in range(len(q)):        # 🎯 Freeze size logic for Level Separation",
+                    "        node = q.popleft()",
+                    "        if not node: continue",
+                    "        level.append(node.val)",
+                    "        q.append(node.left)        # ⚡ Queue children for NEXT level",
+                    "        q.append(node.right)",
+                    "    if level: res.append(level)    # ✅ Add level if not empty (handles null children)"
+                ],
+                metrics: { time: "O(N log N)", space: "O(N)" },
+                timeExplainer: "<strong>BFS + Sorting:</strong><br>• BFS Traversal: <code>O(N)</code><br>• Sorting nodes in same column: <code>O(N log N)</code><br><br><strong>Total:</strong> <code>O(N log N)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Map stores all nodes<br>• Queue for BFS<br><br><strong>Result:</strong> <code>O(N)</code>",
+                visual: "<span><strong>Visual: Grid Overlay</strong><br>Left: (r+1, c-1). Right: (r+1, c+1).</span>",
+                crux: "<strong>Grouping + Sorting:</strong><br>1. BFS/DFS to collect `(c, r, val)`.<br>2. Sort.",
+                trap: "<strong>Shadow Nodes:</strong> Nodes can land on same (r, c). Must sort by value.",
+                dryRun: ["(0,0,1)", "(-1,1,2), (1,1,3)", "Sort -> Col -1: [2], Col 0: [1], Col 1: [3]"],
+                codeTitle: "Python Solution",
+                code: `def verticalTraversal(root):
+cols = defaultdict(list)
+q = deque([(root, 0, 0)])
+min_c, max_c = 0, 0
+while q:
+    node, r, c = q.popleft()
+    if node:
+        cols[c].append((r, node.val))
+        min_c = min(min_c, c)
+        max_c = max(max_c, c)
+        q.append((node.left, r+1, c-1))
+        q.append((node.right, r+1, c+1))
+res = []
+for c in range(min_c, max_c + 1):
+    cols[c].sort(key=lambda x: (x[0], x[1]))
+    res.append([x[1] for x in cols[c]])
+return res`
+            }
+        },
+        {
+            id: "lca-bst",
+            title: "LCA in BST",
+            leetcodeUrl: "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/",
+            difficulty: "Good to Do",
+            priority: "🟢",
+            tags: ["BST Property"],
+            quiz: {
+                description: "Find LCA in BST. Optimization?",
+                options: ["Same as Binary Tree (DFS)", "Use BST Property: if split, that's LCA", "Inorder Traversal", "BFS"],
+                correct: 1,
+                explanation: "Use BST Property! If both p and q < root, go Left. If both > root, go Right. The first node where they SPLIT (one small, one big) is the LCA. O(H) time, O(1) space (iterative)."
+            },
+            learn: {
+                quickAlgo: [
+                    "def maxDepth(node):",
+                    "    if not node: return 0              # 🎯 Base Case: Empty tree has depth 0",
+                    "    left_depth = maxDepth(node.left)   # ⚡ Recurse Left",
+                    "    right_depth = maxDepth(node.right) # ⚡ Recurse Right",
+                    "    return 1 + max(left_depth, right_depth) # ✅ My Depth = 1 (Me) + Max(Children)"
+                ],
+                metrics: { time: "O(H)", space: "O(1)" },
+                code: `def lowestCommonAncestor(root, p, q):
+while root:
+    if p.val < root.val and q.val < root.val:
+        root = root.left
+    elif p.val > root.val and q.val > root.val:
+        root = root.right
+    else:
+        return root`
             }
         }
     ]

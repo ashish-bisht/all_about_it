@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Principal Prep | Daily Quick Revision</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background-color: #000;
+            color: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+            padding: 0;
+            margin: 0;
+        }
+
+        .revision-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Hero / Header */
+        .revision-hero {
+            text-align: center;
+            padding: 50px 20px 30px;
+        }
+
+        .revision-hero h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #fff 0%, #a78bfa 50%, #c026d3 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .revision-hero p {
+            color: #86868b;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        .revision-date {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(94, 92, 230, 0.15);
+            color: #a78bfa;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: 1px solid rgba(94, 92, 230, 0.3);
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0 40px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #86868b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Pattern Group */
+        .pattern-group {
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            overflow: hidden;
+            background: rgba(28, 28, 30, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .pattern-header {
+            padding: 20px 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            user-select: none;
+            transition: background 0.2s;
+        }
+
+        .pattern-header:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .pattern-header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .pattern-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .pattern-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #f5f5f7;
+        }
+
+        .pattern-count {
+            font-size: 0.8rem;
+            color: #86868b;
+            margin-top: 2px;
+        }
+
+        .pattern-arrow {
+            color: #86868b;
+            font-size: 0.85rem;
+            transition: transform 0.3s ease;
+        }
+
+        .pattern-group.open .pattern-arrow {
+            transform: rotate(180deg);
+        }
+
+        /* Pattern Body */
+        .pattern-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .pattern-group.open .pattern-body {
+            max-height: 10000px;
+        }
+
+        /* Question Card (inside pattern) */
+        .rev-question {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 20px 24px;
+            transition: background 0.2s;
+        }
+
+        .rev-question:last-child {
+            border-bottom: none;
+        }
+
+        .rev-question:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .rev-q-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .rev-q-title {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #e5e7eb;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .rev-q-title .q-num {
+            color: #5e5ce6;
+            font-size: 0.85rem;
+            font-weight: 800;
+            min-width: 22px;
+        }
+
+        .rev-q-meta {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .rev-tag {
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .rev-tag.must {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ff453a;
+        }
+
+        .rev-tag.good {
+            background: rgba(245, 158, 11, 0.15);
+            color: #ff9f0a;
+        }
+
+        .rev-tag.bonus {
+            background: rgba(16, 185, 129, 0.15);
+            color: #32d74b;
+        }
+
+        .rev-tag.time {
+            background: rgba(94, 92, 230, 0.15);
+            color: #a78bfa;
+        }
+
+        /* Quick Algo Block */
+        .rev-algo {
+            background: #0d1117;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .rev-algo pre {
+            margin: 0;
+            padding: 16px 20px;
+            font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+
+        .rev-algo pre code {
+            background: none !important;
+            padding: 0 !important;
+        }
+
+        /* Crux one-liner */
+        .rev-crux {
+            margin-top: 10px;
+            padding: 10px 14px;
+            background: rgba(255, 159, 10, 0.08);
+            border-left: 3px solid #ff9f0a;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.85rem;
+            color: #d1d5db;
+            line-height: 1.5;
+        }
+
+        .rev-crux strong {
+            color: #fbbf24;
+        }
+
+        /* Topic filter tabs */
+        .filter-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 0 0 30px;
+            flex-wrap: wrap;
+            padding: 0 20px;
+        }
+
+        .filter-tab {
+            padding: 8px 18px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.03);
+            color: #86868b;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-tab:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+        }
+
+        .filter-tab.active {
+            background: #5e5ce6;
+            color: #fff;
+            border-color: #5e5ce6;
+            box-shadow: 0 4px 15px rgba(94, 92, 230, 0.4);
+        }
+
+        /* Expand/Collapse All */
+        .controls-bar {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 0 4px;
+        }
+
+        .ctrl-btn {
+            padding: 8px 16px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #86868b;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .ctrl-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        @media (max-width: 768px) {
+            .revision-hero h1 {
+                font-size: 2rem;
+            }
+
+            .stats-bar {
+                gap: 20px;
+            }
+
+            .stat-number {
+                font-size: 1.4rem;
+            }
+
+            .pattern-name {
+                font-size: 1rem;
+            }
+
+            .rev-q-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <a href="index.html" class="nav-logo">
+                <i class="fas fa-fire"></i> Principal Prep
+            </a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Dashboard</a>
+                <a href="question_list.html" class="nav-link">55 Questions</a>
+                <a href="flashcard.html" class="nav-link">Flashcards</a>
+                <a href="cheatsheet.html" class="nav-link">Cheat Sheet</a>
+                <a href="templates.html" class="nav-link">Templates</a>
+                <a href="revision.html" class="nav-link active" style="color: #a78bfa !important;">
+                    <i class="fas fa-bolt"></i> Revision
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="revision-container">
+        <!-- Hero -->
+        <div class="revision-hero">
+            <h1>⚡ Daily Quick Revision</h1>
+            <p>Pattern-wise questions at a glance. Read daily, remember forever.</p>
+            <div class="revision-date">
+                <i class="far fa-calendar-alt"></i>
+                <span id="today-date"></span>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-bar" id="stats-bar"></div>
+
+        <!-- Topic Filters -->
+        <div class="filter-tabs" id="filter-tabs"></div>
+
+        <!-- Controls -->
+        <div class="controls-bar">
+            <button class="ctrl-btn" onclick="expandAll()"><i class="fas fa-expand-alt"></i> Expand All</button>
+            <button class="ctrl-btn" onclick="collapseAll()"><i class="fas fa-compress-alt"></i> Collapse All</button>
+        </div>
+
+        <!-- Pattern Groups -->
+        <div id="revision-content"></div>
+    </div>
+
+    <script src="data.js?v=2"></script>
+    <script>
+        // Set today's date
+        document.getElementById('today-date').textContent = new Date().toLocaleDateString('en-IN', {
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+        });
+
+        const allTopics = ['arrays', 'binary_search', 'linked_list', 'stack', 'trees', 'heap_trie', 'graphs', 'dp', 'backtracking'];
+
+        const topicIcons = {
+            'Arrays & Sliding Window': '🔢',
+            'Binary Search Mastery': '🔍',
+            'Linked List Mastery': '🔗',
+            'Stack Mastery': '📚',
+            'Tree Mastery': '🌳',
+            'Heap & Trie': '⛰️',
+            'Graph Mastery': '🕸️',
+            'Dynamic Programming': '💡',
+            'Backtracking Mastery': '♟️'
+        };
+
+        const patternColors = {
+            'HashMap': '#ef4444',
+            'Two Pointers': '#f97316',
+            'Sliding Window': '#eab308',
+            'DP': '#22c55e',
+            'Prefix & Suffix': '#06b6d4',
+            'Sorting': '#8b5cf6',
+            'Greedy': '#ec4899',
+            'Min-Heap': '#14b8a6',
+            'Binary Search': '#3b82f6',
+            'Rotated Array': '#6366f1',
+            'Fast & Slow': '#a855f7',
+            'Reversal': '#f43f5e',
+            'Merge': '#10b981',
+            'Monotonic Stack': '#f59e0b',
+            'NGE': '#d946ef',
+            'DFS': '#22d3ee',
+            'BFS': '#2563eb',
+            'Postorder': '#16a34a',
+            'BST Property': '#ca8a04',
+            'Coordinates': '#7c3aed',
+            'Graph on Tree': '#059669',
+            'Topo Sort': '#dc2626',
+            'Union-Find': '#7c2d12',
+            'Dijkstra': '#1d4ed8',
+            'Multi-source BFS': '#4f46e5',
+            'Cycle Detection': '#be185d',
+            'Knapsack': '#15803d',
+            'LCS': '#b45309',
+            'LIS': '#0369a1',
+            'Grid DP': '#6d28d9',
+            'State Machine': '#a21caf',
+            'Decision': '#c2410c',
+            'Permutation': '#4338ca',
+            'Partition': '#0e7490',
+            'Constraint Backtrack': '#9333ea',
+            'Heap': '#0d9488',
+            'Trie': '#7e22ce'
+        };
+
+        function esc(t) {
+            return (t || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        // Build pattern-grouped data
+        // Group by topic first, then by tag pattern within each topic
+        const topicGroups = [];
+        let totalQuestions = 0;
+        let totalPatterns = 0;
+
+        allTopics.forEach(topicKey => {
+            const topic = prepData[topicKey];
+            if (!topic || !topic.questions) return;
+
+            const patternMap = new Map();
+
+            topic.questions.forEach((q, idx) => {
+                if (!q.learn && !q.customHtml) return;
+                totalQuestions++;
+
+                const tag = (q.tags && q.tags[0]) || 'General';
+
+                if (!patternMap.has(tag)) {
+                    patternMap.set(tag, []);
+                }
+                patternMap.get(tag).push({ ...q, globalIdx: idx });
+            });
+
+            if (patternMap.size > 0) {
+                totalPatterns += patternMap.size;
+                topicGroups.push({
+                    topicKey,
+                    topicTitle: topic.title,
+                    topicIcon: topic.icon,
+                    patterns: patternMap
+                });
+            }
+        });
+
+        // Stats
+        document.getElementById('stats-bar').innerHTML = `
+            <div class="stat-item">
+                <div class="stat-number">${totalQuestions}</div>
+                <div class="stat-label">Questions</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">${allTopics.length}</div>
+                <div class="stat-label">Topics</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">${totalPatterns}</div>
+                <div class="stat-label">Patterns</div>
+            </div>
+        `;
+
+        // Filter tabs
+        const filterContainer = document.getElementById('filter-tabs');
+        filterContainer.innerHTML = `<button class="filter-tab active" data-topic="all" onclick="filterByTopic('all')">All</button>` +
+            topicGroups.map(tg => {
+                const icon = topicIcons[tg.topicTitle] || '📌';
+                return `<button class="filter-tab" data-topic="${tg.topicKey}" onclick="filterByTopic('${tg.topicKey}')">${icon} ${tg.topicTitle.replace(' Mastery', '').replace(' & Sliding Window', '')}</button>`;
+            }).join('');
+
+        // Render groups
+        function renderAll() {
+            const container = document.getElementById('revision-content');
+            let html = '';
+            let qCounter = 0;
+
+            topicGroups.forEach(tg => {
+                const icon = topicIcons[tg.topicTitle] || '📌';
+
+                tg.patterns.forEach((questions, patternName) => {
+                    const color = patternColors[patternName] || '#5e5ce6';
+
+                    html += `
+                    <div class="pattern-group" data-topic="${tg.topicKey}" onclick="togglePattern(event, this)">
+                        <div class="pattern-header">
+                            <div class="pattern-header-left">
+                                <div class="pattern-icon" style="background: ${color}22; color: ${color};">
+                                    ${icon}
+                                </div>
+                                <div>
+                                    <div class="pattern-name">${patternName}</div>
+                                    <div class="pattern-count">${tg.topicTitle} • ${questions.length} question${questions.length > 1 ? 's' : ''}</div>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-down pattern-arrow"></i>
+                        </div>
+                        <div class="pattern-body">
+                    `;
+
+                    questions.forEach(q => {
+                        qCounter++;
+                        const diffClass = q.difficulty === 'Must Do' ? 'must' : (q.difficulty === 'Good to Do' ? 'good' : 'bonus');
+                        const timeStr = q.learn?.metrics?.time || '';
+
+                        // QuickAlgo
+                        let algoHtml = '';
+                        if (q.learn?.quickAlgo && q.learn.quickAlgo.length > 0) {
+                            const algoText = q.learn.quickAlgo.join('\n');
+                            algoHtml = `
+                                <div class="rev-algo">
+                                    <pre><code class="language-python">${esc(algoText)}</code></pre>
+                                </div>
+                            `;
+                        }
+
+                        // Crux one-liner
+                        let cruxHtml = '';
+                        if (q.learn?.crux) {
+                            const cruxText = q.learn.crux.replace(/<[^>]*>/g, '').substring(0, 200);
+                            cruxHtml = `<div class="rev-crux"><strong>💡 Crux:</strong> ${cruxText}</div>`;
+                        }
+
+                        html += `
+                            <div class="rev-question">
+                                <div class="rev-q-header">
+                                    <div class="rev-q-title">
+                                        <span class="q-num">#${qCounter}</span>
+                                        ${q.title}
+                                    </div>
+                                    <div class="rev-q-meta">
+                                        ${timeStr ? `<span class="rev-tag time">${timeStr}</span>` : ''}
+                                        <span class="rev-tag ${diffClass}">${q.difficulty}</span>
+                                    </div>
+                                </div>
+                                ${algoHtml}
+                                ${cruxHtml}
+                            </div>
+                        `;
+                    });
+
+                    html += `
+                        </div>
+                    </div>
+                    `;
+                });
+            });
+
+            container.innerHTML = html;
+
+            // Highlight all code blocks
+            if (window.hljs) {
+                document.querySelectorAll('.rev-algo code').forEach(block => {
+                    hljs.highlightElement(block);
+                });
+            }
+        }
+
+        function togglePattern(event, el) {
+            // Don't toggle if clicking inside the body
+            if (event.target.closest('.pattern-body')) return;
+            el.classList.toggle('open');
+        }
+
+        function expandAll() {
+            document.querySelectorAll('.pattern-group').forEach(g => {
+                if (g.style.display !== 'none') g.classList.add('open');
+            });
+        }
+
+        function collapseAll() {
+            document.querySelectorAll('.pattern-group').forEach(g => g.classList.remove('open'));
+        }
+
+        function filterByTopic(topicKey) {
+            // Update tabs
+            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.filter-tab[data-topic="${topicKey}"]`).classList.add('active');
+
+            // Filter groups
+            document.querySelectorAll('.pattern-group').forEach(g => {
+                if (topicKey === 'all' || g.dataset.topic === topicKey) {
+                    g.style.display = 'block';
+                } else {
+                    g.style.display = 'none';
+                }
+            });
+        }
+
+        // Initial render
+        renderAll();
+    </script>
+</body>
+
+</html>
