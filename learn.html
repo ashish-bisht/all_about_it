@@ -971,17 +971,71 @@
             font-family: 'JetBrains Mono', monospace;
         }
 
-        /* --- Visual Section Better Styling --- */
+        /* --- Visual Intuition Section --- */
         .visual-container {
-            background: rgba(34, 211, 238, 0.03);
-            border: 1px solid rgba(34, 211, 238, 0.12);
-            border-radius: 12px;
-            padding: 20px;
+            background: linear-gradient(145deg, rgba(34, 211, 238, 0.04), rgba(129, 140, 248, 0.03));
+            border: 1px solid rgba(34, 211, 238, 0.1);
+            border-radius: 14px;
+            padding: 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .visual-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #22d3ee, #818cf8, #a78bfa);
+            z-index: 1;
+        }
+
+        .visual-container > div {
+            background: transparent !important;
+            padding: 20px 24px !important;
+            margin: 0 !important;
+            border-radius: 0 !important;
+        }
+
+        .visual-container strong {
+            font-size: 1rem !important;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 14px !important;
+            padding: 6px 14px;
+            background: rgba(167, 139, 250, 0.1) !important;
+            border-radius: 8px;
+            border: 1px solid rgba(167, 139, 250, 0.15);
+            color: #c4b5fd !important;
+        }
+
+        .visual-container code {
+            display: block;
+            background: rgba(0, 0, 0, 0.3) !important;
+            color: #67e8f9 !important;
+            padding: 18px 22px !important;
+            border-radius: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.84rem;
+            line-height: 1.7;
+            border: 1px solid rgba(34, 211, 238, 0.06);
+            white-space: pre-wrap;
+            letter-spacing: 0.01em;
+            overflow-x: auto;
         }
 
         .visual-container pre {
             border: none !important;
             border-top: none !important;
+            background: rgba(0, 0, 0, 0.3) !important;
+            padding: 18px 22px !important;
+            border-radius: 10px;
+            margin: 8px 0;
+            font-size: 0.84rem;
+            line-height: 1.7;
         }
 
         /* --- Crux text better readability --- */
@@ -1692,6 +1746,18 @@
             if (quickAlgoBlock) {
                 hljs.highlightElement(quickAlgoBlock);
             }
+
+            // Post-process visual section: convert <br>-based content to clean <pre> blocks
+            document.querySelectorAll('.visual-container code').forEach(codeEl => {
+                // Get text, strip <br> tags, collapse whitespace lines
+                let html = codeEl.innerHTML;
+                html = html.replace(/<br\s*\/?>\s*<br\s*\/?>/gi, '\n');
+                html = html.replace(/<br\s*\/?>/gi, '\n');
+                html = html.replace(/&nbsp;/gi, ' ');
+                // Remove leading/trailing blank lines
+                html = html.replace(/^\s*\n/, '').replace(/\n\s*$/, '');
+                codeEl.innerHTML = html;
+            });
 
             // Setup sidebar scroll spy
             setupSidebarObserver();
