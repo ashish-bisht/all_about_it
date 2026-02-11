@@ -476,7 +476,29 @@ def findMaximumXOR(nums):
     """
     # ... (Implementation checks opposite bits greedily)
     pass`,
-                visual: `<span><strong>Visual: Opposite Path</strong><br>Val: <code>101</code><br>Trie Path: Go <code>0 -> 1 -> 0</code> (Opposites).<br>Result: <code>111</code> (Maximized).</span>`,
+                visual: `<div style="font-family:monospace; font-size:0.85rem;">
+                    <strong style="color:#c026d3;">Max XOR: "Take the Opposite Bit Path"</strong>
+                    <div style="background:#1e293b; padding:16px; border-radius:10px; margin:12px 0;">
+                        <div style="color:#94a3b8; font-size:0.8rem; margin-bottom:10px;">Binary Trie with nums [5 (101), 2 (010)]</div>
+                        <div style="font-family:monospace; line-height:2; color:#cbd5e1; text-align:center;">
+                            <span style="color:#475569;">(root)</span><br>
+                            <span style="color:#94a3b8;">  /  \\</span><br>
+                            <span style="color:#4ade80; font-weight:bold;">0</span><span style="color:#94a3b8;">    </span><span style="color:#f87171; font-weight:bold;">1</span><br>
+                            <span style="color:#94a3b8;">|    |</span><br>
+                            <span style="color:#4ade80; font-weight:bold;">1</span><span style="color:#94a3b8;">    </span><span style="color:#f87171; font-weight:bold;">0</span><br>
+                            <span style="color:#94a3b8;">|    |</span><br>
+                            <span style="color:#4ade80; font-weight:bold;">0</span><span style="color:#94a3b8;">    </span><span style="color:#f87171; font-weight:bold;">1</span>
+                        </div>
+                    </div>
+                    <div style="background:rgba(192,38,211,0.1); padding:10px; border-radius:8px; border-left:3px solid #c026d3;">
+                        <div style="color:#c026d3; font-weight:bold;">For num 5 (101): take opposite path 0→1→0</div>
+                        <div style="color:#94a3b8;">XOR result: <code style="color:#a5f3fc;">101 ⊕ 010 = 111 = 7</code> (maximized!)</div>
+                    </div>
+                    <div style="background:#0f172a; padding:10px; border-radius:6px; margin-top:8px;">
+                        <div style="color:#fbbf24;">Rule: At each bit, greedily pick OPPOSITE (1→0, 0→1)</div>
+                        <div style="color:#94a3b8;">If opposite doesn't exist, forced to take same bit (XOR=0)</div>
+                    </div>
+                </div>`,
                 crux: "<strong>Greedy Bitwise:</strong> We want the 'Opposite Bit' at every step (MSB to LSB). Use Trie to check existence.",
                 strategy: "Insert all binary strings. For each num, traverse trying to match <code>1-bit</code>. If yes, add <code>1<<i</code> to result.",
                 trap: "<strong>MSB First:</strong> Must process from bit 31 down to 0 to maximize value (higher bits matter more).",
@@ -534,7 +556,27 @@ def findMaximumXOR(nums):
     for n in nums:
         res ^= n
     return res`,
-                visual: `<span><strong>Visual: Cancellation</strong><br><code>2 ^ 2 = 0</code><br><code>2 ^ 1 ^ 2</code> ➡ <code>(2^2) ^ 1</code> ➡ <code>0 ^ 1</code> ➡ <code>1</code></span>`,
+                visual: `<div style="font-family:monospace; font-size:0.85rem;">
+                    <strong style="color:#22d3ee;">XOR Cancellation: "Duplicates Kill Each Other"</strong>
+                    <div style="background:#1e293b; padding:16px; border-radius:10px; margin:12px 0; text-align:center;">
+                        <div style="display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap; font-size:1rem;">
+                            <span style="padding:6px 14px; background:rgba(251,191,36,0.2); border:1px solid #fbbf24; border-radius:8px; color:#fbbf24;">4</span>
+                            <span style="color:#94a3b8;">⊕</span>
+                            <span style="padding:6px 14px; background:rgba(239,68,68,0.2); border:1px solid #ef4444; border-radius:8px; color:#ef4444; text-decoration:line-through;">1</span>
+                            <span style="color:#94a3b8;">⊕</span>
+                            <span style="padding:6px 14px; background:rgba(239,68,68,0.2); border:1px solid #ef4444; border-radius:8px; color:#ef4444; text-decoration:line-through;">2</span>
+                            <span style="color:#94a3b8;">⊕</span>
+                            <span style="padding:6px 14px; background:rgba(239,68,68,0.2); border:1px solid #ef4444; border-radius:8px; color:#ef4444; text-decoration:line-through;">1</span>
+                            <span style="color:#94a3b8;">⊕</span>
+                            <span style="padding:6px 14px; background:rgba(239,68,68,0.2); border:1px solid #ef4444; border-radius:8px; color:#ef4444; text-decoration:line-through;">2</span>
+                        </div>
+                        <div style="margin-top:12px; color:#94a3b8;">↓ pairs cancel: (1⊕1)=0, (2⊕2)=0</div>
+                        <div style="margin-top:8px; font-size:1.2rem; color:#4ade80; font-weight:bold;">= 4 ✓ (The Survivor)</div>
+                    </div>
+                    <div style="background:#0f172a; padding:10px; border-radius:6px;">
+                        <div style="color:#fbbf24;">A ⊕ A = 0 (cancel) | A ⊕ 0 = A (identity)</div>
+                    </div>
+                </div>`,
                 crux: "<strong>XOR Cancellation:</strong> Duplicates kill each other. The survivor is the answer.",
                 strategy: "Initialize <code>res = 0</code>. XOR every element. Return <code>res</code>.",
                 trap: "<strong>Input Validation:</strong> Assumes exactly one single number and all others appear twice. Will fail otherwise.",

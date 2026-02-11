@@ -186,12 +186,33 @@ def asteroidCollision(asteroids):
                 metrics: { time: "O(N)", space: "O(N)" },
                 timeExplainer: "<strong>Monotonic Stack:</strong><br>• Each element pushed ONCE<br>• Each element popped ONCE<br><br><strong>Total:</strong> <code>O(N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Stack stores indices<br>• Worst Case: Decreasing order [5,4,3,2,1] -> Stack holds all N elements.<br><strong>Aux:</strong> <code>O(N)</code>",
-                visual: `<div style="text-align:center;">
-                    <div style="font-size:3rem; margin-bottom:10px;">📉 ➡️ 📈</div>
-                    <div><strong>Visual: The Horizon</strong></div>
-                    <div style="font-size:0.9rem; color:var(--text-muted); margin-top:5px;">
-                        Imagine looking to the right. You can only see the first person <strong>taller</strong> than you.<br>
-                        Smaller people get hidden (popped) by taller ones.
+                visual: `<div style="font-family:monospace; font-size:0.85rem;">
+                    <strong style="color:#22d3ee;">Next Greater Element: "Look Right for Taller"</strong>
+                    <div style="display:flex; align-items:flex-end; gap:4px; margin:15px 0 8px; height:120px;">
+                        <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+                            <div style="font-size:0.7rem; color:#94a3b8;">4</div>
+                            <div style="width:40px; height:40px; background:#334155; border-radius:4px 4px 0 0; display:flex; align-items:center; justify-content:center; color:#e2e8f0; font-weight:bold;">4</div>
+                        </div>
+                        <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+                            <div style="font-size:0.7rem; color:#22d3ee;">→5</div>
+                            <div style="width:40px; height:50px; background:#0e7490; border:2px solid #22d3ee; border-radius:4px 4px 0 0; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:bold;">5</div>
+                        </div>
+                        <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+                            <div style="font-size:0.7rem; color:#94a3b8;">2</div>
+                            <div style="width:40px; height:20px; background:#334155; border-radius:4px 4px 0 0; display:flex; align-items:center; justify-content:center; color:#e2e8f0; font-weight:bold;">2</div>
+                        </div>
+                        <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+                            <div style="font-size:0.7rem; color:#22d3ee;">→10</div>
+                            <div style="width:40px; height:100px; background:#0e7490; border:2px solid #22d3ee; border-radius:4px 4px 0 0; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:bold;">10</div>
+                        </div>
+                        <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+                            <div style="font-size:0.7rem; color:#ef4444;">-1</div>
+                            <div style="width:40px; height:80px; background:#334155; border-radius:4px 4px 0 0; display:flex; align-items:center; justify-content:center; color:#e2e8f0; font-weight:bold;">8</div>
+                        </div>
+                    </div>
+                    <div style="background:#0f172a; padding:10px; border-radius:6px; margin-top:8px;">
+                        <div style="color:#fbbf24;">Stack (decreasing): stores waiting elements</div>
+                        <div style="color:#94a3b8;">When <span style="color:#22d3ee;">BIGGER</span> element arrives → pop all smaller = their NGE found!</div>
                     </div>
                 </div>`,
                 crux: "<strong>Framework (Monotonic Decreasing Stack):</strong><br>1. Store <strong>Indices</strong> (better than values).<br>2. Loop `i` from `0` to `N-1`.<br>3. <strong>Resolving Conflict:</strong> While `arr[stack.top] < arr[i]`: We found the Next Greater for stack.top! <br>➡ `pop()` and record result.<br><br><strong>Logic Ek Line Mein:</strong><br>Jab bhi koi BADA element aata hai, toh stack se sab CHOTE elements pop karke unka answer set kar do!",
@@ -253,12 +274,36 @@ def asteroidCollision(asteroids):
                 metrics: { time: "O(N)", space: "O(N)" },
                 timeExplainer: "<strong>Monotonic Increasing Stack:</strong><br>• Each element pushed ONCE<br>• Each element popped ONCE<br><br><strong>Total:</strong> <code>O(N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Stack stores indices<br>• Worst Case: Increasing order [1,2,3...N] -> Stack holds all N elements.<br><strong>Aux:</strong> <code>O(N)</code>",
-                visual: `<div style="text-align:center;">
-                    <div style="font-size:3rem; margin-bottom:10px;">📊 🧱</div>
-                    <div><strong>Visual: The Expansion Limits</strong></div>
-                    <div style="font-size:0.9rem; color:var(--text-muted); margin-top:5px;">
-                        For current bar <code>H</code>, find left-most and right-most boundary where height >= <code>H</code>.<br>
-                        <strong>Pop Logic:</strong> When you see a smaller bar, the "tall" bars in stack can't expand right anymore. Process them!
+                visual: `<div style="font-family:monospace; font-size:0.85rem;">
+                    <strong style="color:#22d3ee;">Largest Rectangle: "How far can each bar expand?"</strong>
+                    <div style="display:flex; align-items:flex-end; gap:2px; margin:15px 0 8px; height:140px; position:relative;">
+                        <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+                            <div style="width:45px; height:40px; background:#334155; border-radius:4px 4px 0 0; display:flex; align-items:center; justify-content:center; color:#e2e8f0;">2</div>
+                        </div>
+                        <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+                            <div style="width:45px; height:20px; background:#334155; border-radius:4px 4px 0 0; display:flex; align-items:center; justify-content:center; color:#e2e8f0;">1</div>
+                        </div>
+                        <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+                            <div style="width:45px; height:100px; background:rgba(16,185,129,0.3); border:2px solid #10b981; border-radius:4px 4px 0 0; display:flex; align-items:center; justify-content:center; color:#10b981; font-weight:bold;">5</div>
+                        </div>
+                        <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+                            <div style="width:45px; height:120px; background:rgba(16,185,129,0.3); border:2px solid #10b981; border-radius:4px 4px 0 0; display:flex; align-items:center; justify-content:center; color:#10b981; font-weight:bold;">6</div>
+                        </div>
+                        <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+                            <div style="width:45px; height:40px; background:#334155; border-radius:4px 4px 0 0; display:flex; align-items:center; justify-content:center; color:#e2e8f0;">2</div>
+                        </div>
+                        <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+                            <div style="width:45px; height:60px; background:#334155; border-radius:4px 4px 0 0; display:flex; align-items:center; justify-content:center; color:#e2e8f0;">3</div>
+                        </div>
+                    </div>
+                    <div style="background:rgba(16,185,129,0.1); padding:8px 12px; border-radius:6px; border-left:3px solid #10b981; margin-top:8px;">
+                        <span style="color:#10b981; font-weight:bold;">Max Rectangle = 5 × 2 = 10</span>
+                        <span style="color:#94a3b8;"> (height=5, spans 2 bars)</span>
+                    </div>
+                    <div style="background:#0f172a; padding:10px; border-radius:6px; margin-top:8px;">
+                        <div style="color:#fbbf24;">Increasing Stack: when shorter bar arrives →</div>
+                        <div style="color:#94a3b8;">Pop tall bars (they can't expand right anymore). Calc area for each popped bar.</div>
+                        <div style="color:#94a3b8; margin-top:4px;">Width = <code style="color:#a5f3fc;">current_i - stack.top - 1</code></div>
                     </div>
                 </div>`,
                 crux: "<strong>Framework (Monotonic Increasing Stack):</strong><br>1. <strong>Indices</strong> in stack.<br>2. <strong>Conflict:</strong> `arr[i] < arr[stack.top]`.<br>3. <strong>Pop & Resolve:</strong><br>• Height = `arr[popped]`<br>• Width = `i - stack.peek() - 1` (Right - Left - 1)<br>• Area = Max(Area, H*W)",
@@ -322,14 +367,20 @@ def asteroidCollision(asteroids):
                 metrics: { time: "O(N)", space: "O(N)" },
                 timeExplainer: "<strong>Monotonic Decreasing Stack:</strong><br>• Each bar pushed ONCE<br>• Each bar popped ONCE<br><br><strong>Total:</strong> <code>O(N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Stack stores indices<br>• Worst Case: Decreasing order.<br><strong>Aux:</strong> <code>O(N)</code>",
-                visual: `<div style="text-align:center;">
-                    <div style="font-size:3rem; margin-bottom:10px;">🥣 💧</div>
-                    <div><strong>Visual: Horizontal Slicing</strong></div>
-                    <div style="font-size:0.9rem; color:var(--text-muted); margin-top:5px;">
-                        Imagine filling a bowl layer by layer.<br>
-                        <strong>Floor:</strong> The popped short bar.<br>
-                        <strong>Left Wall:</strong> The new top after pop.<br>
-                        <strong>Right Wall:</strong> The current bar <code>i</code>.
+                visual: `<div style="font-family:monospace; font-size:0.85rem;">
+                    <strong style="color:#22d3ee;">Trapping Rain Water: "Find the Bowl"</strong>
+                    <div style="display:flex; align-items:flex-end; gap:2px; margin:15px 0 8px; height:120px;">
+                        <div style="width:40px; height:80px; background:#475569; border-radius:4px 4px 0 0; display:flex; align-items:flex-start; justify-content:center; padding-top:4px; color:#e2e8f0;">4</div>
+                        <div style="width:40px; height:40px; background:#475569; border-radius:4px 4px 0 0; display:flex; align-items:flex-start; justify-content:center; padding-top:4px; color:#e2e8f0; position:relative;"><span>2</span><div style="position:absolute; top:-42px; width:36px; height:40px; background:rgba(56,189,248,0.2); border:1px dashed #38bdf8; border-radius:2px; display:flex; align-items:center; justify-content:center; font-size:0.7rem; color:#38bdf8;">💧</div></div>
+                        <div style="width:40px; height:0px; background:#475569; position:relative;"><div style="position:absolute; bottom:0; width:36px; height:60px; background:rgba(56,189,248,0.2); border:1px dashed #38bdf8; border-radius:2px; display:flex; align-items:center; justify-content:center; font-size:0.7rem; color:#38bdf8;">💧💧</div></div>
+                        <div style="width:40px; height:60px; background:#475569; border-radius:4px 4px 0 0; display:flex; align-items:flex-start; justify-content:center; padding-top:4px; color:#e2e8f0;">3</div>
+                    </div>
+                    <div style="background:#0f172a; padding:10px; border-radius:6px; margin-top:8px;">
+                        <div style="color:#38bdf8; font-weight:bold;">Bowl Pattern: Left Wall → Floor → Right Wall</div>
+                        <div style="color:#94a3b8; margin-top:4px;">Decreasing stack. When taller bar (Right Wall) comes:</div>
+                        <div style="color:#94a3b8;">1. Pop = <span style="color:#fbbf24;">Floor</span></div>
+                        <div style="color:#94a3b8;">2. New top = <span style="color:#fbbf24;">Left Wall</span></div>
+                        <div style="color:#94a3b8;">3. Water = <code style="color:#a5f3fc;">min(L, R) - Floor</code> × <code style="color:#a5f3fc;">width</code></div>
                     </div>
                 </div>`,
                 crux: "<strong>Framework (The Bowl):</strong><br>1. <strong>Stack</strong> (Decreasing).<br>2. <strong>Conflict:</strong> `h[i] > h[stack.top]` (Right Wall found!).<br>3. <strong>Process Bowl:</strong><br>• `Floor` = pop().<br>• `height` = `min(Left, Right) - Floor`.<br>• `width` = `Right - Left - 1`.<br>• `Add water`!",
@@ -391,12 +442,26 @@ def asteroidCollision(asteroids):
                 metrics: { time: "O(N)", space: "O(N)" },
                 timeExplainer: "<strong>Simulation:</strong><br>• Each asteroid processed once<br>• Stack push/pop = O(1) each<br><br><strong>Total:</strong> <code>O(N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Stack stores survivors<br>• Worst: No collisions (all same direction) = <code>O(N)</code>",
-                visual: `<div style="text-align:center;">
-                    <div style="font-size:3rem; margin-bottom:10px;">☄️ 💥 🪨</div>
-                    <div><strong>Visual: The One-Way Street</strong></div>
-                    <div style="font-size:0.9rem; color:var(--text-muted); margin-top:5px;">
-                        Right-moving (+) asteroids are peaceful travellers waiting in the stack.<br>
-                        Left-moving (-) asteroids are destroyers attempting to crash into them.
+                visual: `<div style="font-family:monospace; font-size:0.85rem;">
+                    <strong style="color:#22d3ee;">Asteroid Collision: "Right vs Left"</strong>
+                    <div style="display:flex; align-items:center; gap:8px; margin:15px 0; padding:12px; background:#0f172a; border-radius:8px;">
+                        <div style="padding:6px 12px; background:rgba(16,185,129,0.2); border:1px solid #10b981; border-radius:20px; color:#10b981; font-weight:bold;">5 →</div>
+                        <div style="padding:6px 12px; background:rgba(16,185,129,0.2); border:1px solid #10b981; border-radius:20px; color:#10b981; font-weight:bold;">10 →</div>
+                        <div style="font-size:1.5rem;">💥</div>
+                        <div style="padding:6px 12px; background:rgba(239,68,68,0.2); border:1px solid #ef4444; border-radius:20px; color:#ef4444; font-weight:bold;">← -5</div>
+                    </div>
+                    <div style="display:flex; gap:10px; margin-top:8px;">
+                        <div style="flex:1; background:rgba(16,185,129,0.1); padding:10px; border-radius:8px; border-left:3px solid #10b981;">
+                            <div style="color:#10b981; font-weight:bold; font-size:0.8rem;">Stack (→)</div>
+                            <div style="color:#94a3b8; font-size:0.8rem;">Right-movers wait peacefully</div>
+                        </div>
+                        <div style="flex:1; background:rgba(239,68,68,0.1); padding:10px; border-radius:8px; border-left:3px solid #ef4444;">
+                            <div style="color:#ef4444; font-weight:bold; font-size:0.8rem;">Incoming (←)</div>
+                            <div style="color:#94a3b8; font-size:0.8rem;">Left-movers try to destroy</div>
+                        </div>
+                    </div>
+                    <div style="background:#0f172a; padding:10px; border-radius:6px; margin-top:8px;">
+                        <div style="color:#fbbf24;">Result: |10| > |-5| → <span style="color:#ef4444;">-5 destroyed</span>. Stack = [5, 10]</div>
                     </div>
                 </div>`,
                 crux: "<strong>Framework (Collisions):</strong><br>1. <strong>Stack</strong> only stores Stable asteroids.<br>2. <strong>Conflict Cond:</strong> StackTop > 0 (Right) AND Current < 0 (Left).<br>3. <strong>Battle Logic:</strong><br>• Top < |Cur| ➡ 💥 Top destroyed. Continue Checking.<br>• Top == |Cur| ➡ 💥 Both destroyed.<br>• Top > |Cur| ➡ 💥 Cur destroyed. Stop.",

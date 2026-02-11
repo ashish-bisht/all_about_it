@@ -1249,31 +1249,47 @@
     <!-- Navbar -->
     <nav class="navbar">
         <div class="nav-content">
-            <div class="nav-top">
-                <a href="index.html" class="nav-logo" style="color: #f8fafc !important;">
-                    <i class="fas fa-fire"></i> Principal Prep
-                </a>
-                <div class="level-badge">
-                    <i class="fas fa-star"></i>
-                    <span>Level <span id="player-level">1</span></span>
-                </div>
-            </div>
-            <div class="xp-bar-container">
-                <div class="xp-bar" id="xp-bar" style="width: 0%"></div>
-            </div>
-            <div class="xp-text"><span id="current-xp">0</span> / <span id="next-level-xp">100</span> XP</div>
-            <div class="nav-links" style="margin-top: 15px; justify-content: center;">
+            <a href="index.html" class="nav-logo">
+                <i class="fas fa-fire"></i> Principal Prep
+            </a>
+            <button class="nav-hamburger"
+                onclick="this.classList.toggle('open'); document.querySelector('.nav-links').classList.toggle('open');">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="nav-links">
                 <a href="index.html" class="nav-link">Dashboard</a>
                 <a href="learn.html" class="nav-link">Learn</a>
                 <a href="flashcard.html" class="nav-link">Flashcards</a>
                 <a href="cheatsheet.html" class="nav-link">Cheat Sheet</a>
                 <a href="templates.html" class="nav-link">Templates</a>
-                <a href="revision.html" class="nav-link" style="color: #a78bfa !important;">
+                <div class="nav-separator"></div>
+                <a href="revision.html" class="nav-link revision-link">
                     <i class="fas fa-bolt"></i> Revision
                 </a>
+                <a href="game.html" class="nav-link game-btn active">
+                    <i class="fas fa-gamepad"></i> Game
+                </a>
+                <div class="nav-separator"></div>
+                <button id="theme-toggle" class="nav-link" title="Toggle Theme">
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
         </div>
     </nav>
+    <!-- Game XP Bar -->
+    <div class="game-xp-header">
+        <div class="nav-content">
+            <div class="level-badge">
+                <i class="fas fa-star"></i>
+                <span>Level <span id="player-level">1</span></span>
+            </div>
+            <div class="xp-bar-container">
+                <div class="xp-bar" id="xp-bar" style="width: 0%"></div>
+            </div>
+            <div class="xp-text"><span id="current-xp">0</span> / <span id="next-level-xp">100</span> XP</div>
+        </div>
+    </div>
 
     <div class="container">
 
@@ -1863,6 +1879,7 @@
         updatePowerupCounts();
     </script>
 
+    <script src='script.js'></script>
 </body>
 
 </html>

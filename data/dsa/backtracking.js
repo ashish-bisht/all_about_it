@@ -523,22 +523,50 @@ Each permutation: copy array to result = O(N)<br><br>
 </table>
 </div>`,
 
-                visual: `<div style="text-align:left; font-family: monospace; font-size: 0.85rem; line-height: 1.6;">
-<strong style="color:#fbbf24;">🪑 "Musical Chairs" Visualization:</strong>
-<pre style="color: var(--text-muted); margin-top:10px;">
-nums = [1, 2, 3]       start = 0
-
-"Position 0 pe kaun baithega?"
-    ↓
-┌───────────────────────────────────────────┐
-│  i=0: Swap(0,0)    i=1: Swap(0,1)    i=2: Swap(0,2)  │
-│  [1, 2, 3]         [2, 1, 3]         [3, 2, 1]       │
-│      ↓                 ↓                 ↓           │
-│  start=1           start=1           start=1        │
-│  "Pos 1 pe kaun?"  "Pos 1 pe kaun?" "Pos 1 pe kaun?"│
-└───────────────────────────────────────────┘
-</pre>
-</div>`,
+                visual: `<div style="font-family:monospace; font-size:0.85rem;">
+                    <strong style="color:#fbbf24;">🪑 Permutations: "Musical Chairs Swapping"</strong>
+                    <div style="background:#1e293b; padding:16px; border-radius:10px; margin:12px 0;">
+                        <div style="color:#94a3b8; font-size:0.8rem; margin-bottom:10px;">nums = [1, 2, 3] → "Position 0 pe kaun baithega?"</div>
+                        <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
+                            <div style="text-align:center;">
+                                <div style="color:#4ade80; font-size:0.75rem; margin-bottom:4px;">Swap(0,0)</div>
+                                <div style="display:flex; gap:3px;">
+                                    <span style="padding:4px 10px; background:rgba(74,222,128,0.3); border:2px solid #4ade80; border-radius:6px; color:#4ade80;">1</span>
+                                    <span style="padding:4px 10px; background:#0f172a; border:1px solid #334155; border-radius:6px; color:#cbd5e1;">2</span>
+                                    <span style="padding:4px 10px; background:#0f172a; border:1px solid #334155; border-radius:6px; color:#cbd5e1;">3</span>
+                                </div>
+                            </div>
+                            <div style="text-align:center;">
+                                <div style="color:#38bdf8; font-size:0.75rem; margin-bottom:4px;">Swap(0,1)</div>
+                                <div style="display:flex; gap:3px;">
+                                    <span style="padding:4px 10px; background:rgba(56,189,248,0.3); border:2px solid #38bdf8; border-radius:6px; color:#38bdf8;">2</span>
+                                    <span style="padding:4px 10px; background:#0f172a; border:1px solid #334155; border-radius:6px; color:#cbd5e1;">1</span>
+                                    <span style="padding:4px 10px; background:#0f172a; border:1px solid #334155; border-radius:6px; color:#cbd5e1;">3</span>
+                                </div>
+                            </div>
+                            <div style="text-align:center;">
+                                <div style="color:#f87171; font-size:0.75rem; margin-bottom:4px;">Swap(0,2)</div>
+                                <div style="display:flex; gap:3px;">
+                                    <span style="padding:4px 10px; background:rgba(248,113,113,0.3); border:2px solid #f87171; border-radius:6px; color:#f87171;">3</span>
+                                    <span style="padding:4px 10px; background:#0f172a; border:1px solid #334155; border-radius:6px; color:#cbd5e1;">2</span>
+                                    <span style="padding:4px 10px; background:#0f172a; border:1px solid #334155; border-radius:6px; color:#cbd5e1;">1</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="text-align:center; margin-top:8px; color:#94a3b8; font-size:0.75rem;">Then recurse on positions 1, 2... swap back after each!</div>
+                    </div>
+                    <div style="display:flex; gap:8px;">
+                        <div style="flex:1; background:rgba(74,222,128,0.1); padding:8px; border-radius:6px; text-align:center; border-left:3px solid #4ade80;">
+                            <div style="color:#4ade80; font-weight:bold; font-size:0.8rem;">1️⃣ SWAP</div>
+                        </div>
+                        <div style="flex:1; background:rgba(139,92,246,0.1); padding:8px; border-radius:6px; text-align:center; border-left:3px solid #8b5cf6;">
+                            <div style="color:#8b5cf6; font-weight:bold; font-size:0.8rem;">2️⃣ RECURSE</div>
+                        </div>
+                        <div style="flex:1; background:rgba(248,113,113,0.1); padding:8px; border-radius:6px; text-align:center; border-left:3px solid #f87171;">
+                            <div style="color:#f87171; font-weight:bold; font-size:0.8rem;">3️⃣ UNSWAP</div>
+                        </div>
+                    </div>
+                </div>`,
 
                 crux: `<strong>The Swap-Recurse-Unswap Pattern:</strong><br><br>
 <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:15px 0;">
@@ -649,16 +677,37 @@ nums = [1, 2, 3]       start = 0
 • Current path array: <code>O(N)</code><br>
 • Output: <code>2^N</code> subsets (not counted as aux)<br><br>
 <strong>Aux Space:</strong> <code>O(N)</code>`,
-                visual: `<div style="text-align:left; font-family: monospace; font-size: 0.85rem; line-height: 1.8;">
-<pre style="color: var(--text-muted);">
-                    []
-                    |
-        "Element 1 ko LUN ya NA LUN?"
-                /           \\
-            PICK 1        NO-PICK 1
-              [1]             []
-</pre>
-</div>`,
+                visual: `<div style="font-family:monospace; font-size:0.85rem;">
+                    <strong style="color:#a78bfa;">Subsets: "Pick or No-Pick at Each Element"</strong>
+                    <div style="background:#1e293b; padding:16px; border-radius:10px; margin:12px 0; text-align:center;">
+                        <div style="color:#94a3b8; font-size:0.8rem; margin-bottom:12px;">nums = [1, 2]</div>
+                        <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
+                            <span style="padding:5px 14px; background:rgba(139,92,246,0.2); border:1px solid #8b5cf6; border-radius:8px; color:#8b5cf6;">[ ]</span>
+                            <div style="color:#94a3b8; font-size:0.75rem;">"Element 1 ko LUN ya NA LUN?"</div>
+                            <div style="display:flex; gap:60px; margin-top:4px;">
+                                <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
+                                    <span style="color:#4ade80; font-size:0.7rem;">✓ PICK 1</span>
+                                    <span style="padding:4px 10px; background:rgba(74,222,128,0.2); border:1px solid #4ade80; border-radius:6px; color:#4ade80;">[1]</span>
+                                    <div style="display:flex; gap:20px; margin-top:4px;">
+                                        <div style="text-align:center;"><span style="color:#38bdf8; font-size:0.65rem;">✓ PICK 2</span><br><span style="padding:3px 8px; background:rgba(56,189,248,0.2); border:1px solid #38bdf8; border-radius:4px; color:#38bdf8; font-size:0.8rem;">[1,2]</span></div>
+                                        <div style="text-align:center;"><span style="color:#f87171; font-size:0.65rem;">✗ SKIP 2</span><br><span style="padding:3px 8px; background:rgba(248,113,113,0.1); border:1px solid #475569; border-radius:4px; color:#94a3b8; font-size:0.8rem;">[1]</span></div>
+                                    </div>
+                                </div>
+                                <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
+                                    <span style="color:#f87171; font-size:0.7rem;">✗ SKIP 1</span>
+                                    <span style="padding:4px 10px; background:rgba(248,113,113,0.1); border:1px solid #475569; border-radius:6px; color:#94a3b8;">[ ]</span>
+                                    <div style="display:flex; gap:20px; margin-top:4px;">
+                                        <div style="text-align:center;"><span style="color:#38bdf8; font-size:0.65rem;">✓ PICK 2</span><br><span style="padding:3px 8px; background:rgba(56,189,248,0.2); border:1px solid #38bdf8; border-radius:4px; color:#38bdf8; font-size:0.8rem;">[2]</span></div>
+                                        <div style="text-align:center;"><span style="color:#f87171; font-size:0.65rem;">✗ SKIP 2</span><br><span style="padding:3px 8px; background:rgba(248,113,113,0.1); border:1px solid #475569; border-radius:4px; color:#94a3b8; font-size:0.8rem;">[ ]</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin-top:12px; padding:6px; background:rgba(74,222,128,0.1); border-radius:6px;">
+                            <span style="color:#4ade80;">Result: [[], [1], [2], [1,2]] → 2² = 4 subsets</span>
+                        </div>
+                    </div>
+                </div>`,
                 crux: `<strong>The Pick/No-Pick Pattern:</strong><br>
 For each element, two recursive calls:<br>
 1. Pick it, recurse i+1<br>
@@ -996,17 +1045,35 @@ Typical Sudoku: ~17 given → ~64 empty → still fast!
 for O(1) validity check instead of O(9) loop.
 </div>`,
 
-                visual: `<div style="text-align:left; font-family: monospace; font-size: 0.8rem; line-height: 1.5;">
-<strong style="color:#fbbf24;">🔢 Sudoku 3-Constraint Visualization:</strong>
-<pre style="color: var(--text-muted); margin-top:10px;">
-Filling cell (0,2):
-   ┌───┬───┬───┐
- 0 │ 5 │ 3 │ ? │  Box 0
-   ├───┼───┼───┤
-...
-Valid choices: {1,2,4}
-</pre>
-</div>`,
+                visual: `<div style="font-family:monospace; font-size:0.85rem;">
+                    <strong style="color:#fbbf24;">🔢 Sudoku: "3-Constraint Backtracking"</strong>
+                    <div style="background:#1e293b; padding:16px; border-radius:10px; margin:12px 0;">
+                        <div style="color:#94a3b8; font-size:0.8rem; margin-bottom:10px;">Filling cell (0,2): which digits are valid?</div>
+                        <div style="display:grid; grid-template-columns:repeat(3, 36px); gap:2px; width:fit-content; margin:0 auto 12px;">
+                            <div style="height:36px; display:flex; align-items:center; justify-content:center; background:rgba(139,92,246,0.2); border:1px solid #8b5cf6; border-radius:4px; color:#8b5cf6; font-weight:bold;">5</div>
+                            <div style="height:36px; display:flex; align-items:center; justify-content:center; background:rgba(139,92,246,0.2); border:1px solid #8b5cf6; border-radius:4px; color:#8b5cf6; font-weight:bold;">3</div>
+                            <div style="height:36px; display:flex; align-items:center; justify-content:center; background:rgba(74,222,128,0.2); border:2px solid #4ade80; border-radius:4px; color:#4ade80; font-weight:bold;">?</div>
+                            <div style="height:36px; display:flex; align-items:center; justify-content:center; background:#0f172a; border:1px solid #334155; border-radius:4px; color:#475569;">6</div>
+                            <div style="height:36px; display:flex; align-items:center; justify-content:center; background:#0f172a; border:1px solid #334155; border-radius:4px; color:#475569;">.</div>
+                            <div style="height:36px; display:flex; align-items:center; justify-content:center; background:#0f172a; border:1px solid #334155; border-radius:4px; color:#475569;">.</div>
+                            <div style="height:36px; display:flex; align-items:center; justify-content:center; background:#0f172a; border:1px solid #334155; border-radius:4px; color:#475569;">.</div>
+                            <div style="height:36px; display:flex; align-items:center; justify-content:center; background:#0f172a; border:1px solid #334155; border-radius:4px; color:#475569;">9</div>
+                            <div style="height:36px; display:flex; align-items:center; justify-content:center; background:#0f172a; border:1px solid #334155; border-radius:4px; color:#475569;">8</div>
+                        </div>
+                        <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+                            <span style="padding:3px 10px; background:rgba(248,113,113,0.1); border:1px solid #f87171; border-radius:4px; color:#f87171; font-size:0.75rem;">Row: ✗ 5,3</span>
+                            <span style="padding:3px 10px; background:rgba(248,113,113,0.1); border:1px solid #f87171; border-radius:4px; color:#f87171; font-size:0.75rem;">Col: ✗ 8</span>
+                            <span style="padding:3px 10px; background:rgba(248,113,113,0.1); border:1px solid #f87171; border-radius:4px; color:#f87171; font-size:0.75rem;">Box: ✗ 5,3,6,9</span>
+                        </div>
+                        <div style="margin-top:8px; text-align:center;">
+                            <span style="padding:3px 12px; background:rgba(74,222,128,0.1); border:1px solid #4ade80; border-radius:4px; color:#4ade80;">Valid: {1, 2, 4, 7} → Try each, backtrack if fail</span>
+                        </div>
+                    </div>
+                    <div style="background:#0f172a; padding:10px; border-radius:6px;">
+                        <div style="color:#fbbf24;">Box index = (r//3)*3 + (c//3)</div>
+                        <div style="color:#94a3b8;">Place → Recurse → fail? Reset to '.' → try next digit</div>
+                    </div>
+                </div>`,
 
                 crux: `<strong>The 3-Constraint Check Pattern:</strong><br><br>
 <div style="background:#0f172a; padding:15px; border-radius:8px;">

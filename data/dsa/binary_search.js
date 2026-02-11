@@ -206,16 +206,41 @@ def aggressiveCows(stalls, k):
                 metrics: { time: "Avg O(log N)", space: "O(1)" },
                 timeExplainer: "<strong>Time:</strong><br>• Best/Avg: <code>O(log N)</code><br>• Worst (all duplicates): <code>O(N)</code>",
                 spaceExplainer: "<strong>Space: O(1)</strong><br>Only pointers, no extra space.",
-                visual: `<span><strong>Visual: The Foggy Cliff</strong><br>
-<pre style="background:none; border:none; padding:10px; font-size:0.8rem; line-height:1.2;">
-Normal Rotated:          With Duplicates (FOG):
-    /|                     ???
-   / |___                 1 1 1 0 1 1 1
-  /      |                Which side sorted? 🤷
-         
-FOG CONDITION: nums[L] == nums[mid] == nums[R]
-ACTION: Shrink! L++, R--
-</pre></span>`,
+                visual: `<div style="font-family:monospace; font-size:0.85rem;">
+                    <strong style="color:#ef4444;">Rotated BS: "The Foggy Cliff"</strong>
+                    <div style="background:#1e293b; padding:16px; border-radius:10px; margin:12px 0;">
+                        <div style="display:flex; gap:20px; justify-content:center; flex-wrap:wrap;">
+                            <div style="text-align:center;">
+                                <div style="color:#4ade80; font-size:0.75rem; margin-bottom:6px;">Normal Rotated</div>
+                                <div style="display:flex; gap:2px; align-items:flex-end; height:60px;">
+                                    <div style="width:14px; height:30px; background:#4ade80; border-radius:2px;"></div>
+                                    <div style="width:14px; height:45px; background:#4ade80; border-radius:2px;"></div>
+                                    <div style="width:14px; height:55px; background:#4ade80; border-radius:2px;"></div>
+                                    <div style="width:14px; height:15px; background:#f87171; border-radius:2px;"></div>
+                                    <div style="width:14px; height:25px; background:#f87171; border-radius:2px;"></div>
+                                    <div style="width:14px; height:40px; background:#f87171; border-radius:2px;"></div>
+                                </div>
+                                <div style="color:#94a3b8; font-size:0.65rem; margin-top:4px;">Clear sorted halves</div>
+                            </div>
+                            <div style="text-align:center;">
+                                <div style="color:#f87171; font-size:0.75rem; margin-bottom:6px;">With Duplicates 🌫️ FOG</div>
+                                <div style="display:flex; gap:2px; align-items:flex-end; height:60px;">
+                                    <div style="width:14px; height:25px; background:#fbbf24; border-radius:2px;"></div>
+                                    <div style="width:14px; height:25px; background:#fbbf24; border-radius:2px;"></div>
+                                    <div style="width:14px; height:25px; background:#fbbf24; border-radius:2px;"></div>
+                                    <div style="width:14px; height:15px; background:#fbbf24; border-radius:2px;"></div>
+                                    <div style="width:14px; height:25px; background:#fbbf24; border-radius:2px;"></div>
+                                    <div style="width:14px; height:25px; background:#fbbf24; border-radius:2px;"></div>
+                                </div>
+                                <div style="color:#f87171; font-size:0.65rem; margin-top:4px;">L == mid == R 🤷</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="background:rgba(248,113,113,0.1); padding:10px; border-radius:6px; border-left:3px solid #f87171;">
+                        <div style="color:#f87171; font-weight:bold;">FOG: nums[L] == nums[mid] == nums[R]</div>
+                        <div style="color:#94a3b8;">Action: Shrink! L++, R-- (worst case O(N))</div>
+                    </div>
+                </div>`,
                 crux: "<strong>Two steps:</strong><br>1. Clear FOG first (if L==mid==R)<br>2. Then check which side is sorted<br><br><strong>Sorted side check:</strong> <code>nums[left] <= nums[mid]</code> → Left sorted",
                 strategy: "Check target found → Clear fog → Find sorted half → Check if target in range → Move pointer",
                 trap: "<strong>⚠️ Range checks carefully!</strong><br>Left sorted: <code>nums[L] <= target < nums[mid]</code><br>Right sorted: <code>nums[mid] < target <= nums[R]</code><br><br><code>mid</code> already checked agar equal hota toh return ho chuka!",
@@ -342,19 +367,39 @@ ACTION: Shrink! L++, R--
                 metrics: { time: "O(N log M)", space: "O(1)" },
                 timeExplainer: "<strong>Time: O(N log M)</strong><br>Binary search (log M) × hours calc (N).",
                 spaceExplainer: "<strong>Space: O(1)</strong><br>Only pointers, no extra space.",
-                visual: `<span><strong>Visual: Speed vs Hours (Inverse)</strong><br>
-<pre style="background:none; border:none; padding:10px; font-size:0.8rem; line-height:1.2;">
-Hours
-  ^
-  |  *
-  |    *
-  |      *_____ h (target)
-  |            *
-  +--------------> Speed
-     1        max
-
-Find MINIMUM speed where hours <= h
-</pre></span>`,
+                visual: `<div style="font-family:monospace; font-size:0.85rem;">
+                    <strong style="color:#f59e0b;">Koko: "Speed vs Hours (Inverse Curve)" 🍌</strong>
+                    <div style="background:#1e293b; padding:16px; border-radius:10px; margin:12px 0;">
+                        <div style="color:#94a3b8; font-size:0.8rem; margin-bottom:8px;">piles=[3,6,7,11], h=8</div>
+                        <div style="display:flex; gap:2px; align-items:flex-end; height:70px; padding-left:30px; position:relative;">
+                            <div style="position:absolute; left:0; top:0; bottom:0; display:flex; flex-direction:column; justify-content:space-between; font-size:0.6rem; color:#94a3b8;">
+                                <span>hrs</span><span>↓</span>
+                            </div>
+                            <div style="width:22px; height:65px; background:rgba(248,113,113,0.4); border:1px solid #f87171; border-radius:3px;" title="speed=1"></div>
+                            <div style="width:22px; height:55px; background:rgba(248,113,113,0.4); border:1px solid #f87171; border-radius:3px;" title="speed=2"></div>
+                            <div style="width:22px; height:48px; background:rgba(248,113,113,0.3); border:1px solid #f87171; border-radius:3px;" title="speed=3"></div>
+                            <div style="width:22px; height:38px; background:rgba(74,222,128,0.4); border:2px solid #4ade80; border-radius:3px;" title="speed=4"></div>
+                            <div style="width:22px; height:32px; background:rgba(74,222,128,0.3); border:1px solid #4ade80; border-radius:3px;" title="speed=5"></div>
+                            <div style="width:22px; height:28px; background:rgba(74,222,128,0.3); border:1px solid #4ade80; border-radius:3px;" title="speed=6"></div>
+                        </div>
+                        <div style="display:flex; gap:2px; padding-left:30px; font-size:0.6rem; color:#94a3b8; margin-top:2px;">
+                            <span style="width:22px; text-align:center;">1</span>
+                            <span style="width:22px; text-align:center;">2</span>
+                            <span style="width:22px; text-align:center;">3</span>
+                            <span style="width:22px; text-align:center; color:#4ade80; font-weight:bold;">4✓</span>
+                            <span style="width:22px; text-align:center;">5</span>
+                            <span style="width:22px; text-align:center;">6</span>
+                        </div>
+                        <div style="text-align:center; font-size:0.7rem; color:#94a3b8; margin-top:2px;">speed →</div>
+                        <div style="margin-top:8px; text-align:center;">
+                            <span style="padding:3px 10px; background:rgba(74,222,128,0.1); border:1px solid #4ade80; border-radius:4px; color:#4ade80; font-size:0.8rem;">Min speed where hours ≤ 8: <strong>4</strong></span>
+                        </div>
+                    </div>
+                    <div style="background:#0f172a; padding:10px; border-radius:6px;">
+                        <div style="color:#fbbf24;">BS on answer: range [1, max(piles)]</div>
+                        <div style="color:#94a3b8;">hours ≤ h → try slower | hours > h → go faster</div>
+                    </div>
+                </div>`,
                 crux: "<strong>BS on ANSWER!</strong><br>Search space: <code>[1, max(piles)]</code><br><br><strong>Decision:</strong><br>• hours <= h → Store result, try slower<br>• hours > h → Need faster speed",
                 strategy: "For each speed, calculate total hours. Binary search for minimum valid speed.",
                 trap: "<strong>Ceiling division without math.ceil:</strong><br><code>(pile + speed - 1) // speed</code><br><br>Faster than <code>math.ceil(pile/speed)</code>!",
@@ -462,21 +507,43 @@ Find MINIMUM speed where hours <= h
                 metrics: { time: "O(N log D)", space: "O(1)" },
                 timeExplainer: "<strong>Time: O(N log D)</strong><br>Sort: O(N log N) + BS (log D) × Greedy (N).",
                 spaceExplainer: "<strong>Space: O(1)</strong><br>Only pointers, no extra space.",
-                visual: `<span><strong>Visual: Cows ko Door Door Rakhna Hai! 🐄</strong><br>
-<pre style="background:none; border:none; padding:10px; font-size:0.8rem; line-height:1.2;">
-Stalls: [1, 2, 4, 8, 9]   Cows: 3
-
-Try distance = 3:
-  1--2--4-----8--9
-  🐄     🐄     🐄
-  ├──3──┤├──4──┤
-  Sab fit! ✅ Aur door try karo!
-
-Try distance = 4:
-  1--2--4-----8--9
-  🐄           🐄 (sirf 2 fit hui)
-  Teesri kahan rakhe? ❌ Distance kam karo
-</pre></span>`,
+                visual: `<div style="font-family:monospace; font-size:0.85rem;">
+                    <strong style="color:#10b981;">Aggressive Cows: "Door Door Rakhna Hai!" 🐄</strong>
+                    <div style="background:#1e293b; padding:16px; border-radius:10px; margin:12px 0;">
+                        <div style="color:#94a3b8; font-size:0.8rem; margin-bottom:10px;">Stalls: [1, 2, 4, 8, 9] | Cows: 3</div>
+                        <div style="display:flex; flex-direction:column; gap:12px;">
+                            <div>
+                                <div style="color:#4ade80; font-size:0.75rem; margin-bottom:6px;">Try distance = 3:</div>
+                                <div style="display:flex; gap:2px; align-items:center;">
+                                    <span style="padding:4px 8px; background:rgba(74,222,128,0.3); border:2px solid #4ade80; border-radius:6px; color:#4ade80;">🐄 1</span>
+                                    <span style="padding:4px 8px; background:#0f172a; border:1px solid #334155; border-radius:6px; color:#475569;">2</span>
+                                    <span style="padding:4px 8px; background:rgba(56,189,248,0.3); border:2px solid #38bdf8; border-radius:6px; color:#38bdf8;">🐄 4</span>
+                                    <span style="padding:4px 8px; background:rgba(139,92,246,0.3); border:2px solid #8b5cf6; border-radius:6px; color:#8b5cf6;">🐄 8</span>
+                                    <span style="padding:4px 8px; background:#0f172a; border:1px solid #334155; border-radius:6px; color:#475569;">9</span>
+                                    <span style="color:#4ade80; margin-left:8px;">3 fit! ✓ try bigger</span>
+                                </div>
+                            </div>
+                            <div>
+                                <div style="color:#f87171; font-size:0.75rem; margin-bottom:6px;">Try distance = 4:</div>
+                                <div style="display:flex; gap:2px; align-items:center;">
+                                    <span style="padding:4px 8px; background:rgba(74,222,128,0.3); border:2px solid #4ade80; border-radius:6px; color:#4ade80;">🐄 1</span>
+                                    <span style="padding:4px 8px; background:#0f172a; border:1px solid #334155; border-radius:6px; color:#475569;">2</span>
+                                    <span style="padding:4px 8px; background:#0f172a; border:1px solid #334155; border-radius:6px; color:#475569;">4</span>
+                                    <span style="padding:4px 8px; background:rgba(56,189,248,0.3); border:2px solid #38bdf8; border-radius:6px; color:#38bdf8;">🐄 8</span>
+                                    <span style="padding:4px 8px; background:#0f172a; border:1px solid #334155; border-radius:6px; color:#475569;">9</span>
+                                    <span style="color:#f87171; margin-left:8px;">only 2! ✗ shrink</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin-top:10px; text-align:center;">
+                            <span style="padding:4px 12px; background:rgba(74,222,128,0.1); border:1px solid #4ade80; border-radius:6px; color:#4ade80;">Answer: max min-distance = <strong>3</strong></span>
+                        </div>
+                    </div>
+                    <div style="background:#0f172a; padding:10px; border-radius:6px;">
+                        <div style="color:#fbbf24;">Sort stalls → BS on distance → Greedy placement</div>
+                        <div style="color:#94a3b8;">Fit → try bigger | Not fit → try smaller</div>
+                    </div>
+                </div>`,
                 crux: "<strong>Pyari Cows ko Door Door Rakhna Hai!</strong><br>1. Sort stalls (line mein khada kar)<br>2. BS on distance<br>3. Greedy: pehli cow rakh, next tab jab gap >= min_dist",
                 strategy: "Binary search + Greedy validation. Fit ho gayi? Aur door try. Nahi hui? Paas karo.",
                 trap: "<strong>⚠️ SORT BHOOL GAYA?</strong><br>Bina sort ke greedy kaam nahi karega. Galat answer aayega!",

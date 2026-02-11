@@ -539,7 +539,7 @@
         }
 
         .code-panel .copy-btn {
-            background: rgba(255,255,255,0.08);
+            background: rgba(255, 255, 255, 0.08);
             border: none;
             color: #858585;
             padding: 4px 12px;
@@ -551,7 +551,7 @@
         }
 
         .code-panel .copy-btn:hover {
-            background: rgba(255,255,255,0.15);
+            background: rgba(255, 255, 255, 0.15);
             color: #fff;
         }
 
@@ -588,8 +588,13 @@
             font-size: 0.85rem;
         }
 
-        .complexity-item.time .complexity-badge i { color: #fbbf24; }
-        .complexity-item.space .complexity-badge i { color: #a78bfa; }
+        .complexity-item.time .complexity-badge i {
+            color: #fbbf24;
+        }
+
+        .complexity-item.space .complexity-badge i {
+            color: #a78bfa;
+        }
 
         .complexity-label {
             color: var(--text-muted);
@@ -770,19 +775,51 @@
             animation: focusFadeIn 0.4s ease forwards;
         }
 
-        .focus-animate:nth-child(1) { animation-delay: 0s; }
-        .focus-animate:nth-child(2) { animation-delay: 0.06s; }
-        .focus-animate:nth-child(3) { animation-delay: 0.12s; }
-        .focus-animate:nth-child(4) { animation-delay: 0.18s; }
-        .focus-animate:nth-child(5) { animation-delay: 0.24s; }
-        .focus-animate:nth-child(6) { animation-delay: 0.30s; }
-        .focus-animate:nth-child(7) { animation-delay: 0.36s; }
-        .focus-animate:nth-child(8) { animation-delay: 0.42s; }
-        .focus-animate:nth-child(9) { animation-delay: 0.48s; }
-        .focus-animate:nth-child(10) { animation-delay: 0.54s; }
+        .focus-animate:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .focus-animate:nth-child(2) {
+            animation-delay: 0.06s;
+        }
+
+        .focus-animate:nth-child(3) {
+            animation-delay: 0.12s;
+        }
+
+        .focus-animate:nth-child(4) {
+            animation-delay: 0.18s;
+        }
+
+        .focus-animate:nth-child(5) {
+            animation-delay: 0.24s;
+        }
+
+        .focus-animate:nth-child(6) {
+            animation-delay: 0.30s;
+        }
+
+        .focus-animate:nth-child(7) {
+            animation-delay: 0.36s;
+        }
+
+        .focus-animate:nth-child(8) {
+            animation-delay: 0.42s;
+        }
+
+        .focus-animate:nth-child(9) {
+            animation-delay: 0.48s;
+        }
+
+        .focus-animate:nth-child(10) {
+            animation-delay: 0.54s;
+        }
 
         @keyframes focusFadeIn {
-            to { opacity: 1; transform: translateY(0); }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* --- Toast Notification --- */
@@ -802,7 +839,7 @@
             transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
             pointer-events: none;
             backdrop-filter: blur(10px);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
         }
 
         .toast.show {
@@ -826,7 +863,7 @@
             align-items: center;
             gap: 10px;
             padding: 12px 20px;
-            background: rgba(255,255,255,0.04);
+            background: rgba(255, 255, 255, 0.04);
             border: 1px solid var(--border);
             border-radius: 12px;
             color: var(--text-muted);
@@ -839,7 +876,7 @@
         }
 
         .question-nav-btn:hover {
-            background: rgba(255,255,255,0.08);
+            background: rgba(255, 255, 255, 0.08);
             color: var(--text-main);
             border-color: var(--primary);
             transform: translateY(-2px);
@@ -874,7 +911,7 @@
             flex-wrap: wrap;
             margin-bottom: 24px;
             padding: 12px 16px;
-            background: rgba(255,255,255,0.02);
+            background: rgba(255, 255, 255, 0.02);
             border: 1px solid var(--border);
             border-radius: 12px;
         }
@@ -885,8 +922,8 @@
             font-size: 0.75rem;
             font-weight: 600;
             color: var(--text-muted);
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.06);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.06);
             cursor: pointer;
             transition: all 0.2s;
             text-decoration: none;
@@ -948,8 +985,8 @@
         }
 
         .kbd {
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             padding: 3px 8px;
             border-radius: 6px;
             font-size: 0.65rem;
@@ -992,7 +1029,7 @@
             z-index: 1;
         }
 
-        .visual-container > div {
+        .visual-container>div {
             background: transparent !important;
             padding: 20px 24px !important;
             margin: 0 !important;
@@ -1123,7 +1160,7 @@
         }
 
         .sidebar-link:hover {
-            background: rgba(255,255,255,0.05);
+            background: rgba(255, 255, 255, 0.05);
             color: var(--text-main);
         }
 
@@ -1163,7 +1200,7 @@
         .sidebar-progress {
             margin-top: 20px;
             padding: 12px;
-            background: rgba(255,255,255,0.02);
+            background: rgba(255, 255, 255, 0.02);
             border: 1px solid var(--border);
             border-radius: 10px;
         }
@@ -1179,7 +1216,7 @@
 
         .sidebar-progress-bar {
             height: 4px;
-            background: rgba(255,255,255,0.08);
+            background: rgba(255, 255, 255, 0.08);
             border-radius: 4px;
             overflow: hidden;
         }
@@ -1208,7 +1245,7 @@
             font-size: 0.75rem;
             font-weight: 600;
             color: var(--text-muted);
-            background: rgba(255,255,255,0.03);
+            background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border);
             cursor: pointer;
             transition: all 0.2s;
@@ -1216,9 +1253,9 @@
         }
 
         .sidebar-action-btn:hover {
-            background: rgba(255,255,255,0.06);
+            background: rgba(255, 255, 255, 0.06);
             color: var(--text-main);
-            border-color: rgba(255,255,255,0.15);
+            border-color: rgba(255, 255, 255, 0.15);
         }
 
         .sidebar-action-btn i {
@@ -1379,15 +1416,28 @@
             <a href="index.html" class="nav-logo">
                 <i class="fas fa-fire"></i> Principal Prep
             </a>
+            <button class="nav-hamburger"
+                onclick="this.classList.toggle('open'); document.querySelector('.nav-links').classList.toggle('open');">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-times"></i>
+            </button>
             <div class="nav-links">
                 <a href="index.html" class="nav-link">Dashboard</a>
                 <a href="learn.html" class="nav-link active">Learn</a>
                 <a href="flashcard.html" class="nav-link">Flashcards</a>
                 <a href="cheatsheet.html" class="nav-link">Cheat Sheet</a>
                 <a href="templates.html" class="nav-link">Templates</a>
-                <a href="game.html" class="nav-link" style="color: #f472b6 !important;">
+                <div class="nav-separator"></div>
+                <a href="revision.html" class="nav-link revision-link">
+                    <i class="fas fa-bolt"></i> Revision
+                </a>
+                <a href="game.html" class="nav-link game-btn">
                     <i class="fas fa-gamepad"></i> Game
                 </a>
+                <div class="nav-separator"></div>
+                <button id="theme-toggle" class="nav-link" title="Toggle Theme">
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
         </div>
     </nav>
@@ -1485,31 +1535,31 @@
                 </div>`;
             };
 
-            // Build TOC entries dynamically
+            // Build TOC entries dynamically (Visual FIRST)
             const tocItems = [];
-            tocItems.push({id: 'sec-crux', label: 'Crux', icon: '💡'});
-            if (learn.quickAlgo && learn.quickAlgo.length > 0) tocItems.push({id: 'sec-mentalmap', label: 'Mental Map', icon: '🧠'});
-            tocItems.push({id: 'sec-code', label: 'Code', icon: '💻'});
-            if (learn.visual) tocItems.push({id: 'sec-visual', label: 'Visual', icon: '👁️'});
-            if (learn.strategy) tocItems.push({id: 'sec-strategy', label: 'Strategy', icon: '♟️'});
-            if (learn.dryRun) tocItems.push({id: 'sec-dryrun', label: 'Dry Run', icon: '▶️'});
-            if (learn.trap) tocItems.push({id: 'sec-trap', label: 'Traps', icon: '⚠️'});
-            if (learn.codeDetailed) tocItems.push({id: 'sec-deepdive', label: 'Deep Dive', icon: '🔬'});
+            if (learn.visual) tocItems.push({ id: 'sec-visual', label: 'Visual', icon: '👁️' });
+            tocItems.push({ id: 'sec-crux', label: 'Crux', icon: '💡' });
+            if (learn.quickAlgo && learn.quickAlgo.length > 0) tocItems.push({ id: 'sec-mentalmap', label: 'Mental Map', icon: '🧠' });
+            tocItems.push({ id: 'sec-code', label: 'Code', icon: '💻' });
+            if (learn.strategy) tocItems.push({ id: 'sec-strategy', label: 'Strategy', icon: '♟️' });
+            if (learn.dryRun) tocItems.push({ id: 'sec-dryrun', label: 'Dry Run', icon: '▶️' });
+            if (learn.trap) tocItems.push({ id: 'sec-trap', label: 'Traps', icon: '⚠️' });
+            if (learn.codeDetailed) tocItems.push({ id: 'sec-deepdive', label: 'Deep Dive', icon: '🔬' });
 
             // Prev/Next question logic
             const prevQ = index > 0 ? currentTopicData.questions[index - 1] : null;
             const nextQ = index < currentTopicData.questions.length - 1 ? currentTopicData.questions[index + 1] : null;
 
-            // Build sidebar links
+            // Build sidebar links (Visual FIRST)
             const sidebarLinks = [];
-            sidebarLinks.push({id: 'sec-crux', label: 'Crux & Complexity', icon: 'fas fa-lightbulb', emoji: '💡'});
-            if (learn.quickAlgo && learn.quickAlgo.length > 0) sidebarLinks.push({id: 'sec-mentalmap', label: 'Mental Map', icon: 'fas fa-route', emoji: '🧠'});
-            sidebarLinks.push({id: 'sec-code', label: 'Solution Code', icon: 'fas fa-code', emoji: '💻'});
-            if (learn.visual) sidebarLinks.push({id: 'sec-visual', label: 'Visual', icon: 'fas fa-eye', emoji: '👁️'});
-            if (learn.strategy) sidebarLinks.push({id: 'sec-strategy', label: 'Strategy', icon: 'fas fa-chess', emoji: '♟️'});
-            if (learn.dryRun) sidebarLinks.push({id: 'sec-dryrun', label: 'Execution Trace', icon: 'fas fa-play-circle', emoji: '▶️'});
-            if (learn.trap) sidebarLinks.push({id: 'sec-trap', label: 'Common Traps', icon: 'fas fa-exclamation-triangle', emoji: '⚠️'});
-            if (learn.codeDetailed) sidebarLinks.push({id: 'sec-deepdive', label: 'Deep Dive', icon: 'fas fa-microscope', emoji: '🔬'});
+            if (learn.visual) sidebarLinks.push({ id: 'sec-visual', label: 'Visual Intuition', icon: 'fas fa-eye', emoji: '👁️' });
+            sidebarLinks.push({ id: 'sec-crux', label: 'Crux & Complexity', icon: 'fas fa-lightbulb', emoji: '💡' });
+            if (learn.quickAlgo && learn.quickAlgo.length > 0) sidebarLinks.push({ id: 'sec-mentalmap', label: 'Mental Map', icon: 'fas fa-route', emoji: '🧠' });
+            sidebarLinks.push({ id: 'sec-code', label: 'Solution Code', icon: 'fas fa-code', emoji: '💻' });
+            if (learn.strategy) sidebarLinks.push({ id: 'sec-strategy', label: 'Strategy', icon: 'fas fa-chess', emoji: '♟️' });
+            if (learn.dryRun) sidebarLinks.push({ id: 'sec-dryrun', label: 'Execution Trace', icon: 'fas fa-play-circle', emoji: '▶️' });
+            if (learn.trap) sidebarLinks.push({ id: 'sec-trap', label: 'Common Traps', icon: 'fas fa-exclamation-triangle', emoji: '⚠️' });
+            if (learn.codeDetailed) sidebarLinks.push({ id: 'sec-deepdive', label: 'Deep Dive', icon: 'fas fa-microscope', emoji: '🔬' });
 
             contentDiv.innerHTML = `
                 <div class="focus-layout">
@@ -1519,11 +1569,11 @@
                     <div class="sidebar-label">On this page</div>
                     <nav class="sidebar-nav" id="sidebar-nav">
                         ${sidebarLinks.map((s, i) =>
-                            '<a class="sidebar-link' + (i === 0 ? ' active' : '') + '" data-target="' + s.id + '" onclick="scrollToSection(\'' + s.id + '\')">' +
-                                '<span class="sidebar-icon"><i class="' + s.icon + '"></i></span>' +
-                                '<span class="sidebar-text">' + s.label + '</span>' +
-                            '</a>'
-                        ).join('')}
+                '<a class="sidebar-link' + (i === 0 ? ' active' : '') + '" data-target="' + s.id + '" onclick="scrollToSection(\'' + s.id + '\')">' +
+                '<span class="sidebar-icon"><i class="' + s.icon + '"></i></span>' +
+                '<span class="sidebar-text">' + s.label + '</span>' +
+                '</a>'
+            ).join('')}
                     </nav>
 
                     <div class="sidebar-progress">
@@ -1577,6 +1627,15 @@
                         ${tocItems.map(t => '<a class="toc-chip" onclick="document.getElementById(\'' + t.id + '\').scrollIntoView({behavior:\'smooth\', block:\'start\'})">' + t.icon + ' ' + t.label + '</a>').join('')}
                     </div>
 
+                    <!-- 1. VISUAL INTUITION (THE MOST IMPORTANT — FIRST!) -->
+                    ${learn.visual ? `
+                    <div class="pro-section focus-animate" id="sec-visual">
+                         <div class="pro-header">
+                            <i class="fas fa-eye" style="color:#22d3ee"></i> Visual Intuition
+                         </div>
+                         <div class="visual-container">${learn.visual}</div>
+                    </div>` : ''}
+
                     <!-- 2. CRUX + COMPLEXITY (Side by Side) -->
                     <div class="insight-bar focus-animate" id="sec-crux">
                         <div class="insight-card">
@@ -1611,18 +1670,18 @@
                         <div class="section-title"><i class="fas fa-route" style="color:#8b5cf6"></i> Quick Mental Map</div>
                         <div class="mental-map-steps">
                             ${learn.quickAlgo.map((line, i) => {
-                                const parts = line.split(/\s+#\s+/);
-                                const codePart = parts[0].trimEnd();
-                                const commentPart = parts.length > 1 ? parts.slice(1).join(' # ') : '';
-                                const indent = codePart.length - codePart.trimStart().length;
-                                return '<div class="mm-step" style="--indent:' + Math.floor(indent / 4) + '">' +
-                                    '<div class="mm-step-num">' + (i + 1) + '</div>' +
-                                    '<div class="mm-step-body">' +
-                                        '<code class="mm-code">' + escapeHtml(codePart.trim()) + '</code>' +
-                                        (commentPart ? '<span class="mm-comment">' + commentPart + '</span>' : '') +
-                                    '</div>' +
-                                '</div>';
-                            }).join('')}
+                const parts = line.split(/\s+#\s+/);
+                const codePart = parts[0].trimEnd();
+                const commentPart = parts.length > 1 ? parts.slice(1).join(' # ') : '';
+                const indent = codePart.length - codePart.trimStart().length;
+                return '<div class="mm-step" style="--indent:' + Math.floor(indent / 4) + '">' +
+                    '<div class="mm-step-num">' + (i + 1) + '</div>' +
+                    '<div class="mm-step-body">' +
+                    '<code class="mm-code">' + escapeHtml(codePart.trim()) + '</code>' +
+                    (commentPart ? '<span class="mm-comment">' + commentPart + '</span>' : '') +
+                    '</div>' +
+                    '</div>';
+            }).join('')}
                         </div>
                     </div>` : ''}
 
@@ -1632,14 +1691,7 @@
                         ${learn.code ? renderCodeSections(learn.code, learn.codeTitle) : ''}
                     </div>
 
-                    <!-- 5. VISUAL (if exists) -->
-                    ${learn.visual ? `
-                    <div class="pro-section focus-animate" id="sec-visual">
-                         <div class="pro-header">
-                            <i class="fas fa-eye" style="color:#22d3ee"></i> Visual Intuition
-                         </div>
-                         <div class="visual-container">${learn.visual}</div>
-                    </div>` : ''}
+                    <!-- (Visual moved to top) -->
 
                     <!-- 6. STRATEGY -->
                     ${learn.strategy ? `
@@ -1658,12 +1710,12 @@
                         </div>
                         <div class="dryrun-timeline">
                             ${Array.isArray(learn.dryRun)
-                                ? learn.dryRun.map((step, i) =>
-                                    '<div class="dryrun-step">' +
-                                        '<div class="dryrun-text">' + step + '</div>' +
-                                    '</div>'
-                                ).join('')
-                                : '<div class="pro-content">' + learn.dryRun + '</div>'}
+                        ? learn.dryRun.map((step, i) =>
+                            '<div class="dryrun-step">' +
+                            '<div class="dryrun-text">' + step + '</div>' +
+                            '</div>'
+                        ).join('')
+                        : '<div class="pro-content">' + learn.dryRun + '</div>'}
                         </div>
                     </div>` : ''}
 
@@ -1794,23 +1846,23 @@
                     const codeContent = lines.slice(1).join('\n').trim();
                     return '<div class="code-panel" style="margin-top:' + (idx === 0 ? '0' : '16px') + ';">' +
                         '<div class="code-panel-header">' +
-                            '<span class="code-panel-dots"></span>' +
-                            '<span class="code-panel-title">' + title + '</span>' +
-                            '<button class="copy-btn" onclick="copyCode(\'focus-code-' + idx + '\')"><i class="fas fa-copy"></i> Copy</button>' +
+                        '<span class="code-panel-dots"></span>' +
+                        '<span class="code-panel-title">' + title + '</span>' +
+                        '<button class="copy-btn" onclick="copyCode(\'focus-code-' + idx + '\')"><i class="fas fa-copy"></i> Copy</button>' +
                         '</div>' +
                         '<pre><code id="focus-code-' + idx + '" class="language-python">' + escapeHtml(codeContent) + '</code></pre>' +
-                    '</div>';
+                        '</div>';
                 }).join('');
             } else {
                 // Single code block - visible by default
                 return '<div class="code-panel">' +
                     '<div class="code-panel-header">' +
-                        '<span class="code-panel-dots"></span>' +
-                        '<span class="code-panel-title">' + (defaultTitle || 'Implementation') + '</span>' +
-                        '<button class="copy-btn" onclick="copyCode(\'focus-code\')"><i class="fas fa-copy"></i> Copy</button>' +
+                    '<span class="code-panel-dots"></span>' +
+                    '<span class="code-panel-title">' + (defaultTitle || 'Implementation') + '</span>' +
+                    '<button class="copy-btn" onclick="copyCode(\'focus-code\')"><i class="fas fa-copy"></i> Copy</button>' +
                     '</div>' +
                     '<pre><code id="focus-code" class="language-python">' + escapeHtml(code) + '</code></pre>' +
-                '</div>';
+                    '</div>';
             }
         }
 
@@ -2168,6 +2220,7 @@
         // Start
         renderPage();
     </script>
+    <script src='script.js'></script>
 </body>
 
 </html>

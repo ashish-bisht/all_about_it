@@ -250,14 +250,40 @@ def lengthOfLIS(nums):
                     • <strong>Optimized:</strong> Only 2 variables needed!<br>
                     • Why? dp[i] only depends on dp[i-1] and dp[i-2]<br>
                     <br><strong>Result:</strong> <code>O(1)</code> space`,
-                visual: `<div style="background: #1e293b; padding: 20px; border-radius: 12px; margin: 15px 0;">
-                    <strong style="color: #a78bfa;">🏠 The Thief's Decision Tree</strong><br><br>
-                    <code style="color: #4ade80;">
-                    At House[i]:<br>
-                    ├── ROB it  → Take nums[i] + best from 2 houses ago<br>
-                    └── SKIP it → Keep best from previous house<br><br>
-                    Answer = max(ROB, SKIP)
-                    </code>
+                visual: `<div style="font-family:monospace; font-size:0.85rem;">
+                    <strong style="color:#a78bfa;">🏠 House Robber: "Rob or Skip at Each House"</strong>
+                    <div style="background:#1e293b; padding:16px; border-radius:10px; margin:12px 0;">
+                        <div style="color:#94a3b8; font-size:0.8rem; margin-bottom:10px;">houses = [2, 7, 9, 3, 1]</div>
+                        <div style="display:flex; gap:6px; align-items:flex-end; justify-content:center; height:80px; margin:8px 0;">
+                            <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+                                <div style="height:25px; width:32px; background:rgba(74,222,128,0.3); border:2px solid #4ade80; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#4ade80; font-size:0.7rem;">$2</div>
+                                <span style="font-size:0.65rem; color:#4ade80;">ROB</span>
+                            </div>
+                            <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+                                <div style="height:55px; width:32px; background:rgba(248,113,113,0.2); border:1px solid #f87171; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#f87171; font-size:0.7rem;">$7</div>
+                                <span style="font-size:0.65rem; color:#f87171;">skip</span>
+                            </div>
+                            <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+                                <div style="height:70px; width:32px; background:rgba(74,222,128,0.3); border:2px solid #4ade80; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#4ade80; font-size:0.7rem;">$9</div>
+                                <span style="font-size:0.65rem; color:#4ade80;">ROB</span>
+                            </div>
+                            <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+                                <div style="height:30px; width:32px; background:rgba(248,113,113,0.2); border:1px solid #f87171; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#f87171; font-size:0.7rem;">$3</div>
+                                <span style="font-size:0.65rem; color:#f87171;">skip</span>
+                            </div>
+                            <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+                                <div style="height:18px; width:32px; background:rgba(74,222,128,0.3); border:2px solid #4ade80; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#4ade80; font-size:0.7rem;">$1</div>
+                                <span style="font-size:0.65rem; color:#4ade80;">ROB</span>
+                            </div>
+                        </div>
+                        <div style="text-align:center; margin-top:8px;">
+                            <span style="padding:4px 12px; background:rgba(74,222,128,0.1); border:1px solid #4ade80; border-radius:6px; color:#4ade80; font-weight:bold;">Max loot: 2+9+1 = $12</span>
+                        </div>
+                    </div>
+                    <div style="background:#0f172a; padding:10px; border-radius:6px;">
+                        <div style="color:#fbbf24;">dp[i] = max(nums[i] + dp[i-2], dp[i-1])</div>
+                        <div style="color:#94a3b8;">ROB current + best from 2 ago | SKIP = best from prev</div>
+                    </div>
                 </div>`,
                 crux: `<strong style="color:#f59e0b;">🔑 Key Insight:</strong><br>
                     <strong>Adjacent constraint = "Gap of 1" pattern</strong><br><br>
