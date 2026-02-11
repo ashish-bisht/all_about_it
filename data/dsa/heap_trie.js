@@ -213,19 +213,35 @@ def singleNumber(nums):
                 crux: "<strong>Inverse Logic:</strong> Kth Largest -> Min-Heap.<br>1. Keep size <= K.<br>2. `heapq.heappushpop` if full.",
                 trap: "<strong>Don't Heapify All:</strong> Only store K elements.",
                 dryRun: ["K=3. Heap [?, ?, ?].", "Add 5, 2, 8 -> [2, 5, 8]. Root 2 is 3rd largest.", "Add 10. 10 > 2. Pop 2. Push 10. [5, 8, 10]. Root 5 is 3rd largest."],
+                strategy: "Min-Heap of size K rakho. Naya element agar root se bada hai toh replace karo, root hamesha Kth largest.",
                 codeTitle: "Python Solution",
                 code: `class KthLargest:
 def __init__(self, k, nums):
     self.k = k
     self.heap = []
     for n in nums: self.add(n)
-    
+
 def add(self, val):
     if len(self.heap) < self.k:
         heapq.heappush(self.heap, val)
     elif val > self.heap[0]:
         heapq.heapreplace(self.heap, val)
-    return self.heap[0]`
+    return self.heap[0]`,
+                codeDetailed: `\`\`\`python
+class KthLargest:
+    def __init__(self, k, nums):
+        self.k = k          # K = kitne largest track karne hain
+        self.heap = []       # Min-heap to store top K elements
+        for n in nums:       # Initialize heap with given nums
+            self.add(n)      # Reuse add logic for consistency
+
+    def add(self, val):
+        if len(self.heap) < self.k:
+            heapq.heappush(self.heap, val)    # Heap not full yet, just push
+        elif val > self.heap[0]:
+            heapq.heapreplace(self.heap, val) # New val bigger than root? Replace root (pop+push in one op)
+        return self.heap[0]                   # Root of min-heap = Kth largest element
+\`\`\``
             }
         },
         {
@@ -294,6 +310,7 @@ def add(self, val):
                 crux: "<strong>Tuple Trick:</strong> `(val, idx, node)`. Use `idx` to break ties because Python can't compare `ListNode` objects.",
                 trap: "<strong>Comparsion Crash:</strong> Nodes with same value will crash heap if you don't use a tie-breaker or override `__lt__`.",
                 dryRun: ["Heads: 1(L1), 4(L2), 2(L3). Heap: [(1, L1), (2, L3), (4, L2)].", "Pop 1. Push L1.next."],
+                strategy: "Min-Heap mein K heads daal do. Pop min, result mein add karo, popped node ka next push karo.",
                 codeTitle: "Python Solution",
                 code: `def mergeKLists(lists):
 pq = []
@@ -307,8 +324,25 @@ while pq:
     curr = curr.next
     if node.next:
         heapq.heappush(pq, (node.next.val, i, node.next))
-        
-return dummy.next`
+
+return dummy.next`,
+                codeDetailed: `\`\`\`python
+def mergeKLists(lists):
+    pq = []                                    # Min-heap to hold current heads
+    for i, l in enumerate(lists):              # Iterate over all K lists
+        if l:                                  # Skip empty lists
+            heapq.heappush(pq, (l.val, i, l))  # Push (value, list_index, node) — index breaks ties
+
+    dummy = curr = ListNode()                  # Dummy head for result linked list
+    while pq:                                  # Process until heap is empty
+        val, i, node = heapq.heappop(pq)       # Pop the smallest value among K heads
+        curr.next = node                       # Append this node to result list
+        curr = curr.next                       # Move result pointer forward
+        if node.next:                          # If popped node has a next node
+            heapq.heappush(pq, (node.next.val, i, node.next))  # Push next from same list
+
+    return dummy.next                          # Return merged list (skip dummy)
+\`\`\``
             }
         },
         {
@@ -365,6 +399,7 @@ return dummy.next`
                 crux: "<strong>Node Struct:</strong> `children = {}`, `is_end = False`.<br>Insert/Search: Traverse char by char.",
                 trap: "<strong>Prefix vs Word:</strong> `startWith` returns True for 'APP'. `search` returns False for 'APP' if only 'APPLE' exists.",
                 dryRun: ["Insert 'HI'. Root->H->I(end).", "Search 'H'. Root->H. No end. False.", "Starts 'H'. True."],
+                strategy: "Har node mein children dict aur isEnd flag. Insert mein char-by-char traverse, search mein isEnd check, startsWith mein sirf traverse.",
                 codeTitle: "Python Solution",
                 code: `class TrieNode:
 def __init__(self):
@@ -395,7 +430,41 @@ def startsWith(self, prefix):
     for c in prefix:
         if c not in cur.children: return False
         cur = cur.children[c]
-    return True`
+    return True`,
+                codeDetailed: `\`\`\`python
+class TrieNode:
+    def __init__(self):
+        self.children = {}     # Dict mapping char -> TrieNode (flexible, no fixed size)
+        self.isEnd = False     # True if this node marks end of a complete word
+
+class Trie:
+    def __init__(self):
+        self.root = TrieNode()  # Empty root node — starting point for all words
+
+    def insert(self, word):
+        cur = self.root         # Start from root
+        for c in word:          # Traverse char by char
+            if c not in cur.children:        # Char not yet in trie?
+                cur.children[c] = TrieNode() # Create new node for this char
+            cur = cur.children[c]            # Move to child node
+        cur.isEnd = True        # Mark last node as end of word
+
+    def search(self, word):
+        cur = self.root         # Start from root
+        for c in word:          # Traverse char by char
+            if c not in cur.children:  # Path broken? Word doesn't exist
+                return False
+            cur = cur.children[c]      # Move to next node
+        return cur.isEnd        # Must be end of word (not just a prefix)
+
+    def startsWith(self, prefix):
+        cur = self.root         # Start from root
+        for c in prefix:        # Traverse char by char
+            if c not in cur.children:  # Path broken? Prefix doesn't exist
+                return False
+            cur = cur.children[c]      # Move to next node
+        return True             # Reached end of prefix — it exists (no isEnd check needed)
+\`\`\``
             }
         },
         {
@@ -426,6 +495,8 @@ def startsWith(self, prefix):
                     "    max_xor = max(max_xor, xor)"
                 ],
                 metrics: { time: "O(N * 32)", space: "O(N * 32)" },
+                timeExplainer: "<strong>Binary Trie:</strong><br>• Insert N numbers: each takes <code>O(32)</code> bit traversal<br>• Query N numbers: each takes <code>O(32)</code> opposite-bit search<br><br><strong>Total:</strong> <code>O(N × 32) = O(N)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Trie stores up to <code>N</code> numbers<br>• Each number = 32-bit path<br>• Worst case: no shared prefixes<br><br><strong>Total:</strong> <code>O(N × 32)</code> nodes",
                 code: `class TrieNode:
     def __init__(self):
         self.children = {}
@@ -534,6 +605,8 @@ def findMaximumXOR(nums):
                     "return res                         # ✅ Remaining value is the single number"
                 ],
                 metrics: { time: "O(N)", space: "O(1)" },
+                timeExplainer: "<strong>Single Pass:</strong><br>• XOR each of N elements once<br>• XOR operation = <code>O(1)</code><br><br><strong>Total:</strong> <code>O(N)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Only one variable <code>res</code><br>• No extra data structures<br><br><strong>Result:</strong> <code>O(1)</code>",
                 code: `def singleNumber(nums):
     res = 0
     for n in nums:
@@ -612,6 +685,8 @@ def findMaximumXOR(nums):
                     "💡 <code>push</code> N times is O(NlogN). This is efficient batch build."
                 ],
                 metrics: { time: "O(N)", space: "O(1)" },
+                timeExplainer: "<strong>Bottom-Up Heapify:</strong><br>• Leaves (N/2 nodes): 0 swaps<br>• Level above: N/4 nodes × 1 swap<br>• Level above: N/8 nodes × 2 swaps<br>• Sum converges to <code>O(N)</code><br><br><strong>NOT</strong> <code>O(N log N)</code> — that's N individual pushes",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• In-place array rearrangement<br>• Only index variables used<br><br><strong>Result:</strong> <code>O(1)</code>",
                 code: `import heapq
 def heapify(arr):
     # In-place transform

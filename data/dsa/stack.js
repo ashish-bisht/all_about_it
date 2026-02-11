@@ -242,6 +242,25 @@ def asteroidCollision(asteroids):
         
         stack.append(current_index)
     
+    return result`,
+                strategy: `<strong>Monotonic Decreasing Stack Strategy:</strong><br><strong>Step 1:</strong> Initialize result array with -1 (default: no NGE).<br><strong>Step 2:</strong> Traverse left to right. For each element, pop all smaller elements from stack — current element IS their NGE.<br><strong>Step 3:</strong> Push current index onto stack.<br><br><strong>Why it works:</strong> Stack maintains decreasing order. When a bigger element arrives, it resolves all waiting smaller elements.`,
+                codeDetailed: `def nextGreaterElement(arr):
+    n = len(arr)
+    result = [-1] * n       # ← Default: no NGE found
+    stack = []               # ← Stores INDICES (not values)
+    
+    for current_index in range(n):
+        current_value = arr[current_index]
+        
+        # ← Pop all elements SMALLER than current
+        # ← Current is NGE for all of them!
+        while stack and arr[stack[-1]] < current_value:
+            smaller_index = stack.pop()
+            result[smaller_index] = current_value  # ← Found NGE!
+        
+        stack.append(current_index)  # ← Wait for future NGE
+    
+    # ← Elements remaining in stack have no NGE (result stays -1)
     return result`
             }
         },
@@ -329,6 +348,21 @@ def asteroidCollision(asteroids):
             ans = max(ans, height * width)
         stack.append(i)
     
+    return ans`,
+                strategy: `<strong>Monotonic Increasing Stack Strategy:</strong><br><strong>Step 1:</strong> Append 0 to heights (sentinel forces all remaining bars to pop).<br><strong>Step 2:</strong> Initialize stack with -1 (sentinel for left boundary).<br><strong>Step 3:</strong> For each bar: while shorter than stack top, pop and calculate area = height[popped] × (i - stack[-1] - 1).<br><br><strong>Why it works:</strong> When a bar is popped, current index is its right boundary and new stack top is its left boundary.`,
+                codeDetailed: `def largestRectangleArea(heights):
+    heights.append(0)        # ← Sentinel: forces all bars to pop at end
+    stack = [-1]             # ← Sentinel: left boundary for width calc
+    ans = 0
+    
+    for i, h in enumerate(heights):
+        # ← Pop bars taller than current (they can't expand right)
+        while stack[-1] != -1 and h < heights[stack[-1]]:
+            height = heights[stack.pop()]   # ← This bar's height
+            width = i - stack[-1] - 1       # ← Right - Left - 1
+            ans = max(ans, height * width)  # ← Track max area
+        stack.append(i)  # ← Push current bar
+    
     return ans`
             }
         },
@@ -408,6 +442,25 @@ def asteroidCollision(asteroids):
             bounded_height = min(height[left_wall_index], h) - height[floor_index]
             
             water += width * bounded_height
+            
+        stack.append(i)
+    return water`,
+                strategy: `<strong>Decreasing Stack "Bowl" Strategy:</strong><br><strong>Step 1:</strong> Maintain decreasing stack of indices.<br><strong>Step 2:</strong> When taller bar found (right wall): pop = floor. New top = left wall.<br><strong>Step 3:</strong> Water = min(left, right) - floor height × width between walls.<br><br><strong>Why it works:</strong> Each pop reveals a "bowl" — floor between two walls where water accumulates horizontally.`,
+                codeDetailed: `def trap(height):
+    stack = []       # ← Decreasing stack of indices
+    water = 0
+    
+    for i, h in enumerate(height):
+        # ← Found right wall (taller than stack top)
+        while stack and h > height[stack[-1]]:
+            floor_index = stack.pop()    # ← Valley floor
+            if not stack: break          # ← No left wall = no bowl
+            
+            left_wall_index = stack[-1]  # ← Left wall
+            width = i - left_wall_index - 1  # ← Bowl width
+            bounded_height = min(height[left_wall_index], h) - height[floor_index]  # ← Water height
+            
+            water += width * bounded_height  # ← Add water in this layer
             
         stack.append(i)
     return water`
@@ -500,6 +553,30 @@ def asteroidCollision(asteroids):
         # 1. Current POSITIVE tha (while skip ho gaya)
         # 2. Current NEGATIVE tha BUT bach gaya (sabko uda diya)
         else:
+            stack.append(current_asteroid)
+
+    return stack`,
+                strategy: `<strong>Stack Battle Simulation Strategy:</strong><br><strong>Step 1:</strong> Iterate through asteroids. Push right-moving (+) onto stack.<br><strong>Step 2:</strong> When left-moving (-) meets right-moving (+) on stack: battle!<br><strong>Step 3:</strong> Three cases:<br>• |current| > top → pop top, continue checking<br>• |current| == top → both destroyed<br>• |current| < top → current destroyed<br><br><strong>Why it works:</strong> Only right-left collisions happen. Same-direction asteroids never meet.`,
+                codeDetailed: `def asteroid_collision(asteroids):
+    stack = []
+
+    for current_asteroid in asteroids:
+        # ← Collision only when: current LEFT (−) and top RIGHT (+)
+        while stack and current_asteroid < 0 < stack[-1]:
+            
+            if abs(current_asteroid) > stack[-1]:   # ← Current wins
+                stack.pop()
+                continue  # ← Chain reaction: check next in stack
+
+            elif abs(current_asteroid) == stack[-1]: # ← Mutual destruction
+                stack.pop()
+                break     # ← Both gone, stop
+
+            else:                                    # ← Top wins
+                break     # ← Current destroyed, stop
+
+        else:
+            # ← Survived all battles (or no collision)
             stack.append(current_asteroid)
 
     return stack`

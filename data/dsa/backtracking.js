@@ -409,6 +409,7 @@ Same diagonal formula for ANY cell:
     
     backtrack(0)
     return result`,
+                strategy: `<strong>Constraint Satisfaction Strategy:</strong><br><strong>Step 1:</strong> Go row by row (only 1 queen per row).<br><strong>Step 2:</strong> For each column, check O(1) safety using 3 Sets: <code>columns</code>, <code>posDiag (row+col)</code>, <code>negDiag (row-col)</code>.<br><strong>Step 3:</strong> Place queen → add to all 3 sets → recurse next row → remove from sets.<br><br><strong>Why it works:</strong> Row-by-row traversal handles row conflicts automatically. Sets encode column and diagonal attacks for O(1) lookup.`,
                 codeDetailed: `def solveNQueens_detailed(n):
     """
     N-QUEENS with 3-Sets O(1) Constraint Check
@@ -622,6 +623,7 @@ Each permutation: copy array to result = O(N)<br><br>
             nums[start], nums[i] = nums[i], nums[start]
     backtrack(0)
     return res`,
+                strategy: `<strong>Swap-Recurse-Unswap Strategy:</strong><br><strong>Step 1:</strong> Fix position <code>start</code>. Swap each remaining element into that position.<br><strong>Step 2:</strong> Recurse on <code>start+1</code> to fix next position.<br><strong>Step 3:</strong> Swap back to restore array for next iteration.<br><br><strong>Why it works:</strong> In-place swapping avoids needing a visited set. Each swap puts a different element at position <code>start</code>.`,
                 codeDetailed: `def permute_detailed(nums):
     """
     Detailed step-by-step explanation
@@ -740,6 +742,7 @@ Must use <code>res.append(path[:])</code>!`,
         
     backtrack(0, [])
     return res`,
+                strategy: `<strong>Pick/No-Pick Strategy:</strong><br><strong>Step 1:</strong> At each element, make TWO recursive calls.<br><strong>Step 2:</strong> PICK: append element, recurse <code>i+1</code>, then pop (backtrack).<br><strong>Step 3:</strong> NO-PICK: just recurse <code>i+1</code> without the element.<br><br><strong>Why it works:</strong> Binary decision tree generates all 2^N subsets. Every leaf node is a valid subset.`,
                 codeDetailed: `def subsets_detailed(nums):
     res = []
     def backtrack(i, path):
@@ -836,6 +839,7 @@ Must check <code>if sum > target</code> and ensure numbers are positive!`,
         
     backtrack(0, [], 0)
     return res`,
+                strategy: `<strong>Unbounded Knapsack Strategy:</strong><br><strong>Step 1:</strong> Sort candidates for pruning. Loop from <code>start</code>.<br><strong>Step 2:</strong> PICK: recurse with SAME index <code>i</code> (reuse allowed). SKIP: move to <code>i+1</code>.<br><strong>Step 3:</strong> Prune: if <code>candidates[i] > remain</code>, break (sorted = all future elements too big).<br><br><strong>Key difference from Subsets:</strong> PICK stays at <code>i</code>, not <code>i+1</code>.`,
                 codeDetailed: `def combinationSum_detailed(candidates, target):
     """
     Key difference: Recurse with 'i' to allow reuse
@@ -961,6 +965,7 @@ If you don't unmark, other paths can't use this cell!`,
         for c in range(C):
             if dfs(r, c, 0): return True
     return False`,
+                strategy: `<strong>Grid DFS + Mark/Unmark Strategy:</strong><br><strong>Step 1:</strong> Try every cell as starting point.<br><strong>Step 2:</strong> DFS: check bounds, check char match, mark cell as <code>'#'</code> (visited).<br><strong>Step 3:</strong> Explore 4 directions. If any returns True, short-circuit return True.<br><strong>Step 4:</strong> UNMARK cell (restore original char) for other paths.<br><br><strong>Why mark/unmark:</strong> Prevents revisiting same cell in one path, but allows it for different starting paths.`,
                 codeDetailed: `def exist_detailed(board, word):
     """
     Grid DFS with backtracking
@@ -1137,6 +1142,7 @@ Use this to map (0..8, 0..8) to Box 0..8
         return True
         
     solve()`,
+                strategy: `<strong>Cell-by-Cell Constraint Strategy:</strong><br><strong>Step 1:</strong> Find next empty cell (scan row by row).<br><strong>Step 2:</strong> Try digits 1–9. Check validity using row, column, and 3×3 box constraints.<br><strong>Step 3:</strong> Place digit → recurse → if fails, remove digit (backtrack).<br><strong>Step 4:</strong> If no digit works, return False (triggers backtrack in parent).<br><br><strong>Why it works:</strong> Exhaustive search with constraint pruning. Guarantees finding a solution if one exists.`,
                 codeDetailed: `def solveSudoku_detailed(board):
     """
     SUDOKU SOLVER with Backtracking

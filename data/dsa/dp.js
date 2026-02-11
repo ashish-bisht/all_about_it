@@ -302,6 +302,7 @@ def lengthOfLIS(nums):
                     • <strong>Climbing Stairs</strong> - ways[i] = ways[i-1] + ways[i-2]<br>
                     • <strong>Fibonacci</strong> - fib[i] = fib[i-1] + fib[i-2]<br>
                     • <strong>House Robber II</strong> - Same but circular array`,
+                strategy: "Har ghar pe decide karo: Rob karo (current + 2 peeche ka best) ya Skip karo (previous best). Sirf 2 variables chahiye.",
                 trap: `<strong style="color:#ef4444;">⚠️ Common Traps:</strong><br><br>
                     
                     <strong>1. Greedy Fails:</strong><br>
@@ -389,7 +390,54 @@ return prev_max
 print(rob([1,2,3,1]))     # 4 (rob house 0 + house 2)
 print(rob([2,7,9,3,1]))   # 12 (rob house 0 + house 2 + house 4)
 print(rob([]))            # 0 (edge case)
-print(rob([100]))         # 100 (single house)`
+print(rob([100]))         # 100 (single house)`,
+                codeDetailed: `def rob(nums):
+    """
+    House Robber - Space Optimized DP
+
+    STRATEGY:
+    1. Har house pe 2 choices: ROB karo ya SKIP karo
+    2. ROB = current money + best from 2 houses peeche
+    3. SKIP = previous house ka best
+    4. Sirf 2 variables track karo (prev_prev aur prev)
+    """
+
+    # --- Edge Cases Handle Karo ---
+    if not nums:           # Koi ghar nahi hai
+        return 0
+    if len(nums) == 1:     # Sirf ek ghar hai, wahi rob karo
+        return nums[0]
+
+    # --- Sirf 2 Variables Chahiye (Space Optimization) ---
+    prev_prev_max = 0  # 2 ghar peeche ka best loot
+    prev_max = 0       # 1 ghar peeche ka best loot
+
+    # --- Har Ghar Pe Decision Lo ---
+    for current_money in nums:
+        # Option 1: ROB this house
+        # Current money + best from 2 houses ago (adjacent skip)
+        rob_current = current_money + prev_prev_max
+
+        # Option 2: SKIP this house
+        # Previous house ka best answer forward karo
+        skip_current = prev_max
+
+        # Dono mein se best lo
+        current_max = max(rob_current, skip_current)
+
+        # Window ko aage slide karo
+        prev_prev_max = prev_max    # Purana prev ab prev_prev ban gaya
+        prev_max = current_max      # Current answer ab prev ban gaya
+
+    # Final answer: last house tak ka best loot
+    return prev_max
+
+
+# --- Test Cases ---
+print(rob([1,2,3,1]))     # 4 (rob house 0 + house 2 = 1+3)
+print(rob([2,7,9,3,1]))   # 12 (rob house 0 + house 2 + house 4 = 2+9+1)
+print(rob([]))            # 0 (koi ghar nahi)
+print(rob([100]))         # 100 (single house, bas wahi rob karo)`
             }
         },
         {
@@ -520,6 +568,7 @@ print(rob([100]))         # 100 (single house)`
                     Key must be <code>(curr_idx, prev_idx)</code> not just <code>curr_idx</code>!<br>
                     Same curr_idx with different prev_idx gives different results.
                 </div>`,
+                strategy: "Take/Skip with prev_idx track karo. TAKE only if nums[curr] > nums[prev]. Memo key = (curr_idx, prev_idx).",
                 dryRun: [
                     `<strong>Input:</strong> nums = [10, 9, 2, 5, 3, 7, 101, 18]`,
                     `<strong>Call:</strong> dfs(curr_idx=0, prev_idx=-1)<br>
@@ -611,7 +660,59 @@ return max(dp)  # LIS can end at any index
 
 # Test
 print(lis_memo([10,9,2,5,3,7,101,18]))  # 4 → [2,5,7,101]
-print(lengthOfLIS([0,1,0,3,2,3]))       # 4 → [0,1,2,3]`
+print(lengthOfLIS([0,1,0,3,2,3]))       # 4 → [0,1,2,3]`,
+                codeDetailed: `def lengthOfLIS(nums):
+    """
+    Longest Increasing Subsequence - Memoization Approach
+
+    STRATEGY:
+    1. Har element pe 2 choices: TAKE ya SKIP
+    2. TAKE sirf tab kar sakte ho jab nums[curr] > nums[prev]
+    3. prev_idx yaad rakhna hai taaki comparison ho sake
+    4. Memo key = (curr_idx, prev_idx) kyunki dono milke state define karte hain
+    """
+
+    memo = {}  # Cache: (curr_idx, prev_idx) -> LIS length from here
+
+    def dfs(curr_idx, prev_idx):
+        """
+        curr_idx: Abhi hum kidhar hain array mein
+        prev_idx: Last element jo humne LIS mein liya tha (-1 = kuch nahi liya)
+        """
+        # --- BASE CASE: Array khatam ho gaya ---
+        if curr_idx == len(nums):
+            return 0
+
+        # --- Memo Check: Pehle se calculate kiya hai? ---
+        if (curr_idx, prev_idx) in memo:
+            return memo[(curr_idx, prev_idx)]
+
+        # --- Option 1: TAKE current element ---
+        # Yeh tab hi possible hai jab:
+        # - prev_idx == -1 (koi element nahi liya abhi tak, toh kuch bhi le sakte)
+        # - ya nums[curr_idx] > nums[prev_idx] (strictly increasing hona chahiye)
+        take = 0
+        if prev_idx == -1 or nums[curr_idx] > nums[prev_idx]:
+            # Liya toh: 1 (current element) + aage ka best
+            # prev_idx update hoga curr_idx pe (yeh last taken element banega)
+            take = 1 + dfs(curr_idx + 1, curr_idx)
+
+        # --- Option 2: SKIP current element ---
+        # Hamesha allowed hai, prev_idx same rahega
+        skip = dfs(curr_idx + 1, prev_idx)
+
+        # --- Best of both choices ---
+        result = max(take, skip)
+        memo[(curr_idx, prev_idx)] = result  # Cache karo
+        return result
+
+    # Start: index 0 se, prev = -1 (kuch nahi liya)
+    return dfs(0, -1)
+
+
+# --- Test Cases ---
+print(lengthOfLIS([10,9,2,5,3,7,101,18]))  # 4 -> [2,5,7,101]
+print(lengthOfLIS([0,1,0,3,2,3]))           # 4 -> [0,1,2,3]`
             }
         },
         {
@@ -735,6 +836,7 @@ print(lengthOfLIS([0,1,0,3,2,3]))       # 4 → [0,1,2,3]`
                     When chars MATCH, there's NO choice to make - always take the match!<br>
                     "Lun Na Lun" only applies when chars DON'T match.
                 </div>`,
+                strategy: "Two pointers (i, j) on both strings. MATCH hoga toh 1 + diagonal. No match toh max(skip from s1, skip from s2).",
                 dryRun: [
                     `<strong>Input:</strong> text1 = "abcde", text2 = "ace"`,
                     `<strong>Call:</strong> dfs(index1=0, index2=0)<br>
@@ -827,7 +929,56 @@ return dp[m][n]
 
 
 # Test
-print(longestCommonSubsequence("abcde", "ace"))  # 3 → "ace"`
+print(longestCommonSubsequence("abcde", "ace"))  # 3 → "ace"`,
+                codeDetailed: `def longestCommonSubsequence(text1, text2):
+    """
+    Longest Common Subsequence - Memoization
+
+    STRATEGY:
+    1. Dono strings pe ek-ek pointer rakho (index1, index2)
+    2. Agar characters MATCH karte hain -> 1 + diagonal move (dono pointers aage)
+    3. Agar MATCH nahi -> try skipping from either string, max lo
+    4. Memo key = (index1, index2)
+    """
+
+    memo = {}  # Cache: (index1, index2) -> LCS length from here
+
+    def dfs(index1, index2):
+        """
+        index1: text1 mein kidhar hain abhi
+        index2: text2 mein kidhar hain abhi
+        """
+        # --- BASE CASE: Koi bhi string khatam ho gayi ---
+        # Agar ek bhi string end ho gayi, toh aur match nahi ho sakta
+        if index1 == len(text1) or index2 == len(text2):
+            return 0
+
+        # --- Memo Check: Pehle se solve kiya hai? ---
+        if (index1, index2) in memo:
+            return memo[(index1, index2)]
+
+        # --- CASE 1: Characters MATCH karte hain ---
+        # Yahan pe koi choice nahi hai - match mil gaya toh le lo!
+        if text1[index1] == text2[index2]:
+            # 1 (current match) + dono pointers aage badhao
+            result = 1 + dfs(index1 + 1, index2 + 1)
+        else:
+            # --- CASE 2: Characters MATCH nahi karte ---
+            # Ab choice hai: kisko skip kare?
+            skip_text1 = dfs(index1 + 1, index2)  # text1 ka char skip karo
+            skip_text2 = dfs(index1, index2 + 1)  # text2 ka char skip karo
+            result = max(skip_text1, skip_text2)   # Dono mein se best lo
+
+        memo[(index1, index2)] = result  # Cache karo result
+        return result
+
+    # Dono strings ke start se shuru karo
+    return dfs(0, 0)
+
+
+# --- Test Cases ---
+print(longestCommonSubsequence("abcde", "ace"))  # 3 -> "ace"
+print(longestCommonSubsequence("abc", "def"))    # 0 -> koi common nahi`
             }
         },
         {
@@ -959,6 +1110,7 @@ print(longestCommonSubsequence("abcde", "ace"))  # 3 → "ace"`
                     When TAKING: <code>dfs(amt - coin, index)</code> NOT <code>dfs(amt - coin, index+1)</code>!<br>
                     STAY at same index means we can take same coin again.
                 </div>`,
+                strategy: "Unbounded Knapsack: TAKE coin toh STAY at same index (reuse allowed). SKIP toh next coin pe jao. Min coins return karo.",
                 dryRun: [
                     `<strong>Input:</strong> coins = [1, 2, 5], amount = 11`,
                     `<strong>Call:</strong> dfs(remaining=11, index=0)<br>
@@ -1048,7 +1200,64 @@ return dp[amount] if dp[amount] != float('inf') else -1
 
 # Test
 print(coinChange([1,2,5], 11))  # 3 → 5+5+1
-print(coinChange([2], 3))       # -1 → impossible`
+print(coinChange([2], 3))       # -1 → impossible`,
+                codeDetailed: `def coinChange(coins, amount):
+    """
+    Coin Change - Memoization (Unbounded Knapsack)
+
+    STRATEGY:
+    1. Har coin pe 2 choices: TAKE ya SKIP
+    2. TAKE: coin use karo, SAME index pe raho (infinite supply!)
+    3. SKIP: next coin pe jao
+    4. Minimum coins return karo
+    """
+
+    memo = {}  # Cache: (remaining_amount, coin_index) -> min coins
+
+    def dfs(remaining_amount, coin_index):
+        """
+        remaining_amount: Kitna amount abhi baaki hai banane ke liye
+        coin_index: Kaun sa coin consider kar rahe hain abhi
+        """
+        # --- BASE CASE 1: Amount ban gaya! ---
+        if remaining_amount == 0:
+            return 0  # Koi aur coin nahi chahiye
+
+        # --- BASE CASE 2: Impossible cases ---
+        # Coins khatam ho gaye ya amount negative ho gaya
+        if coin_index == len(coins) or remaining_amount < 0:
+            return float('inf')  # Impossible hai yeh path
+
+        # --- Memo Check ---
+        state = (remaining_amount, coin_index)
+        if state in memo:
+            return memo[state]
+
+        # --- Option 1: TAKE this coin ---
+        # CRITICAL: index SAME rehta hai (coin_index, not coin_index + 1)
+        # Kyunki same coin dubara use kar sakte hain (UNBOUNDED)
+        take = float('inf')
+        if remaining_amount >= coins[coin_index]:
+            # 1 coin use kiya + baaki amount ke liye recurse
+            take = 1 + dfs(remaining_amount - coins[coin_index], coin_index)
+
+        # --- Option 2: SKIP this coin ---
+        # Agle coin pe move karo (coin_index + 1)
+        skip = dfs(remaining_amount, coin_index + 1)
+
+        # --- Minimum lo dono options ka ---
+        memo[state] = min(take, skip)
+        return memo[state]
+
+    # Start: full amount, pehle coin se
+    result = dfs(amount, 0)
+    # Agar inf aaya toh impossible hai
+    return result if result != float('inf') else -1
+
+
+# --- Test Cases ---
+print(coinChange([1,2,5], 11))  # 3 -> 5+5+1
+print(coinChange([2], 3))       # -1 -> impossible (sirf even bana sakte)`
             }
         },
         {
@@ -1277,6 +1486,7 @@ if word in wordSet:    <span style="color:#4ade80;"># Mila! CUT lagao</span><br>
                         <p style="font-size:0.75rem; color:#94a3b8;">Always convert wordDict to set first.</p>
                     </div>
                 </div>`,
+                strategy: "Har position se try karo: word in dict mila toh CUT lagao aur baaki string pe recurse karo. State = start index only.",
                 dryRun: [
                     `<details style="background:#1e293b; border-radius:8px; padding:8px; cursor:pointer;">
                         <summary style="display:flex; align-items:center; gap:12px; font-weight:500; color:#a5b4fc; user-select:none; list-style:none; font-size:0.875rem;">
@@ -1438,7 +1648,61 @@ for end in range(1, n + 1):
             dp[end] = True
             break  # One valid cut is enough!
 
-return dp[n]`
+return dp[n]`,
+                codeDetailed: `def wordBreak(s, wordDict):
+    """
+    Word Break - Memoization
+
+    STRATEGY:
+    1. Start index se try karo har possible end position
+    2. Agar s[start:end] dictionary mein hai -> CUT lagao
+    3. Baaki string (end se) pe recurse karo
+    4. Agar koi bhi cut se True aata hai -> return True
+    5. State sirf start_index hai (single state DP)
+    """
+
+    word_set = set(wordDict)  # Set banao O(1) lookup ke liye
+    memo = {}  # Cache: start_index -> can we break from here?
+
+    def dfs(start_index):
+        """
+        start_index: String mein kahan se segmentation try kar rahe hain
+        """
+        # --- BASE CASE: Puri string process ho gayi ---
+        # Agar start == len(s), matlab sab kuch valid words mein cut ho gaya
+        if start_index == len(s):
+            return True
+
+        # --- Memo Check: Pehle solve kiya hai? ---
+        if start_index in memo:
+            return memo[start_index]
+
+        # --- Try Every Possible Cut Position ---
+        # end_index: start+1 se lekar end of string tak
+        # (start+1 kyunki minimum 1 character ka word chahiye)
+        for end_index in range(start_index + 1, len(s) + 1):
+            # Current word nikalo: s[start:end]
+            current_word = s[start_index:end_index]
+
+            # Yahan pe check karo ki:
+            # 1. current_word dictionary mein hai?
+            # 2. Baaki string bhi valid hai? (recurse)
+            if current_word in word_set and dfs(end_index):
+                memo[start_index] = True  # Cache success
+                return True
+
+        # Koi bhi cut kaam nahi aaya
+        memo[start_index] = False  # Cache failure bhi karo!
+        return False
+
+    # String ke start se try karo
+    return dfs(0)
+
+
+# --- Test Cases ---
+print(wordBreak("leetcode", ["leet", "code"]))        # True -> "leet" + "code"
+print(wordBreak("applepenapple", ["apple", "pen"]))    # True -> "apple" + "pen" + "apple"
+print(wordBreak("catsandog", ["cats","dog","sand","and","cat"]))  # False`
             }
         },
         {
@@ -1669,6 +1933,7 @@ dp = [False] * (target + 1)  <span style="color:#4ade80;">← O(Sum)</span>
                         <p style="font-size:0.75rem; color:#94a3b8;">This single line difference changes everything!</p>
                     </div>
                 </div>`,
+                strategy: "Total odd hai toh impossible. Warna target = total/2. 0/1 Knapsack: TAKE (idx+1) ya SKIP. 1D DP mein BACKWARDS iterate karo.",
                 dryRun: [
                     `<details style="background:#1e293b; border-radius:8px; padding:8px; cursor:pointer;">
                         <summary style="display:flex; align-items:center; gap:12px; font-weight:500; color:#a5b4fc; user-select:none; list-style:none; font-size:0.875rem;">
@@ -1793,7 +2058,58 @@ for num in nums:
     if dp[target]:  # Early exit optimization
         return True
 
-return dp[target]`
+return dp[target]`,
+                codeDetailed: `def canPartition(nums):
+    """
+    Partition Equal Subset Sum - 1D DP (Space Optimized)
+
+    STRATEGY:
+    1. Total sum odd hai? Toh impossible - return False
+    2. Target = total / 2 (agar ek subset target hai, doosra bhi hoga)
+    3. 0/1 Knapsack: har element ONCE use karo ya skip karo
+    4. 1D DP mein BACKWARDS iterate karo (right to left)
+       Backwards kyun? Taaki same element dobara use na ho
+    """
+
+    # --- Step 1: Total Sum Calculate Karo ---
+    total = sum(nums)
+
+    # --- Step 2: Odd Sum Check ---
+    # Odd number ko 2 equal integers mein divide nahi kar sakte
+    if total % 2 != 0:
+        return False  # Impossible hai bhai!
+
+    # --- Step 3: Target Set Karo ---
+    # Agar total 22 hai, toh ek subset ka sum 11 hona chahiye
+    target = total // 2
+
+    # --- Step 4: 1D DP Array Banao ---
+    # dp[s] = True matlab hum nums ke kuch elements se sum 's' bana sakte hain
+    dp = [False] * (target + 1)
+    dp[0] = True  # Empty subset ka sum = 0 (hamesha possible)
+
+    # --- Step 5: Har Number Process Karo ---
+    for num in nums:
+        # CRITICAL: BACKWARDS iterate karo (RIGHT to LEFT)
+        # Agar LEFT to RIGHT karoge toh same num multiple times use ho jayega
+        # Yeh 0/1 Knapsack ka sabse important trick hai!
+        for current_sum in range(target, num - 1, -1):
+            # Kya hum current_sum bana sakte hain?
+            # Haan, agar (current_sum - num) pehle se bana sakte the
+            if dp[current_sum - num]:
+                dp[current_sum] = True
+
+        # Early exit: agar target mil gaya toh aage check mat karo
+        if dp[target]:
+            return True
+
+    # Final answer: kya target sum possible hai?
+    return dp[target]
+
+
+# --- Test Cases ---
+print(canPartition([1, 5, 11, 5]))  # True -> {11} and {1,5,5}
+print(canPartition([1, 2, 3, 5]))   # False -> total=11 (odd)`
             }
         },
         {
@@ -2012,6 +2328,7 @@ dp[0][j] = j  <span style="color:#64748b;"># Insert all j chars into word1</span
                         <p style="font-size:0.75rem; color:#94a3b8;">Must try all 3 options and take minimum.</p>
                     </div>
                 </div>`,
+                strategy: "Match hoga toh diagonal (0 cost). Mismatch pe 3 options try karo: Insert(i,j-1), Delete(i-1,j), Replace(i-1,j-1). Min + 1 lo.",
                 dryRun: [
                     `<details style="background:#1e293b; border-radius:8px; padding:8px; cursor:pointer;">
                         <summary style="display:flex; align-items:center; gap:12px; font-weight:500; color:#a5b4fc; user-select:none; list-style:none; font-size:0.875rem;">
@@ -2137,7 +2454,77 @@ for i in range(1, m + 1):
                 dp[i-1][j-1]   # REPLACE
             )
 
-return dp[m][n]`
+return dp[m][n]`,
+                codeDetailed: `def minDistance(word1, word2):
+    """
+    Edit Distance - Memoization
+
+    STRATEGY:
+    1. Dono strings pe pointers (i, j) rakho
+    2. MATCH: Characters same hain toh koi operation nahi, diagonal move (i-1, j-1)
+    3. MISMATCH: 3 operations try karo aur minimum lo:
+       - INSERT: word1 mein char daalo -> (i, j-1)
+       - DELETE: word1 se char hatao -> (i-1, j)
+       - REPLACE: word1 ka char badlo -> (i-1, j-1)
+    4. Har operation ki cost = 1
+    """
+
+    memo = {}  # Cache: (i, j) -> min operations
+
+    def solve(i, j):
+        """
+        i: word1 ke pehle i characters consider kar rahe hain
+        j: word2 ke pehle j characters consider kar rahe hain
+        """
+        # --- BASE CASE 1: word1 khatam ho gaya ---
+        # Baaki ke j characters INSERT karne padenge word1 mein
+        if i == 0:
+            return j
+
+        # --- BASE CASE 2: word2 khatam ho gaya ---
+        # Baaki ke i characters DELETE karne padenge word1 se
+        if j == 0:
+            return i
+
+        # --- Memo Check ---
+        if (i, j) in memo:
+            return memo[(i, j)]
+
+        # --- CASE 1: Characters MATCH karte hain ---
+        # Koi operation nahi chahiye, bas dono pointers peeche le jao
+        if word1[i - 1] == word2[j - 1]:
+            result = solve(i - 1, j - 1)  # Zero cost, diagonal move
+        else:
+            # --- CASE 2: Characters MATCH nahi karte ---
+            # Teenon operations try karo:
+
+            # INSERT: word2[j-1] ko word1 mein daalo
+            # word1 same rehta (i), word2 ka pointer peeche (j-1)
+            insert_op = solve(i, j - 1)
+
+            # DELETE: word1[i-1] ko hatao
+            # word1 ka pointer peeche (i-1), word2 same (j)
+            delete_op = solve(i - 1, j)
+
+            # REPLACE: word1[i-1] ko word2[j-1] se badal do
+            # Dono pointers peeche (i-1, j-1)
+            replace_op = solve(i - 1, j - 1)
+
+            # Minimum lo + 1 (operation ki cost)
+            result = 1 + min(insert_op, delete_op, replace_op)
+
+        memo[(i, j)] = result  # Cache karo
+        return result
+
+    # Full lengths se start karo
+    return solve(len(word1), len(word2))
+
+
+# --- Test Cases ---
+print(minDistance("horse", "ros"))       # 3 -> horse->rorse->rose->ros
+print(minDistance("intention", "execution"))  # 5
+print(minDistance("", "abc"))            # 3 -> 3 inserts
+print(minDistance("abc", ""))            # 3 -> 3 deletes`
             }
         }
     ]

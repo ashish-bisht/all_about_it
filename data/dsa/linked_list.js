@@ -264,7 +264,42 @@ def put(self, key, value):
     if len(self.cache) > self.cap:
         lru = self.tail.prev
         self._remove(lru)
-        del self.cache[lru.key]`
+        del self.cache[lru.key]`,
+                strategy: `<strong>Wire-Splicing Strategy:</strong><br><strong>Step 1:</strong> Build HashMap (key → DLL node) + Doubly Linked List (head=MRU, tail=LRU).<br><strong>Step 2:</strong> <code>get(key)</code>: If in map, remove node from current position, add to head (most recent).<br><strong>Step 3:</strong> <code>put(key, val)</code>: If exists, remove old. Create new node at head. If over capacity, evict tail node AND delete from map.<br><br><strong>Why it works:</strong> HashMap gives O(1) lookup. DLL gives O(1) removal/insertion at any position.`,
+                codeDetailed: `class LRUCache:
+    def __init__(self, capacity):
+        self.cap = capacity
+        self.cache = {}                # ← key → DLL node
+        self.head, self.tail = Node(0,0), Node(0,0)  # ← Sentinel nodes
+        self.head.next = self.tail     # ← head = most recent
+        self.tail.prev = self.head     # ← tail = least recent
+
+    def _remove(self, node):           # ← O(1) unplug from anywhere
+        prev, nxt = node.prev, node.next
+        prev.next, nxt.prev = nxt, prev
+
+    def _add(self, node):              # ← O(1) plug right after head
+        node.prev, node.next = self.head, self.head.next
+        self.head.next.prev = node
+        self.head.next = node
+
+    def get(self, key):
+        if key in self.cache:
+            self._remove(self.cache[key])   # ← Unplug
+            self._add(self.cache[key])      # ← Move to front (MRU)
+            return self.cache[key].val
+        return -1
+
+    def put(self, key, value):
+        if key in self.cache:
+            self._remove(self.cache[key])   # ← Remove old
+        new_node = Node(key, value)
+        self._add(new_node)                 # ← Add to front
+        self.cache[key] = new_node
+        if len(self.cache) > self.cap:
+            lru = self.tail.prev             # ← Least recent = before tail
+            self._remove(lru)
+            del self.cache[lru.key]          # ← MUST delete from map too!`
             }
         },
         {
@@ -379,7 +414,31 @@ while True:
     groupPrev.next = prev # New head
     groupPrev = tmp # Move anchor
     
-return dummy.next`
+return dummy.next`,
+                strategy: `<strong>K-Group Reversal Strategy:</strong><br><strong>Step 1:</strong> Use dummy node. Track <code>groupPrev</code> (anchor before group).<br><strong>Step 2:</strong> Find kth node from groupPrev. If < K nodes remain, stop.<br><strong>Step 3:</strong> Reverse K nodes using standard prev/curr reversal.<br><strong>Step 4:</strong> Rewire: connect groupPrev to new head, move groupPrev to new tail.<br><br><strong>Why it works:</strong> Each group is reversed independently and reconnected via anchor pointers.`,
+                codeDetailed: `def reverseKGroup(head, k):
+    dummy = ListNode(0, head)  # ← Dummy simplifies head edge cases
+    groupPrev = dummy          # ← Anchor: last node before current group
+
+    while True:
+        kth = get_kth(groupPrev, k)  # ← Find end of group
+        if not kth: break            # ← Less than K nodes = stop
+        groupNext = kth.next         # ← Save start of next group
+
+        # ← Standard reversal within group
+        prev, curr = kth.next, groupPrev.next
+        while curr != groupNext:
+            tmp = curr.next
+            curr.next = prev         # ← Reverse pointer
+            prev = curr
+            curr = tmp
+
+        # ← Rewire connections
+        tmp = groupPrev.next         # ← Old start = new tail
+        groupPrev.next = prev        # ← Connect to reversed head
+        groupPrev = tmp              # ← Move anchor forward
+
+    return dummy.next`
             }
         },
         {
@@ -464,7 +523,20 @@ while fast and fast.next:
             slow = slow.next
             fast = fast.next
         return slow
-return None`
+return None`,
+                strategy: `<strong>Floyd's Two-Phase Strategy:</strong><br><strong>Phase 1 (Detect):</strong> Slow moves 1 step, Fast moves 2 steps. If they meet, cycle exists.<br><strong>Phase 2 (Find Start):</strong> Reset slow to head. Move both 1 step. They meet at cycle start.<br><br><strong>Math proof:</strong> Distance from head to cycle start = distance from meeting point to cycle start (through the cycle).`,
+                codeDetailed: `def detectCycle(head):
+    slow, fast = head, head
+    while fast and fast.next:          # ← Phase 1: Detect cycle
+        slow = slow.next               # ← Tortoise: 1 step
+        fast = fast.next.next          # ← Hare: 2 steps
+        if slow == fast:               # ← Collision! Cycle confirmed
+            slow = head                # ← Phase 2: Reset slow to head
+            while slow != fast:        # ← Both move 1 step
+                slow = slow.next
+                fast = fast.next
+            return slow                # ← Meeting point = cycle start
+    return None                        # ← No cycle`
             }
         },
         {
@@ -563,7 +635,36 @@ while curr_old: # Unweave
         curr_new.next = curr_new.next.next
     curr_old = curr_old.next
     curr_new = curr_new.next
-return new_head`
+return new_head`,
+                strategy: `<strong>3-Pass Interleaving Strategy:</strong><br><strong>Pass 1 (Weave):</strong> Insert copy of each node right after original: A→A'→B→B'.<br><strong>Pass 2 (Link Randoms):</strong> <code>copy.random = original.random.next</code> (copy is always next to original).<br><strong>Pass 3 (Unweave):</strong> Separate interleaved list into original and copy lists.<br><br><strong>Why it works:</strong> Interleaving gives O(1) access to each node's copy without a HashMap.`,
+                codeDetailed: `def copyRandomList(head):
+    if not head: return None
+    
+    # ← Pass 1: Weave copies between originals
+    curr = head
+    while curr:
+        new_node = Node(curr.val, next=curr.next)  # ← Create copy
+        curr.next = new_node                        # ← Insert after original
+        curr = new_node.next                        # ← Skip to next original
+    
+    # ← Pass 2: Link random pointers using interleaved structure
+    curr = head
+    while curr:
+        if curr.random:
+            curr.next.random = curr.random.next     # ← Copy's random = original's random's copy
+        curr = curr.next.next                       # ← Skip to next original
+    
+    # ← Pass 3: Unweave into two separate lists
+    old_head = head
+    new_head = head.next
+    curr_old, curr_new = old_head, new_head
+    while curr_old:
+        curr_old.next = curr_old.next.next          # ← Restore original list
+        if curr_new.next:
+            curr_new.next = curr_new.next.next      # ← Build copy list
+        curr_old = curr_old.next
+        curr_new = curr_new.next
+    return new_head`
             }
         },
         {
@@ -648,7 +749,32 @@ while right:
     if left.val != right.val: return False
     left = left.next
     right = right.next
-return True`
+return True`,
+                strategy: `<strong>Half-Reversal Strategy:</strong><br><strong>Step 1:</strong> Find middle using slow/fast pointers.<br><strong>Step 2:</strong> Reverse second half in-place.<br><strong>Step 3:</strong> Compare first half with reversed second half node by node.<br><br><strong>Why it works:</strong> Singly linked list can only go forward. Reversing second half lets us compare from both ends toward the center.`,
+                codeDetailed: `def isPalindrome(head):
+    # ← Step 1: Find middle (slow/fast)
+    slow, fast = head, head
+    while fast and fast.next:
+        slow = slow.next               # ← Slow at middle
+        fast = fast.next.next
+    
+    # ← Step 2: Reverse second half
+    prev = None
+    curr = slow
+    while curr:
+        tmp = curr.next
+        curr.next = prev               # ← Reverse pointer
+        prev = curr
+        curr = tmp
+    
+    # ← Step 3: Compare both halves
+    left, right = head, prev           # ← prev is reversed tail
+    while right:
+        if left.val != right.val:
+            return False               # ← Mismatch = not palindrome
+        left = left.next
+        right = right.next
+    return True                        # ← All matched!`
             }
         }
     ]

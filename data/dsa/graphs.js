@@ -329,6 +329,7 @@ def topoSort(numCourses, prerequisites):
                         <li>🗺️ <strong>Shortest Bridge</strong>: Expand from Island A (Multi-source) until you hit Island B.</li>
                     </ul>
                 `,
+                strategy: "Multi-source BFS → saare rotten oranges ko queue mein daalo initially → level-by-level expand karo → har level = 1 minute → fresh_count == 0 check karo end mein",
                 trap: `
                     <h4 style="color:#ef4444;">⚠️ Deep Traps</h4>
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin:15px 0;">
@@ -416,6 +417,73 @@ def orangesRotting(grid):
         minutes_elapsed += 1
     
     # 3. FINAL CHECK: Did we reach everyone?
+    return minutes_elapsed if fresh_count == 0 else -1`,
+                codeDetailed: `from collections import deque
+
+def orangesRotting(grid):
+    """
+    Rotten Oranges - Multi-Source BFS
+
+    STRATEGY:
+    - Pehle saare rotten oranges ko queue mein daal do (multi-source)
+    - BFS level by level chalao - har level = 1 minute
+    - Har fresh orange ko rot karo jab uska neighbor rotten ho
+    - End mein check karo: koi fresh bacha toh -1, warna minutes return karo
+
+    WHY BFS (not DFS)?
+    - Simultaneous spread chahiye, sequential nahi
+    - BFS naturally level-by-level kaam karta hai
+    """
+
+    rows, cols = len(grid), len(grid[0])
+
+    # Step 1: PRE-SCAN - Saare initially rotten oranges dhoondho (Sources)
+    queue = deque()
+    fresh_count = 0
+
+    for row in range(rows):
+        for col in range(cols):
+            if grid[row][col] == 2:
+                # Rotten mila - queue mein daalo as BFS source
+                queue.append((row, col))
+            elif grid[row][col] == 1:
+                # Fresh mila - count karo taaki end mein verify kar sakein
+                fresh_count += 1
+
+    # Edge Case: Agar koi fresh orange hi nahi hai, toh 0 minutes
+    if fresh_count == 0:
+        return 0
+
+    # Step 2: BFS - Level by Level (Har level = 1 minute)
+    minutes_elapsed = 0
+    # 4 directions: up, right, down, left
+    directions = [(-1, 0), (0, 1), (1, 0), (0, -1)]
+
+    # TRAP FIX: "while queue AND fresh_count > 0"
+    # Agar fresh khatam ho gaye toh aur process karne ka matlab nahi
+    while queue and fresh_count > 0:
+
+        # IMPORTANT: Sirf current level process karo (snapshot of current minute)
+        # len(queue) ONCE evaluate hoga - naye additions is iteration mein nahi aayenge
+        for _ in range(len(queue)):
+            current_row, current_col = queue.popleft()
+
+            # 4-directional spread
+            for row_change, col_change in directions:
+                new_row = current_row + row_change
+                new_col = current_col + col_change
+
+                # Valid boundary check + Fresh orange check
+                if 0 <= new_row < rows and 0 <= new_col < cols and grid[new_row][new_col] == 1:
+                    grid[new_row][new_col] = 2    # Rot it immediately! (acts as visited)
+                    fresh_count -= 1               # Ek aur fresh khatam
+                    queue.append((new_row, new_col))  # Next level mein process hoga
+
+        # Ek poora level process ho gaya = 1 minute elapsed
+        minutes_elapsed += 1
+
+    # Step 3: FINAL CHECK - Kya sab fresh oranges rot ho gaye?
+    # Agar fresh_count > 0, matlab kuch unreachable the -> return -1
     return minutes_elapsed if fresh_count == 0 else -1`
             }
         },
@@ -567,6 +635,7 @@ def orangesRotting(grid):
                         </div>
                     </div>
                 `,
+                strategy: "Kahn's Algo (Topo Sort BFS) → graph + indegree array banao → indegree 0 wale queue mein → process karo aur neighbors ka indegree reduce karo → count == n toh true, warna cycle hai",
                 trap: `
                     <h4 style="color:#ef4444;">⚠️ Common Mistakes (Interview Killers)</h4>
                     <div style="display:grid; gap:15px; margin:15px 0;">
@@ -650,6 +719,59 @@ def course_schedule(num_courses, prerequisites):
                 que.append(neighbour)
     
     # STEP 4: Check if all courses processed
+    return processed_courses == num_courses`,
+                codeDetailed: `from collections import defaultdict, deque
+
+def course_schedule(num_courses, prerequisites):
+    """
+    Course Schedule - Kahn's Algorithm (Topological Sort via BFS)
+
+    STRATEGY:
+    - Graph banao: prereq -> course (dependency direction)
+    - Indegree array banao: kitne prerequisites chahiye har course ko
+    - Queue mein daalo jo courses indegree 0 hai (no dependencies)
+    - BFS: process karo, neighbors ka indegree reduce karo
+    - Agar sab process ho gaye (count == n), toh possible hai
+
+    WHY TOPO SORT?
+    - Dependencies ka ordering chahiye
+    - Cycle detect bhi ho jaata hai automatically
+    """
+
+    # STEP 1: Graph aur in-degree array build karo
+    graph = defaultdict(list)    # Adjacency list: prereq -> [courses]
+    in_degree = [0] * num_courses  # Har course ke kitne prerequisites
+
+    for course, pre_course in prerequisites:
+        # pre_course pehle karna padega course se
+        # Yahan pe direction dhyan se: pre -> course
+        graph[pre_course].append(course)
+        # Course ka indegree badhao (ek aur dependency)
+        in_degree[course] += 1
+
+    # STEP 2: Starting points dhoondho (indegree = 0, no dependencies)
+    que = deque()
+    for course in range(num_courses):
+        if in_degree[course] == 0:
+            # Ye course bina kisi prerequisite ke le sakte hain
+            que.append(course)
+
+    # STEP 3: BFS - Level by level process karo
+    processed_courses = 0
+
+    while que:
+        cur_course = que.popleft()
+        processed_courses += 1  # Ye course complete ho gaya
+
+        # Saare dependent courses ka indegree reduce karo
+        for neighbour in graph[cur_course]:
+            in_degree[neighbour] -= 1
+            # Agar indegree 0 ho gaya, toh ye course ab free hai
+            if in_degree[neighbour] == 0:
+                que.append(neighbour)
+
+    # STEP 4: Kya saare courses process ho gaye?
+    # Agar nahi, toh cycle hai (kuch courses ka indegree kabhi 0 nahi hua)
     return processed_courses == num_courses`
             }
         },
@@ -823,6 +945,7 @@ def course_schedule(num_courses, prerequisites):
                         <li>🚗 <strong>Shortest Path in Binary Matrix</strong> - BFS (unweighted)</li>
                     </ul>
                 `,
+                strategy: "Dijkstra → min-heap mein (cost, node) daalo → greedy: sabse chhota cost pehle process karo → relaxation se neighbors update karo → max(dist) return karo",
                 trap: `
                     <h4 style="color:#ef4444;">⚠️ Common Traps</h4>
                     <div style="display:grid; gap:15px; margin:15px 0;">
@@ -910,6 +1033,60 @@ def course_schedule(num_courses, prerequisites):
     # Check if all nodes are reachable
     if len(dist) == n:
         return max(dist.values())
+    return -1`,
+                codeDetailed: `def networkDelayTime(times, n, k):
+    """
+    Network Delay Time - Dijkstra's Algorithm
+
+    STRATEGY:
+    - Weighted graph hai, shortest path chahiye -> Dijkstra use karo
+    - Min-heap se sabse chhota cost wala node pehle process karo (Greedy)
+    - Relaxation: agar naya path chhota hai toh update karo
+    - Sab nodes reach ho gaye toh max distance return karo
+
+    WHY DIJKSTRA (not BFS)?
+    - Edges mein weight hai, BFS sirf unweighted ke liye kaam karta hai
+    - Dijkstra min-heap se guarantee karta hai ki pehli baar node pop ho,
+      woh shortest distance hai
+    """
+    import heapq
+    from collections import defaultdict
+
+    # Adjacency list banao: node -> [(neighbor, weight), ...]
+    graph = defaultdict(list)
+    for u, v, w in times:
+        graph[u].append((v, w))
+
+    # Min-heap: (distance_from_source, node)
+    # Source node ka distance 0 hai
+    heap = [(0, k)]
+    # dist dictionary: node -> shortest distance (finalized)
+    dist = {}
+
+    while heap:
+        # Sabse chhota cost wala node pop karo (Greedy choice)
+        cost, node = heapq.heappop(heap)
+
+        # CRITICAL: Agar node already process ho chuka hai, skip karo
+        # Yeh stale entry hai heap mein (lazy deletion)
+        if node in dist:
+            continue
+
+        # Pehli baar reach hua = shortest path confirmed
+        dist[node] = cost
+
+        # Saare neighbors ko relax karo
+        for neighbor, weight in graph[node]:
+            # Sirf unprocessed neighbors ke liye push karo
+            if neighbor not in dist:
+                # Naya cost = current cost + edge weight
+                heapq.heappush(heap, (cost + weight, neighbor))
+
+    # Check: kya saare n nodes reachable hain?
+    if len(dist) == n:
+        # Maximum distance = jab tak signal sabko pahunchega
+        return max(dist.values())
+    # Kuch nodes unreachable hain
     return -1`
             }
         },
@@ -1057,6 +1234,7 @@ def course_schedule(num_courses, prerequisites):
                         <li>👥 <strong>Smallest String with Swaps</strong> - Group indices by swaps</li>
                     </ul>
                 `,
+                strategy: "Union-Find (DSU) → har node apna parent → connected nodes ko union karo with path compression + rank → unique roots count karo = provinces",
                 trap: `
                     <h4 style="color:#ef4444;">⚠️ Common Traps</h4>
                     <div style="display:grid; gap:15px; margin:15px 0;">
@@ -1100,6 +1278,60 @@ def course_schedule(num_courses, prerequisites):
             if isConnected[i][j] == 1:
                 union(i, j)
     
+    return count`,
+                codeDetailed: `def findCircleNum(isConnected):
+    """
+    Number of Provinces - Union-Find (DSU)
+
+    STRATEGY:
+    - Har city ko initially apna parent maano (n separate provinces)
+    - Adjacency matrix mein connected pairs ko union karo
+    - Union ke baad count reduce hota hai
+    - Final count = number of provinces (connected components)
+
+    WHY UNION-FIND?
+    - Connectivity problems ke liye best DS
+    - Path compression + union by rank se nearly O(1) per operation
+    """
+    n = len(isConnected)
+    # Har node apna khud ka parent (initially sab independent)
+    parent = list(range(n))
+    # Start with N separate provinces
+    count = n
+
+    def find(x):
+        """
+        Find root with PATH COMPRESSION
+        Jab root dhoondho, toh saare intermediate nodes ko
+        directly root se connect kar do (tree flat ho jaata hai)
+        """
+        if parent[x] != x:
+            # Recursive call + path compression
+            # parent[x] directly root ki taraf point karega
+            parent[x] = find(parent[x])
+        return parent[x]
+
+    def union(x, y):
+        """
+        Union two nodes - unke ROOTS ko merge karo
+        TRAP: parent[x] = y GALAT hai! Roots ko merge karna hai!
+        """
+        nonlocal count
+        root_x, root_y = find(x), find(y)
+        if root_x != root_y:
+            # Different components hain, merge karo
+            parent[root_x] = root_y
+            count -= 1  # Ek component kam hua
+
+    # Upper triangle iterate karo (i,j) jahan i < j
+    # isConnected[i][i] = 1 always, skip karo
+    for i in range(n):
+        for j in range(i + 1, n):
+            if isConnected[i][j] == 1:
+                # City i aur j connected hain, union karo
+                union(i, j)
+
+    # Count mein kitne independent groups bache
     return count`
             }
         },
@@ -1217,6 +1449,7 @@ def course_schedule(num_courses, prerequisites):
                         <li>🔗 <strong>Clone N-ary Tree</strong> - Simpler, no cycles</li>
                     </ul>
                 `,
+                strategy: "DFS + HashMap → old_to_new map banao → node clone karo, map mein PEHLE daalo (cycle handle) → neighbors recursively clone karo → map se return karo",
                 trap: `
                     <h4 style="color:#ef4444;">⚠️ Common Mistakes & Why They're Wrong</h4>
                     <div style="display:grid; gap:15px; margin:15px 0;">
@@ -1288,6 +1521,58 @@ def cloneGraph(node):
         
         return clone
     
+    return dfs(node)`,
+                codeDetailed: `class Node:
+    def __init__(self, val=0, neighbors=None):
+        self.val = val
+        self.neighbors = neighbors if neighbors is not None else []
+
+def cloneGraph(node):
+    """
+    Clone Graph - DFS + HashMap
+
+    STRATEGY:
+    - HashMap use karo: original_node -> cloned_node
+    - DFS se traverse karo graph ko
+    - Har node ke liye: pehle check karo map mein hai kya (cycle handle)
+    - Nahi hai toh clone banao, MAP MEIN PEHLE DAALO, phir neighbors recurse karo
+    - Map mein pehle daalna CRITICAL hai - warna cycle pe infinite recursion
+
+    WHY HASHMAP?
+    - Visited set + Clone storage dono ek saath
+    - O(1) lookup se cycle detection instant
+    """
+
+    # EDGE CASE: Empty graph, kuch clone nahi karna
+    if not node:
+        return None
+
+    # HashMap: original_node -> cloned_node
+    # Yeh dono kaam karta hai: visited tracking + clone storage
+    cloned = {}
+
+    def dfs(node):
+        # BASE CASE: Agar node pehle se clone ho chuka hai
+        # Yeh cycle handle karta hai! Bina iske infinite recursion hoga
+        if node in cloned:
+            return cloned[node]
+
+        # STEP 1: Naya clone node banao (sirf value copy, neighbors baad mein)
+        clone = Node(node.val)
+
+        # STEP 2: Map mein PEHLE daalo BEFORE recursing on neighbors
+        # CRITICAL: Agar baad mein daalo toh cycle pe neighbor call
+        # is node ko map mein nahi paayega -> infinite loop
+        cloned[node] = clone
+
+        # STEP 3: Saare neighbors ko recursively clone karo
+        for neighbor in node.neighbors:
+            # dfs(neighbor) ya toh naya clone return karega
+            # ya map se existing clone (cycle case)
+            clone.neighbors.append(dfs(neighbor))
+
+        return clone
+
     return dfs(node)`
             }
         },
@@ -1394,6 +1679,7 @@ def cloneGraph(node):
                         <li>🏫 <strong>Divide into Two Groups</strong> - Graph coloring variant</li>
                     </ul>
                 `,
+                strategy: "BFS 2-Coloring → color array [-1] init → har uncolored node se BFS shuru karo → neighbor ko opposite color do → same color mila toh NOT bipartite",
                 trap: `
                     <h4 style="color:#ef4444;">⚠️ Common Mistakes & Why They're Wrong</h4>
                     <div style="display:grid; gap:15px; margin:15px 0;">
@@ -1465,6 +1751,58 @@ def isBipartite(graph):
                 elif color[neighbor] == color[node]:
                     return False
                     
+    return True`,
+                codeDetailed: `from collections import deque
+
+def isBipartite(graph):
+    """
+    Is Graph Bipartite? - BFS 2-Coloring
+
+    STRATEGY:
+    - Har node ko 2 colors mein se ek assign karo (0 ya 1)
+    - BFS se traverse karo: neighbor ko opposite color do
+    - Agar neighbor already colored hai aur SAME color hai -> NOT bipartite
+    - Disconnected components handle karo: har uncolored node se BFS chalaao
+
+    KEY INSIGHT:
+    - Bipartite iff no odd-length cycle
+    - 2-coloring possible hai toh bipartite hai
+    """
+    n = len(graph)
+    # Color array: -1 = uncolored, 0 = Red, 1 = Blue
+    # 3 states chahiye: unvisited + 2 colors
+    # Boolean visited set GALAT hai - conflict detect nahi hoga
+    color = [-1] * n
+
+    # Saare components check karo (graph disconnected ho sakta hai!)
+    # TRAP: Sirf node 0 se start karna GALAT hai
+    for start in range(n):
+        # Skip already colored nodes
+        if color[start] != -1:
+            continue
+
+        # BFS shuru karo is component ke liye
+        queue = deque([start])
+        color[start] = 0  # Pehla color assign karo (Red)
+
+        while queue:
+            node = queue.popleft()
+
+            for neighbor in graph[node]:
+                # Case 1: Neighbor abhi tak uncolored hai
+                if color[neighbor] == -1:
+                    # Opposite color assign karo: 1 - 0 = 1, 1 - 1 = 0
+                    color[neighbor] = 1 - color[node]
+                    queue.append(neighbor)
+
+                # Case 2: Neighbor already colored with SAME color
+                # Yeh odd cycle hai -> bipartite NAHI hai
+                elif color[neighbor] == color[node]:
+                    return False
+
+                # Case 3 (implicit): Neighbor has DIFFERENT color -> OK, skip
+
+    # Saare components successfully 2-colored -> Bipartite hai!
     return True`
             }
         },
@@ -1599,6 +1937,7 @@ def isBipartite(graph):
                         <li>👽 <strong>Alien Dictionary</strong> - Topological Sort (which detects cycles as "impossible" ordering).</li>
                     </ul>
                 `,
+                strategy: "DFS + 2 Sets (visited + rec_stack) → visited global tracking, rec_stack current path → neighbor rec_stack mein mila toh CYCLE → backtrack pe rec_stack se remove karo",
                 dryRun: `
                     <h4 style="color:#22d3ee;">🔍 Dry Run: 0->1, 1->2, 2->0</h4>
                     <div style="background:#0f172a; padding:15px; border-radius:12px; font-family:'Consolas', monospace; font-size:0.9rem;">
@@ -1663,6 +2002,72 @@ def detect_cycle(n, edges):
             if dfs(node):
                 return True
                 
+    return False
+
+# Example Usage
+# n = 3, edges = [[0,1], [1,2], [2,0]] -> True
+# n = 4, edges = [[0,1], [0,2], [1,3], [2,3]] -> False`,
+                codeDetailed: `from collections import defaultdict
+
+def detect_cycle(n, edges):
+    """
+    Detect Cycle in Directed Graph - DFS + Recursion Stack
+
+    STRATEGY:
+    - Do sets maintain karo: visited (global) aur recursive_stack (current path)
+    - DFS karo: node ko visited aur rec_stack dono mein daalo
+    - Neighbor agar rec_stack mein mila -> BACK EDGE -> CYCLE!
+    - Neighbor agar sirf visited mein hai (stack mein nahi) -> safe CROSS EDGE
+    - Backtrack karte waqt rec_stack se remove karo
+
+    WHY 2 SETS (not just visited)?
+    - Sirf visited se cross edges ko cycle samajh loge (false positive)
+    - rec_stack specifically current DFS path track karta hai
+    """
+
+    # Step 1: Adjacency List banao
+    graph = defaultdict(list)
+    for u, v in edges:
+        # Directed edge: u -> v
+        graph[u].append(v)
+
+    # Global visited: kya node kisi bhi path mein process ho chuka hai
+    visited = set()
+    # Recursion stack: kya node CURRENT active path mein hai
+    recursive_stack = set()
+
+    def dfs(node):
+        # Current node ko visited aur recursion stack dono mein daalo
+        visited.add(node)
+        recursive_stack.add(node)
+
+        for neighbour in graph[node]:
+            # Case 1: Neighbor abhi tak visit nahi hua
+            if neighbour not in visited:
+                # Aage explore karo, agar cycle mili toh True propagate karo
+                if dfs(neighbour):
+                    return True
+
+            # Case 2: Neighbor recursion stack mein hai
+            # Matlab hum isi path pe wapas aa gaye -> BACK EDGE -> CYCLE!
+            elif neighbour in recursive_stack:
+                return True
+
+            # Case 3 (implicit): Neighbor visited hai but stack mein nahi
+            # Yeh CROSS EDGE hai - safe hai, cycle nahi
+            # Example: A->B->C aur A->D->C (C visited via B, but not in current path via D)
+
+        # BACKTRACK: Current path se node remove karo
+        # Yeh important hai! Bina iske cross edges ko cycle samajh loge
+        recursive_stack.remove(node)
+        return False
+
+    # Step 2: Saare nodes check karo (disconnected components handle)
+    for node in range(n):
+        if node not in visited:
+            if dfs(node):
+                return True
+
     return False
 
 # Example Usage

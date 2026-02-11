@@ -228,7 +228,35 @@ if not root or root == p or root == q: return root
 left = lowestCommonAncestor(root.left, p, q)
 right = lowestCommonAncestor(root.right, p, q)
 if left and right: return root
-return left if left else right`
+return left if left else right`,
+                strategy: "<strong>Bubble-Up DFS:</strong><br><strong>Step 1:</strong> Base case — if node is null, p, or q, return it.<br><strong>Step 2:</strong> Recurse left and right subtrees.<br><strong>Step 3:</strong> If BOTH sides return non-null → current node is LCA (split point).<br>If only one side returns → propagate that result upward.<br><br><strong>Key insight:</strong> LCA is the first node where p and q are found on different sides.",
+                codeDetailed: `def lowestCommonAncestor_detailed(root, p, q):
+    """
+    LCA in Binary Tree — Bubble-Up DFS
+    
+    KEY INSIGHT: The LCA is the deepest node that has
+    p in one subtree and q in the other (or is p/q itself).
+    
+    RETURN VALUE MEANING:
+    - None: Neither p nor q found in this subtree
+    - node: Found p or q (or LCA) in this subtree
+    
+    Time: O(N), Space: O(H)
+    """
+    # BASE CASE: reached null, or found target
+    if not root or root == p or root == q:
+        return root
+    
+    # RECURSE: Search both subtrees
+    left_result = lowestCommonAncestor_detailed(root.left, p, q)
+    right_result = lowestCommonAncestor_detailed(root.right, p, q)
+    
+    # COMBINE: Both sides found something → I am LCA!
+    if left_result and right_result:
+        return root
+    
+    # PROPAGATE: Only one side found → pass it up
+    return left_result if left_result else right_result`
             }
         },
         {
@@ -321,7 +349,46 @@ def deserialize(self, data):
         node.left = build()
         node.right = build()
         return node
-    return build()`
+    return build()`,
+                strategy: "<strong>Preorder + Null Markers:</strong><br><strong>Serialize:</strong> DFS preorder — append value or 'N' for null. Join with ','.<br><strong>Deserialize:</strong> Use <code>iter()</code> on split string. <code>next()</code> gives root, recurse to build left then right.<br><br><strong>Why preorder?</strong> Root comes first → naturally maps to tree construction order. Null markers preserve tree shape.",
+                codeDetailed: `class Codec_detailed:
+    """
+    Serialize & Deserialize Binary Tree
+    
+    PREORDER + NULL MARKERS approach:
+    - Serialize: Root value first, 'N' for nulls
+    - Deserialize: Iterator-based reconstruction
+    
+    WHY ITERATOR?
+    - next() automatically advances position
+    - No need for global index or array slicing
+    - Left subtree consumes its portion, right gets the rest
+    
+    Time: O(N), Space: O(N)
+    """
+    def serialize(self, root):
+        vals = []
+        def dfs(node):
+            if not node:
+                vals.append("N")  # Null marker
+                return
+            vals.append(str(node.val))  # Root first (preorder)
+            dfs(node.left)
+            dfs(node.right)
+        dfs(root)
+        return ",".join(vals)
+
+    def deserialize(self, data):
+        vals = iter(data.split(","))  # Iterator, not list!
+        def build():
+            val = next(vals)
+            if val == "N":
+                return None  # Null → stop this branch
+            node = TreeNode(int(val))
+            node.left = build()   # Left consumes its tokens
+            node.right = build()  # Right gets remaining
+            return node
+        return build()`
             }
         },
         {
@@ -391,7 +458,42 @@ def maxPathSum(self, root):
         self.max_sum = max(self.max_sum, node.val + left + right)
         return node.val + max(left, right)
     get_max(root)
-    return self.max_sum`
+    return self.max_sum`,
+                strategy: "<strong>Global vs Local (Split vs Flow):</strong><br><strong>Step 1:</strong> Postorder DFS. For each node, get max gain from left and right (clamp negatives to 0).<br><strong>Step 2:</strong> SPLIT: Update global max with <code>node + left + right</code> (path through this node).<br><strong>Step 3:</strong> FLOW: Return <code>node + max(left, right)</code> to parent (can only extend one branch).<br><br><strong>Key:</strong> Negative subtrees are clamped to 0 — don't extend bad paths.",
+                codeDetailed: `class Solution_detailed:
+    """
+    Maximum Path Sum — Global vs Local Pattern
+    
+    TWO CONCEPTS:
+    1. SPLIT (Global Update): L + Root + R (path arches through node)
+    2. FLOW (Return to Parent): Root + max(L, R) (extend one branch only)
+    
+    WHY CLAMP TO 0?
+    - If left subtree gives -5, better to not include it
+    - max(gain, 0) → ignore negative contributions
+    
+    Time: O(N), Space: O(H)
+    """
+    def maxPathSum(self, root):
+        self.max_sum = float('-inf')
+        
+        def dfs(node):
+            if not node:
+                return 0
+            
+            # Get max gain from children (clamp negatives!)
+            left_gain = max(dfs(node.left), 0)
+            right_gain = max(dfs(node.right), 0)
+            
+            # SPLIT: Path through this node (L + Root + R)
+            path_through_me = node.val + left_gain + right_gain
+            self.max_sum = max(self.max_sum, path_through_me)
+            
+            # FLOW: Return best single branch to parent
+            return node.val + max(left_gain, right_gain)
+        
+        dfs(root)
+        return self.max_sum`
             }
         },
         {
@@ -474,7 +576,46 @@ def build(l, r):
     root.right = build(mid + 1, r)
     return root
     
-return build(0, len(inorder) - 1)`
+return build(0, len(inorder) - 1)`,
+                strategy: "<strong>Preorder = Root, Inorder = Split:</strong><br><strong>Step 1:</strong> Build HashMap of inorder values → indices for O(1) lookup.<br><strong>Step 2:</strong> Use preorder iterator — <code>next()</code> gives current root.<br><strong>Step 3:</strong> Find root in inorder (HashMap). Left of it = left subtree, right of it = right subtree.<br><strong>Step 4:</strong> Recurse: build left first (matches preorder order), then right.<br><br><strong>Why iterator?</strong> Avoids O(N) array slicing.",
+                codeDetailed: `def buildTree_detailed(preorder, inorder):
+    """
+    Construct Binary Tree from Preorder + Inorder
+    
+    KEY INSIGHT:
+    - Preorder: [Root, ...Left..., ...Right...]
+    - Inorder:  [...Left..., Root, ...Right...]
+    - First element of preorder = root
+    - Find root in inorder → splits left/right subtrees
+    
+    OPTIMIZATION:
+    - HashMap for O(1) root lookup in inorder
+    - Iterator for preorder (avoids slicing)
+    
+    Time: O(N), Space: O(N)
+    """
+    # O(1) lookup: value → index in inorder
+    in_map = {v: i for i, v in enumerate(inorder)}
+    pre_iter = iter(preorder)
+    
+    def build(in_start, in_end):
+        if in_start > in_end:
+            return None
+        
+        # Next preorder value = current root
+        root_val = next(pre_iter)
+        root = TreeNode(root_val)
+        
+        # Find root position in inorder
+        mid = in_map[root_val]
+        
+        # Build left subtree FIRST (matches preorder traversal)
+        root.left = build(in_start, mid - 1)
+        root.right = build(mid + 1, in_end)
+        
+        return root
+    
+    return build(0, len(inorder) - 1)`
             }
         },
         {
@@ -501,6 +642,8 @@ return build(0, len(inorder) - 1)`
                     "           validate(node.right, node.val, max_val)"
                 ],
                 metrics: { time: "O(N)", space: "O(H)" },
+                timeExplainer: "<strong>Postorder DFS:</strong><br>• Visit every node once<br>• O(1) work per node (compare min/max, merge tuples)<br><br><strong>Total:</strong> <code>O(N)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Recursion Stack: <code>O(H)</code><br>• Tuple returns (no extra storage)<br><br><strong>Result:</strong> <code>O(H)</code>",
                 code: `def largestBST(root):
 # Return: (min_val, max_val, size)
 def postorder(node):
@@ -513,27 +656,54 @@ def postorder(node):
         return (min(l_min, node.val), max(r_max, node.val), l_size + r_size + 1)
     
     return (float('-inf'), float('inf'), max(l_size, r_size))
-    
-    return (float('-inf'), float('inf'), max(l_size, r_size))
-    
+
 return postorder(root)[2]`,
-                codeDetailed: `def largestBST(root):
+                codeDetailed: `def largestBST_detailed(root):
     """
-    Largest BST Subtree
-    
-    STRATEGY: Postorder Traversal (Bottom-Up)
-    - Each node needs information from children to decide if it forms a BST.
-    - Info needed: (Min_Val, Max_Val, Size)
-    - Logic:
-      - Valid BST if: MaxLeft < Node < MinRight
-      - If Valid: Size = LeftSize + RightSize + 1
-      - Update Return: (NewMin, NewMax, NewSize)
-      - If Invalid: Return (-inf, inf, max(LeftSize, RightSize)) to propagate failure
-      
-    Time: O(N), Space: O(H)
+    Largest BST Subtree — Postorder (Bottom-Up) Tuple Return
+
+    STRATEGY: Har node se upar info bhejo — (min_val, max_val, size)
+    - Leaf node khud ek valid BST hai size=1
+    - Parent check karta hai: kya left ka max < me < right ka min?
+    - Agar haan: merge karo, size = left_size + right_size + 1
+    - Agar nahi: failure tuple bhejo, lekin max size propagate karo
+
+    FAILURE TUPLE TRICK:
+    - (-inf, inf) return karo — ye kisi bhi future check ko fail kar dega
+    - Kyunki inf < node kabhi true nahi hoga
+
+    Time: O(N) — har node ek baar visit
+    Space: O(H) — recursion stack depth = tree height
     """
-    # ... (Implementation uses tuple returns)
-    pass`,
+    def postorder(node):
+        # BASE CASE: null node — valid BST with size 0
+        # min=inf, max=-inf so parent comparison works correctly
+        # (parent ka val will be < inf and > -inf)
+        if not node:
+            return (float('inf'), float('-inf'), 0)
+
+        # POSTORDER: pehle children solve karo (bottom-up)
+        l_min, l_max, l_size = postorder(node.left)   # Left subtree info
+        r_min, r_max, r_size = postorder(node.right)   # Right subtree info
+
+        # CHECK BST VALIDITY: left ka max < node < right ka min
+        # Ye ensure karta hai ki poora subtree BST hai
+        if l_max < node.val < r_min:
+            # VALID BST — merge karo
+            # New min = min of left subtree min and current node
+            # New max = max of right subtree max and current node
+            new_min = min(l_min, node.val)
+            new_max = max(r_max, node.val)
+            new_size = l_size + r_size + 1
+            return (new_min, new_max, new_size)
+
+        # INVALID BST — failure tuple bhejo
+        # (-inf, inf) ensures no ancestor can form valid BST through us
+        # But propagate the max size found so far
+        return (float('-inf'), float('inf'), max(l_size, r_size))
+
+    # Final answer: tuple ka third element = largest BST size
+    return postorder(root)[2]`,
                 visual: `
                     <h4 style="color:#c026d3;">🔺 Green Triangle: Bottom-Up BST Validation</h4>
                     <div style="display:flex; flex-direction:column; gap:15px; margin:15px 0; max-width:600px;">
@@ -599,6 +769,8 @@ return postorder(root)[2]`,
                     "💡 Visited Set zaroori hai cycle/revisit avoid karne ke liye"
                 ],
                 metrics: { time: "O(N)", space: "O(N)" },
+                timeExplainer: "<strong>Two-Phase:</strong><br>• Phase 1: DFS to build adjacency list: <code>O(N)</code><br>• Phase 2: BFS from start node: <code>O(N)</code><br><br><strong>Total:</strong> <code>O(N)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Adjacency list stores all edges: <code>O(N)</code><br>• BFS queue + visited set: <code>O(N)</code><br><br><strong>Total:</strong> <code>O(N)</code>",
                 code: `def amountOfTime(root, start):
 graph = defaultdict(list)
 def dfs(node):
@@ -624,20 +796,58 @@ while q:
             visited.add(nei)
             q.append((nei, time + 1))
 return max_time`,
-                codeDetailed: `def amountOfTime(root, start):
+                codeDetailed: `def amountOfTime_detailed(root, start):
     """
-    Amount of Time for Binary Tree to Be Infected (Burn Tree)
-    
-    STRATEGY: Tree -> Graph Conversion + BFS
-    - The infection spreads to Parent, Left Child, and Right Child.
-    - Standard tree only links to children.
-    - Step 1: Convert Tree to Graph (Adjacency List) to enable upward movement.
-    - Step 2: Run BFS from the 'start' node to find the furthest node distance.
-    
-    Time: O(N), Space: O(N)
+    Burn Binary Tree / Amount of Time for Binary Tree to Be Infected
+
+    STRATEGY: Tree ko Graph mein convert karo, phir BFS lagao
+    - Tree mein sirf neeche ja sakte ho (left/right children)
+    - Lekin infection upar bhi jaata hai (parent ko bhi)
+    - Isliye: Tree -> Undirected Graph (adjacency list)
+    - Phir BFS from start node — har level = 1 second
+
+    Time: O(N) — DFS for graph build + BFS for infection
+    Space: O(N) — adjacency list + visited set + queue
     """
-    # ... (Graph build + BFS)
-    pass`,
+    from collections import defaultdict, deque
+
+    # PHASE 1: Tree -> Undirected Graph (Adjacency List)
+    # Har edge ko dono direction mein store karo
+    graph = defaultdict(list)
+
+    def dfs(node):
+        if not node:
+            return
+        # Left child hai toh bidirectional edge banao
+        if node.left:
+            graph[node.val].append(node.left.val)   # parent -> child
+            graph[node.left.val].append(node.val)    # child -> parent (UPWARD edge!)
+            dfs(node.left)                           # recurse left subtree
+        # Right child ke liye bhi same
+        if node.right:
+            graph[node.val].append(node.right.val)   # parent -> child
+            graph[node.right.val].append(node.val)   # child -> parent (UPWARD edge!)
+            dfs(node.right)                          # recurse right subtree
+
+    dfs(root)  # Poora tree traverse karke graph banao
+
+    # PHASE 2: BFS from start node
+    # Har level = 1 unit of time (infection ek step mein neighbors tak jaata hai)
+    q = deque([(start, 0)])   # (node_val, time)
+    visited = {start}          # Track visited to avoid revisiting
+    max_time = 0               # Answer: maximum time to infect last node
+
+    while q:
+        node, time = q.popleft()          # Current infected node
+        max_time = max(max_time, time)     # Update max infection time
+
+        # Sabhi neighbors (children + parent) ko infect karo
+        for neighbor in graph[node]:
+            if neighbor not in visited:     # Sirf unvisited nodes
+                visited.add(neighbor)       # Mark as infected
+                q.append((neighbor, time + 1))  # Next time step
+
+    return max_time  # Last node infected hone ka time`,
                 visual: `
                     <h4 style="color:#c026d3;">🔥 Forest Fire: BFS from Start Node</h4>
                     <div style="display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:15px 0;">
@@ -770,7 +980,46 @@ res = []
 for c in range(min_c, max_c + 1):
     cols[c].sort(key=lambda x: (x[0], x[1]))
     res.append([x[1] for x in cols[c]])
-return res`
+return res`,
+                strategy: "<strong>Coordinate System + Sorting:</strong><br><strong>Step 1:</strong> BFS with (row, col) tracking. Left child = (r+1, c-1), Right = (r+1, c+1).<br><strong>Step 2:</strong> Group nodes by column in a <code>defaultdict(list)</code>.<br><strong>Step 3:</strong> Sort each column by (row, then value) for same-position overlap.<br><br><strong>Key edge case:</strong> Nodes at same (row, col) must be sorted by value.",
+                codeDetailed: `def verticalTraversal_detailed(root):
+    """
+    Vertical Order Traversal — Coordinate Mapping
+    
+    APPROACH:
+    1. BFS traversal with (row, col) coordinates
+    2. Group by column, sort by (row, value)
+    3. Output columns left-to-right
+    
+    COORDINATE RULES:
+    - Root: (0, 0)
+    - Left child: (row+1, col-1)
+    - Right child: (row+1, col+1)
+    
+    Time: O(N log N), Space: O(N)
+    """
+    from collections import defaultdict, deque
+    
+    cols = defaultdict(list)
+    q = deque([(root, 0, 0)])  # (node, row, col)
+    min_col = max_col = 0
+    
+    while q:
+        node, row, col = q.popleft()
+        if node:
+            cols[col].append((row, node.val))
+            min_col = min(min_col, col)
+            max_col = max(max_col, col)
+            q.append((node.left, row + 1, col - 1))
+            q.append((node.right, row + 1, col + 1))
+    
+    # Sort each column: by row first, then value (for ties)
+    result = []
+    for c in range(min_col, max_col + 1):
+        cols[c].sort(key=lambda x: (x[0], x[1]))
+        result.append([val for _, val in cols[c]])
+    
+    return result`
             }
         },
         {
@@ -798,6 +1047,8 @@ return res`
                     "        return curr            # 💡 One left, one right (or one is curr)"
                 ],
                 metrics: { time: "O(H)", space: "O(1)" },
+                timeExplainer: "<strong>BST Walk:</strong><br>• Walk down one path from root to LCA<br>• At each step, eliminate half the tree<br><br><strong>Total:</strong> <code>O(H)</code> where H = height (log N balanced, N skewed)",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• Iterative solution — no recursion stack!<br>• Only one pointer <code>curr</code><br><br><strong>Result:</strong> <code>O(1)</code>",
                 code: `def lowestCommonAncestor(root, p, q):
     curr = root
     while curr:

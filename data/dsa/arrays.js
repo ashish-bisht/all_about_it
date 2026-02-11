@@ -1030,7 +1030,46 @@ for i in range(1, len(intervals)):
         heapq.heappop(heap)
     heapq.heappush(heap, intervals[i][1])
     
-return len(heap)`
+return len(heap)`,
+                strategy: "Sort by start. Min-Heap tracks end times. If earliest ending <= current start, reuse room (pop). Always push current end.",
+                codeDetailed: `import heapq
+
+def min_meeting_rooms(intervals):
+    """
+    Meeting Rooms II - Minimum rooms needed
+
+    STRATEGY: Sort + Min-Heap of End Times
+    - Sort meetings by start time
+    - Min-Heap tracks when each room becomes free
+    - If earliest free room (heap[0]) is free by current start → reuse
+    - Otherwise → allocate new room
+
+    Time: O(N log N), Space: O(N)
+    """
+
+    # Edge case: no meetings
+    if not intervals:
+        return 0
+
+    # Sort by start time so we process meetings in order
+    intervals.sort(key=lambda x: x[0])
+
+    # Min-Heap stores END times of ongoing meetings
+    # heap[0] = earliest ending meeting
+    heap = []
+    heapq.heappush(heap, intervals[0][1])  # First meeting's end time
+
+    for i in range(1, len(intervals)):
+        # Can we reuse a room?
+        # If earliest ending meeting (heap[0]) finishes before/at current start
+        if intervals[i][0] >= heap[0]:
+            heapq.heappop(heap)  # Room freed! Reuse it
+
+        # Push current meeting's end time (new or reused room)
+        heapq.heappush(heap, intervals[i][1])
+
+    # Heap size = number of rooms in use
+    return len(heap)`
             }
         },
         {
@@ -1200,6 +1239,8 @@ return len(heap)`
                     "        R -= 1                     # ✅ Don't move mid (check swapped val)"
                 ],
                 metrics: { time: "O(N)", space: "O(1)" },
+                timeExplainer: "<strong>Dutch National Flag:</strong><br>• Single pass through array<br>• Each element processed at most once<br><br><strong>Total:</strong> <code>O(N)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• In-place swaps, only 3 pointer variables<br>• No extra data structures<br><br><strong>Result:</strong> <code>O(1)</code>",
                 code: `def sortColors(nums):
 l, r = 0, len(nums)-1
 i = 0
@@ -1319,6 +1360,8 @@ while i <= r:
                     "return count"
                 ],
                 metrics: { time: "O(N)", space: "O(N)" },
+                timeExplainer: "<strong>Prefix XOR:</strong><br>• Single pass through array<br>• HashMap lookup/insert = <code>O(1)</code> each<br><br><strong>Total:</strong> <code>O(N)</code>",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• HashMap stores prefix XOR frequencies<br>• Worst case: all unique prefix XORs = <code>O(N)</code><br><br><strong>Result:</strong> <code>O(N)</code>",
                 code: `def solve(A, B):
 cnt = 0
 xor = 0
@@ -1416,6 +1459,8 @@ return cnt`,
                     "return max_len"
                 ],
                 metrics: { time: "O(N)", space: "O(K)" },
+                timeExplainer: "<strong>Sliding Window:</strong><br>• Right pointer traverses N chars<br>• Left pointer moves at most N times total<br><br><strong>Total:</strong> <code>O(N)</code> amortized",
+                spaceExplainer: "<strong>Space Analysis:</strong><br>• HashMap stores at most K+1 distinct chars<br><br><strong>Result:</strong> <code>O(K)</code>",
                 code: `def lengthOfLongestSubstringKDistinct(s, k):
 map = {}
 l = 0
