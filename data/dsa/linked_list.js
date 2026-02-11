@@ -185,7 +185,43 @@ def findMiddle(head):
                 metrics: { time: "O(1)", space: "O(N)" },
                 timeExplainer: "<strong>Time Analysis:</strong><br>• <code>get()</code>: HashMap lookup = <code>O(1)</code><br>• <code>put()</code>: Map + DLL operations = <code>O(1)</code><br><br><strong>All operations:</strong> <code>O(1)</code> average",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• HashMap: <code>O(N)</code> for N key-value pairs<br>• Doubly Linked List: <code>O(N)</code> nodes<br><br><strong>Total:</strong> <code>O(N)</code>",
-                visual: "<span><strong>Visual: The Hybrid Engine</strong><br>HashMap stores <code>{Key -> Node}</code> for speed.<br>DLL stores <code>Order</code> (Head=Recent, Tail=Old).</span>",
+                visual: `
+                    <h4 style="color:#c026d3;">⚡ LRU Cache: HashMap + Doubly Linked List</h4>
+                    <div style="display:flex; flex-direction:column; gap:15px; margin:15px 0; max-width:600px;">
+                        <div style="background:#1e293b; padding:20px; border-radius:12px;">
+                            <div style="font-size:0.8rem; color:#94a3b8; margin-bottom:10px; text-align:center;">HashMap: O(1) lookup → DLL: O(1) reorder</div>
+                            <div style="display:flex; gap:20px; align-items:center; justify-content:center; flex-wrap:wrap;">
+                                <div style="background:#0f172a; padding:12px; border-radius:8px; min-width:120px;">
+                                    <div style="font-size:0.7rem; color:#fbbf24; font-weight:bold; margin-bottom:6px;">HashMap</div>
+                                    <div style="font-family:monospace; font-size:0.8rem; color:#cbd5e1; line-height:1.8;">
+                                        key1 → <span style="color:#4ade80;">●</span><br>
+                                        key2 → <span style="color:#38bdf8;">●</span><br>
+                                        key3 → <span style="color:#f87171;">●</span>
+                                    </div>
+                                </div>
+                                <div style="color:#64748b;">→</div>
+                                <div style="background:#0f172a; padding:12px; border-radius:8px;">
+                                    <div style="font-size:0.7rem; color:#a78bfa; font-weight:bold; margin-bottom:6px;">DLL (MRU ← → LRU)</div>
+                                    <div style="display:flex; align-items:center; gap:6px; font-family:monospace; font-size:0.8rem;">
+                                        <span style="color:#475569;">H</span>
+                                        <span style="color:#475569;">⇄</span>
+                                        <span style="background:rgba(74,222,128,0.15); padding:4px 8px; border-radius:4px; color:#4ade80;">k1</span>
+                                        <span style="color:#475569;">⇄</span>
+                                        <span style="background:rgba(56,189,248,0.15); padding:4px 8px; border-radius:4px; color:#38bdf8;">k2</span>
+                                        <span style="color:#475569;">⇄</span>
+                                        <span style="background:rgba(248,113,113,0.15); padding:4px 8px; border-radius:4px; color:#f87171;">k3</span>
+                                        <span style="color:#475569;">⇄</span>
+                                        <span style="color:#475569;">T</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:10px; flex-wrap:wrap; font-size:0.8rem; justify-content:center;">
+                            <span style="background:rgba(74,222,128,0.1); border:1px solid rgba(74,222,128,0.3); padding:6px 12px; border-radius:6px; color:#4ade80;">GET: remove → add to head</span>
+                            <span style="background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3); padding:6px 12px; border-radius:6px; color:#38bdf8;">PUT: if full, evict tail</span>
+                            <span style="background:rgba(248,113,113,0.1); border:1px solid rgba(248,113,113,0.3); padding:6px 12px; border-radius:6px; color:#f87171;">⚠️ Delete from map too!</span>
+                        </div>
+                    </div>`,
                 crux: "<strong>The Wire-Splicing Strategy:</strong><br>Helpers: <code>_remove(node)</code> (Unplug) and <code>_add(node)</code> (Plug at front).<br>Get: Remove -> Add.<br>Put: Remove Old -> Add New. If Full: Remove Tail.",
                 trap: "<strong>Phantom Pointer:</strong> When evicting tail, you MUST delete it from the HashMap too! Often forgotten.",
                 dryRun: [
@@ -269,7 +305,49 @@ def put(self, key, value):
                 metrics: { time: "O(N)", space: "O(1)" },
                 timeExplainer: "<strong>Time Analysis:</strong><br>• Visit each node once<br>• Reversal within groups is O(K)<br><br><strong>Total:</strong> <code>O(N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Only pointers for manipulation<br>• No extra data structures<br><br><strong>Result:</strong> <code>O(1)</code>",
-                visual: "<span><strong>Visual: The Surgery</strong><br>1. Identify K segment.<br>2. Snip wires.<br>3. Flip.<br>4. Reconnect Anchors.</span>",
+                visual: `
+                    <h4 style="color:#c026d3;">🔧 Reverse in K-Groups: The Surgery</h4>
+                    <div style="display:flex; flex-direction:column; gap:15px; margin:15px 0; max-width:600px;">
+                        <div style="display:flex; flex-wrap:wrap; gap:15px; justify-content:center;">
+                            <div style="background:#1e293b; padding:14px; border-radius:10px; min-width:200px;">
+                                <div style="font-size:0.8rem; color:#94a3b8; margin-bottom:8px;">Before (K=3):</div>
+                                <div style="display:flex; align-items:center; gap:6px; font-family:monospace; font-size:0.85rem;">
+                                    <span style="background:rgba(251,191,36,0.15); padding:4px 8px; border-radius:4px; color:#fbbf24; border:1px solid rgba(251,191,36,0.3);">1</span>
+                                    <span style="color:#475569;">→</span>
+                                    <span style="background:rgba(251,191,36,0.15); padding:4px 8px; border-radius:4px; color:#fbbf24; border:1px solid rgba(251,191,36,0.3);">2</span>
+                                    <span style="color:#475569;">→</span>
+                                    <span style="background:rgba(251,191,36,0.15); padding:4px 8px; border-radius:4px; color:#fbbf24; border:1px solid rgba(251,191,36,0.3);">3</span>
+                                    <span style="color:#475569;">→</span>
+                                    <span style="background:rgba(74,222,128,0.15); padding:4px 8px; border-radius:4px; color:#4ade80;">4</span>
+                                    <span style="color:#475569;">→</span>
+                                    <span style="background:rgba(74,222,128,0.15); padding:4px 8px; border-radius:4px; color:#4ade80;">5</span>
+                                </div>
+                            </div>
+                            <div style="display:flex; align-items:center; color:#64748b;">➞</div>
+                            <div style="background:#1e293b; padding:14px; border-radius:10px; min-width:200px;">
+                                <div style="font-size:0.8rem; color:#94a3b8; margin-bottom:8px;">After:</div>
+                                <div style="display:flex; align-items:center; gap:6px; font-family:monospace; font-size:0.85rem;">
+                                    <span style="background:rgba(251,191,36,0.15); padding:4px 8px; border-radius:4px; color:#fbbf24; border:1px solid rgba(251,191,36,0.3);">3</span>
+                                    <span style="color:#475569;">→</span>
+                                    <span style="background:rgba(251,191,36,0.15); padding:4px 8px; border-radius:4px; color:#fbbf24; border:1px solid rgba(251,191,36,0.3);">2</span>
+                                    <span style="color:#475569;">→</span>
+                                    <span style="background:rgba(251,191,36,0.15); padding:4px 8px; border-radius:4px; color:#fbbf24; border:1px solid rgba(251,191,36,0.3);">1</span>
+                                    <span style="color:#475569;">→</span>
+                                    <span style="background:rgba(74,222,128,0.15); padding:4px 8px; border-radius:4px; color:#4ade80;">4</span>
+                                    <span style="color:#475569;">→</span>
+                                    <span style="background:rgba(74,222,128,0.15); padding:4px 8px; border-radius:4px; color:#4ade80;">5</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="background:#0f172a; padding:14px; border-radius:8px;">
+                            <div style="display:grid; grid-template-columns:30px 1fr; gap:8px; font-size:0.82rem; color:#cbd5e1;">
+                                <span style="color:#fbbf24; font-weight:bold;">1.</span><span>Find <code style="color:#38bdf8;">kth</code> node (is there a full group?)</span>
+                                <span style="color:#fbbf24; font-weight:bold;">2.</span><span>Save <code style="color:#38bdf8;">nextGroup = kth.next</code>, snip</span>
+                                <span style="color:#fbbf24; font-weight:bold;">3.</span><span>Reverse the K nodes (standard reversal)</span>
+                                <span style="color:#fbbf24; font-weight:bold;">4.</span><span><code style="color:#f87171;">groupPrev.next = new head</code> (reconnect!)</span>
+                            </div>
+                        </div>
+                    </div>`,
                 crux: "<strong>Don't get lost.</strong><br>Use `get_kth` to find group end.<br>After reverse, your `groupPrev` is broken. Update it to the NEW tail.",
                 trap: "<strong>Losing the Anchor:</strong> `groupPrev` must point to the new tail after each reversal to be ready for the next group.",
                 dryRun: [
@@ -339,7 +417,33 @@ return dummy.next`
                 metrics: { time: "O(N)", space: "O(1)" },
                 timeExplainer: "<strong>Floyd's Algorithm:</strong><br>• Phase 1: Detect cycle = <code>O(N)</code><br>• Phase 2: Find start = <code>O(N)</code><br><strong>Total:</strong> <code>O(N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Only 2 pointers: slow, fast<br>• No HashSet needed!<br><strong>Result:</strong> <code>O(1)</code>",
-                visual: "<span><strong>Visual: The P Shape</strong><br>Distance(Head to Start) = Distance(Meeting to Start).</span>",
+                visual: `
+                    <h4 style="color:#c026d3;">🔄 Floyd's Cycle Detection: The P Shape</h4>
+                    <div style="display:flex; flex-direction:column; gap:15px; margin:15px 0; max-width:550px;">
+                        <div style="background:#1e293b; padding:20px; border-radius:12px; text-align:center;">
+                            <div style="font-family:monospace; font-size:0.85rem; color:#cbd5e1; line-height:2;">
+                                <span style="color:#94a3b8;">1 → 2 → </span><span style="color:#fbbf24; font-weight:bold; text-decoration:underline;">3</span><span style="color:#94a3b8;"> → 4 → 5</span><br>
+                                <span style="color:#94a3b8;">          ↑         ↓</span><br>
+                                <span style="color:#94a3b8;">          8 ← 7 ← 6</span>
+                            </div>
+                            <div style="margin-top:10px; display:flex; gap:15px; justify-content:center; font-size:0.8rem;">
+                                <span style="color:#fbbf24;">Start of cycle = node 3</span>
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">
+                            <div style="background:rgba(74,222,128,0.08); border:1px solid rgba(74,222,128,0.3); padding:12px 16px; border-radius:8px; flex:1; min-width:200px;">
+                                <div style="font-size:0.8rem; color:#4ade80; font-weight:bold; margin-bottom:4px;">Phase 1: Detect</div>
+                                <div style="font-size:0.8rem; color:#94a3b8;">Slow (1 step) + Fast (2 steps)<br>They meet inside the cycle</div>
+                            </div>
+                            <div style="background:rgba(56,189,248,0.08); border:1px solid rgba(56,189,248,0.3); padding:12px 16px; border-radius:8px; flex:1; min-width:200px;">
+                                <div style="font-size:0.8rem; color:#38bdf8; font-weight:bold; margin-bottom:4px;">Phase 2: Find Start</div>
+                                <div style="font-size:0.8rem; color:#94a3b8;">Reset slow → head<br>Both move 1 step. Meet = start!</div>
+                            </div>
+                        </div>
+                        <div style="background:#0f172a; padding:10px 14px; border-radius:8px; font-size:0.82rem; color:#94a3b8; text-align:center;">
+                            <strong style="color:#a78bfa;">Math:</strong> dist(head → start) = dist(meeting → start)
+                        </div>
+                    </div>`,
                 crux: "<strong>Phase 1:</strong> Intercept (do they collide?).<br><strong>Phase 2:</strong> Reset slow to head. Move both 1 step. Collision = Start.",
                 trap: "<strong>The False Start:</strong> `slow` and `fast` equal at head initially. Don't return true immediately!",
                 dryRun: [
@@ -399,7 +503,40 @@ return None`
                 metrics: { time: "O(N)", space: "O(1) (Interleaving)" },
                 timeExplainer: "<strong>3-Pass Algorithm:</strong><br>• Pass 1: Weave copies = <code>O(N)</code><br>• Pass 2: Link randoms = <code>O(N)</code><br>• Pass 3: Unweave = <code>O(N)</code><br><strong>Total:</strong> <code>O(N)</code>",
                 spaceExplainer: "<strong>Interleaving Method:</strong><br>• Insert copies inline<br>• No HashMap needed<br><strong>Result:</strong> <code>O(1)</code> extra space",
-                visual: "<span><strong>Visual: DNA Replication</strong><br>Pass 1: Weave A->A'->B->B'.<br>Pass 2: Link Randoms.<br>Pass 3: Unweave.</span>",
+                visual: `
+                    <h4 style="color:#c026d3;">🧬 DNA Replication: 3-Pass Interleaving</h4>
+                    <div style="display:flex; flex-direction:column; gap:12px; margin:15px 0; max-width:600px;">
+                        <div style="background:#1e293b; padding:14px; border-radius:10px;">
+                            <div style="font-size:0.8rem; color:#fbbf24; font-weight:bold; margin-bottom:8px;">Pass 1: Weave copies</div>
+                            <div style="display:flex; align-items:center; gap:4px; font-family:monospace; font-size:0.82rem; flex-wrap:wrap;">
+                                <span style="background:rgba(74,222,128,0.15); padding:3px 8px; border-radius:4px; color:#4ade80;">A</span>
+                                <span style="color:#475569;">→</span>
+                                <span style="background:rgba(74,222,128,0.08); padding:3px 8px; border-radius:4px; color:#4ade80; border:1px dashed rgba(74,222,128,0.4);">A'</span>
+                                <span style="color:#475569;">→</span>
+                                <span style="background:rgba(56,189,248,0.15); padding:3px 8px; border-radius:4px; color:#38bdf8;">B</span>
+                                <span style="color:#475569;">→</span>
+                                <span style="background:rgba(56,189,248,0.08); padding:3px 8px; border-radius:4px; color:#38bdf8; border:1px dashed rgba(56,189,248,0.4);">B'</span>
+                                <span style="color:#475569;">→</span>
+                                <span style="background:rgba(248,113,113,0.15); padding:3px 8px; border-radius:4px; color:#f87171;">C</span>
+                                <span style="color:#475569;">→</span>
+                                <span style="background:rgba(248,113,113,0.08); padding:3px 8px; border-radius:4px; color:#f87171; border:1px dashed rgba(248,113,113,0.4);">C'</span>
+                            </div>
+                        </div>
+                        <div style="background:#1e293b; padding:14px; border-radius:10px;">
+                            <div style="font-size:0.8rem; color:#38bdf8; font-weight:bold; margin-bottom:8px;">Pass 2: Link random pointers</div>
+                            <div style="font-family:monospace; font-size:0.82rem; color:#94a3b8;">
+                                <code style="color:#4ade80;">copy.random = original.random.next</code>
+                            </div>
+                        </div>
+                        <div style="background:#1e293b; padding:14px; border-radius:10px;">
+                            <div style="font-size:0.8rem; color:#f87171; font-weight:bold; margin-bottom:8px;">Pass 3: Unweave (split lists)</div>
+                            <div style="display:flex; gap:15px; font-family:monospace; font-size:0.82rem;">
+                                <span style="color:#4ade80;">A → B → C</span>
+                                <span style="color:#475569;">|</span>
+                                <span style="color:#94a3b8; border:1px dashed #475569; padding:2px 8px; border-radius:4px;">A' → B' → C'</span>
+                            </div>
+                        </div>
+                    </div>`,
                 crux: "<strong>Interleaving Strategy:</strong><br>1. Insert Copy next to Original.<br>2. `copy.random = original.random.next`.<br>3. Extract Copy list.",
                 trap: "<strong>Null Crash:</strong> Check `if curr.random:` before accessing `next`.",
                 dryRun: ["1. Weave: 1->1'->2->2'.", "2. Rand: 1'.rand = 1.rand.next.", "3. Split: 1->2, 1'->2'."],
@@ -458,7 +595,36 @@ return new_head`
                 metrics: { time: "O(N)", space: "O(1)" },
                 timeExplainer: "<strong>Time Breakdown:</strong><br>• Find middle: <code>O(N/2)</code><br>• Reverse second half: <code>O(N/2)</code><br>• Compare: <code>O(N/2)</code><br><strong>Total:</strong> <code>O(N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• No extra array for reversal<br>• In-place manipulation<br><strong>Result:</strong> <code>O(1)</code>",
-                visual: "<span><strong>Visual: The Butterfly</strong><br>1. Find Body (Mid).<br>2. Flip Right Wing.<br>3. Compare Wings.</span>",
+                visual: `
+                    <h4 style="color:#c026d3;">🦋 The Butterfly: Find Mid → Reverse → Compare</h4>
+                    <div style="display:flex; flex-direction:column; gap:12px; margin:15px 0; max-width:550px;">
+                        <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">
+                            <div style="background:#1e293b; padding:14px; border-radius:10px; text-align:center; flex:1; min-width:180px;">
+                                <div style="font-size:0.8rem; color:#94a3b8; margin-bottom:6px;">Original:</div>
+                                <div style="font-family:monospace; font-size:0.85rem; display:flex; gap:4px; justify-content:center;">
+                                    <span style="color:#4ade80;">1</span><span style="color:#475569;">→</span>
+                                    <span style="color:#4ade80;">2</span><span style="color:#475569;">→</span>
+                                    <span style="color:#fbbf24; font-weight:bold;">|</span><span style="color:#475569;">→</span>
+                                    <span style="color:#f87171;">2</span><span style="color:#475569;">→</span>
+                                    <span style="color:#f87171;">1</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">
+                            <div style="background:rgba(74,222,128,0.08); border:1px solid rgba(74,222,128,0.3); padding:12px; border-radius:10px; text-align:center; flex:1; min-width:140px;">
+                                <div style="font-size:0.75rem; color:#4ade80; font-weight:bold; margin-bottom:4px;">Left Wing</div>
+                                <div style="font-family:monospace; font-size:0.85rem; color:#4ade80;">1 → 2</div>
+                            </div>
+                            <div style="display:flex; align-items:center; font-size:1.2rem;">🔄</div>
+                            <div style="background:rgba(248,113,113,0.08); border:1px solid rgba(248,113,113,0.3); padding:12px; border-radius:10px; text-align:center; flex:1; min-width:140px;">
+                                <div style="font-size:0.75rem; color:#f87171; font-weight:bold; margin-bottom:4px;">Right Wing (reversed)</div>
+                                <div style="font-family:monospace; font-size:0.85rem; color:#f87171;">1 → 2</div>
+                            </div>
+                        </div>
+                        <div style="background:#0f172a; padding:10px; border-radius:8px; font-size:0.82rem; color:#94a3b8; text-align:center;">
+                            Compare node by node: <span style="color:#4ade80;">1==1</span> ✓ <span style="color:#4ade80;">2==2</span> ✓ → <span style="color:#fbbf24; font-weight:bold;">Palindrome!</span>
+                        </div>
+                    </div>`,
                 crux: "Singly lists only go forward. To read backward, we must <strong>Reverse the Second Half</strong>.",
                 trap: "<strong>Destructive Read:</strong> You broke the list! Good engineers restore the list before returning.",
                 dryRun: ["1. 1->2->2->1. Slow at 2nd 2.", "2. Reverse 2->1 to 1->2.", "3. Compare 1->2 with 1->2. Match."],

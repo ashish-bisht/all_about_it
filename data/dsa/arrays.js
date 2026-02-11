@@ -158,7 +158,80 @@ def merge(intervals):
                 correct: 1,
                 explanation: "HashMap is KING! As you iterate, check if (target - current) exists in map. If yes, found! If no, store current. One pass: O(n) time, O(n) space. Warm-up in 20% of interviews!"
             },
-            learn: null // Not present in arrays.html, only game
+            learn: {
+                quickAlgo: [
+                    "seen = {}                                      # 🎯 HashMap to store {value: index}",
+                    "for index, num in enumerate(nums):",
+                    "    complement = target - num                  # ⚡ What do we need?",
+                    "    if complement in seen:                     # 🔍 Found it?",
+                    "        return [seen[complement], index]       # ✅ Return [old_index, current_index]",
+                    "    seen[num] = index                          # 💡 Store current for future"
+                ],
+                metrics: { time: "O(N)", space: "O(N)" },
+                timeExplainer: "<strong>Time: O(N)</strong><br>We traverse the list containing N elements only once. Each look up in the table costs only O(1) time.",
+                spaceExplainer: "<strong>Space: O(N)</strong><br>The extra space required depends on the number of items stored in the hash table, which stores at most N elements.",
+                visual: `<span><strong>Visual: The Mirror 🪞</strong><br>
+<pre style="background:none; border:none; padding:10px; font-size:0.8rem; line-height:1.2;">
+Target = 9
+Walk through [2, 7, 11, 15]:
+
+1. See 2. Need 7. Map: {2:0}
+2. See 7. Need 2.
+   Is 2 in Map? YES!
+   Pair found: (2, 7)
+</pre></span>`,
+                crux: "<strong>HashMap as Memory:</strong><br>As we iterate, we ask: 'Have I seen my complement before?'<br>If yes, we're done. If no, we remember the current number for the future.",
+                strategy: "One-pass HashMap. Store `val -> index`. Check `target - val` in map.",
+                trap: "<strong>Self-Usage:</strong><br>You cannot use the same element twice (e.g., target=6, nums=[3, 3] is fine, but nums=[3] is checking itself).<br><strong>Fix:</strong> Check map <em>before</em> adding current element.",
+                dryRun: [
+                    "<strong>Input:</strong> nums=[2, 7, 11, 15], target=9",
+                    "<strong>Init:</strong> map={}",
+                    "i=0, num=2: Need 7. Map has 7? NO. Add map[2]=0.",
+                    "i=1, num=7: Need 2. Map has 2? YES (index 0).",
+                    "<strong>Return:</strong> [0, 1]"
+                ],
+                codeTitle: "Python Solution (One Pass)",
+                code: `def twoSum(nums, target):
+    seen = {}
+    
+    for i, num in enumerate(nums):
+        complement = target - num
+        
+        if complement in seen:
+            return [seen[complement], i]
+            
+        seen[num] = i
+        
+    return []`,
+                codeDetailed: `def twoSum(nums, target):
+    """
+    Two Sum - HashMap Method
+    
+    STRATEGY:
+    - We need to find 'a + b = target'
+    - Rewritten: 'a = target - b'
+    - Iterate through array, for each number 'b', check if we've already seen 'a'.
+    
+    WHY HASHMAP?
+    - Lookup is O(1).
+    - Total time becomes O(N) instead of O(N^2).
+    """
+    
+    # Store { value : index }
+    seen = {}
+    
+    for i, num in enumerate(nums):
+        complement = target - num
+        
+        # Have we seen the complement before?
+        if complement in seen:
+            return [seen[complement], i]
+            
+        # Store current number for future lookups
+        seen[num] = i
+        
+    return []`
+            }
         },
         {
             id: "3sum",
@@ -806,7 +879,34 @@ Result: [[1,6], [8,10]]
                 metrics: { time: "O(N log N)", space: "O(N)" },
                 timeExplainer: "<strong>Time Breakdown:</strong><br>• Sorting: <code>O(N log N)</code><br>• Heap operations: <code>O(N log N)</code><br><br><strong>Total:</strong> <code>O(N log N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Min-Heap stores end times<br>• Worst case: all meetings overlap = <code>O(N)</code>",
-                visual: "<span><strong>Visual: Room Re-use</strong><br>Heap batata hai kaunsi meeting sabse pehle khatam hogi. Agar nayi meeting uske baad shuru ho rahi hai, toh room reuse karo.</span>",
+                visual: `
+                    <h4 style="color:#c026d3;">🏢 Meeting Rooms: Min-Heap of End Times</h4>
+                    <div style="display:flex; flex-direction:column; gap:12px; margin:15px 0; max-width:600px;">
+                        <div style="background:#1e293b; padding:16px; border-radius:12px;">
+                            <div style="font-size:0.8rem; color:#94a3b8; margin-bottom:10px;">Meetings (sorted by start): [0,30], [5,10], [15,20]</div>
+                            <div style="display:flex; flex-direction:column; gap:8px; font-family:monospace; font-size:0.82rem;">
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <span style="color:#fbbf24; width:30px;">M1:</span>
+                                    <div style="background:rgba(74,222,128,0.15); height:22px; border-radius:4px; width:200px; display:flex; align-items:center; padding:0 8px; font-size:0.75rem; color:#4ade80;">[0 ──────────────── 30]</div>
+                                </div>
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <span style="color:#fbbf24; width:30px;">M2:</span>
+                                    <div style="margin-left:33px; background:rgba(56,189,248,0.15); height:22px; border-radius:4px; width:40px; display:flex; align-items:center; padding:0 8px; font-size:0.75rem; color:#38bdf8;">[5-10]</div>
+                                </div>
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <span style="color:#fbbf24; width:30px;">M3:</span>
+                                    <div style="margin-left:100px; background:rgba(248,113,113,0.15); height:22px; border-radius:4px; width:40px; display:flex; align-items:center; padding:0 8px; font-size:0.75rem; color:#f87171;">[15-20]</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="background:#0f172a; padding:12px; border-radius:8px;">
+                            <div style="display:grid; grid-template-columns:80px 1fr; gap:6px; font-size:0.82rem; color:#cbd5e1;">
+                                <span style="color:#4ade80;">Add M1:</span><span>Heap=[<span style="color:#4ade80;">30</span>] → Rooms=1</span>
+                                <span style="color:#38bdf8;">Add M2:</span><span>5 < 30? New room! Heap=[<span style="color:#38bdf8;">10</span>,30] → Rooms=2</span>
+                                <span style="color:#f87171;">Add M3:</span><span>15 ≥ 10? Reuse! Heap=[<span style="color:#f87171;">20</span>,30] → Rooms=2 ✅</span>
+                            </div>
+                        </div>
+                    </div>`,
                 crux: "Track occupied rooms.<br><strong>Strategy:</strong><br>1. Sort by Start Time.<br>2. Min-Heap stores End Times.<br>3. If <code>start >= heap[0]</code>, pop (room freed).<br>4. Push new end time.",
                 trap: "<strong>Just Finished:</strong> [1, 5] and [5, 10]. Reuse is allowed.",
                 dryRun: [
@@ -981,7 +1081,84 @@ while i <= r:
         nums[r], nums[i] = nums[i], nums[r]
         r -= 1
     else:
-        i += 1`
+        i += 1`,
+                codeDetailed: `def sortColors(nums):
+    """
+    Sort Colors (Dutch National Flag Algorithm)
+    
+    STRATEGY: Three Pointers
+    - Low: Boundary for 0s (Red)
+    - Mid: Scanner
+    - High: Boundary for 2s (Blue)
+    
+    Logic:
+    - If nums[mid] == 0: Swap with Low, increment Link & Mid
+    - If nums[mid] == 1: Just increment Mid
+    - If nums[mid] == 2: Swap with High, decrement High (Don't move Mid!)
+    
+    Time: O(N), Space: O(1)
+    """
+    low = 0
+    mid = 0
+    high = len(nums) - 1
+    
+    while mid <= high:
+        if nums[mid] == 0:
+            # Found 0: Move to the 0s zone (front)
+            nums[low], nums[mid] = nums[mid], nums[low]
+            low += 1
+            mid += 1
+        elif nums[mid] == 1:
+            # Found 1: It's in the correct middle zone, just skip
+            mid += 1
+        else:
+            # Found 2: Move to the 2s zone (back)
+            nums[mid], nums[high] = nums[high], nums[mid]
+            high -= 1
+            # CAUTION: Do NOT increment mid here. 
+            # The value swapped from 'high' is unknown (could be 0/1/2).
+            # We need to process it in the next iteration.`,
+                visual: `
+                    <h4 style="color:#c026d3;">🇳🇱 Dutch National Flag: 3-Zone Partition</h4>
+                    <div style="display:flex; flex-direction:column; gap:12px; margin:15px 0; max-width:550px;">
+                        <div style="background:#1e293b; padding:16px; border-radius:12px;">
+                            <div style="display:flex; gap:3px; justify-content:center; font-family:monospace; font-size:0.85rem;">
+                                <span style="background:rgba(248,113,113,0.2); padding:6px 10px; border-radius:4px; color:#f87171; border-bottom:2px solid #f87171;">0</span>
+                                <span style="background:rgba(248,113,113,0.2); padding:6px 10px; border-radius:4px; color:#f87171; border-bottom:2px solid #f87171;">0</span>
+                                <span style="color:#475569; display:flex; align-items:center;">│</span>
+                                <span style="background:rgba(255,255,255,0.08); padding:6px 10px; border-radius:4px; color:#fff; border-bottom:2px solid #fff;">1</span>
+                                <span style="background:rgba(255,255,255,0.08); padding:6px 10px; border-radius:4px; color:#fff; border-bottom:2px solid #fff;">1</span>
+                                <span style="color:#475569; display:flex; align-items:center;">│</span>
+                                <span style="background:rgba(94,92,230,0.2); padding:6px 10px; border-radius:4px; color:#a78bfa; border-bottom:2px solid #a78bfa;">?</span>
+                                <span style="color:#475569; display:flex; align-items:center;">│</span>
+                                <span style="background:rgba(56,189,248,0.2); padding:6px 10px; border-radius:4px; color:#38bdf8; border-bottom:2px solid #38bdf8;">2</span>
+                                <span style="background:rgba(56,189,248,0.2); padding:6px 10px; border-radius:4px; color:#38bdf8; border-bottom:2px solid #38bdf8;">2</span>
+                            </div>
+                            <div style="display:flex; justify-content:center; gap:35px; font-size:0.7rem; margin-top:8px; color:#94a3b8;">
+                                <span>↑ <span style="color:#f87171;">Low</span></span>
+                                <span>↑ <span style="color:#a78bfa;">Mid</span> (scanner)</span>
+                                <span>↑ <span style="color:#38bdf8;">High</span></span>
+                            </div>
+                        </div>
+                        <div style="background:#0f172a; padding:12px; border-radius:8px;">
+                            <div style="display:grid; grid-template-columns:1fr; gap:4px; font-size:0.82rem; color:#cbd5e1;">
+                                <span><span style="color:#f87171;">arr[mid]=0:</span> swap(low, mid), low++, mid++</span>
+                                <span><span style="color:#fff;">arr[mid]=1:</span> mid++ (already in place)</span>
+                                <span><span style="color:#38bdf8;">arr[mid]=2:</span> swap(mid, high), high-- <span style="color:#f87171;">(don't mid++!)</span></span>
+                            </div>
+                        </div>
+                    </div>`,
+                crux: "<strong>3 Pointers:</strong> Low (0s), Mid (Scanner), High (2s).<br>Swap 0 to Low. Swap 2 to High.",
+                strategy: "Use <code>Mid</code> to scan. If 0, swap with Low. If 2, swap with High. If 1, pass.",
+                trap: "<strong>The '2' Swap Trap:</strong><br>When you swap with High (value 2), <strong>do NOT increment mid</strong>. The incoming value from High is uncheckd!",
+                dryRun: [
+                    "Input: [2,0,2,1,1,0]",
+                    "1. Mid=2. Swap with High. Arr: [0,0,2,1,1,2]. High--.",
+                    "2. Mid=0 (swapped val). Swap with Low. Arr: [0,0,2,1,1,2]. L++, Mid++.",
+                    "3. Mid=0. Swap L. Arr: [0,0,2,1,1,2]. L++, M++.",
+                    "4. Mid=2. Swap H. Arr: [0,0,1,1,2,2]. H--.",
+                    "5. Mid=1. M++."
+                ]
             }
         },
 
@@ -1020,7 +1197,65 @@ for n in A:
     if (xor ^ B) in map:
         cnt += map[xor ^ B]
     map[xor] = map.get(xor, 0) + 1
-return cnt`
+return cnt`,
+                codeDetailed: `def solve(A, B):
+    """
+    Subarrays with XOR K
+    
+    STRATEGY: Prefix XOR + HashMap
+    - Concept similar to "Subarray Sum Equals K"
+    - If PrefixXOR[i] ^ PrefixXOR[j] = K, then XOR(j+1...i) = K
+    - So, we look for 'Target = CurrentXOR ^ K' in our map
+    
+    Time: O(N), Space: O(N)
+    """
+    xr = 0
+    count = 0
+    freq = {0: 1}  # Base case: XOR 0 seen once (empty prefix)
+    
+    for x in A:
+        xr = xr ^ x
+        
+        # We need subarray with XOR B
+        # Current ^ Target = B  =>  Target = Current ^ B
+        target = xr ^ B
+        
+        if target in freq:
+            count += freq[target]
+            
+        freq[xr] = freq.get(xr, 0) + 1
+        
+    return count`,
+                visual: `
+                    <h4 style="color:#c026d3;">⊕ XOR Prefix: Like Prefix Sum but XOR</h4>
+                    <div style="display:flex; flex-direction:column; gap:12px; margin:15px 0; max-width:550px;">
+                        <div style="background:#1e293b; padding:16px; border-radius:12px;">
+                            <div style="font-size:0.82rem; color:#94a3b8; margin-bottom:10px;">arr = [4, 2, 2, 6, 4], K = 6</div>
+                            <div style="font-family:monospace; font-size:0.85rem; line-height:2; color:#cbd5e1; text-align:center;">
+                                <span style="color:#fbbf24;">PrefixXOR:</span> 0 → 4 → 6 → 4 → 2 → 6<br>
+                                <span style="color:#38bdf8;">Need:</span> CurrXOR ⊕ K = PrevXOR<br>
+                                <span style="color:#4ade80;">At idx 4:</span> CurrXOR=6, 6⊕6=<span style="color:#fbbf24; font-weight:bold;">0</span> (found in map!) ✅
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:12px; justify-content:center; font-size:0.82rem; flex-wrap:wrap;">
+                            <span style="background:rgba(251,191,36,0.1); border:1px solid rgba(251,191,36,0.3); padding:6px 12px; border-radius:6px; color:#fbbf24;">A ⊕ B = K</span>
+                            <span style="color:#94a3b8; display:flex; align-items:center;">⟹</span>
+                            <span style="background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3); padding:6px 12px; border-radius:6px; color:#38bdf8;">A ⊕ K = B</span>
+                            <span style="color:#94a3b8; display:flex; align-items:center;">→ lookup B in map!</span>
+                        </div>
+                    </div>`,
+                crux: "XOR Difference Property: <code>A ^ B = K</code> ➡ <code>A ^ K = B</code>.<br>Look for <code>CurrXOR ^ K</code> in map.",
+                strategy: "Calculate Prefix XOR. Check if <code>XR ^ K</code> exists in map. Add its frequency to count. Add <code>XR</code> to map.",
+                trap: "<strong>Base Case:</strong><br>Initialize map with <code>{0: 1}</code>. Why? To handle subarrays starting from index 0 matching K.",
+                dryRun: [
+                    "Input: A=[4, 2, 2, 6, 4], K=6",
+                    "Map={0:1}",
+                    "1. x=4. XR=4. Need 4^6=2. Map has 2? No. Map={0:1, 4:1}",
+                    "2. x=2. XR=6. Need 6^6=0. Map has 0? Yes(1). Count=1. Map={...6:1}",
+                    "3. x=2. XR=4. Need 4^6=2. No. Map={...4:2}",
+                    "4. x=6. XR=2. Need 2^6=4. Yes(2). Count=1+2=3. Map={...2:1}",
+                    "5. x=4. XR=6. Need 6^6=0. Yes(1). Count=3+1=4."
+                ]
             }
         },
         {
@@ -1061,7 +1296,88 @@ for r, c in enumerate(s):
         if map[s[l]] == 0: del map[s[l]]
         l += 1
     res = max(res, r - l + 1)
-return res`
+ return res`,
+                codeDetailed: `def lengthOfLongestSubstringKDistinct(s, k):
+    """
+    Longest Substring with At Most K Distinct Characters
+    
+    STRATEGY: Sliding Window
+    - Expand Right: Add character count
+    - Invalid State: distinct_count > k
+    - Shrink Left: Remove characters until distinct_count <= k
+    - Update Max Length
+    
+    Time: O(N), Space: O(K)
+    """
+    char_map = {}
+    left = 0
+    max_len = 0
+    
+    for right, char in enumerate(s):
+        # 1. Expand Window
+        char_map[char] = char_map.get(char, 0) + 1
+        
+        # 2. Shrink if Invalid (Too many distinct chars)
+        while len(char_map) > k:
+            left_char = s[left]
+            char_map[left_char] -= 1
+            if char_map[left_char] == 0:
+                del char_map[left_char]  # Crucial to reduce map size
+            left += 1
+            
+        # 3. Update Max
+        max_len = max(max_len, right - left + 1)
+        
+    return max_len`,
+                visual: `
+                    <h4 style="color:#c026d3;">🪟 Sliding Window: K Distinct Characters</h4>
+                    <div style="display:flex; flex-direction:column; gap:12px; margin:15px 0; max-width:550px;">
+                        <div style="background:#1e293b; padding:16px; border-radius:12px;">
+                            <div style="font-size:0.82rem; color:#94a3b8; margin-bottom:10px;">s = "eceba", K = 2</div>
+                            <div style="display:flex; flex-direction:column; gap:8px; font-family:monospace; font-size:0.85rem;">
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <span style="color:#4ade80; width:12px;">✓</span>
+                                    <span style="background:rgba(74,222,128,0.15); padding:4px; border-radius:4px; border:1px solid rgba(74,222,128,0.3);">
+                                        [<span style="color:#4ade80; font-weight:bold;">e c e</span>]
+                                    </span>
+                                    <span style="color:#94a3b8;">b a</span>
+                                    <span style="color:#64748b; font-size:0.75rem;">→ {e:2, c:1} = 2 distinct ✓</span>
+                                </div>
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <span style="color:#f87171; width:12px;">✗</span>
+                                    <span style="background:rgba(248,113,113,0.15); padding:4px; border-radius:4px; border:1px solid rgba(248,113,113,0.3);">
+                                        [<span style="color:#f87171; font-weight:bold;">e c e b</span>]
+                                    </span>
+                                    <span style="color:#94a3b8;">a</span>
+                                    <span style="color:#64748b; font-size:0.75rem;">→ 3 distinct! Shrink left</span>
+                                </div>
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <span style="color:#4ade80; width:12px;">✓</span>
+                                    <span style="color:#94a3b8;">e</span>
+                                    <span style="background:rgba(74,222,128,0.15); padding:4px; border-radius:4px; border:1px solid rgba(74,222,128,0.3);">
+                                        [<span style="color:#4ade80; font-weight:bold;">c e b</span>]
+                                    </span>
+                                    <span style="color:#94a3b8;">a</span>
+                                    <span style="color:#64748b; font-size:0.75rem;">→ still 3! keep shrinking...</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="background:#0f172a; padding:10px 14px; border-radius:8px; font-size:0.82rem; color:#94a3b8; text-align:center;">
+                            <strong style="color:#fbbf24;">Pattern:</strong> Expand right always. Shrink left when <code style="color:#f87171;">len(map) > K</code>
+                        </div>
+                    </div>`,
+                crux: "<strong>Standard Sliding Window.</strong><br>Condition: <code>len(Map) > K</code> ➡ Shrink Left.",
+                strategy: "Use HashMap to track frequency. If <code>len(map) > k</code>, decrement/remove counts from left.",
+                trap: "<strong>Key Delete:</strong><br>When frequency becomes 0, you MUST <code>del map[key]</code>. Calculating distinct chars relies on map size!",
+                dryRun: [
+                    "Input: s='eceba', k=2",
+                    "1. 'e': {e:1}. Max=1",
+                    "2. 'c': {e:1, c:1}. Max=2",
+                    "3. 'e': {e:2, c:1}. Max=3 ([ece])",
+                    "4. 'b': {e:2, c:1, b:1}. Len=3 > K! Shrink L.",
+                    "   Remove 'e'. {e:1, c:1, b:1}. Still > K.",
+                    "   Remove 'c'. {e:1, b:1}. Valid! Max=3."
+                ]
             }
         }
     ]

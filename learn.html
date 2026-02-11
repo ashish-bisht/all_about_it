@@ -10,55 +10,17 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="style.css">
+    <!-- JetBrains Mono for code -->
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <!-- Highlight.js (GitHub Dark Theme) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
     <style>
-        /* --- Focus View Specifics (Page Local) --- */
-        .focus-view {
-            display: none;
-            max-width: 900px;
-            margin: 0 auto;
-            animation: fadeIn 0.4s ease-out;
-            background: var(--bg-card);
-            border: 1px solid var(--primary);
-            border-radius: var(--radius-xl);
-            overflow: hidden;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-
-        .focus-header {
-            background: linear-gradient(135deg, rgba(129, 140, 248, 0.1), rgba(99, 102, 241, 0.1));
-            padding: 30px;
-            border-bottom: 1px solid var(--border-light);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .focus-body {
-            padding: 40px;
-            line-height: 1.8;
-            font-size: 1.05rem;
-            color: #d1d5db;
-        }
-
-        .section-title {
-            font-size: 1.2rem;
-            color: var(--text-accent);
-            margin: 30px 0 15px 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 700;
-        }
-
         /* --- Quiz Specifics --- */
         .quiz-box {
-            background: rgba(28, 28, 30, 0.4);
-            border: 1px solid var(--border-light);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
             border-radius: var(--radius-md);
             padding: 25px;
             margin-top: 20px;
@@ -94,7 +56,7 @@
         /* --- Dry Run & Explainer --- */
         .metric-explainer {
             display: none;
-            background: rgba(28, 28, 30, 0.4);
+            background: var(--bg-card);
             color: #f1f5f9;
             padding: 24px;
             border-radius: var(--radius-md);
@@ -141,13 +103,13 @@
             letter-spacing: 1px;
             border-radius: 20px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            border: 1px solid var(--border-light);
+            border: 1px solid var(--border);
         }
 
         /* --- Collapsible Sections (Apple Style) --- */
         .collapsible-section {
             margin-top: 25px;
-            border: 1px solid var(--border-light);
+            border: 1px solid var(--border);
             border-radius: 16px;
             overflow: hidden;
             background: rgba(255, 255, 255, 0.02);
@@ -211,7 +173,7 @@
 
         .collapsible-inner {
             padding: 24px;
-            border-top: 1px solid var(--border-light);
+            border-top: 1px solid var(--border);
             line-height: 1.8;
             color: var(--text-muted);
         }
@@ -255,7 +217,7 @@
 
         .collapsible-section.mentalmodel {
             border-left: 3px solid #8b5cf6;
-            background: linear-gradient(145deg, rgba(28, 28, 30, 0.9) 0%, rgba(44, 44, 46, 0.8) 100%);
+            background: var(--bg-card);
         }
 
         .collapsible-section.quick-algo {
@@ -386,37 +348,8 @@
             }
         }
 
-        /* --- Content De-Colorizer (Forces Apple Aesthetic on Data) --- */
-        #focus-content div[style*="background"],
-        #focus-content table[style*="background"],
-        #focus-content tr[style*="background"],
-        #focus-content td[style*="background"],
-        #focus-content th[style*="background"] {
-            background: rgba(255, 255, 255, 0.02) !important;
-            border-color: var(--border-light) !important;
-        }
-
-        #focus-content h4[style*="color"],
-        #focus-content h5[style*="color"],
-        #focus-content div>strong[style*="color"] {
-            color: var(--text-main) !important;
-            /* Neutralize headers */
-        }
-
-        /* Exception: Allow Red/Green for Visuals if needed, or mute them */
-        /* For now, let's keep it minimal. The user wants 'Apple Clean'. */
-        #focus-content .visual-text-red {
-            color: var(--danger) !important;
-        }
-
-        /* usage if we had classes */
-
-        /* Force text colors in tables to be readable */
-        #focus-content table td,
-        #focus-content table th {
-            color: var(--text-muted) !important;
-            border-color: rgba(255, 255, 255, 0.05) !important;
-        }
+        /* --- Content De-Colorizer REMOVED --- */
+        /* Restoring original color hierarchy */
 
         /* --- Premium Code Block Design (VS Code Style) --- */
         details {
@@ -569,10 +502,709 @@
             }
         }
 
+        /* --- Code Panel (Always Visible) --- */
+        .code-panel {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #333;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+            margin-top: 20px;
+        }
+
+        .code-panel-header {
+            background: #252526;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #1e1e1e;
+        }
+
+        .code-panel-dots::before {
+            content: '';
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ff5f56;
+            box-shadow: 20px 0 0 #ffbd2e, 40px 0 0 #27c93f;
+        }
+
+        .code-panel-title {
+            flex: 1;
+            color: #ccc;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-left: 40px;
+        }
+
+        .code-panel .copy-btn {
+            background: rgba(255,255,255,0.08);
+            border: none;
+            color: #858585;
+            padding: 4px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+            opacity: 1;
+        }
+
+        .code-panel .copy-btn:hover {
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+        }
+
+        /* --- Complexity Panel --- */
+        .complexity-panel {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .complexity-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 16px;
+            flex: 1;
+        }
+
+        .complexity-item.time {
+            border-top: 2px solid #fbbf24;
+        }
+
+        .complexity-item.space {
+            border-top: 2px solid #a78bfa;
+        }
+
+        .complexity-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .complexity-badge i {
+            font-size: 0.85rem;
+        }
+
+        .complexity-item.time .complexity-badge i { color: #fbbf24; }
+        .complexity-item.space .complexity-badge i { color: #a78bfa; }
+
+        .complexity-label {
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .complexity-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 1rem;
+            color: #a5f3fc;
+            margin-left: auto;
+        }
+
+        .complexity-explain {
+            color: var(--text-muted);
+            font-size: 0.78rem;
+            line-height: 1.45;
+            padding-top: 8px;
+            margin-top: 8px;
+            border-top: 1px solid var(--border);
+            max-height: 80px;
+            overflow-y: auto;
+        }
+
+        .complexity-explain strong {
+            color: var(--text-main);
+        }
+
+        /* --- Mental Map Structured --- */
+        .mental-map-section {
+            margin-bottom: 28px;
+            background: linear-gradient(135deg, rgba(94, 92, 230, 0.06), rgba(139, 92, 246, 0.03));
+            border: 1px solid rgba(94, 92, 230, 0.15);
+            border-radius: 14px;
+            padding: 22px;
+        }
+
+        .section-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            margin-bottom: 18px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .mental-map-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .mm-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 6px 10px;
+            border-radius: 8px;
+            margin-left: calc(var(--indent, 0) * 20px);
+            transition: background 0.15s;
+        }
+
+        .mm-step:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .mm-step-num {
+            width: 22px;
+            height: 22px;
+            background: rgba(94, 92, 230, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: #a78bfa;
+            flex-shrink: 0;
+            margin-top: 3px;
+        }
+
+        .mm-step-body {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .mm-code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85rem;
+            color: #e2e8f0;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 3px 8px;
+            border-radius: 5px;
+            display: inline-block;
+            word-break: break-all;
+        }
+
+        .mm-comment {
+            font-size: 0.78rem;
+            color: #8b5cf6;
+            font-weight: 500;
+            padding-left: 8px;
+        }
+
+        /* --- DryRun Timeline --- */
+        .dryrun-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            position: relative;
+            padding-left: 24px;
+            border-left: 2px solid rgba(255, 159, 10, 0.2);
+            margin-left: 6px;
+        }
+
+        .dryrun-step {
+            position: relative;
+            padding: 8px 0 8px 16px;
+        }
+
+        .dryrun-step::before {
+            content: '';
+            position: absolute;
+            left: -30px;
+            top: 16px;
+            width: 10px;
+            height: 10px;
+            background: var(--warning);
+            border-radius: 50%;
+            border: 2px solid var(--bg-dark);
+        }
+
+        .dryrun-text {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--text-muted);
+        }
+
+        .dryrun-text strong {
+            color: var(--text-main);
+        }
+
+        .dryrun-text code {
+            background: rgba(0, 0, 0, 0.3);
+            color: #a5f3fc;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+
+        /* --- Trap Section Enhanced --- */
+        .trap-content {
+            background: rgba(255, 69, 58, 0.05);
+            padding: 16px 20px;
+            border-left: 3px solid var(--danger);
+            border-radius: 0 10px 10px 0;
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--text-main);
+        }
+
+        .trap-content strong {
+            color: var(--danger);
+        }
+
+        /* --- Stagger Animation for Focus View Sections --- */
+        .focus-animate {
+            opacity: 0;
+            transform: translateY(16px);
+            animation: focusFadeIn 0.4s ease forwards;
+        }
+
+        .focus-animate:nth-child(1) { animation-delay: 0s; }
+        .focus-animate:nth-child(2) { animation-delay: 0.06s; }
+        .focus-animate:nth-child(3) { animation-delay: 0.12s; }
+        .focus-animate:nth-child(4) { animation-delay: 0.18s; }
+        .focus-animate:nth-child(5) { animation-delay: 0.24s; }
+        .focus-animate:nth-child(6) { animation-delay: 0.30s; }
+        .focus-animate:nth-child(7) { animation-delay: 0.36s; }
+        .focus-animate:nth-child(8) { animation-delay: 0.42s; }
+        .focus-animate:nth-child(9) { animation-delay: 0.48s; }
+        .focus-animate:nth-child(10) { animation-delay: 0.54s; }
+
+        @keyframes focusFadeIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Toast Notification --- */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(50, 215, 75, 0.95);
+            color: #000;
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            z-index: 9999;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            pointer-events: none;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* --- Prev/Next Navigation --- */
+        .question-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+            gap: 16px;
+        }
+
+        .question-nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            max-width: 45%;
+        }
+
+        .question-nav-btn:hover {
+            background: rgba(255,255,255,0.08);
+            color: var(--text-main);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .question-nav-btn.disabled {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .nav-btn-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            display: block;
+        }
+
+        .nav-btn-title {
+            color: var(--text-main);
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+        }
+
+        /* --- Floating TOC (Jump to Section) --- */
+        .focus-toc {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .toc-chip {
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.06);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .toc-chip:hover {
+            background: rgba(94, 92, 230, 0.15);
+            color: var(--primary);
+            border-color: rgba(94, 92, 230, 0.3);
+        }
+
+        /* --- Code Line Numbers --- */
+        .code-panel pre code.hljs {
+            counter-reset: line;
+        }
+
+        .code-panel .hljs-ln-numbers {
+            user-select: none;
+            text-align: right;
+            color: #4a5568;
+            padding-right: 12px;
+            border-right: 1px solid #333;
+            margin-right: 12px;
+        }
+
+        /* --- Question Tile Quick Info --- */
+        .tile-meta {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-top: 4px;
+        }
+
+        .tile-complexity {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #94a3b8;
+            letter-spacing: 0.02em;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+
+        /* --- Keyboard Shortcut Hint --- */
+        .kbd-hint {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 8px;
+            opacity: 0.4;
+            transition: opacity 0.3s;
+            z-index: 100;
+        }
+
+        .kbd-hint:hover {
+            opacity: 0.8;
+        }
+
+        .kbd {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.65rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-muted);
+        }
+
+        /* --- Strategy Pro Content Improvement --- */
+        .pro-content p {
+            margin-bottom: 0;
+        }
+
+        .pro-content code {
+            background: rgba(0, 0, 0, 0.3);
+            color: #a5f3fc;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* --- Visual Section Better Styling --- */
+        .visual-container {
+            background: rgba(34, 211, 238, 0.03);
+            border: 1px solid rgba(34, 211, 238, 0.12);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .visual-container pre {
+            border: none !important;
+            border-top: none !important;
+        }
+
+        /* --- Crux text better readability --- */
+        .insight-text code {
+            background: rgba(94, 92, 230, 0.15);
+            color: #c4b5fd;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .insight-text strong {
+            color: #fff;
+        }
+
+        /* --- Smooth scroll offset for sticky nav --- */
+        [id^="sec-"] {
+            scroll-margin-top: 80px;
+        }
+
+        /* --- Question counter pill in header --- */
+        .question-counter {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            background: rgba(94, 92, 230, 0.12);
+            color: var(--primary);
+            border: 1px solid rgba(94, 92, 230, 0.2);
+        }
+
+        /* --- Sidebar + Main Layout for Focus View --- */
+        .focus-layout {
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: 48px;
+            max-width: 1800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .focus-sidebar {
+            position: sticky;
+            top: 80px;
+            align-self: start;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+            padding: 16px 0;
+        }
+
+        .sidebar-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            padding: 0 12px;
+            margin-bottom: 12px;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            border-radius: 10px;
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.15s;
+            text-decoration: none;
+            border: 1px solid transparent;
+            position: relative;
+        }
+
+        .sidebar-link:hover {
+            background: rgba(255,255,255,0.05);
+            color: var(--text-main);
+        }
+
+        .sidebar-link.active {
+            background: rgba(94, 92, 230, 0.1);
+            color: var(--primary);
+            border-color: rgba(94, 92, 230, 0.2);
+            font-weight: 700;
+        }
+
+        .sidebar-link.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 18px;
+            background: var(--primary);
+            border-radius: 0 3px 3px 0;
+        }
+
+        .sidebar-icon {
+            font-size: 0.85rem;
+            width: 20px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .sidebar-text {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Sidebar progress */
+        .sidebar-progress {
+            margin-top: 20px;
+            padding: 12px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+
+        .sidebar-progress-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .sidebar-progress-bar {
+            height: 4px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .sidebar-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), #8b5cf6);
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        /* Sidebar quick actions */
+        .sidebar-actions {
+            margin-top: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .sidebar-action-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .sidebar-action-btn:hover {
+            background: rgba(255,255,255,0.06);
+            color: var(--text-main);
+            border-color: rgba(255,255,255,0.15);
+        }
+
+        .sidebar-action-btn i {
+            font-size: 0.8rem;
+        }
+
+        .focus-main {
+            min-width: 0;
+            max-width: 100%;
+            width: 100%;
+        }
+
+        /* Hide chip TOC on desktop when sidebar exists */
+        .focus-layout .focus-toc {
+            display: none;
+        }
+
+        /* Mobile: hide sidebar, show chip TOC */
+        @media (max-width: 1100px) {
+            .focus-layout {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .focus-sidebar {
+                display: none;
+            }
+
+            .focus-layout .focus-toc {
+                display: flex;
+            }
+
+            .focus-main {
+                max-width: 100%;
+            }
+        }
+
         @media (max-width: 768px) {
             body {
                 padding: 15px;
-                /* Reduce global padding */
             }
 
             .header-section h1 {
@@ -581,7 +1213,6 @@
 
             .pattern-card {
                 padding: 20px;
-                /* More compact */
             }
 
             .pattern-grid {
@@ -591,7 +1222,6 @@
 
             .questions-grid {
                 grid-template-columns: 1fr;
-                /* Single column for tiles */
             }
 
             .focus-header {
@@ -599,7 +1229,6 @@
                 align-items: flex-start;
                 gap: 15px;
                 padding: 20px;
-                /* Reduced padding */
             }
 
             .focus-body {
@@ -608,14 +1237,12 @@
 
             .metrics {
                 flex-wrap: wrap;
-                /* Allow metrics to wrap */
             }
 
             .metric-item {
                 font-size: 0.9rem;
             }
 
-            /* Ensure code blocks don't break layout */
             pre {
                 padding: 15px;
                 font-size: 0.8rem;
@@ -624,6 +1251,67 @@
             .back-btn {
                 width: 100%;
                 justify-content: center;
+            }
+
+            .complexity-panel {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .complexity-item {
+                padding: 10px 14px;
+            }
+
+            .complexity-value {
+                font-size: 0.95rem;
+            }
+
+            .mental-map-section {
+                padding: 14px;
+            }
+
+            .mm-step {
+                margin-left: calc(var(--indent, 0) * 12px);
+            }
+
+            .mm-code {
+                font-size: 0.78rem;
+            }
+
+            .code-panel-title {
+                font-size: 0.8rem;
+            }
+
+            .kbd-hint {
+                display: none !important;
+            }
+
+            .focus-toc {
+                padding: 10px 12px;
+                gap: 6px;
+            }
+
+            .toc-chip {
+                font-size: 0.68rem;
+                padding: 4px 10px;
+            }
+
+            .question-nav-btn {
+                padding: 10px 14px;
+                font-size: 0.8rem;
+            }
+
+            .nav-btn-title {
+                max-width: 100px;
+                font-size: 0.8rem;
+            }
+
+            .tile-meta {
+                gap: 6px;
+            }
+
+            .tile-complexity {
+                font-size: 0.7rem;
             }
         }
     </style>
@@ -639,7 +1327,7 @@
             </a>
             <div class="nav-links">
                 <a href="index.html" class="nav-link">Dashboard</a>
-                <a href="question_list.html" class="nav-link">55 Questions</a>
+                <a href="learn.html" class="nav-link active">Learn</a>
                 <a href="flashcard.html" class="nav-link">Flashcards</a>
                 <a href="cheatsheet.html" class="nav-link">Cheat Sheet</a>
                 <a href="templates.html" class="nav-link">Templates</a>
@@ -649,6 +1337,12 @@
             </div>
         </div>
     </nav>
+
+    <!-- Keyboard Hint -->
+    <div class="kbd-hint" id="kbd-hint" style="display:none;">
+        <span class="kbd">← →</span>
+        <span class="kbd">Esc</span>
+    </div>
 
     <div class="container" id="app">
         <div class="nav-bar">
@@ -685,9 +1379,12 @@
             document.getElementById('grid-view-container').style.display = 'none';
             const focusView = document.getElementById('focus-view-container');
             focusView.style.display = 'block';
+            document.getElementById('app').classList.add('focus-active');
 
-            // Show Navbar (if hidden by animation etc)
+            // Show Navbar and keyboard hints
             document.querySelector('.navbar').style.display = 'block';
+            const kbdHint = document.getElementById('kbd-hint');
+            if (kbdHint) kbdHint.style.display = 'flex';
 
             // Render content into focus view
             const contentDiv = document.getElementById('focus-content');
@@ -695,7 +1392,7 @@
             if (q.customHtml) {
                 // System Design Custom Template Mode
                 contentDiv.innerHTML = `
-                    <div class="focus-card" style="max-width: 1000px;">
+                    <div class="focus-card" style="max-width: 100%;">
                         <div class="focus-header">
                             <div>
                                 <h2 style="margin:0; font-size:1.8rem; display:flex; align-items:center; gap:12px;">
@@ -718,165 +1415,272 @@
                 return;
             }
 
+            // --- NUCLEAR REDESIGN: PRO SHEET LAYOUT ---
+
+            // Helper to render sections cleanly
+            const renderSection = (title, icon, content, isHtml = false) => {
+                if (!content) return '';
+                return `
+                <div class="pro-section">
+                    <div class="pro-header">
+                        <i class="${icon}" style="color:var(--primary)"></i> ${title}
+                    </div>
+                    <div class="pro-content">
+                        ${isHtml ? content : `<p>${content}</p>`}
+                    </div>
+                </div>`;
+            };
+
+            // Build TOC entries dynamically
+            const tocItems = [];
+            tocItems.push({id: 'sec-crux', label: 'Crux', icon: '💡'});
+            if (learn.quickAlgo && learn.quickAlgo.length > 0) tocItems.push({id: 'sec-mentalmap', label: 'Mental Map', icon: '🧠'});
+            tocItems.push({id: 'sec-code', label: 'Code', icon: '💻'});
+            if (learn.visual) tocItems.push({id: 'sec-visual', label: 'Visual', icon: '👁️'});
+            if (learn.strategy) tocItems.push({id: 'sec-strategy', label: 'Strategy', icon: '♟️'});
+            if (learn.dryRun) tocItems.push({id: 'sec-dryrun', label: 'Dry Run', icon: '▶️'});
+            if (learn.trap) tocItems.push({id: 'sec-trap', label: 'Traps', icon: '⚠️'});
+            if (learn.codeDetailed) tocItems.push({id: 'sec-deepdive', label: 'Deep Dive', icon: '🔬'});
+
+            // Prev/Next question logic
+            const prevQ = index > 0 ? currentTopicData.questions[index - 1] : null;
+            const nextQ = index < currentTopicData.questions.length - 1 ? currentTopicData.questions[index + 1] : null;
+
+            // Build sidebar links
+            const sidebarLinks = [];
+            sidebarLinks.push({id: 'sec-crux', label: 'Crux & Complexity', icon: 'fas fa-lightbulb', emoji: '💡'});
+            if (learn.quickAlgo && learn.quickAlgo.length > 0) sidebarLinks.push({id: 'sec-mentalmap', label: 'Mental Map', icon: 'fas fa-route', emoji: '🧠'});
+            sidebarLinks.push({id: 'sec-code', label: 'Solution Code', icon: 'fas fa-code', emoji: '💻'});
+            if (learn.visual) sidebarLinks.push({id: 'sec-visual', label: 'Visual', icon: 'fas fa-eye', emoji: '👁️'});
+            if (learn.strategy) sidebarLinks.push({id: 'sec-strategy', label: 'Strategy', icon: 'fas fa-chess', emoji: '♟️'});
+            if (learn.dryRun) sidebarLinks.push({id: 'sec-dryrun', label: 'Execution Trace', icon: 'fas fa-play-circle', emoji: '▶️'});
+            if (learn.trap) sidebarLinks.push({id: 'sec-trap', label: 'Common Traps', icon: 'fas fa-exclamation-triangle', emoji: '⚠️'});
+            if (learn.codeDetailed) sidebarLinks.push({id: 'sec-deepdive', label: 'Deep Dive', icon: 'fas fa-microscope', emoji: '🔬'});
+
             contentDiv.innerHTML = `
-                <div class="focus-card">
-                    <div class="focus-header">
-                        <div>
-                            <h2 style="margin:0; font-size:1.8rem; display:flex; align-items:center; gap:12px;">
-                                <i class="${currentTopicData.icon}" style="color:var(--primary)"></i>
-                                ${q.title}
-                            </h2>
+                <div class="focus-layout">
+
+                <!-- LEFT SIDEBAR -->
+                <aside class="focus-sidebar">
+                    <div class="sidebar-label">On this page</div>
+                    <nav class="sidebar-nav" id="sidebar-nav">
+                        ${sidebarLinks.map((s, i) =>
+                            '<a class="sidebar-link' + (i === 0 ? ' active' : '') + '" data-target="' + s.id + '" onclick="scrollToSection(\'' + s.id + '\')">' +
+                                '<span class="sidebar-icon"><i class="' + s.icon + '"></i></span>' +
+                                '<span class="sidebar-text">' + s.label + '</span>' +
+                            '</a>'
+                        ).join('')}
+                    </nav>
+
+                    <div class="sidebar-progress">
+                        <div class="sidebar-progress-label">
+                            <span>Question</span>
+                            <span>${index + 1} / ${currentTopicData.questions.length}</span>
                         </div>
-                        <div style="display:flex; gap:10px; align-items:center;">
-                            <button onclick="event.stopPropagation(); expandAllSections();" class="back-btn" style="padding:6px 12px; font-size:0.8rem;" title="Expand All">
-                                <i class="fas fa-expand-alt"></i>
-                            </button>
-                            <button onclick="event.stopPropagation(); collapseAllSections();" class="back-btn" style="padding:6px 12px; font-size:0.8rem;" title="Collapse All">
-                                <i class="fas fa-compress-alt"></i>
-                            </button>
-                            <span class="tile-badge ${q.difficulty === 'Must Do' ? 'must' : (q.difficulty === 'Good to Do' ? 'good' : 'bonus')}">
-                                ${q.difficulty}
-                            </span>
-                            ${q.leetcodeUrl ? `<a href="${q.leetcodeUrl}" target="_blank" class="back-btn" style="padding:6px 12px; font-size:0.9rem; color:#ffa116; border-color:#ffa116;">
-                                <i class="fas fa-external-link-alt"></i> LeetCode
-                            </a>` : ''}
+                        <div class="sidebar-progress-bar">
+                            <div class="sidebar-progress-fill" style="width:${Math.round(((index + 1) / currentTopicData.questions.length) * 100)}%"></div>
                         </div>
                     </div>
-                    
-                    <div class="focus-body">
-                         <!-- Metrics -->
-                        <div class="metrics" style="display: flex; gap: 20px; margin-bottom: 25px;">
-                            <div class="metric-item" onclick="toggleExplainer('focus-time')" style="background:rgba(255,255,255,0.03); padding:10px 15px; border-radius:12px; border:1px solid var(--border-light); cursor:pointer;">
-                                <i class="far fa-clock" style="color:var(--primary)"></i> ${learn.metrics.time} Time
+
+                    <div class="sidebar-actions">
+                        ${q.leetcodeUrl ? '<a href="' + q.leetcodeUrl + '" target="_blank" class="sidebar-action-btn"><i class="fas fa-external-link-alt"></i> LeetCode</a>' : ''}
+                        ${prevQ ? '<a class="sidebar-action-btn" onclick="openQuestion(' + (index - 1) + ')"><i class="fas fa-arrow-left"></i> ' + prevQ.title + '</a>' : ''}
+                        ${nextQ ? '<a class="sidebar-action-btn" onclick="openQuestion(' + (index + 1) + ')"><i class="fas fa-arrow-right"></i> ' + nextQ.title + '</a>' : ''}
+                    </div>
+                </aside>
+
+                <!-- MAIN CONTENT -->
+                <div class="focus-main">
+                <div style="padding: 16px 0;">
+
+                    <!-- 1. HEADER (Compact) -->
+                    <div class="focus-animate" style="margin-bottom: 24px; border-bottom:1px solid var(--border); padding-bottom:18px;">
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
+                            <div>
+                                <h1 style="font-size:2.2rem; font-weight:800; letter-spacing:-0.5px; margin-bottom:8px; background: linear-gradient(135deg, #fff 0%, #94a3b8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                                    ${q.title}
+                                </h1>
+                                <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+                                     <span style="color:var(--text-muted); font-size:0.9rem; display:flex; align-items:center; gap:6px;">
+                                        <i class="${currentTopicData.icon}" style="color:var(--primary)"></i> ${currentTopicData.title}
+                                     </span>
+                                     <span style="color:var(--border);">|</span>
+                                     <span class="tile-badge ${q.difficulty === 'Must Do' ? 'must' : (q.difficulty === 'Good to Do' ? 'good' : 'bonus')}" style="font-size:0.7rem;">
+                                        ${q.difficulty}
+                                     </span>
+                                     ${q.tags ? q.tags.map(t => '<span class="tile-tag" style="font-size:0.7rem;">' + t + '</span>').join('') : ''}
+                                </div>
                             </div>
-                            <div class="metric-item" onclick="toggleExplainer('focus-space')" style="background:rgba(255,255,255,0.03); padding:10px 15px; border-radius:12px; border:1px solid var(--border-light); cursor:pointer;">
-                                <i class="fas fa-server" style="color:var(--safe)"></i> ${learn.metrics.space} Space
+
+                            <button onclick="backToGrid()" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--text-muted); font-size:0.85rem; cursor:pointer; transition:all 0.2s; padding:8px 14px; border-radius:8px; display:flex; align-items:center; gap:6px;" title="Back to List (Esc)">
+                                <i class="fas fa-th-large"></i> Grid
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- TOC (Jump to Section) -->
+                    <div class="focus-toc focus-animate">
+                        ${tocItems.map(t => '<a class="toc-chip" onclick="document.getElementById(\'' + t.id + '\').scrollIntoView({behavior:\'smooth\', block:\'start\'})">' + t.icon + ' ' + t.label + '</a>').join('')}
+                    </div>
+
+                    <!-- 2. CRUX + COMPLEXITY (Side by Side) -->
+                    <div class="insight-bar focus-animate" id="sec-crux">
+                        <div class="insight-card">
+                            <div class="insight-label">The Crux</div>
+                            <div class="insight-text">
+                                ${learn.crux || "No crux available. Focus on the strategy."}
                             </div>
                         </div>
-                        
-                         ${learn.timeExplainer ? `<div id="focus-time-explainer" class="metric-explainer">${learn.timeExplainer}</div>` : ''}
-                         ${learn.spaceExplainer ? `<div id="focus-space-explainer" class="metric-explainer">${learn.spaceExplainer}</div>` : ''}
+                        <div class="complexity-panel">
+                            <div class="complexity-item time">
+                                <div class="complexity-badge">
+                                    <i class="fas fa-clock"></i>
+                                    <span class="complexity-label">Time</span>
+                                    <span class="complexity-value">${learn.metrics.time}</span>
+                                </div>
+                                ${learn.timeExplainer ? '<div class="complexity-explain">' + learn.timeExplainer + '</div>' : ''}
+                            </div>
+                            <div class="complexity-item space">
+                                <div class="complexity-badge">
+                                    <i class="fas fa-database"></i>
+                                    <span class="complexity-label">Space</span>
+                                    <span class="complexity-value">${learn.metrics.space}</span>
+                                </div>
+                                ${learn.spaceExplainer ? '<div class="complexity-explain">' + learn.spaceExplainer + '</div>' : ''}
+                            </div>
+                        </div>
+                    </div>
 
-                        <!-- Skip to Practice Button -->
+                    <!-- 3. QUICK MENTAL MAP (Structured Walkthrough) -->
+                    ${learn.quickAlgo && learn.quickAlgo.length > 0 ? `
+                    <div class="mental-map-section focus-animate" id="sec-mentalmap">
+                        <div class="section-title"><i class="fas fa-route" style="color:#8b5cf6"></i> Quick Mental Map</div>
+                        <div class="mental-map-steps">
+                            ${learn.quickAlgo.map((line, i) => {
+                                const parts = line.split(/\s+#\s+/);
+                                const codePart = parts[0].trimEnd();
+                                const commentPart = parts.length > 1 ? parts.slice(1).join(' # ') : '';
+                                const indent = codePart.length - codePart.trimStart().length;
+                                return '<div class="mm-step" style="--indent:' + Math.floor(indent / 4) + '">' +
+                                    '<div class="mm-step-num">' + (i + 1) + '</div>' +
+                                    '<div class="mm-step-body">' +
+                                        '<code class="mm-code">' + escapeHtml(codePart.trim()) + '</code>' +
+                                        (commentPart ? '<span class="mm-comment">' + commentPart + '</span>' : '') +
+                                    '</div>' +
+                                '</div>';
+                            }).join('')}
+                        </div>
+                    </div>` : ''}
+
+                    <!-- 4. CODE (Visible by Default!) -->
+                    <div class="focus-animate" style="margin-bottom:28px;" id="sec-code">
+                        <div class="section-title"><i class="fas fa-code" style="color:var(--safe)"></i> Solution Code</div>
+                        ${learn.code ? renderCodeSections(learn.code, learn.codeTitle) : ''}
+                    </div>
+
+                    <!-- 5. VISUAL (if exists) -->
+                    ${learn.visual ? `
+                    <div class="pro-section focus-animate" id="sec-visual">
+                         <div class="pro-header">
+                            <i class="fas fa-eye" style="color:#22d3ee"></i> Visual Intuition
+                         </div>
+                         <div class="visual-container">${learn.visual}</div>
+                    </div>` : ''}
+
+                    <!-- 6. STRATEGY -->
+                    ${learn.strategy ? `
+                    <div class="pro-section focus-animate" id="sec-strategy">
+                        <div class="pro-header">
+                            <i class="fas fa-chess" style="color:var(--primary)"></i> Strategy
+                        </div>
+                        <div class="pro-content"><p>${learn.strategy}</p></div>
+                    </div>` : ''}
+
+                    <!-- 7. EXECUTION TRACE (DryRun Timeline) -->
+                    ${learn.dryRun ? `
+                    <div class="pro-section focus-animate" id="sec-dryrun">
+                        <div class="pro-header">
+                            <i class="fas fa-play-circle" style="color:var(--warning)"></i> Execution Trace
+                        </div>
+                        <div class="dryrun-timeline">
+                            ${Array.isArray(learn.dryRun)
+                                ? learn.dryRun.map((step, i) =>
+                                    '<div class="dryrun-step">' +
+                                        '<div class="dryrun-text">' + step + '</div>' +
+                                    '</div>'
+                                ).join('')
+                                : '<div class="pro-content">' + learn.dryRun + '</div>'}
+                        </div>
+                    </div>` : ''}
+
+                    <!-- 8. COMMON TRAPS -->
+                    ${learn.trap ? `
+                    <div class="pro-section focus-animate" id="sec-trap">
+                        <div class="pro-header" style="color:var(--danger); border-color:rgba(255, 69, 58, 0.3);">
+                            <i class="fas fa-exclamation-triangle"></i> Common Traps
+                        </div>
+                        <div class="trap-content">
+                            ${learn.trap}
+                        </div>
+                    </div>` : ''}
+
+                    <!-- 9. DEEP DIVE (Collapsible) -->
+                    ${learn.codeDetailed ? `
+                    <div class="collapsible-section crux focus-animate" onclick="toggleCollapsible(this)" style="margin-top:24px;" id="sec-deepdive">
+                        <div class="collapsible-header">
+                            <div class="collapsible-header-left">
+                                <span class="collapsible-header-icon"><i class="fas fa-microscope"></i></span>
+                                <span class="collapsible-header-title">Line-by-Line Deep Dive</span>
+                            </div>
+                            <i class="fas fa-chevron-down collapsible-arrow"></i>
+                        </div>
+                        <div class="collapsible-content">
+                            <div class="collapsible-inner" style="padding:0;">
+                                <div class="code-panel" style="border:none; border-radius:0; box-shadow:none;">
+                                    <div class="code-panel-header">
+                                        <span class="code-panel-dots"></span>
+                                        <span class="code-panel-title">Detailed Walkthrough</span>
+                                        <button class="copy-btn" onclick="event.stopPropagation(); copyCode('focus-code-detailed')"><i class="fas fa-copy"></i> Copy</button>
+                                    </div>
+                                    <pre><code id="focus-code-detailed" class="language-python">${escapeHtml(learn.codeDetailed)}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>` : ''}
+
+                    <!-- 10. LEETCODE + PREV/NEXT NAV -->
+                    <div class="focus-animate" style="margin-top:32px;">
                         ${q.leetcodeUrl ? `
-                        <a href="${q.leetcodeUrl}" target="_blank" class="skip-to-practice-btn">
-                            <i class="fas fa-rocket"></i>
-                            <span>Feeling confident? Practice on LeetCode →</span>
+                        <a href="${q.leetcodeUrl}" target="_blank" class="btn btn-primary" style="padding:14px 28px; font-size:1rem; border-radius:50px; margin-bottom:20px; display:inline-flex;">
+                            <i class="fas fa-rocket"></i> Solve on LeetCode
                         </a>` : ''}
 
-                        <!-- Deep Dive Button (Senior Engineer Edition) -->
-                        ${q.deepDiveUrl ? `
-                        <div style="margin-bottom: 20px;">
-                            <a href="${q.deepDiveUrl}" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 12px; background:linear-gradient(135deg, #e67e22, #d35400); color:white; padding:18px; border-radius:16px; font-weight:700; text-decoration:none; box-shadow: 0 4px 20px rgba(230, 126, 34, 0.4); transition: all 0.2s;">
-                                <i class="fas fa-file-alt fa-lg"></i>
-                                <span>Open Deep Dive (Senior Engineer Edition)</span>
-                            </a>
-                        </div>` : ''}
-
-                        <!-- Visualizer Launch Button -->
-                        ${q.visualizerUrl ? `
-                        <div style="margin-bottom: 30px;">
-                            <a href="${q.visualizerUrl}" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 12px; background:linear-gradient(135deg, #6366f1, #8b5cf6); color:white; padding:18px; border-radius:16px; font-weight:700; text-decoration:none; box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4); transition: all 0.2s;">
-                                <i class="fas fa-play-circle fa-lg"></i>
-                                <span>Launch Interactive Visualization</span>
-                            </a>
-                        </div>` : ''}
-
-                        ${learn.quickAlgo && learn.quickAlgo.length > 0 ? `
-                        <div class="collapsible-section quick-algo" onclick="toggleCollapsible(this)">
-                            <div class="collapsible-header">
-                                <div class="collapsible-header-left">
-                                    <span class="collapsible-header-icon">⚡</span>
-                                    <span class="collapsible-header-title">Quick Mental Map</span>
+                        <div class="question-nav">
+                            <button class="question-nav-btn ${!prevQ ? 'disabled' : ''}" onclick="${prevQ ? 'openQuestion(' + (index - 1) + ')' : ''}">
+                                <i class="fas fa-arrow-left"></i>
+                                <div>
+                                    <span class="nav-btn-label">Previous</span>
+                                    <span class="nav-btn-title">${prevQ ? prevQ.title : 'None'}</span>
                                 </div>
-                                <i class="fas fa-chevron-down collapsible-arrow"></i>
-                            </div>
-                            <div class="collapsible-content">
-                                <div class="collapsible-inner" style="padding:0; background: #0d1117;">
-                                    <pre style="margin:0; border:none; border-radius:0;"><code class="language-python" style="font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; line-height: 1.5;">${learn.quickAlgo.join('\n')}</code></pre>
+                            </button>
+                            <span style="color:var(--text-muted); font-size:0.8rem; font-weight:600;">${index + 1} / ${currentTopicData.questions.length}</span>
+                            <button class="question-nav-btn ${!nextQ ? 'disabled' : ''}" onclick="${nextQ ? 'openQuestion(' + (index + 1) + ')' : ''}" style="flex-direction:row-reverse; text-align:right;">
+                                <i class="fas fa-arrow-right"></i>
+                                <div>
+                                    <span class="nav-btn-label">Next</span>
+                                    <span class="nav-btn-title">${nextQ ? nextQ.title : 'None'}</span>
                                 </div>
-                            </div>
-                        </div>` : ''}
-
-                        <!-- Visuals (Collapsible) -->
-                         ${learn.visual ? `
-                        <div class="collapsible-section visual" onclick="toggleCollapsible(this)">
-                            <div class="collapsible-header">
-                                <div class="collapsible-header-left">
-                                    <span class="collapsible-header-icon">🎯</span>
-                                    <span class="collapsible-header-title">Visual Intuition</span>
-                                </div>
-                                <i class="fas fa-chevron-down collapsible-arrow"></i>
-                            </div>
-                            <div class="collapsible-content">
-                                <div class="collapsible-inner">${learn.visual}</div>
-                            </div>
-                        </div>` : ''}
-
-                        <!-- Crux (Collapsible) -->
-                        ${learn.crux ? `
-                        <div class="collapsible-section crux" onclick="toggleCollapsible(this)">
-                            <div class="collapsible-header">
-                                <div class="collapsible-header-left">
-                                    <span class="collapsible-header-icon">💡</span>
-                                    <span class="collapsible-header-title">The Crux (Key Insight)</span>
-                                </div>
-                                <i class="fas fa-chevron-down collapsible-arrow"></i>
-                            </div>
-                            <div class="collapsible-content">
-                                <div class="collapsible-inner">${learn.crux}</div>
-                            </div>
-                        </div>` : ''}
-
-                        <!-- Trap (Collapsible) -->
-                        ${learn.trap ? `
-                        <div class="collapsible-section trap" onclick="toggleCollapsible(this)">
-                            <div class="collapsible-header">
-                                <div class="collapsible-header-left">
-                                    <span class="collapsible-header-icon">⚠️</span>
-                                    <span class="collapsible-header-title">Common Traps & Pitfalls</span>
-                                </div>
-                                <i class="fas fa-chevron-down collapsible-arrow"></i>
-                            </div>
-                            <div class="collapsible-content">
-                                <div class="collapsible-inner">${learn.trap}</div>
-                            </div>
-                        </div>` : ''}
-                        
-                         <!-- Dry Run (Collapsible) -->
-                         ${learn.dryRun ? `
-                        <div class="collapsible-section dryrun" onclick="toggleCollapsible(this)">
-                            <div class="collapsible-header">
-                                <div class="collapsible-header-left">
-                                    <span class="collapsible-header-icon">🔄</span>
-                                    <span class="collapsible-header-title">Principal Execution Flow</span>
-                                </div>
-                                <i class="fas fa-chevron-down collapsible-arrow"></i>
-                            </div>
-                            <div class="collapsible-content">
-                                <div class="collapsible-inner">
-                                    ${Array.isArray(learn.dryRun)
-                        ? learn.dryRun.map(step => `<div class="dry-step" style="padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.05); color:var(--text-main); font-size:0.95rem;">${step}</div>`).join('')
-                        : learn.dryRun}
-                                </div>
-                            </div>
-                        </div>` : ''}
-
-                        <!-- Code -->
-                         ${learn.code ? renderCodeSections(learn.code, learn.codeTitle) : ''}
-
-                        <!-- Detailed Code (Optional) -->
-                         ${learn.codeDetailed ? `
-                        <details style="margin-top: 20px;">
-                            <summary>💡 Detailed Explainer Code</summary>
-                            <div style="position:relative;">
-                                <button class="copy-btn" onclick="copyCode('focus-code-detailed')">Copy</button>
-                                <pre><code id="focus-code-detailed" class="language-python">${escapeHtml(learn.codeDetailed)}</code></pre>
-                            </div>
-                        </details>` : ''}
+                            </button>
+                        </div>
                     </div>
+
                 </div>
+                </div> <!-- /.focus-main -->
+                </div> <!-- /.focus-layout -->
             `;
+
+            // Store current question index for keyboard nav
+            window._currentQuestionIndex = index;
 
             // Trigger Highlight.js
             if (window.hljs) {
@@ -888,6 +1692,9 @@
             if (quickAlgoBlock) {
                 hljs.highlightElement(quickAlgoBlock);
             }
+
+            // Setup sidebar scroll spy
+            setupSidebarObserver();
 
             // Switch Nav button to "Back to List"
             const navBtn = document.getElementById('nav-back-btn');
@@ -913,27 +1720,31 @@
         function renderCodeSections(code, defaultTitle) {
             const codeBlocks = code.split(/(?=##### )/);
             if (codeBlocks.length > 1) {
-                // Multiple approaches - create separate collapsible sections
+                // Multiple approaches - separate visible code panels
                 return codeBlocks.filter(block => block.trim()).map((block, idx) => {
                     const lines = block.split('\n');
                     const titleMatch = lines[0].match(/##### (.+)/);
                     const title = titleMatch ? titleMatch[1] : 'Approach ' + (idx + 1);
                     const codeContent = lines.slice(1).join('\n').trim();
-                    return '<details style="margin-top: ' + (idx === 0 ? '40px' : '15px') + ';">' +
-                        '<summary>📝 ' + title + '</summary>' +
-                        '<div style="position:relative;">' +
-                        '<button class="copy-btn" onclick="copyCode(\'focus-code-' + idx + '\')">Copy</button>' +
+                    return '<div class="code-panel" style="margin-top:' + (idx === 0 ? '0' : '16px') + ';">' +
+                        '<div class="code-panel-header">' +
+                            '<span class="code-panel-dots"></span>' +
+                            '<span class="code-panel-title">' + title + '</span>' +
+                            '<button class="copy-btn" onclick="copyCode(\'focus-code-' + idx + '\')"><i class="fas fa-copy"></i> Copy</button>' +
+                        '</div>' +
                         '<pre><code id="focus-code-' + idx + '" class="language-python">' + escapeHtml(codeContent) + '</code></pre>' +
-                        '</div></details>';
+                    '</div>';
                 }).join('');
             } else {
-                // Single code block - original behavior
-                return '<details style="margin-top: 40px;">' +
-                    '<summary>' + (defaultTitle || 'Implementation (Clean)') + '</summary>' +
-                    '<div style="position:relative;">' +
-                    '<button class="copy-btn" onclick="copyCode(\'focus-code\')">Copy</button>' +
+                // Single code block - visible by default
+                return '<div class="code-panel">' +
+                    '<div class="code-panel-header">' +
+                        '<span class="code-panel-dots"></span>' +
+                        '<span class="code-panel-title">' + (defaultTitle || 'Implementation') + '</span>' +
+                        '<button class="copy-btn" onclick="copyCode(\'focus-code\')"><i class="fas fa-copy"></i> Copy</button>' +
+                    '</div>' +
                     '<pre><code id="focus-code" class="language-python">' + escapeHtml(code) + '</code></pre>' +
-                    '</div></details>';
+                '</div>';
             }
         }
 
@@ -965,6 +1776,14 @@
 
             document.getElementById('focus-view-container').style.display = 'none';
             document.getElementById('grid-view-container').style.display = 'block';
+            document.getElementById('app').classList.remove('focus-active');
+
+            // Hide keyboard hints
+            const kbdHint = document.getElementById('kbd-hint');
+            if (kbdHint) kbdHint.style.display = 'none';
+
+            // Disconnect sidebar observer
+            if (sidebarObserver) sidebarObserver.disconnect();
 
             // Reset Nav Button
             const navBtn = document.getElementById('nav-back-btn');
@@ -997,8 +1816,73 @@
 
         function copyCode(id) {
             const text = document.getElementById(id).innerText;
-            navigator.clipboard.writeText(text).then(() => alert('Copied!'));
+            navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard!'));
         }
+
+        // Toast notification
+        function showToast(msg) {
+            let toast = document.getElementById('global-toast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'global-toast';
+                toast.className = 'toast';
+                document.body.appendChild(toast);
+            }
+            toast.textContent = msg;
+            toast.classList.add('show');
+            clearTimeout(toast._timer);
+            toast._timer = setTimeout(() => toast.classList.remove('show'), 1800);
+        }
+
+        // Scroll to section (sidebar)
+        function scrollToSection(id) {
+            const el = document.getElementById(id);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Intersection Observer for sidebar active state
+        let sidebarObserver = null;
+        function setupSidebarObserver() {
+            if (sidebarObserver) sidebarObserver.disconnect();
+
+            const sections = document.querySelectorAll('[id^="sec-"]');
+            if (!sections.length) return;
+
+            sidebarObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.id;
+                        document.querySelectorAll('.sidebar-link').forEach(link => {
+                            link.classList.toggle('active', link.dataset.target === id);
+                        });
+                    }
+                });
+            }, {
+                rootMargin: '-80px 0px -60% 0px',
+                threshold: 0
+            });
+
+            sections.forEach(sec => sidebarObserver.observe(sec));
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            const focusView = document.getElementById('focus-view-container');
+            if (!focusView || focusView.style.display === 'none') return;
+
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                backToGrid();
+            }
+            if (e.key === 'ArrowLeft' && window._currentQuestionIndex > 0) {
+                e.preventDefault();
+                openQuestion(window._currentQuestionIndex - 1);
+            }
+            if (e.key === 'ArrowRight' && window._currentQuestionIndex < currentTopicData.questions.length - 1) {
+                e.preventDefault();
+                openQuestion(window._currentQuestionIndex + 1);
+            }
+        });
 
         // --- Render Logic ---
         function renderPage() {
@@ -1070,29 +1954,30 @@
 
                 <!-- GRID VIEW CONTAINER -->
                 <div id="grid-view-container">
-                    <div class="header-section">
-                        <h1><i class="${currentTopicData.icon}" style="color:var(--primary)"></i> ${currentTopicData.title}</h1>
-                        <p style="color: var(--text-muted); font-size:1.1rem; max-width:600px; margin:0 auto;">${currentTopicData.description}</p>
+                    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px; margin-bottom:4px;">
+                        <div>
+                            <h1 style="font-size:1.8rem; font-weight:800; margin:0 0 4px 0; letter-spacing:-0.5px;"><i class="${currentTopicData.icon}" style="color:var(--primary); margin-right:8px; font-size:1.4rem;"></i>${currentTopicData.title}</h1>
+                            <p style="color: var(--text-muted); font-size:0.95rem; margin:0; max-width:600px;">${currentTopicData.description}</p>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            <span style="color:var(--text-muted); font-size:0.85rem; font-weight:600;">${currentTopicData.questions.length} questions</span>
+                        </div>
                     </div>
 
                     <!-- Topic Progress Bar -->
-                    <div class="topic-progress">
-                        <div class="progress-text">
-                            <span><i class="fas fa-chart-line" style="margin-right:8px; color:var(--primary)"></i>Topic Progress</span>
-                            <span class="progress-count">${currentTopicData.questions.length} questions</span>
-                        </div>
-                        <div class="progress-track">
+                    <div style="margin-top:12px;">
+                        <div class="progress-track" style="height:5px;">
                             <div class="progress-fill" style="width: 0%"></div>
                         </div>
                     </div>
 
                      <!-- Mental Model -->
                     ${currentTopicData.mentalModel ? `
-                    <div class="collapsible-section mentalmodel" onclick="toggleCollapsible(this)">
+                    <div class="collapsible-section mentalmodel" style="margin-top:16px;" onclick="toggleCollapsible(this)">
                         <div class="collapsible-header">
                             <div class="collapsible-header-left">
                                 <span class="collapsible-header-icon"><i class="fas fa-brain"></i></span>
-                                <span class="collapsible-title">Principal's Mental Model</span>
+                                <span class="collapsible-title">Mental Model</span>
                             </div>
                             <i class="fas fa-chevron-down collapsible-arrow"></i>
                         </div>
@@ -1173,6 +2058,8 @@
                         ${currentTopicData.questions.map((q, idx) => {
                 if (!q.learn && !q.customHtml) return '';
                 const priorityClass = q.difficulty === 'Must Do' ? 'must' : (q.difficulty === 'Good to Do' ? 'good' : 'bonus');
+                const timeC = q.learn && q.learn.metrics ? q.learn.metrics.time : '';
+                const spaceC = q.learn && q.learn.metrics ? q.learn.metrics.space : '';
                 return `
                             <div class="question-tile ${priorityClass}" data-priority="${q.difficulty}" onclick="openQuestion(${idx})">
                                 <div class="tile-header">
@@ -1180,6 +2067,10 @@
                                     <i class="${currentTopicData.icon} tile-icon"></i>
                                 </div>
                                 <div class="tile-title">${q.title}</div>
+                                ${timeC ? `<div class="tile-meta">
+                                    <span class="tile-complexity">⏱ ${timeC}</span>
+                                    <span class="tile-complexity">💾 ${spaceC}</span>
+                                </div>` : ''}
                                 <div class="tile-tags">
                                     ${q.tags.slice(0, 3).map(t => `<span class="tile-tag">${t}</span>`).join('')}
                                 </div>

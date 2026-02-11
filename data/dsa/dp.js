@@ -1050,83 +1050,83 @@ print(coinChange([2], 3))       # -1 → impossible`
                 ],
                 metrics: { time: "O(N³)", space: "O(N)" },
                 timeExplainer: `
-                    <div class="space-y-3">
-                        <div class="bg-red-900/20 p-3 rounded-lg border border-red-500/30">
-                            <p class="font-bold text-red-400 text-base">🔴 Brute Force (Recursion): O(2ⁿ)</p>
-                            <div class="mt-2 space-y-2 text-sm text-gray-300">
+                    <div style="display:flex; flex-direction:column; gap:12px;">
+                        <div style="background:rgba(127,29,29,0.2); padding:12px; border-radius:8px; border:1px solid rgba(248,113,113,0.3);">
+                            <p style="font-weight:bold; color:#f87171; font-size:1rem;">🔴 Brute Force (Recursion): O(2ⁿ)</p>
+                            <div style="margin-top:8px; display:flex; flex-direction:column; gap:8px; font-size:0.875rem; color:#d1d5db;">
                                 <p><strong>🤔 Kyun?</strong> Har character ke baad ek "cut" lag sakta hai ya nahi:</p>
-                                <div class="bg-black/30 p-2 rounded font-mono text-xs">
+                                <div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:6px; font-family:monospace; font-size:0.75rem;">
                                     l|e|e|t|c|o|d|e   ← 7 potential gaps<br>
                                     Cut? ✓ or ✗ for each gap
                                 </div>
-                                
+
                                 <p><strong>📊 Math Breakdown:</strong></p>
-                                <ul class="list-disc pl-4 space-y-1">
+                                <ul style="list-style:disc; padding-left:16px; display:flex; flex-direction:column; gap:4px;">
                                     <li>String length = N</li>
                                     <li>Potential gaps = <strong>N-1</strong> (between characters)</li>
                                     <li>Each gap: 2 choices (cut or don't cut)</li>
                                     <li>Total combinations = <strong>2^(N-1)</strong> ≈ O(2ⁿ)</li>
                                 </ul>
-                                
+
                                 <p><strong>🎯 Real Numbers:</strong></p>
-                                <table class="w-full text-xs border-collapse">
-                                    <tr class="border-b border-gray-700">
-                                        <td class="py-1">N = 10</td>
-                                        <td class="text-yellow-400">512 ops ✅ Fast</td>
+                                <table style="width:100%; font-size:0.75rem; border-collapse:collapse;">
+                                    <tr style="border-bottom:1px solid #374151;">
+                                        <td style="padding-top:4px; padding-bottom:4px;">N = 10</td>
+                                        <td style="color:#fbbf24;">512 ops ✅ Fast</td>
                                     </tr>
-                                    <tr class="border-b border-gray-700">
-                                        <td class="py-1">N = 20</td>
-                                        <td class="text-yellow-400">~1 Million ops ⚠️ Borderline</td>
+                                    <tr style="border-bottom:1px solid #374151;">
+                                        <td style="padding-top:4px; padding-bottom:4px;">N = 20</td>
+                                        <td style="color:#fbbf24;">~1 Million ops ⚠️ Borderline</td>
                                     </tr>
-                                    <tr class="border-b border-gray-700">
-                                        <td class="py-1">N = 30</td>
-                                        <td class="text-red-400">~1 Billion ops ❌ TLE</td>
+                                    <tr style="border-bottom:1px solid #374151;">
+                                        <td style="padding-top:4px; padding-bottom:4px;">N = 30</td>
+                                        <td style="color:#f87171;">~1 Billion ops ❌ TLE</td>
                                     </tr>
                                     <tr>
-                                        <td class="py-1">N = 50</td>
-                                        <td class="text-red-400">~10¹⁵ ops 💀 Universe Heat Death</td>
+                                        <td style="padding-top:4px; padding-bottom:4px;">N = 50</td>
+                                        <td style="color:#f87171;">~10¹⁵ ops 💀 Universe Heat Death</td>
                                     </tr>
                                 </table>
                             </div>
                         </div>
-                        
-                        <div class="bg-green-900/20 p-3 rounded-lg border border-green-500/30">
-                            <p class="font-bold text-green-400 text-base">🟢 Memoization / DP: O(N³)</p>
-                            <div class="mt-2 space-y-2 text-sm text-gray-300">
+
+                        <div style="background:rgba(20,83,45,0.2); padding:12px; border-radius:8px; border:1px solid rgba(74,222,128,0.3);">
+                            <p style="font-weight:bold; color:#4ade80; font-size:1rem;">🟢 Memoization / DP: O(N³)</p>
+                            <div style="margin-top:8px; display:flex; flex-direction:column; gap:8px; font-size:0.875rem; color:#d1d5db;">
                                 <p><strong>🤔 Why 2ⁿ → N³?</strong></p>
-                                
+
                                 <p><strong>Step 1: Count Unique States</strong></p>
-                                <div class="bg-black/30 p-2 rounded">
-                                    <div class="font-mono text-xs">dfs(<span class="text-cyan-400">start</span>)</div>
-                                    <div class="text-xs text-gray-400">Start index can only be: 0, 1, 2, ... N</div>
-                                    <div class="text-cyan-400 font-bold">Unique States = N+1 ≈ O(N)</div>
+                                <div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:6px;">
+                                    <div style="font-family:monospace; font-size:0.75rem;">dfs(<span style="color:#22d3ee;">start</span>)</div>
+                                    <div style="font-size:0.75rem; color:#94a3b8;">Start index can only be: 0, 1, 2, ... N</div>
+                                    <div style="color:#22d3ee; font-weight:bold;">Unique States = N+1 ≈ O(N)</div>
                                 </div>
-                                
-                                <p class="mt-2"><strong>Step 2: Work per State</strong></p>
-                                <div class="bg-black/30 p-2 rounded font-mono text-xs">
-for end in range(start+1, len(s)+1):  <span class="text-yellow-400">← O(N) iterations</span>
-curr_word = s[start:end]           <span class="text-orange-400">← O(N) slicing!</span>
+
+                                <p style="margin-top:8px;"><strong>Step 2: Work per State</strong></p>
+                                <div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:6px; font-family:monospace; font-size:0.75rem;">
+for end in range(start+1, len(s)+1):  <span style="color:#fbbf24;">← O(N) iterations</span>
+curr_word = s[start:end]           <span style="color:#fb923c;">← O(N) slicing!</span>
                                 </div>
-                                
-                                <p class="mt-2"><strong>🧮 Final Calculation:</strong></p>
-                                <div class="bg-black/30 p-2 rounded text-cyan-300">
-                                    N states × N loop × N slicing = <strong class="text-green-400">O(N³)</strong>
+
+                                <p style="margin-top:8px;"><strong>🧮 Final Calculation:</strong></p>
+                                <div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:6px; color:#67e8f9;">
+                                    N states × N loop × N slicing = <strong style="color:#4ade80;">O(N³)</strong>
                                 </div>
-                                
-                                <p class="mt-2"><strong>💡 Hidden Cost - Slicing:</strong></p>
-                                <div class="bg-orange-900/20 p-2 rounded border border-orange-500/20">
-                                    <div class="text-orange-400 font-bold text-xs">⚠️ DON'T FORGET!</div>
-                                    <div class="text-xs">In Python/Java: <code>s[start:end]</code> creates NEW string</div>
-                                    <div class="text-xs">This takes O(end - start) = O(N) time!</div>
+
+                                <p style="margin-top:8px;"><strong>💡 Hidden Cost - Slicing:</strong></p>
+                                <div style="background:rgba(124,45,18,0.2); padding:8px; border-radius:6px; border:1px solid rgba(249,115,22,0.2);">
+                                    <div style="color:#fb923c; font-weight:bold; font-size:0.75rem;">⚠️ DON'T FORGET!</div>
+                                    <div style="font-size:0.75rem;">In Python/Java: <code>s[start:end]</code> creates NEW string</div>
+                                    <div style="font-size:0.75rem;">This takes O(end - start) = O(N) time!</div>
                                 </div>
                             </div>
                         </div>
-                        
-                        <div class="bg-purple-900/20 p-3 rounded-lg border border-purple-500/30">
-                            <p class="font-bold text-purple-400 text-base">🟣 Optimization: O(N² × M)</p>
-                            <div class="mt-2 text-sm text-gray-300">
+
+                        <div style="background:rgba(88,28,135,0.2); padding:12px; border-radius:8px; border:1px solid rgba(168,85,247,0.3);">
+                            <p style="font-weight:bold; color:#a78bfa; font-size:1rem;">🟣 Optimization: O(N² × M)</p>
+                            <div style="margin-top:8px; font-size:0.875rem; color:#d1d5db;">
                                 <p><strong>Using Trie or Word Length Bound:</strong></p>
-                                <ul class="list-disc pl-4 text-xs space-y-1">
+                                <ul style="list-style:disc; padding-left:16px; font-size:0.75rem; display:flex; flex-direction:column; gap:4px;">
                                     <li>If max word length in dict = M (usually small)</li>
                                     <li>Instead of loop till N, loop only till M</li>
                                     <li>Time: O(N × M × M) = O(N × M²)</li>
@@ -1135,210 +1135,210 @@ curr_word = s[start:end]           <span class="text-orange-400">← O(N) slicin
                         </div>
                     </div>`,
                 spaceExplainer: `
-                    <div class="space-y-3">
-                        <div class="bg-slate-800 p-3 rounded-lg">
-                            <p class="font-bold text-blue-400">1. Recursion Stack: O(N)</p>
-                            <div class="text-sm text-gray-300 mt-1">
+                    <div style="display:flex; flex-direction:column; gap:12px;">
+                        <div style="background:#1e293b; padding:12px; border-radius:8px;">
+                            <p style="font-weight:bold; color:#60a5fa;">1. Recursion Stack: O(N)</p>
+                            <div style="font-size:0.875rem; color:#d1d5db; margin-top:4px;">
                                 <p>Worst case: All single chars are valid words</p>
-                                <div class="bg-black/30 p-2 rounded font-mono text-xs mt-1">
+                                <div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:6px; font-family:monospace; font-size:0.75rem; margin-top:4px;">
 s = "aaa" and dict = {"a"}<br>
 dfs(0) → dfs(1) → dfs(2) → dfs(3)<br>
-<span class="text-yellow-400">Max depth = N</span>
+<span style="color:#fbbf24;">Max depth = N</span>
                                 </div>
                             </div>
                         </div>
-                        
-                        <div class="bg-slate-800 p-3 rounded-lg">
-                            <p class="font-bold text-green-400">2. Memoization Cache: O(N)</p>
-                            <div class="text-sm text-gray-300 mt-1">
-                                <div class="bg-black/30 p-2 rounded font-mono text-xs">
+
+                        <div style="background:#1e293b; padding:12px; border-radius:8px;">
+                            <p style="font-weight:bold; color:#4ade80;">2. Memoization Cache: O(N)</p>
+                            <div style="font-size:0.875rem; color:#d1d5db; margin-top:4px;">
+                                <div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:6px; font-family:monospace; font-size:0.75rem;">
 memo = {<br>
-  0: True/False,   <span class="text-gray-500"># Can break from index 0?</span><br>
-  1: True/False,   <span class="text-gray-500"># Can break from index 1?</span><br>
+  0: True/False,   <span style="color:#64748b;"># Can break from index 0?</span><br>
+  1: True/False,   <span style="color:#64748b;"># Can break from index 1?</span><br>
   ...<br>
-  N-1: True/False  <span class="text-gray-500"># Can break from last char?</span><br>
+  N-1: True/False  <span style="color:#64748b;"># Can break from last char?</span><br>
 }<br>
-<span class="text-cyan-400">Size = N entries</span>
+<span style="color:#22d3ee;">Size = N entries</span>
                                 </div>
                             </div>
                         </div>
-                        
-                        <div class="bg-green-900/20 p-3 rounded-lg border border-green-500/30">
-                            <p class="font-bold text-green-400">Total Space: O(N)</p>
-                            <p class="text-sm text-gray-400">Both stack and cache are linear.</p>
+
+                        <div style="background:rgba(20,83,45,0.2); padding:12px; border-radius:8px; border:1px solid rgba(74,222,128,0.3);">
+                            <p style="font-weight:bold; color:#4ade80;">Total Space: O(N)</p>
+                            <p style="font-size:0.875rem; color:#94a3b8;">Both stack and cache are linear.</p>
                         </div>
                     </div>`,
-                visual: `<div class="space-y-3">
-                    <div class="text-center font-bold text-cyan-400">🔪 The Cut Strategy</div>
-                    <div class="bg-black/30 p-3 rounded font-mono text-sm">
-                        <div class="text-gray-400 mb-2">s = "leetcode", dict = ["leet", "code"]</div>
-                        <div class="flex justify-center gap-1" style="font-size:12px;">
-                            <span class="bg-green-500/30 px-2 py-1 rounded">l</span>
-                            <span class="bg-green-500/30 px-2 py-1 rounded">e</span>
-                            <span class="bg-green-500/30 px-2 py-1 rounded">e</span>
-                            <span class="bg-green-500/30 px-2 py-1 rounded">t</span>
-                            <span class="text-red-400 text-xl">|</span>
-                            <span class="bg-blue-500/30 px-2 py-1 rounded">c</span>
-                            <span class="bg-blue-500/30 px-2 py-1 rounded">o</span>
-                            <span class="bg-blue-500/30 px-2 py-1 rounded">d</span>
-                            <span class="bg-blue-500/30 px-2 py-1 rounded">e</span>
+                visual: `
+                    <h4 style="color:#c026d3;">🔪 The Cut Strategy</h4>
+                    <div style="display:flex; flex-direction:column; gap:12px; margin:15px 0; max-width:500px;">
+                        <div style="background:#1e293b; padding:16px; border-radius:12px;">
+                            <div style="font-size:0.82rem; color:#94a3b8; margin-bottom:10px;">s = "leetcode", dict = ["leet", "code"]</div>
+                            <div style="display:flex; justify-content:center; gap:3px; font-family:monospace; font-size:0.85rem;">
+                                <span style="background:rgba(74,222,128,0.2); padding:4px 8px; border-radius:4px; color:#4ade80;">l</span>
+                                <span style="background:rgba(74,222,128,0.2); padding:4px 8px; border-radius:4px; color:#4ade80;">e</span>
+                                <span style="background:rgba(74,222,128,0.2); padding:4px 8px; border-radius:4px; color:#4ade80;">e</span>
+                                <span style="background:rgba(74,222,128,0.2); padding:4px 8px; border-radius:4px; color:#4ade80;">t</span>
+                                <span style="color:#f87171; font-size:1.2rem; font-weight:bold; display:flex; align-items:center;">✂</span>
+                                <span style="background:rgba(56,189,248,0.2); padding:4px 8px; border-radius:4px; color:#38bdf8;">c</span>
+                                <span style="background:rgba(56,189,248,0.2); padding:4px 8px; border-radius:4px; color:#38bdf8;">o</span>
+                                <span style="background:rgba(56,189,248,0.2); padding:4px 8px; border-radius:4px; color:#38bdf8;">d</span>
+                                <span style="background:rgba(56,189,248,0.2); padding:4px 8px; border-radius:4px; color:#38bdf8;">e</span>
+                            </div>
+                            <div style="text-align:center; margin-top:10px; font-size:0.82rem;">
+                                <span style="color:#4ade80;">"leet" ✓</span> +
+                                <span style="color:#38bdf8;">"code" ✓</span> =
+                                <span style="color:#fbbf24; font-weight:bold;">VALID!</span>
+                            </div>
                         </div>
-                        <div class="text-center mt-2" style="font-size:11px;">
-                            <span class="text-green-400">"leet" ✓</span> + 
-                            <span class="text-blue-400">"code" ✓</span> = 
-                            <span class="text-yellow-400 font-bold">VALID!</span>
+                        <div style="background:#0f172a; padding:10px 14px; border-radius:8px; font-size:0.82rem; color:#94a3b8; text-align:center;">
+                            Try every cut position. Left part in dict? Recurse on right part.
                         </div>
-                    </div>
-                    <div class="text-xs text-gray-400 text-center">
-                        Find ONE valid cut position where:<br>
-                        Left part is valid AND right part can be broken
-                    </div>
-                </div>`,
-                crux: `<div class="space-y-3">
-                    <div class="bg-cyan-900/20 p-3 rounded-lg border border-cyan-500/30">
-                        <div class="font-bold text-cyan-400 mb-2">🎯 The "Cut or Extend" Logic</div>
-                        <div class="bg-black/30 p-2 rounded font-mono text-xs">
-for end in range(start + 1, len(s) + 1):  <span class="text-gray-500"># Try all ends</span><br>
+                    </div>`,
+                crux: `<div style="display:flex; flex-direction:column; gap:12px;">
+                    <div style="background:rgba(22,78,99,0.2); padding:12px; border-radius:8px; border:1px solid rgba(6,182,212,0.3);">
+                        <div style="font-weight:bold; color:#22d3ee; margin-bottom:8px;">🎯 The "Cut or Extend" Logic</div>
+                        <div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:6px; font-family:monospace; font-size:0.75rem;">
+for end in range(start + 1, len(s) + 1):  <span style="color:#64748b;"># Try all ends</span><br>
 word = s[start:end]<br>
 <br>
-if word in wordSet:    <span class="text-green-400"># Mila! CUT lagao</span><br>
-    if dfs(end):       <span class="text-green-400"># Baki bhi valid?</span><br>
+if word in wordSet:    <span style="color:#4ade80;"># Mila! CUT lagao</span><br>
+    if dfs(end):       <span style="color:#4ade80;"># Baki bhi valid?</span><br>
         return True<br>
-<span class="text-gray-500"># Else: EXTEND karo (loop continues)</span>
+<span style="color:#64748b;"># Else: EXTEND karo (loop continues)</span>
                         </div>
                     </div>
-                    
-                    <div class="bg-yellow-900/20 p-3 rounded-lg border border-yellow-500/30">
-                        <div class="font-bold text-yellow-400 mb-2">💡 Key Insight</div>
-                        <p class="text-sm text-gray-300"><strong>STATE:</strong> Just the <code>start</code> index</p>
-                        <p class="text-sm text-gray-300"><strong>DECISION:</strong> Where to cut (try all ends)</p>
-                        <p class="text-sm text-gray-300"><strong>BASE CASE:</strong> start == len(s) → True</p>
+
+                    <div style="background:rgba(113,63,18,0.2); padding:12px; border-radius:8px; border:1px solid rgba(234,179,8,0.3);">
+                        <div style="font-weight:bold; color:#fbbf24; margin-bottom:8px;">💡 Key Insight</div>
+                        <p style="font-size:0.875rem; color:#d1d5db;"><strong>STATE:</strong> Just the <code>start</code> index</p>
+                        <p style="font-size:0.875rem; color:#d1d5db;"><strong>DECISION:</strong> Where to cut (try all ends)</p>
+                        <p style="font-size:0.875rem; color:#d1d5db;"><strong>BASE CASE:</strong> start == len(s) → True</p>
                     </div>
-                    
-                    <div class="bg-purple-900/20 p-3 rounded-lg border border-purple-500/30">
-                        <div class="font-bold text-purple-400 mb-2">🔗 Same Pattern Problems</div>
-                        <ul class="text-sm text-gray-300 space-y-1">
+
+                    <div style="background:rgba(88,28,135,0.2); padding:12px; border-radius:8px; border:1px solid rgba(168,85,247,0.3);">
+                        <div style="font-weight:bold; color:#a78bfa; margin-bottom:8px;">🔗 Same Pattern Problems</div>
+                        <ul style="font-size:0.875rem; color:#d1d5db; display:flex; flex-direction:column; gap:4px;">
                             <li>• <strong>Word Break II</strong> - Return all valid segmentations</li>
                             <li>• <strong>Palindrome Partitioning</strong> - Cut where each part is palindrome</li>
                             <li>• <strong>Decode Ways</strong> - Valid number → letter mappings</li>
                         </ul>
                     </div>
                 </div>`,
-                trap: `<div class="space-y-2">
-                    <div class="bg-red-900/20 p-2 rounded border border-red-500/30">
-                        <div class="font-bold text-red-400 text-sm">❌ Trap 1: Complexity Confusion</div>
-                        <p class="text-xs text-gray-300">Looks like O(N^N) due to nested loop, but it's O(2^N)!</p>
-                        <p class="text-xs text-gray-400">Each gap has binary choice: cut or extend.</p>
+                trap: `<div style="display:flex; flex-direction:column; gap:8px;">
+                    <div style="background:rgba(127,29,29,0.2); padding:8px; border-radius:6px; border:1px solid rgba(248,113,113,0.3);">
+                        <div style="font-weight:bold; color:#f87171; font-size:0.875rem;">❌ Trap 1: Complexity Confusion</div>
+                        <p style="font-size:0.75rem; color:#d1d5db;">Looks like O(N^N) due to nested loop, but it's O(2^N)!</p>
+                        <p style="font-size:0.75rem; color:#94a3b8;">Each gap has binary choice: cut or extend.</p>
                     </div>
-                    
-                    <div class="bg-orange-900/20 p-2 rounded border border-orange-500/30">
-                        <div class="font-bold text-orange-400 text-sm">❌ Trap 2: Slicing Cost Hidden</div>
-                        <p class="text-xs text-gray-300"><code>s[start:end]</code> is NOT O(1)!</p>
-                        <p class="text-xs text-gray-400">It's O(K) where K = substring length. Total = O(N³)</p>
+
+                    <div style="background:rgba(124,45,18,0.2); padding:8px; border-radius:6px; border:1px solid rgba(249,115,22,0.2);">
+                        <div style="font-weight:bold; color:#fb923c; font-size:0.875rem;">❌ Trap 2: Slicing Cost Hidden</div>
+                        <p style="font-size:0.75rem; color:#d1d5db;"><code>s[start:end]</code> is NOT O(1)!</p>
+                        <p style="font-size:0.75rem; color:#94a3b8;">It's O(K) where K = substring length. Total = O(N³)</p>
                     </div>
-                    
-                    <div class="bg-yellow-900/20 p-2 rounded border border-yellow-500/30">
-                        <div class="font-bold text-yellow-400 text-sm">❌ Trap 3: Wrong Loop Range</div>
-                        <div class="bg-black/30 p-1 rounded font-mono text-xs mt-1">
-<span class="text-red-400">❌ range(start, len(s)+1)</span>  <span class="text-gray-500"># empty substring!</span><br>
-<span class="text-green-400">✅ range(start+1, len(s)+1)</span> <span class="text-gray-500"># at least 1 char</span>
+
+                    <div style="background:rgba(113,63,18,0.2); padding:8px; border-radius:6px; border:1px solid rgba(234,179,8,0.3);">
+                        <div style="font-weight:bold; color:#fbbf24; font-size:0.875rem;">❌ Trap 3: Wrong Loop Range</div>
+                        <div style="background:rgba(0,0,0,0.3); padding:4px; border-radius:6px; font-family:monospace; font-size:0.75rem; margin-top:4px;">
+<span style="color:#f87171;">❌ range(start, len(s)+1)</span>  <span style="color:#64748b;"># empty substring!</span><br>
+<span style="color:#4ade80;">✅ range(start+1, len(s)+1)</span> <span style="color:#64748b;"># at least 1 char</span>
                         </div>
                     </div>
-                    
-                    <div class="bg-blue-900/20 p-2 rounded border border-blue-500/30">
-                        <div class="font-bold text-blue-400 text-sm">❌ Trap 4: Not Using Set</div>
-                        <p class="text-xs text-gray-300">List lookup = O(N). <strong>Set lookup = O(1)!</strong></p>
-                        <p class="text-xs text-gray-400">Always convert wordDict to set first.</p>
+
+                    <div style="background:rgba(30,58,138,0.3); padding:8px; border-radius:6px; border:1px solid rgba(59,130,246,0.3);">
+                        <div style="font-weight:bold; color:#60a5fa; font-size:0.875rem;">❌ Trap 4: Not Using Set</div>
+                        <p style="font-size:0.75rem; color:#d1d5db;">List lookup = O(N). <strong>Set lookup = O(1)!</strong></p>
+                        <p style="font-size:0.75rem; color:#94a3b8;">Always convert wordDict to set first.</p>
                     </div>
                 </div>`,
                 dryRun: [
-                    `<details class="group bg-slate-800 rounded-lg p-2 cursor-pointer open:ring-1 open:ring-indigo-500/50 transition-all duration-300">
-                        <summary class="flex items-center gap-3 font-medium text-indigo-300 select-none list-none text-sm">
-                            <span class="bg-indigo-500/20 text-indigo-400 p-1.5 rounded-md group-open:rotate-90 transition-transform">
-                                <i class="fas fa-chevron-right text-xs"></i>
+                    `<details style="background:#1e293b; border-radius:8px; padding:8px; cursor:pointer;">
+                        <summary style="display:flex; align-items:center; gap:12px; font-weight:500; color:#a5b4fc; user-select:none; list-style:none; font-size:0.875rem;">
+                            <span style="background:rgba(99,102,241,0.2); color:#818cf8; padding:6px; border-radius:6px;">
+                                <i class="fas fa-chevron-right" style="font-size:0.75rem;"></i>
                             </span>
                             <span>🔍 View Trace: "leetcode" (Hidden by Default)</span>
                         </summary>
-                        
-                        <div class="mt-3 pl-4 border-l-2 border-indigo-500/20 space-y-3 text-sm font-mono text-gray-300 animate-in fade-in slide-in-from-top-2 duration-300">
-                            <div class="bg-black/30 p-2 rounded text-xs">
+
+                        <div style="margin-top:12px; padding-left:16px; border-left:2px solid rgba(99,102,241,0.2); display:flex; flex-direction:column; gap:12px; font-size:0.875rem; font-family:monospace; color:#d1d5db;">
+                            <div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:6px; font-size:0.75rem;">
                                 <strong>Input:</strong> s = "leetcode"<br>
                                 <strong>Dict:</strong> {"leet", "code"}
                             </div>
-                            
-                            <div class="flex items-start gap-2">
-                                <span class="text-blue-400 mt-1">1.</span>
+
+                            <div style="display:flex; align-items:flex-start; gap:8px;">
+                                <span style="color:#60a5fa; margin-top:4px;">1.</span>
                                 <div>
-                                    <div class="font-bold text-white">dfs(0)</div>
-                                    <div class="text-xs text-gray-500">Full string "leetcode"</div>
+                                    <div style="font-weight:bold; color:white;">dfs(0)</div>
+                                    <div style="font-size:0.75rem; color:#64748b;">Full string "leetcode"</div>
                                 </div>
                             </div>
 
-                            <div class="pl-4 border-l border-gray-700 ml-1 opacity-60 hover:opacity-100 transition-opacity">
-                                <div class="flex items-center gap-2 text-xs text-red-300">
+                            <div style="padding-left:16px; border-left:1px solid #374151; margin-left:4px; opacity:0.6;">
+                                <div style="display:flex; align-items:center; gap:8px; font-size:0.75rem; color:#fca5a5;">
                                     <span>s[0:1] = "l"</span>
-                                    <span class="text-red-500">❌ Not in dict</span>
+                                    <span style="color:#ef4444;">❌ Not in dict</span>
                                 </div>
-                                <div class="flex items-center gap-2 text-xs text-red-300">
+                                <div style="display:flex; align-items:center; gap:8px; font-size:0.75rem; color:#fca5a5;">
                                     <span>s[0:2] = "le"</span>
-                                    <span class="text-red-500">❌ Not in dict</span>
+                                    <span style="color:#ef4444;">❌ Not in dict</span>
                                 </div>
-                                <div class="flex items-center gap-2 text-xs text-red-300">
+                                <div style="display:flex; align-items:center; gap:8px; font-size:0.75rem; color:#fca5a5;">
                                     <span>s[0:3] = "lee"</span>
-                                    <span class="text-red-500">❌ Not in dict</span>
+                                    <span style="color:#ef4444;">❌ Not in dict</span>
                                 </div>
                             </div>
 
-                            <div class="flex items-start gap-2 pl-4 border-l border-gray-700 ml-1">
-                                <span class="text-green-400 mt-1">2.</span>
+                            <div style="display:flex; align-items:flex-start; gap:8px; padding-left:16px; border-left:1px solid #374151; margin-left:4px;">
+                                <span style="color:#4ade80; margin-top:4px;">2.</span>
                                 <div>
-                                    <div class="flex items-center gap-2">
+                                    <div style="display:flex; align-items:center; gap:8px;">
                                         <span>s[0:4] = "leet"</span>
-                                        <span class="bg-green-500/20 text-green-400 text-xs px-1.5 rounded">FOUND!</span>
+                                        <span style="background:rgba(74,222,128,0.2); color:#4ade80; font-size:0.75rem; padding-left:6px; padding-right:6px; border-radius:6px;">FOUND!</span>
                                     </div>
-                                    <div class="text-xs text-gray-400">CUT lagao! → Recurse on remaining...</div>
+                                    <div style="font-size:0.75rem; color:#94a3b8;">CUT lagao! → Recurse on remaining...</div>
                                 </div>
                             </div>
 
-                            <div class="flex items-start gap-2 pl-6 border-l border-gray-700 ml-1">
-                                <span class="text-blue-400 mt-1">3.</span>
+                            <div style="display:flex; align-items:flex-start; gap:8px; padding-left:24px; border-left:1px solid #374151; margin-left:4px;">
+                                <span style="color:#60a5fa; margin-top:4px;">3.</span>
                                 <div>
-                                    <div class="font-bold text-white">dfs(4)</div>
-                                    <div class="text-xs text-gray-500">Remaining: "code"</div>
+                                    <div style="font-weight:bold; color:white;">dfs(4)</div>
+                                    <div style="font-size:0.75rem; color:#64748b;">Remaining: "code"</div>
                                 </div>
                             </div>
 
-                            <div class="pl-10 border-l border-gray-700 ml-1 opacity-60 hover:opacity-100 transition-opacity">
-                                <div class="flex items-center gap-2 text-xs text-red-300">
+                            <div style="padding-left:40px; border-left:1px solid #374151; margin-left:4px; opacity:0.6;">
+                                <div style="display:flex; align-items:center; gap:8px; font-size:0.75rem; color:#fca5a5;">
                                     <span>s[4:5] = "c", s[4:6] = "co", s[4:7] = "cod"</span>
-                                    <span class="text-red-500">❌</span>
+                                    <span style="color:#ef4444;">❌</span>
                                 </div>
                             </div>
 
-                            <div class="flex items-start gap-2 pl-10 border-l border-gray-700 ml-1">
-                                <span class="text-green-400 mt-1">4.</span>
+                            <div style="display:flex; align-items:flex-start; gap:8px; padding-left:40px; border-left:1px solid #374151; margin-left:4px;">
+                                <span style="color:#4ade80; margin-top:4px;">4.</span>
                                 <div>
-                                    <div class="flex items-center gap-2">
+                                    <div style="display:flex; align-items:center; gap:8px;">
                                         <span>s[4:8] = "code"</span>
-                                        <span class="bg-green-500/20 text-green-400 text-xs px-1.5 rounded">FOUND!</span>
+                                        <span style="background:rgba(74,222,128,0.2); color:#4ade80; font-size:0.75rem; padding-left:6px; padding-right:6px; border-radius:6px;">FOUND!</span>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="flex items-start gap-2 pl-12 border-l border-gray-700 ml-1">
-                                <span class="text-purple-400 mt-1">5.</span>
+                            <div style="display:flex; align-items:flex-start; gap:8px; padding-left:48px; border-left:1px solid #374151; margin-left:4px;">
+                                <span style="color:#a78bfa; margin-top:4px;">5.</span>
                                 <div>
-                                    <div class="font-bold text-purple-300">dfs(8) → True</div>
-                                    <div class="text-xs text-gray-500">BASE CASE: start == len(s)</div>
+                                    <div style="font-weight:bold; color:#d8b4fe;">dfs(8) → True</div>
+                                    <div style="font-size:0.75rem; color:#64748b;">BASE CASE: start == len(s)</div>
                                 </div>
                             </div>
 
-                            <div class="border-t border-gray-700 pt-2 mt-2">
-                                <div class="flex items-center gap-2 text-green-400">
+                            <div style="border-top:1px solid #374151; padding-top:8px; margin-top:8px;">
+                                <div style="display:flex; align-items:center; gap:8px; color:#4ade80;">
                                     <i class="fas fa-check-circle"></i>
-                                    <span class="font-bold">Backtrack: True → True → True</span>
+                                    <span style="font-weight:bold;">Backtrack: True → True → True</span>
                                 </div>
-                                <div class="text-xs text-gray-500 mt-1">"leet" + "code" = ✅ Valid!</div>
+                                <div style="font-size:0.75rem; color:#64748b; margin-top:4px;">"leet" + "code" = ✅ Valid!</div>
                             </div>
                         </div>
                     </details>`
@@ -1438,176 +1438,176 @@ return dp[n]`
                 ],
                 metrics: { time: "O(N × Sum)", space: "O(Sum)" },
                 timeExplainer: `
-                    <div class="space-y-3">
-                        <div class="bg-red-900/20 p-3 rounded-lg border border-red-500/30">
-                            <p class="font-bold text-red-400 text-base">🔴 Brute Force (Recursion): O(2ⁿ)</p>
-                            <div class="mt-2 space-y-2 text-sm text-gray-300">
+                    <div style="display:flex; flex-direction:column; gap:12px;">
+                        <div style="background:rgba(127,29,29,0.2); padding:12px; border-radius:8px; border:1px solid rgba(248,113,113,0.3);">
+                            <p style="font-weight:bold; color:#f87171; font-size:1rem;">🔴 Brute Force (Recursion): O(2ⁿ)</p>
+                            <div style="margin-top:8px; display:flex; flex-direction:column; gap:8px; font-size:0.875rem; color:#d1d5db;">
                                 <p><strong>🤔 Kyun?</strong> Har element ke liye 2 choices:</p>
-                                <div class="bg-black/30 p-2 rounded font-mono text-xs">
+                                <div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:6px; font-family:monospace; font-size:0.75rem;">
                                     TAKE   → Include in subset (LUN LE)<br>
                                     SKIP   → Don't include (MAT LE)
                                 </div>
-                                
+
                                 <p><strong>📊 Math Breakdown:</strong></p>
-                                <ul class="list-disc pl-4 space-y-1">
+                                <ul style="list-style:disc; padding-left:16px; display:flex; flex-direction:column; gap:4px;">
                                     <li>N elements in array</li>
                                     <li>Each element: 2 choices (take/skip)</li>
                                     <li>Total subsets = <strong>2^N</strong></li>
                                 </ul>
-                                
+
                                 <p><strong>🎯 Real Numbers:</strong></p>
-                                <table class="w-full text-xs border-collapse">
-                                    <tr class="border-b border-gray-700">
-                                        <td class="py-1">N = 10</td>
-                                        <td class="text-yellow-400">1,024 subsets ✅ Fast</td>
+                                <table style="width:100%; font-size:0.75rem; border-collapse:collapse;">
+                                    <tr style="border-bottom:1px solid #374151;">
+                                        <td style="padding-top:4px; padding-bottom:4px;">N = 10</td>
+                                        <td style="color:#fbbf24;">1,024 subsets ✅ Fast</td>
                                     </tr>
-                                    <tr class="border-b border-gray-700">
-                                        <td class="py-1">N = 20</td>
-                                        <td class="text-yellow-400">~1 Million ⚠️ Slow</td>
+                                    <tr style="border-bottom:1px solid #374151;">
+                                        <td style="padding-top:4px; padding-bottom:4px;">N = 20</td>
+                                        <td style="color:#fbbf24;">~1 Million ⚠️ Slow</td>
                                     </tr>
-                                    <tr class="border-b border-gray-700">
-                                        <td class="py-1">N = 30</td>
-                                        <td class="text-red-400">~1 Billion ❌ TLE</td>
+                                    <tr style="border-bottom:1px solid #374151;">
+                                        <td style="padding-top:4px; padding-bottom:4px;">N = 30</td>
+                                        <td style="color:#f87171;">~1 Billion ❌ TLE</td>
                                     </tr>
                                     <tr>
-                                        <td class="py-1">N = 50</td>
-                                        <td class="text-red-400">~10¹⁵ 💀 Impossible</td>
+                                        <td style="padding-top:4px; padding-bottom:4px;">N = 50</td>
+                                        <td style="color:#f87171;">~10¹⁵ 💀 Impossible</td>
                                     </tr>
                                 </table>
                             </div>
                         </div>
-                        
-                        <div class="bg-green-900/20 p-3 rounded-lg border border-green-500/30">
-                            <p class="font-bold text-green-400 text-base">🟢 Memoization / DP: O(N × Sum)</p>
-                            <div class="mt-2 space-y-2 text-sm text-gray-300">
+
+                        <div style="background:rgba(20,83,45,0.2); padding:12px; border-radius:8px; border:1px solid rgba(74,222,128,0.3);">
+                            <p style="font-weight:bold; color:#4ade80; font-size:1rem;">🟢 Memoization / DP: O(N × Sum)</p>
+                            <div style="margin-top:8px; display:flex; flex-direction:column; gap:8px; font-size:0.875rem; color:#d1d5db;">
                                 <p><strong>🤔 Why 2ⁿ → N × Sum?</strong></p>
-                                
+
                                 <p><strong>Step 1: Count Unique States</strong></p>
-                                <div class="bg-black/30 p-2 rounded">
-                                    <div class="font-mono text-xs">solve(<span class="text-cyan-400">index</span>, <span class="text-purple-400">remaining_sum</span>)</div>
-                                    <div class="text-xs text-gray-400">index: 0 to N → N values</div>
-                                    <div class="text-xs text-gray-400">remaining_sum: 0 to Target → Target+1 values</div>
-                                    <div class="text-cyan-400 font-bold">Unique States = N × Target</div>
+                                <div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:6px;">
+                                    <div style="font-family:monospace; font-size:0.75rem;">solve(<span style="color:#22d3ee;">index</span>, <span style="color:#a78bfa;">remaining_sum</span>)</div>
+                                    <div style="font-size:0.75rem; color:#94a3b8;">index: 0 to N → N values</div>
+                                    <div style="font-size:0.75rem; color:#94a3b8;">remaining_sum: 0 to Target → Target+1 values</div>
+                                    <div style="color:#22d3ee; font-weight:bold;">Unique States = N × Target</div>
                                 </div>
-                                
-                                <p class="mt-2"><strong>Step 2: Work per State</strong></p>
-                                <div class="bg-black/30 p-2 rounded font-mono text-xs">
-take = solve(idx + 1, rem - nums[idx])  <span class="text-green-400">← O(1)</span><br>
-skip = solve(idx + 1, rem)               <span class="text-green-400">← O(1)</span><br>
-return take or skip                      <span class="text-green-400">← O(1)</span>
+
+                                <p style="margin-top:8px;"><strong>Step 2: Work per State</strong></p>
+                                <div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:6px; font-family:monospace; font-size:0.75rem;">
+take = solve(idx + 1, rem - nums[idx])  <span style="color:#4ade80;">← O(1)</span><br>
+skip = solve(idx + 1, rem)               <span style="color:#4ade80;">← O(1)</span><br>
+return take or skip                      <span style="color:#4ade80;">← O(1)</span>
                                 </div>
-                                
-                                <p class="mt-2"><strong>🧮 Final Calculation:</strong></p>
-                                <div class="bg-black/30 p-2 rounded text-cyan-300">
-                                    N × Sum states × O(1) work = <strong class="text-green-400">O(N × Sum)</strong>
+
+                                <p style="margin-top:8px;"><strong>🧮 Final Calculation:</strong></p>
+                                <div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:6px; color:#67e8f9;">
+                                    N × Sum states × O(1) work = <strong style="color:#4ade80;">O(N × Sum)</strong>
                                 </div>
                             </div>
                         </div>
-                        
-                        <div class="bg-purple-900/20 p-3 rounded-lg border border-purple-500/30">
-                            <p class="font-bold text-purple-400 text-base">🟣 1D Space Optimized: O(Sum)</p>
-                            <div class="mt-2 text-sm text-gray-300">
+
+                        <div style="background:rgba(88,28,135,0.2); padding:12px; border-radius:8px; border:1px solid rgba(168,85,247,0.3);">
+                            <p style="font-weight:bold; color:#a78bfa; font-size:1rem;">🟣 1D Space Optimized: O(Sum)</p>
+                            <div style="margin-top:8px; font-size:0.875rem; color:#d1d5db;">
                                 <p><strong>Key Trick:</strong> Iterate RIGHT to LEFT!</p>
-                                <div class="bg-black/30 p-2 rounded font-mono text-xs mt-1">
+                                <div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:6px; font-family:monospace; font-size:0.75rem; margin-top:4px;">
 for num in nums:<br>
-for s in range(target, num - 1, <span class="text-red-400">-1</span>):  <span class="text-yellow-400">← BACKWARDS!</span><br>
+for s in range(target, num - 1, <span style="color:#f87171;">-1</span>):  <span style="color:#fbbf24;">← BACKWARDS!</span><br>
     dp[s] = dp[s] or dp[s - num]
                                 </div>
-                                <p class="text-xs text-gray-400 mt-1">Backwards ensures each item used only once!</p>
+                                <p style="font-size:0.75rem; color:#94a3b8; margin-top:4px;">Backwards ensures each item used only once!</p>
                             </div>
                         </div>
                     </div>`,
                 spaceExplainer: `
-                    <div class="space-y-3">
-                        <div class="bg-slate-800 p-3 rounded-lg">
-                            <p class="font-bold text-blue-400">1. Recursion Stack: O(N)</p>
-                            <div class="text-sm text-gray-300 mt-1">
+                    <div style="display:flex; flex-direction:column; gap:12px;">
+                        <div style="background:#1e293b; padding:12px; border-radius:8px;">
+                            <p style="font-weight:bold; color:#60a5fa;">1. Recursion Stack: O(N)</p>
+                            <div style="font-size:0.875rem; color:#d1d5db; margin-top:4px;">
                                 <p>Max depth = N (one decision per element)</p>
-                                <div class="bg-black/30 p-2 rounded font-mono text-xs mt-1">
+                                <div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:6px; font-family:monospace; font-size:0.75rem; margin-top:4px;">
 solve(0, target) → solve(1, ...) → ... → solve(N, ...)<br>
-<span class="text-yellow-400">Max depth = N</span>
+<span style="color:#fbbf24;">Max depth = N</span>
                                 </div>
                             </div>
                         </div>
-                        
-                        <div class="bg-slate-800 p-3 rounded-lg">
-                            <p class="font-bold text-green-400">2. DP Table: O(N × Sum) → O(Sum)</p>
-                            <div class="text-sm text-gray-300 mt-1">
-                                <div class="bg-black/30 p-2 rounded font-mono text-xs">
-<span class="text-gray-500"># 2D Table</span><br>
-dp = [[False] * (target+1) for _ in range(N+1)]  <span class="text-yellow-400">← O(N × Sum)</span><br><br>
-<span class="text-gray-500"># Optimized 1D</span><br>
-dp = [False] * (target + 1)  <span class="text-green-400">← O(Sum)</span>
+
+                        <div style="background:#1e293b; padding:12px; border-radius:8px;">
+                            <p style="font-weight:bold; color:#4ade80;">2. DP Table: O(N × Sum) → O(Sum)</p>
+                            <div style="font-size:0.875rem; color:#d1d5db; margin-top:4px;">
+                                <div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:6px; font-family:monospace; font-size:0.75rem;">
+<span style="color:#64748b;"># 2D Table</span><br>
+dp = [[False] * (target+1) for _ in range(N+1)]  <span style="color:#fbbf24;">← O(N × Sum)</span><br><br>
+<span style="color:#64748b;"># Optimized 1D</span><br>
+dp = [False] * (target + 1)  <span style="color:#4ade80;">← O(Sum)</span>
                                 </div>
                             </div>
                         </div>
-                        
-                        <div class="bg-green-900/20 p-3 rounded-lg border border-green-500/30">
-                            <p class="font-bold text-green-400">Optimized Space: O(Sum)</p>
-                            <p class="text-sm text-gray-400">Where Sum = Total/2 (our target)</p>
+
+                        <div style="background:rgba(20,83,45,0.2); padding:12px; border-radius:8px; border:1px solid rgba(74,222,128,0.3);">
+                            <p style="font-weight:bold; color:#4ade80;">Optimized Space: O(Sum)</p>
+                            <p style="font-size:0.875rem; color:#94a3b8;">Where Sum = Total/2 (our target)</p>
                         </div>
                     </div>`,
-                visual: `<div class="space-y-3">
-                    <div class="text-center font-bold text-cyan-400">🎒 0/1 Knapsack = Lun ya Mat Lun</div>
-                    <div class="bg-black/30 p-3 rounded font-mono text-xs">
-                        <div class="text-gray-400 mb-2">nums = [1, 5, 11, 5], Target = 11</div>
-                        <div class="flex items-center gap-4 justify-center">
-                            <div class="text-center">
-                                <div class="bg-green-900/30 p-2 rounded border border-green-500/30 mb-1">
-                                    <span class="text-green-400 font-bold">TAKE</span>
+                visual: `
+                    <h4 style="color:#c026d3;">🎒 0/1 Knapsack: Take or Skip</h4>
+                    <div style="display:flex; flex-direction:column; gap:12px; margin:15px 0; max-width:500px;">
+                        <div style="background:#1e293b; padding:16px; border-radius:12px;">
+                            <div style="font-size:0.82rem; color:#94a3b8; margin-bottom:12px;">nums = [1, 5, 11, 5], Target = 11</div>
+                            <div style="display:flex; align-items:center; gap:20px; justify-content:center;">
+                                <div style="text-align:center;">
+                                    <div style="background:rgba(74,222,128,0.15); border:1px solid rgba(74,222,128,0.3); padding:10px 16px; border-radius:8px; margin-bottom:6px;">
+                                        <span style="color:#4ade80; font-weight:bold; font-size:0.9rem;">TAKE</span>
+                                    </div>
+                                    <div style="font-size:0.75rem; color:#94a3b8;">Include in subset</div>
+                                    <div style="font-family:monospace; font-size:0.78rem; color:#4ade80; margin-top:4px;">idx+1, sum-num</div>
                                 </div>
-                                <div class="text-xs text-gray-400">Include in subset</div>
-                                <div class="text-green-400 text-xs">idx + 1, sum - num</div>
+                                <div style="color:#475569; font-size:1.5rem; font-weight:bold;">OR</div>
+                                <div style="text-align:center;">
+                                    <div style="background:rgba(248,113,113,0.15); border:1px solid rgba(248,113,113,0.3); padding:10px 16px; border-radius:8px; margin-bottom:6px;">
+                                        <span style="color:#f87171; font-weight:bold; font-size:0.9rem;">SKIP</span>
+                                    </div>
+                                    <div style="font-size:0.75rem; color:#94a3b8;">Don't include</div>
+                                    <div style="font-family:monospace; font-size:0.78rem; color:#f87171; margin-top:4px;">idx+1, sum (same)</div>
+                                </div>
                             </div>
-                            <div class="text-gray-500 text-2xl">OR</div>
-                            <div class="text-center">
-                                <div class="bg-red-900/30 p-2 rounded border border-red-500/30 mb-1">
-                                    <span class="text-red-400 font-bold">SKIP</span>
+                        </div>
+                        <div style="background:#0f172a; padding:10px 14px; border-radius:8px; font-size:0.82rem; color:#94a3b8; text-align:center;">
+                            Each element: use <strong style="color:#fbbf24;">ONCE</strong> or not at all. Goal: subset summing to Target.
+                        </div>
+                    </div>`,
+                crux: `<div style="display:flex; flex-direction:column; gap:12px;">
+                    <div style="background:rgba(127,29,29,0.3); padding:12px; border-radius:8px; border-width:2px; border-style:solid; border-color:#ef4444;">
+                        <div style="font-weight:bold; color:#f87171; margin-bottom:8px;">🚨 CRITICAL: 0/1 vs Unbounded Knapsack</div>
+                        <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:8px; font-size:0.75rem;">
+                            <div style="background:rgba(127,29,29,0.2); padding:8px; border-radius:6px;">
+                                <div style="color:#f87171; font-weight:bold; margin-bottom:4px;">0/1 Knapsack</div>
+                                <div style="font-family:monospace; background:rgba(0,0,0,0.3); padding:4px; border-radius:6px;">
+                                    solve(<span style="color:#fbbf24;">idx + 1</span>, rem - num)
                                 </div>
-                                <div class="text-xs text-gray-400">Don't include</div>
-                                <div class="text-red-400 text-xs">idx + 1, sum (same)</div>
+                                <div style="color:#94a3b8; margin-top:4px;">MOVE to next! Each item ONCE.</div>
+                            </div>
+                            <div style="background:rgba(20,83,45,0.2); padding:8px; border-radius:6px;">
+                                <div style="color:#4ade80; font-weight:bold; margin-bottom:4px;">Unbounded</div>
+                                <div style="font-family:monospace; background:rgba(0,0,0,0.3); padding:4px; border-radius:6px;">
+                                    solve(<span style="color:#fbbf24;">idx</span>, rem - num)
+                                </div>
+                                <div style="color:#94a3b8; margin-top:4px;">STAY at same! Infinite supply.</div>
                             </div>
                         </div>
                     </div>
-                    <div class="text-xs text-gray-400 text-center">
-                        Each element: use ONCE or not at all<br>
-                        Goal: Find subset summing to Target
-                    </div>
-                </div>`,
-                crux: `<div class="space-y-3">
-                    <div class="bg-red-900/30 p-3 rounded-lg border-2 border-red-500">
-                        <div class="font-bold text-red-400 mb-2">🚨 CRITICAL: 0/1 vs Unbounded Knapsack</div>
-                        <div class="grid grid-cols-2 gap-2 text-xs">
-                            <div class="bg-red-900/20 p-2 rounded">
-                                <div class="text-red-400 font-bold mb-1">0/1 Knapsack</div>
-                                <div class="font-mono bg-black/30 p-1 rounded">
-                                    solve(<span class="text-yellow-400">idx + 1</span>, rem - num)
-                                </div>
-                                <div class="text-gray-400 mt-1">MOVE to next! Each item ONCE.</div>
-                            </div>
-                            <div class="bg-green-900/20 p-2 rounded">
-                                <div class="text-green-400 font-bold mb-1">Unbounded</div>
-                                <div class="font-mono bg-black/30 p-1 rounded">
-                                    solve(<span class="text-yellow-400">idx</span>, rem - num)
-                                </div>
-                                <div class="text-gray-400 mt-1">STAY at same! Infinite supply.</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-cyan-900/20 p-3 rounded-lg border border-cyan-500/30">
-                        <div class="font-bold text-cyan-400 mb-2">🎯 Problem Transformation</div>
-                        <div class="bg-black/30 p-2 rounded text-xs">
-                            <div>1. Total sum odd? → <span class="text-red-400">IMPOSSIBLE</span></div>
+
+                    <div style="background:rgba(22,78,99,0.2); padding:12px; border-radius:8px; border:1px solid rgba(6,182,212,0.3);">
+                        <div style="font-weight:bold; color:#22d3ee; margin-bottom:8px;">🎯 Problem Transformation</div>
+                        <div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:6px; font-size:0.75rem;">
+                            <div>1. Total sum odd? → <span style="color:#f87171;">IMPOSSIBLE</span></div>
                             <div>2. Target = sum / 2</div>
                             <div>3. Find ANY subset that sums to Target</div>
                             <div>4. If found, other subset also = Target! ✓</div>
                         </div>
                     </div>
-                    
-                    <div class="bg-purple-900/20 p-3 rounded-lg border border-purple-500/30">
-                        <div class="font-bold text-purple-400 mb-2">🔗 Same Pattern Problems</div>
-                        <ul class="text-sm text-gray-300 space-y-1">
+
+                    <div style="background:rgba(88,28,135,0.2); padding:12px; border-radius:8px; border:1px solid rgba(168,85,247,0.3);">
+                        <div style="font-weight:bold; color:#a78bfa; margin-bottom:8px;">🔗 Same Pattern Problems</div>
+                        <ul style="font-size:0.875rem; color:#d1d5db; display:flex; flex-direction:column; gap:4px;">
                             <li>• <strong>Target Sum</strong> - Assign +/- to reach target</li>
                             <li>• <strong>Last Stone Weight II</strong> - Minimize remaining stone</li>
                             <li>• <strong>Subset Sum</strong> - Classic 0/1 Knapsack</li>
@@ -1615,86 +1615,86 @@ dp = [False] * (target + 1)  <span class="text-green-400">← O(Sum)</span>
                         </ul>
                     </div>
                 </div>`,
-                trap: `<div class="space-y-2">
-                    <div class="bg-red-900/20 p-2 rounded border border-red-500/30">
-                        <div class="font-bold text-red-400 text-sm">❌ Trap 1: Odd Sum</div>
-                        <p class="text-xs text-gray-300">If total sum is <strong>ODD</strong>, return False immediately!</p>
-                        <p class="text-xs text-gray-400">Can't split odd number into two equal integers.</p>
+                trap: `<div style="display:flex; flex-direction:column; gap:8px;">
+                    <div style="background:rgba(127,29,29,0.2); padding:8px; border-radius:6px; border:1px solid rgba(248,113,113,0.3);">
+                        <div style="font-weight:bold; color:#f87171; font-size:0.875rem;">❌ Trap 1: Odd Sum</div>
+                        <p style="font-size:0.75rem; color:#d1d5db;">If total sum is <strong>ODD</strong>, return False immediately!</p>
+                        <p style="font-size:0.75rem; color:#94a3b8;">Can't split odd number into two equal integers.</p>
                     </div>
-                    
-                    <div class="bg-orange-900/20 p-2 rounded border border-orange-500/30">
-                        <div class="font-bold text-orange-400 text-sm">❌ Trap 2: 1D DP Direction</div>
-                        <div class="bg-black/30 p-1 rounded font-mono text-xs mt-1">
-<span class="text-red-400">❌ for s in range(0, target+1):</span>  <span class="text-gray-500"># LEFT to RIGHT</span><br>
-<span class="text-green-400">✅ for s in range(target, num-1, -1):</span>  <span class="text-gray-500"># RIGHT to LEFT</span>
+
+                    <div style="background:rgba(124,45,18,0.2); padding:8px; border-radius:6px; border:1px solid rgba(249,115,22,0.2);">
+                        <div style="font-weight:bold; color:#fb923c; font-size:0.875rem;">❌ Trap 2: 1D DP Direction</div>
+                        <div style="background:rgba(0,0,0,0.3); padding:4px; border-radius:6px; font-family:monospace; font-size:0.75rem; margin-top:4px;">
+<span style="color:#f87171;">❌ for s in range(0, target+1):</span>  <span style="color:#64748b;"># LEFT to RIGHT</span><br>
+<span style="color:#4ade80;">✅ for s in range(target, num-1, -1):</span>  <span style="color:#64748b;"># RIGHT to LEFT</span>
                         </div>
-                        <p class="text-xs text-gray-400">Wrong direction = using same item multiple times!</p>
+                        <p style="font-size:0.75rem; color:#94a3b8;">Wrong direction = using same item multiple times!</p>
                     </div>
-                    
-                    <div class="bg-yellow-900/20 p-2 rounded border border-yellow-500/30">
-                        <div class="font-bold text-yellow-400 text-sm">❌ Trap 3: Greedy Doesn't Work</div>
-                        <p class="text-xs text-gray-300">[3, 1, 1, 2, 2, 1]: Greedy picks 3, then stuck!</p>
-                        <p class="text-xs text-gray-400">Optimal: {3, 2} and {1, 1, 2, 1} both sum to 5.</p>
+
+                    <div style="background:rgba(113,63,18,0.2); padding:8px; border-radius:6px; border:1px solid rgba(234,179,8,0.3);">
+                        <div style="font-weight:bold; color:#fbbf24; font-size:0.875rem;">❌ Trap 3: Greedy Doesn't Work</div>
+                        <p style="font-size:0.75rem; color:#d1d5db;">[3, 1, 1, 2, 2, 1]: Greedy picks 3, then stuck!</p>
+                        <p style="font-size:0.75rem; color:#94a3b8;">Optimal: {3, 2} and {1, 1, 2, 1} both sum to 5.</p>
                     </div>
-                    
-                    <div class="bg-blue-900/20 p-2 rounded border border-blue-500/30">
-                        <div class="font-bold text-blue-400 text-sm">❌ Trap 4: Confusing with Unbounded</div>
-                        <p class="text-xs text-gray-300">0/1 = <strong>idx + 1</strong> (move) | Unbounded = <strong>idx</strong> (stay)</p>
-                        <p class="text-xs text-gray-400">This single line difference changes everything!</p>
+
+                    <div style="background:rgba(30,58,138,0.3); padding:8px; border-radius:6px; border:1px solid rgba(59,130,246,0.3);">
+                        <div style="font-weight:bold; color:#60a5fa; font-size:0.875rem;">❌ Trap 4: Confusing with Unbounded</div>
+                        <p style="font-size:0.75rem; color:#d1d5db;">0/1 = <strong>idx + 1</strong> (move) | Unbounded = <strong>idx</strong> (stay)</p>
+                        <p style="font-size:0.75rem; color:#94a3b8;">This single line difference changes everything!</p>
                     </div>
                 </div>`,
                 dryRun: [
-                    `<details class="group bg-slate-800 rounded-lg p-2 cursor-pointer open:ring-1 open:ring-indigo-500/50 transition-all duration-300">
-                        <summary class="flex items-center gap-3 font-medium text-indigo-300 select-none list-none text-sm">
-                            <span class="bg-indigo-500/20 text-indigo-400 p-1.5 rounded-md group-open:rotate-90 transition-transform">
-                                <i class="fas fa-chevron-right text-xs"></i>
+                    `<details style="background:#1e293b; border-radius:8px; padding:8px; cursor:pointer;">
+                        <summary style="display:flex; align-items:center; gap:12px; font-weight:500; color:#a5b4fc; user-select:none; list-style:none; font-size:0.875rem;">
+                            <span style="background:rgba(99,102,241,0.2); color:#818cf8; padding:6px; border-radius:6px;">
+                                <i class="fas fa-chevron-right" style="font-size:0.75rem;"></i>
                             </span>
                             <span>🔍 View Trace: [1, 5, 11, 5] (Hidden by Default)</span>
                         </summary>
-                        
-                        <div class="mt-3 pl-4 border-l-2 border-indigo-500/20 space-y-3 text-sm font-mono text-gray-300">
-                            <div class="bg-black/30 p-2 rounded text-xs">
+
+                        <div style="margin-top:12px; padding-left:16px; border-left:2px solid rgba(99,102,241,0.2); display:flex; flex-direction:column; gap:12px; font-size:0.875rem; font-family:monospace; color:#d1d5db;">
+                            <div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:6px; font-size:0.75rem;">
                                 <strong>Input:</strong> nums = [1, 5, 11, 5]<br>
                                 <strong>Total:</strong> 22 (even ✓)<br>
                                 <strong>Target:</strong> 22 / 2 = 11
                             </div>
-                            
-                            <div class="text-xs">
+
+                            <div style="font-size:0.75rem;">
                                 <strong>Find subset summing to 11:</strong>
-                                <div class="bg-black/30 p-2 rounded mt-1 space-y-1">
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-yellow-400">1.</span>
+                                <div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:6px; margin-top:4px; display:flex; flex-direction:column; gap:4px;">
+                                    <div style="display:flex; align-items:center; gap:8px;">
+                                        <span style="color:#fbbf24;">1.</span>
                                         <span>Try [1]: 1 ≠ 11</span>
                                     </div>
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-yellow-400">2.</span>
+                                    <div style="display:flex; align-items:center; gap:8px;">
+                                        <span style="color:#fbbf24;">2.</span>
                                         <span>Try [1, 5]: 6 ≠ 11</span>
                                     </div>
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-yellow-400">3.</span>
+                                    <div style="display:flex; align-items:center; gap:8px;">
+                                        <span style="color:#fbbf24;">3.</span>
                                         <span>Try [1, 5, 5]: 11 = 11 ✅</span>
                                     </div>
                                 </div>
                             </div>
-                            
-                            <div class="text-xs">
+
+                            <div style="font-size:0.75rem;">
                                 <strong>Or simpler - just take 11:</strong>
-                                <div class="bg-black/30 p-2 rounded mt-1">
-                                    <div class="flex items-center gap-2">
+                                <div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:6px; margin-top:4px;">
+                                    <div style="display:flex; align-items:center; gap:8px;">
                                         <span>Subset {11} sums to 11 ✅</span>
                                     </div>
-                                    <div class="flex items-center gap-2">
+                                    <div style="display:flex; align-items:center; gap:8px;">
                                         <span>Remaining {1, 5, 5} also sums to 11 ✅</span>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="border-t border-gray-700 pt-2 mt-2">
-                                <div class="flex items-center gap-2 text-green-400">
+                            <div style="border-top:1px solid #374151; padding-top:8px; margin-top:8px;">
+                                <div style="display:flex; align-items:center; gap:8px; color:#4ade80;">
                                     <i class="fas fa-check-circle"></i>
-                                    <span class="font-bold">Answer: True</span>
+                                    <span style="font-weight:bold;">Answer: True</span>
                                 </div>
-                                <div class="text-xs text-gray-500 mt-1">Partition: {11} | {1, 5, 5}</div>
+                                <div style="font-size:0.75rem; color:#64748b; margin-top:4px;">Partition: {11} | {1, 5, 5}</div>
                             </div>
                         </div>
                     </details>`
@@ -1795,75 +1795,75 @@ return dp[target]`
                 ],
                 metrics: { time: "O(M×N)", space: "O(M×N)" },
                 timeExplainer: `
-                    <div class="space-y-3">
-                        <div class="bg-red-900/20 p-3 rounded-lg border border-red-500/30">
-                            <p class="font-bold text-red-400 text-base">🔴 Brute Force (Recursion): O(3^(M+N))</p>
-                            <div class="mt-2 space-y-2 text-sm text-gray-300">
+                    <div style="display:flex; flex-direction:column; gap:12px;">
+                        <div style="background:rgba(127,29,29,0.2); padding:12px; border-radius:8px; border:1px solid rgba(248,113,113,0.3);">
+                            <p style="font-weight:bold; color:#f87171; font-size:1rem;">🔴 Brute Force (Recursion): O(3^(M+N))</p>
+                            <div style="margin-top:8px; display:flex; flex-direction:column; gap:8px; font-size:0.875rem; color:#d1d5db;">
                                 <p><strong>🤔 Kyun?</strong> Har mismatch pe 3 choices hain:</p>
-                                <div class="bg-black/30 p-2 rounded font-mono text-xs">
-                                    INSERT  → (i, j-1)    <span class="text-gray-500"># Add char to word1</span><br>
-                                    DELETE  → (i-1, j)    <span class="text-gray-500"># Remove char from word1</span><br>
-                                    REPLACE → (i-1, j-1)  <span class="text-gray-500"># Change char in word1</span>
+                                <div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:6px; font-family:monospace; font-size:0.75rem;">
+                                    INSERT  → (i, j-1)    <span style="color:#64748b;"># Add char to word1</span><br>
+                                    DELETE  → (i-1, j)    <span style="color:#64748b;"># Remove char from word1</span><br>
+                                    REPLACE → (i-1, j-1)  <span style="color:#64748b;"># Change char in word1</span>
                                 </div>
-                                
+
                                 <p><strong>📊 Math Breakdown:</strong></p>
-                                <ul class="list-disc pl-4 space-y-1">
+                                <ul style="list-style:disc; padding-left:16px; display:flex; flex-direction:column; gap:4px;">
                                     <li>At each step: <strong>3 branches</strong> (worst case)</li>
                                     <li>Max depth: <strong>M + N</strong> (both strings empty)</li>
                                     <li>Total: 3^(M+N) calls!</li>
                                 </ul>
-                                
+
                                 <p><strong>🎯 Real Numbers:</strong></p>
-                                <table class="w-full text-xs border-collapse">
-                                    <tr class="border-b border-gray-700">
-                                        <td class="py-1">M=5, N=5</td>
-                                        <td class="text-yellow-400">3^10 ≈ 59K ops ✅</td>
+                                <table style="width:100%; font-size:0.75rem; border-collapse:collapse;">
+                                    <tr style="border-bottom:1px solid #374151;">
+                                        <td style="padding-top:4px; padding-bottom:4px;">M=5, N=5</td>
+                                        <td style="color:#fbbf24;">3^10 ≈ 59K ops ✅</td>
                                     </tr>
-                                    <tr class="border-b border-gray-700">
-                                        <td class="py-1">M=10, N=10</td>
-                                        <td class="text-orange-400">3^20 ≈ 3.5 Billion ⚠️ TLE</td>
+                                    <tr style="border-bottom:1px solid #374151;">
+                                        <td style="padding-top:4px; padding-bottom:4px;">M=10, N=10</td>
+                                        <td style="color:#fb923c;">3^20 ≈ 3.5 Billion ⚠️ TLE</td>
                                     </tr>
                                     <tr>
-                                        <td class="py-1">M=20, N=20</td>
-                                        <td class="text-red-400">3^40 ≈ 10^19 💀 Impossible</td>
+                                        <td style="padding-top:4px; padding-bottom:4px;">M=20, N=20</td>
+                                        <td style="color:#f87171;">3^40 ≈ 10^19 💀 Impossible</td>
                                     </tr>
                                 </table>
                             </div>
                         </div>
-                        
-                        <div class="bg-green-900/20 p-3 rounded-lg border border-green-500/30">
-                            <p class="font-bold text-green-400 text-base">🟢 Memoization / DP: O(M × N)</p>
-                            <div class="mt-2 space-y-2 text-sm text-gray-300">
+
+                        <div style="background:rgba(20,83,45,0.2); padding:12px; border-radius:8px; border:1px solid rgba(74,222,128,0.3);">
+                            <p style="font-weight:bold; color:#4ade80; font-size:1rem;">🟢 Memoization / DP: O(M × N)</p>
+                            <div style="margin-top:8px; display:flex; flex-direction:column; gap:8px; font-size:0.875rem; color:#d1d5db;">
                                 <p><strong>🤔 Why 3^(M+N) → M×N?</strong></p>
-                                
+
                                 <p><strong>Step 1: Count Unique States</strong></p>
-                                <div class="bg-black/30 p-2 rounded">
-                                    <div class="font-mono text-xs">solve(<span class="text-cyan-400">i</span>, <span class="text-purple-400">j</span>)</div>
-                                    <div class="text-xs text-gray-400">i can be: 0 to M → (M+1) values</div>
-                                    <div class="text-xs text-gray-400">j can be: 0 to N → (N+1) values</div>
-                                    <div class="text-cyan-400 font-bold">Unique States = (M+1) × (N+1) ≈ O(M×N)</div>
+                                <div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:6px;">
+                                    <div style="font-family:monospace; font-size:0.75rem;">solve(<span style="color:#22d3ee;">i</span>, <span style="color:#a78bfa;">j</span>)</div>
+                                    <div style="font-size:0.75rem; color:#94a3b8;">i can be: 0 to M → (M+1) values</div>
+                                    <div style="font-size:0.75rem; color:#94a3b8;">j can be: 0 to N → (N+1) values</div>
+                                    <div style="color:#22d3ee; font-weight:bold;">Unique States = (M+1) × (N+1) ≈ O(M×N)</div>
                                 </div>
-                                
-                                <p class="mt-2"><strong>Step 2: Work per State</strong></p>
-                                <div class="bg-black/30 p-2 rounded font-mono text-xs">
-if word1[i-1] == word2[j-1]:  <span class="text-green-400">← O(1) compare</span><br>
-return dp[i-1][j-1]       <span class="text-green-400">← O(1) lookup</span><br>
+
+                                <p style="margin-top:8px;"><strong>Step 2: Work per State</strong></p>
+                                <div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:6px; font-family:monospace; font-size:0.75rem;">
+if word1[i-1] == word2[j-1]:  <span style="color:#4ade80;">← O(1) compare</span><br>
+return dp[i-1][j-1]       <span style="color:#4ade80;">← O(1) lookup</span><br>
 else:<br>
-return 1 + min(...)       <span class="text-green-400">← O(1) min of 3</span>
+return 1 + min(...)       <span style="color:#4ade80;">← O(1) min of 3</span>
                                 </div>
-                                
-                                <p class="mt-2"><strong>🧮 Final Calculation:</strong></p>
-                                <div class="bg-black/30 p-2 rounded text-cyan-300">
-                                    M×N states × O(1) work = <strong class="text-green-400">O(M×N)</strong>
+
+                                <p style="margin-top:8px;"><strong>🧮 Final Calculation:</strong></p>
+                                <div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:6px; color:#67e8f9;">
+                                    M×N states × O(1) work = <strong style="color:#4ade80;">O(M×N)</strong>
                                 </div>
                             </div>
                         </div>
-                        
-                        <div class="bg-purple-900/20 p-3 rounded-lg border border-purple-500/30">
-                            <p class="font-bold text-purple-400 text-base">🟣 Space Optimized: O(min(M, N))</p>
-                            <div class="mt-2 text-sm text-gray-300">
+
+                        <div style="background:rgba(88,28,135,0.2); padding:12px; border-radius:8px; border:1px solid rgba(168,85,247,0.3);">
+                            <p style="font-weight:bold; color:#a78bfa; font-size:1rem;">🟣 Space Optimized: O(min(M, N))</p>
+                            <div style="margin-top:8px; font-size:0.875rem; color:#d1d5db;">
                                 <p><strong>Only need previous row!</strong></p>
-                                <ul class="list-disc pl-4 text-xs space-y-1">
+                                <ul style="list-style:disc; padding-left:16px; font-size:0.75rem; display:flex; flex-direction:column; gap:4px;">
                                     <li>Current cell only depends on: top, left, diagonal</li>
                                     <li>Keep 2 rows (previous + current)</li>
                                     <li>Space: O(min(M, N)) if we iterate smarter</li>
@@ -1872,86 +1872,86 @@ return 1 + min(...)       <span class="text-green-400">← O(1) min of 3</span>
                         </div>
                     </div>`,
                 spaceExplainer: `
-                    <div class="space-y-3">
-                        <div class="bg-slate-800 p-3 rounded-lg">
-                            <p class="font-bold text-blue-400">1. Recursion Stack: O(M + N)</p>
-                            <div class="text-sm text-gray-300 mt-1">
+                    <div style="display:flex; flex-direction:column; gap:12px;">
+                        <div style="background:#1e293b; padding:12px; border-radius:8px;">
+                            <p style="font-weight:bold; color:#60a5fa;">1. Recursion Stack: O(M + N)</p>
+                            <div style="font-size:0.875rem; color:#d1d5db; margin-top:4px;">
                                 <p>Max depth when both strings shrink one char at a time</p>
-                                <div class="bg-black/30 p-2 rounded font-mono text-xs mt-1">
+                                <div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:6px; font-family:monospace; font-size:0.75rem; margin-top:4px;">
 solve(M, N) → solve(M-1, N) → ... → solve(0, N)<br>
      → solve(0, N-1) → ... → solve(0, 0)<br>
-<span class="text-yellow-400">Max depth = M + N</span>
+<span style="color:#fbbf24;">Max depth = M + N</span>
                                 </div>
                             </div>
                         </div>
-                        
-                        <div class="bg-slate-800 p-3 rounded-lg">
-                            <p class="font-bold text-green-400">2. Memoization Cache / DP Table: O(M × N)</p>
-                            <div class="text-sm text-gray-300 mt-1">
-                                <div class="bg-black/30 p-2 rounded font-mono text-xs">
+
+                        <div style="background:#1e293b; padding:12px; border-radius:8px;">
+                            <p style="font-weight:bold; color:#4ade80;">2. Memoization Cache / DP Table: O(M × N)</p>
+                            <div style="font-size:0.875rem; color:#d1d5db; margin-top:4px;">
+                                <div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:6px; font-family:monospace; font-size:0.75rem;">
 dp = [[0] * (N+1) for _ in range(M+1)]<br>
-<span class="text-gray-500"># (M+1) rows × (N+1) columns</span><br>
-<span class="text-cyan-400">Size ≈ M × N cells</span>
+<span style="color:#64748b;"># (M+1) rows × (N+1) columns</span><br>
+<span style="color:#22d3ee;">Size ≈ M × N cells</span>
                                 </div>
                             </div>
                         </div>
-                        
-                        <div class="bg-green-900/20 p-3 rounded-lg border border-green-500/30">
-                            <p class="font-bold text-green-400">Total Space: O(M × N)</p>
-                            <p class="text-sm text-gray-400">Can be optimized to O(min(M,N)) using 2 rows.</p>
+
+                        <div style="background:rgba(20,83,45,0.2); padding:12px; border-radius:8px; border:1px solid rgba(74,222,128,0.3);">
+                            <p style="font-weight:bold; color:#4ade80;">Total Space: O(M × N)</p>
+                            <p style="font-size:0.875rem; color:#94a3b8;">Can be optimized to O(min(M,N)) using 2 rows.</p>
                         </div>
                     </div>`,
-                visual: `<div class="space-y-3">
-                    <div class="text-center font-bold text-cyan-400">⚡ The 3 Operations</div>
-                    <div class="bg-black/30 p-3 rounded font-mono text-xs">
-                        <div class="text-gray-400 mb-2">Convert "CAT" → "CUT"</div>
-                        <div class="grid grid-cols-3 gap-2 text-center">
-                            <div class="bg-blue-900/30 p-2 rounded border border-blue-500/30">
-                                <div class="text-blue-400 font-bold">INSERT</div>
-                                <div class="text-xs">CAT → C<span class="text-green-400">U</span>AT</div>
-                                <div class="text-gray-500 text-xs">(i, j-1)</div>
-                            </div>
-                            <div class="bg-red-900/30 p-2 rounded border border-red-500/30">
-                                <div class="text-red-400 font-bold">DELETE</div>
-                                <div class="text-xs">CAT → <span class="text-red-400 line-through">C</span>AT</div>
-                                <div class="text-gray-500 text-xs">(i-1, j)</div>
-                            </div>
-                            <div class="bg-yellow-900/30 p-2 rounded border border-yellow-500/30">
-                                <div class="text-yellow-400 font-bold">REPLACE</div>
-                                <div class="text-xs">CAT → C<span class="text-yellow-400">U</span>T</div>
-                                <div class="text-gray-500 text-xs">(i-1, j-1)</div>
+                visual: `
+                    <h4 style="color:#c026d3;">⚡ The 3 Operations: Insert / Delete / Replace</h4>
+                    <div style="display:flex; flex-direction:column; gap:12px; margin:15px 0; max-width:550px;">
+                        <div style="background:#1e293b; padding:16px; border-radius:12px;">
+                            <div style="font-size:0.82rem; color:#94a3b8; margin-bottom:12px;">Convert "CAT" → "CUT"</div>
+                            <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px;">
+                                <div style="background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3); padding:12px; border-radius:10px; text-align:center;">
+                                    <div style="color:#38bdf8; font-weight:bold; font-size:0.9rem; margin-bottom:6px;">INSERT</div>
+                                    <div style="font-family:monospace; font-size:0.82rem; color:#cbd5e1;">CAT → C<span style="color:#4ade80; font-weight:bold;">U</span>AT</div>
+                                    <div style="font-family:monospace; font-size:0.75rem; color:#64748b; margin-top:4px;">(i, j-1)</div>
+                                </div>
+                                <div style="background:rgba(248,113,113,0.1); border:1px solid rgba(248,113,113,0.3); padding:12px; border-radius:10px; text-align:center;">
+                                    <div style="color:#f87171; font-weight:bold; font-size:0.9rem; margin-bottom:6px;">DELETE</div>
+                                    <div style="font-family:monospace; font-size:0.82rem; color:#cbd5e1;">CAT → <span style="color:#f87171; text-decoration:line-through;">C</span>AT</div>
+                                    <div style="font-family:monospace; font-size:0.75rem; color:#64748b; margin-top:4px;">(i-1, j)</div>
+                                </div>
+                                <div style="background:rgba(251,191,36,0.1); border:1px solid rgba(251,191,36,0.3); padding:12px; border-radius:10px; text-align:center;">
+                                    <div style="color:#fbbf24; font-weight:bold; font-size:0.9rem; margin-bottom:6px;">REPLACE</div>
+                                    <div style="font-family:monospace; font-size:0.82rem; color:#cbd5e1;">CAT → C<span style="color:#fbbf24; font-weight:bold;">U</span>T</div>
+                                    <div style="font-family:monospace; font-size:0.75rem; color:#64748b; margin-top:4px;">(i-1, j-1)</div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="text-xs text-gray-400 text-center">
-                        If chars MATCH → move diagonal (no cost)<br>
-                        If MISMATCH → pick min of 3 operations (+1 cost)
-                    </div>
-                </div>`,
-                crux: `<div class="space-y-3">
-                    <div class="bg-cyan-900/20 p-3 rounded-lg border border-cyan-500/30">
-                        <div class="font-bold text-cyan-400 mb-2">🎯 The Core Recurrence</div>
-                        <div class="bg-black/30 p-2 rounded font-mono text-xs">
-if word1[i-1] == word2[j-1]:  <span class="text-green-400"># MATCH!</span><br>
-dp[i][j] = dp[i-1][j-1]   <span class="text-green-400"># No operation needed</span><br>
-else:                         <span class="text-red-400"># MISMATCH</span><br>
+                        <div style="background:#0f172a; padding:10px 14px; border-radius:8px; font-size:0.82rem; color:#94a3b8; text-align:center;">
+                            <span style="color:#4ade80;">MATCH → diagonal (0 cost)</span> | <span style="color:#f87171;">MISMATCH → min(3 ops) + 1</span>
+                        </div>
+                    </div>`,
+                crux: `<div style="display:flex; flex-direction:column; gap:12px;">
+                    <div style="background:rgba(22,78,99,0.2); padding:12px; border-radius:8px; border:1px solid rgba(6,182,212,0.3);">
+                        <div style="font-weight:bold; color:#22d3ee; margin-bottom:8px;">🎯 The Core Recurrence</div>
+                        <div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:6px; font-family:monospace; font-size:0.75rem;">
+if word1[i-1] == word2[j-1]:  <span style="color:#4ade80;"># MATCH!</span><br>
+dp[i][j] = dp[i-1][j-1]   <span style="color:#4ade80;"># No operation needed</span><br>
+else:                         <span style="color:#f87171;"># MISMATCH</span><br>
 dp[i][j] = 1 + min(<br>
-    dp[i-1][j],           <span class="text-red-400"># DELETE from word1</span><br>
-    dp[i][j-1],           <span class="text-blue-400"># INSERT into word1</span><br>
-    dp[i-1][j-1]          <span class="text-yellow-400"># REPLACE in word1</span><br>
+    dp[i-1][j],           <span style="color:#f87171;"># DELETE from word1</span><br>
+    dp[i][j-1],           <span style="color:#60a5fa;"># INSERT into word1</span><br>
+    dp[i-1][j-1]          <span style="color:#fbbf24;"># REPLACE in word1</span><br>
 )
                         </div>
                     </div>
-                    
-                    <div class="bg-yellow-900/20 p-3 rounded-lg border border-yellow-500/30">
-                        <div class="font-bold text-yellow-400 mb-2">💡 Key Insight: LCS Connection</div>
-                        <p class="text-sm text-gray-300">Edit Distance ≈ <strong>Total Length - 2×LCS</strong></p>
-                        <p class="text-xs text-gray-400">But direct DP is easier to understand and implement!</p>
+
+                    <div style="background:rgba(113,63,18,0.2); padding:12px; border-radius:8px; border:1px solid rgba(234,179,8,0.3);">
+                        <div style="font-weight:bold; color:#fbbf24; margin-bottom:8px;">💡 Key Insight: LCS Connection</div>
+                        <p style="font-size:0.875rem; color:#d1d5db;">Edit Distance ≈ <strong>Total Length - 2×LCS</strong></p>
+                        <p style="font-size:0.75rem; color:#94a3b8;">But direct DP is easier to understand and implement!</p>
                     </div>
-                    
-                    <div class="bg-purple-900/20 p-3 rounded-lg border border-purple-500/30">
-                        <div class="font-bold text-purple-400 mb-2">🔗 Same Pattern Problems</div>
-                        <ul class="text-sm text-gray-300 space-y-1">
+
+                    <div style="background:rgba(88,28,135,0.2); padding:12px; border-radius:8px; border:1px solid rgba(168,85,247,0.3);">
+                        <div style="font-weight:bold; color:#a78bfa; margin-bottom:8px;">🔗 Same Pattern Problems</div>
+                        <ul style="font-size:0.875rem; color:#d1d5db; display:flex; flex-direction:column; gap:4px;">
                             <li>• <strong>LCS</strong> - Match = take, Mismatch = skip</li>
                             <li>• <strong>One Edit Distance</strong> - Check if exactly 1 edit</li>
                             <li>• <strong>Delete Operation for Two Strings</strong> - Only delete allowed</li>
@@ -1959,51 +1959,51 @@ dp[i][j] = 1 + min(<br>
                         </ul>
                     </div>
                 </div>`,
-                trap: `<div class="space-y-2">
-                    <div class="bg-red-900/20 p-2 rounded border border-red-500/30">
-                        <div class="font-bold text-red-400 text-sm">❌ Trap 1: Base Case Confusion</div>
-                        <div class="bg-black/30 p-1 rounded font-mono text-xs mt-1">
-dp[i][0] = i  <span class="text-gray-500"># Delete all i chars from word1</span><br>
-dp[0][j] = j  <span class="text-gray-500"># Insert all j chars into word1</span>
+                trap: `<div style="display:flex; flex-direction:column; gap:8px;">
+                    <div style="background:rgba(127,29,29,0.2); padding:8px; border-radius:6px; border:1px solid rgba(248,113,113,0.3);">
+                        <div style="font-weight:bold; color:#f87171; font-size:0.875rem;">❌ Trap 1: Base Case Confusion</div>
+                        <div style="background:rgba(0,0,0,0.3); padding:4px; border-radius:6px; font-family:monospace; font-size:0.75rem; margin-top:4px;">
+dp[i][0] = i  <span style="color:#64748b;"># Delete all i chars from word1</span><br>
+dp[0][j] = j  <span style="color:#64748b;"># Insert all j chars into word1</span>
                         </div>
                     </div>
-                    
-                    <div class="bg-orange-900/20 p-2 rounded border border-orange-500/30">
-                        <div class="font-bold text-orange-400 text-sm">❌ Trap 2: Index Off-by-One</div>
-                        <p class="text-xs text-gray-300">DP uses 1-indexed! Compare <code>word1[i-1]</code> with <code>word2[j-1]</code></p>
-                        <p class="text-xs text-gray-400">dp[i][j] represents first i chars of word1 and first j chars of word2</p>
+
+                    <div style="background:rgba(124,45,18,0.2); padding:8px; border-radius:6px; border:1px solid rgba(249,115,22,0.2);">
+                        <div style="font-weight:bold; color:#fb923c; font-size:0.875rem;">❌ Trap 2: Index Off-by-One</div>
+                        <p style="font-size:0.75rem; color:#d1d5db;">DP uses 1-indexed! Compare <code>word1[i-1]</code> with <code>word2[j-1]</code></p>
+                        <p style="font-size:0.75rem; color:#94a3b8;">dp[i][j] represents first i chars of word1 and first j chars of word2</p>
                     </div>
-                    
-                    <div class="bg-yellow-900/20 p-2 rounded border border-yellow-500/30">
-                        <div class="font-bold text-yellow-400 text-sm">❌ Trap 3: Forgetting +1</div>
-                        <p class="text-xs text-gray-300">INSERT/DELETE/REPLACE each costs <strong>1 operation</strong></p>
-                        <p class="text-xs text-gray-400">Return value is: <code>1 + min(...)</code> not just <code>min(...)</code></p>
+
+                    <div style="background:rgba(113,63,18,0.2); padding:8px; border-radius:6px; border:1px solid rgba(234,179,8,0.3);">
+                        <div style="font-weight:bold; color:#fbbf24; font-size:0.875rem;">❌ Trap 3: Forgetting +1</div>
+                        <p style="font-size:0.75rem; color:#d1d5db;">INSERT/DELETE/REPLACE each costs <strong>1 operation</strong></p>
+                        <p style="font-size:0.75rem; color:#94a3b8;">Return value is: <code>1 + min(...)</code> not just <code>min(...)</code></p>
                     </div>
-                    
-                    <div class="bg-blue-900/20 p-2 rounded border border-blue-500/30">
-                        <div class="font-bold text-blue-400 text-sm">❌ Trap 4: Greedy Doesn't Work</div>
-                        <p class="text-xs text-gray-300">"horse" → "ros": Greedy might replace h→r, but optimal is different!</p>
-                        <p class="text-xs text-gray-400">Must try all 3 options and take minimum.</p>
+
+                    <div style="background:rgba(30,58,138,0.3); padding:8px; border-radius:6px; border:1px solid rgba(59,130,246,0.3);">
+                        <div style="font-weight:bold; color:#60a5fa; font-size:0.875rem;">❌ Trap 4: Greedy Doesn't Work</div>
+                        <p style="font-size:0.75rem; color:#d1d5db;">"horse" → "ros": Greedy might replace h→r, but optimal is different!</p>
+                        <p style="font-size:0.75rem; color:#94a3b8;">Must try all 3 options and take minimum.</p>
                     </div>
                 </div>`,
                 dryRun: [
-                    `<details class="group bg-slate-800 rounded-lg p-2 cursor-pointer open:ring-1 open:ring-indigo-500/50 transition-all duration-300">
-                        <summary class="flex items-center gap-3 font-medium text-indigo-300 select-none list-none text-sm">
-                            <span class="bg-indigo-500/20 text-indigo-400 p-1.5 rounded-md group-open:rotate-90 transition-transform">
-                                <i class="fas fa-chevron-right text-xs"></i>
+                    `<details style="background:#1e293b; border-radius:8px; padding:8px; cursor:pointer;">
+                        <summary style="display:flex; align-items:center; gap:12px; font-weight:500; color:#a5b4fc; user-select:none; list-style:none; font-size:0.875rem;">
+                            <span style="background:rgba(99,102,241,0.2); color:#818cf8; padding:6px; border-radius:6px;">
+                                <i class="fas fa-chevron-right" style="font-size:0.75rem;"></i>
                             </span>
                             <span>🔍 View Trace: "CAT" → "CUT" (Hidden by Default)</span>
                         </summary>
-                        
-                        <div class="mt-3 pl-4 border-l-2 border-indigo-500/20 space-y-3 text-sm font-mono text-gray-300">
-                            <div class="bg-black/30 p-2 rounded text-xs">
+
+                        <div style="margin-top:12px; padding-left:16px; border-left:2px solid rgba(99,102,241,0.2); display:flex; flex-direction:column; gap:12px; font-size:0.875rem; font-family:monospace; color:#d1d5db;">
+                            <div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:6px; font-size:0.75rem;">
                                 <strong>Input:</strong> word1 = "CAT", word2 = "CUT"<br>
                                 <strong>Goal:</strong> Minimum operations to convert CAT → CUT
                             </div>
-                            
-                            <div class="text-xs">
+
+                            <div style="font-size:0.75rem;">
                                 <strong>DP Table (rows=word1, cols=word2):</strong>
-                                <pre class="bg-black/30 p-2 rounded mt-1 overflow-x-auto">
+                                <pre style="background:rgba(0,0,0,0.3); padding:8px; border-radius:6px; margin-top:4px; overflow-x:auto;">
 ""  C   U   T
 ""   0   1   2   3  ← Insert C, U, T
 C    1  [0]  1   2  ← C==C, cost=0
@@ -2011,31 +2011,31 @@ A    2   1  [1]  2  ← A≠U, min(1,1,0)+1=1
 T    3   2   2  [1] ← T==T, cost=dp[2][2]=1
                                 </pre>
                             </div>
-                            
-                            <div class="space-y-2 text-xs">
-                                <div class="flex items-center gap-2">
-                                    <span class="text-green-400">1.</span>
+
+                            <div style="display:flex; flex-direction:column; gap:8px; font-size:0.75rem;">
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <span style="color:#4ade80;">1.</span>
                                     <span>dp[1][1]: C == C → dp[0][0] = <strong>0</strong></span>
                                 </div>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-yellow-400">2.</span>
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <span style="color:#fbbf24;">2.</span>
                                     <span>dp[2][2]: A ≠ U → 1 + min(dp[1][2], dp[2][1], dp[1][1])</span>
                                 </div>
-                                <div class="flex items-center gap-2 pl-4">
+                                <div style="display:flex; align-items:center; gap:8px; padding-left:16px;">
                                     <span>= 1 + min(1, 1, 0) = <strong>1</strong> (REPLACE A→U)</span>
                                 </div>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-green-400">3.</span>
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <span style="color:#4ade80;">3.</span>
                                     <span>dp[3][3]: T == T → dp[2][2] = <strong>1</strong></span>
                                 </div>
                             </div>
 
-                            <div class="border-t border-gray-700 pt-2 mt-2">
-                                <div class="flex items-center gap-2 text-green-400">
+                            <div style="border-top:1px solid #374151; padding-top:8px; margin-top:8px;">
+                                <div style="display:flex; align-items:center; gap:8px; color:#4ade80;">
                                     <i class="fas fa-check-circle"></i>
-                                    <span class="font-bold">Answer: 1 (Replace 'A' with 'U')</span>
+                                    <span style="font-weight:bold;">Answer: 1 (Replace 'A' with 'U')</span>
                                 </div>
-                                <div class="text-xs text-gray-500 mt-1">CAT → C<span class="text-yellow-400">U</span>T</div>
+                                <div style="font-size:0.75rem; color:#64748b; margin-top:4px;">CAT → C<span style="color:#fbbf24;">U</span>T</div>
                             </div>
                         </div>
                     </details>`

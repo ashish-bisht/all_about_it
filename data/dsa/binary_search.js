@@ -617,42 +617,123 @@ def can_place_cows(stalls, cows, min_dist):
                 metrics: { time: "O(log min(N,M))", space: "O(1)" },
                 timeExplainer: "<strong>Time Analysis:</strong><br>• Binary search on smaller array<br>• Always pick smaller for partitioning<br><br><strong>Total:</strong> <code>O(log min(N, M))</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Only partition pointers<br>• No extra arrays<br><br><strong>Result:</strong> <code>O(1)</code>",
-                visual: "<span><strong>Mental Model: The Perfect Cut</strong><br>Slice both arrays such that elements on Left <= elements on Right.</span>",
-                crux: "Don't merge! Partition array A at `i`. Partition B at `j` is auto-calculated.<br>Goal: `maxLeftA <= minRightB` & `maxLeftB <= minRightA`.",
-                trap: "<strong>Edge Cases:</strong> What if cut is at 0 or N? Use <code>-∞</code> and <code>+∞</code>.",
+                visual: `
+                    <h4 style="color:#c026d3;">✂️ The Perfect Cut: Binary Search on Partition</h4>
+                    <div style="display:flex; flex-direction:column; gap:12px; margin:15px 0; max-width:600px;">
+                        <div style="background:#1e293b; padding:16px; border-radius:12px;">
+                            <div style="font-size:0.82rem; color:#94a3b8; margin-bottom:10px;">A = [1, 3, 8, 9], B = [2, 5, 6, 7]</div>
+                            <div style="display:flex; flex-direction:column; gap:8px; font-family:monospace; font-size:0.85rem;">
+                                <div style="display:flex; align-items:center; gap:4px;">
+                                    <span style="color:#4ade80; width:22px;">A:</span>
+                                    <span style="background:rgba(74,222,128,0.15); padding:4px 8px; border-radius:4px; color:#4ade80;">1</span>
+                                    <span style="background:rgba(74,222,128,0.15); padding:4px 8px; border-radius:4px; color:#4ade80;">3</span>
+                                    <span style="color:#fbbf24; font-weight:bold; font-size:1.2rem;">✂</span>
+                                    <span style="background:rgba(248,113,113,0.15); padding:4px 8px; border-radius:4px; color:#f87171;">8</span>
+                                    <span style="background:rgba(248,113,113,0.15); padding:4px 8px; border-radius:4px; color:#f87171;">9</span>
+                                </div>
+                                <div style="display:flex; align-items:center; gap:4px;">
+                                    <span style="color:#38bdf8; width:22px;">B:</span>
+                                    <span style="background:rgba(56,189,248,0.15); padding:4px 8px; border-radius:4px; color:#38bdf8;">2</span>
+                                    <span style="background:rgba(56,189,248,0.15); padding:4px 8px; border-radius:4px; color:#38bdf8;">5</span>
+                                    <span style="color:#fbbf24; font-weight:bold; font-size:1.2rem;">✂</span>
+                                    <span style="background:rgba(167,139,250,0.15); padding:4px 8px; border-radius:4px; color:#a78bfa;">6</span>
+                                    <span style="background:rgba(167,139,250,0.15); padding:4px 8px; border-radius:4px; color:#a78bfa;">7</span>
+                                </div>
+                            </div>
+                            <div style="display:flex; gap:20px; margin-top:12px; padding-top:10px; border-top:1px solid #334155; justify-content:center; font-size:0.82rem;">
+                                <span style="color:#4ade80;">Left: {1,3,2,5}</span>
+                                <span style="color:#fbbf24;">≤</span>
+                                <span style="color:#f87171;">Right: {8,9,6,7}</span>
+                            </div>
+                        </div>
+                        <div style="background:#0f172a; padding:12px; border-radius:8px; font-size:0.82rem; color:#94a3b8;">
+                            <strong style="color:#fbbf24;">Check:</strong> A[i-1] ≤ B[j] AND B[j-1] ≤ A[i] → <span style="color:#4ade80;">3≤6 ✓</span> <span style="color:#4ade80;">5≤8 ✓</span> → Median = max(3,5) = <strong style="color:#fbbf24;">5</strong>
+                        </div>
+                    </div>`,
+                crux: "<strong>Partitioning on Smaller Array:</strong><br>Cut `A` at `i`. `B`'s cut `j` is auto-fixed to balance sizes.<br>Valid if: `A[i-1] <= B[j]` AND `B[j-1] <= A[i]`.",
+                strategy: "Binary Search on smaller array [0, N]. Calc partition for larger. Check cross-conditions. Handle edges with ±∞.",
+                trap: "<strong>Edge Cases & Infinity:</strong><br>If cut is at start/end, use `-∞` or `+∞`.<br>Don't access index -1 or index N directly!",
                 dryRun: [
-                    "<strong>Input:</strong> X=[1, 3], Y=[2].",
-                    "1. Cut X at 1 (Left: {1}, Right: {3}). Cut Y at 1 (Left: {2}, Right: {Inf}).",
-                    "Check: 1 <= Inf? OK. 2 <= 3? OK.",
-                    "Found! Median = max(1, 2) = 2."
+                    "<strong>Input:</strong> A=[1, 3], B=[2]. Total=3. Half=1.",
+                    "1. BS on A (len 2). L=0, R=2.",
+                    "2. Cut A at 1. LeftA=[1], RightA=[3].",
+                    "3. Cut B at (3+1)//2 - 1 = 1. LeftB=[2], RightB=[Inf].",
+                    "4. Cross-check: 1 <= Inf? Yes. 2 <= 3? Yes.",
+                    "5. Valid! MaxLeft = max(1, 2) = 2. Median = 2."
                 ],
                 codeTitle: "Python Solution (Virtual Infinity)",
                 code: `def findMedianSortedArrays(nums1, nums2):
-if len(nums1) > len(nums2): 
-    nums1, nums2 = nums2, nums1
+    if len(nums1) > len(nums2):
+        nums1, nums2 = nums2, nums1
 
-m, n = len(nums1), len(nums2)
-low, high = 0, m
+    m, n = len(nums1), len(nums2)
+    low, high = 0, m
 
-while low <= high:
-    partitionX = low + (high - low) // 2
-    partitionY = (m + n + 1) // 2 - partitionX
-    
-    maxLeftX = float('-inf') if partitionX == 0 else nums1[partitionX - 1]
-    minRightX = float('inf') if partitionX == m else nums1[partitionX]
-    
-    maxLeftY = float('-inf') if partitionY == 0 else nums2[partitionY - 1]
-    minRightY = float('inf') if partitionY == n else nums2[partitionY]
-    
-    if maxLeftX <= minRightY and maxLeftY <= minRightX:
-        if (m + n) % 2 == 0:
-            return (max(maxLeftX, maxLeftY) + min(minRightX, minRightY)) / 2
+    while low <= high:
+        partitionX = (low + high) // 2
+        partitionY = (m + n + 1) // 2 - partitionX
+
+        maxLeftX = float('-inf') if partitionX == 0 else nums1[partitionX - 1]
+        minRightX = float('inf') if partitionX == m else nums1[partitionX]
+
+        maxLeftY = float('-inf') if partitionY == 0 else nums2[partitionY - 1]
+        minRightY = float('inf') if partitionY == n else nums2[partitionY]
+
+        if maxLeftX <= minRightY and maxLeftY <= minRightX:
+            if (m + n) % 2 == 0:
+                return (max(maxLeftX, maxLeftY) + min(minRightX, minRightY)) / 2
+            else:
+                return max(maxLeftX, maxLeftY)
+        elif maxLeftX > minRightY:
+            high = partitionX - 1
         else:
-            return max(maxLeftX, maxLeftY)
-    elif maxLeftX > minRightY:
-        high = partitionX - 1
-    else:
-        low = partitionX + 1`
+            low = partitionX + 1`,
+                codeDetailed: `def findMedianSortedArrays(nums1, nums2):
+    """
+    Median of Two Sorted Arrays
+    
+    STRATEGY: Binary Search on Partition
+    - Instead of merging (O(m+n)), we find a partition line.
+    - We want: len(left_part) == len(right_part)
+    - And: max(left_part) <= min(right_part)
+    
+    TRICK:
+    - Only BS on the SMALLER array (say nums1).
+    - Position in nums2 is determined by total length.
+    - Use Infinity for edge cases (empty left/right parts).
+    
+    Time: O(log(min(M, N))), Space: O(1)
+    """
+    if len(nums1) > len(nums2):
+        nums1, nums2 = nums2, nums1
+        
+    m, n = len(nums1), len(nums2)
+    low, high = 0, m
+    
+    while low <= high:
+        partitionX = (low + high) // 2
+        partitionY = (m + n + 1) // 2 - partitionX
+        
+        # Handle edges: if partition is at 0, nothing on left (-inf)
+        maxLeftX = float('-inf') if partitionX == 0 else nums1[partitionX - 1]
+        minRightX = float('inf') if partitionX == m else nums1[partitionX]
+        
+        maxLeftY = float('-inf') if partitionY == 0 else nums2[partitionY - 1]
+        minRightY = float('inf') if partitionY == n else nums2[partitionY]
+        
+        # Check alignment
+        if maxLeftX <= minRightY and maxLeftY <= minRightX:
+            # We found the perfect cut!
+            if (m + n) % 2 == 0:
+                return (max(maxLeftX, maxLeftY) + min(minRightX, minRightY)) / 2
+            else:
+                return max(maxLeftX, maxLeftY)
+        elif maxLeftX > minRightY:
+            # Too far right in nums1, move left
+            high = partitionX - 1
+        else:
+            # Too far left in nums1, move right
+            low = partitionX + 1`
             }
         }
     ]

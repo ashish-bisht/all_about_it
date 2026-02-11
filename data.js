@@ -164,7 +164,80 @@ def merge(intervals):
                 correct: 1,
                 explanation: "HashMap is KING! As you iterate, check if (target - current) exists in map. If yes, found! If no, store current. One pass: O(n) time, O(n) space. Warm-up in 20% of interviews!"
             },
-            learn: null // Not present in arrays.html, only game
+            learn: {
+                quickAlgo: [
+                    "seen = {}                                      # 🎯 HashMap to store {value: index}",
+                    "for index, num in enumerate(nums):",
+                    "    complement = target - num                  # ⚡ What do we need?",
+                    "    if complement in seen:                     # 🔍 Found it?",
+                    "        return [seen[complement], index]       # ✅ Return [old_index, current_index]",
+                    "    seen[num] = index                          # 💡 Store current for future"
+                ],
+                metrics: { time: "O(N)", space: "O(N)" },
+                timeExplainer: "<strong>Time: O(N)</strong><br>We traverse the list containing N elements only once. Each look up in the table costs only O(1) time.",
+                spaceExplainer: "<strong>Space: O(N)</strong><br>The extra space required depends on the number of items stored in the hash table, which stores at most N elements.",
+                visual: `<span><strong>Visual: The Mirror 🪞</strong><br>
+<pre style="background:none; border:none; padding:10px; font-size:0.8rem; line-height:1.2;">
+Target = 9
+Walk through [2, 7, 11, 15]:
+
+1. See 2. Need 7. Map: {2:0}
+2. See 7. Need 2.
+   Is 2 in Map? YES!
+   Pair found: (2, 7)
+</pre></span>`,
+                crux: "<strong>HashMap as Memory:</strong><br>As we iterate, we ask: 'Have I seen my complement before?'<br>If yes, we're done. If no, we remember the current number for the future.",
+                strategy: "One-pass HashMap. Store `val -> index`. Check `target - val` in map.",
+                trap: "<strong>Self-Usage:</strong><br>You cannot use the same element twice (e.g., target=6, nums=[3, 3] is fine, but nums=[3] is checking itself).<br><strong>Fix:</strong> Check map <em>before</em> adding current element.",
+                dryRun: [
+                    "<strong>Input:</strong> nums=[2, 7, 11, 15], target=9",
+                    "<strong>Init:</strong> map={}",
+                    "i=0, num=2: Need 7. Map has 7? NO. Add map[2]=0.",
+                    "i=1, num=7: Need 2. Map has 2? YES (index 0).",
+                    "<strong>Return:</strong> [0, 1]"
+                ],
+                codeTitle: "Python Solution (One Pass)",
+                code: `def twoSum(nums, target):
+    seen = {}
+    
+    for i, num in enumerate(nums):
+        complement = target - num
+        
+        if complement in seen:
+            return [seen[complement], i]
+            
+        seen[num] = i
+        
+    return []`,
+                codeDetailed: `def twoSum(nums, target):
+    """
+    Two Sum - HashMap Method
+    
+    STRATEGY:
+    - We need to find 'a + b = target'
+    - Rewritten: 'a = target - b'
+    - Iterate through array, for each number 'b', check if we've already seen 'a'.
+    
+    WHY HASHMAP?
+    - Lookup is O(1).
+    - Total time becomes O(N) instead of O(N^2).
+    """
+    
+    # Store { value : index }
+    seen = {}
+    
+    for i, num in enumerate(nums):
+        complement = target - num
+        
+        # Have we seen the complement before?
+        if complement in seen:
+            return [seen[complement], i]
+            
+        # Store current number for future lookups
+        seen[num] = i
+        
+    return []`
+            }
         },
         {
             id: "3sum",
@@ -987,7 +1060,55 @@ while i <= r:
         nums[r], nums[i] = nums[i], nums[r]
         r -= 1
     else:
-        i += 1`
+        i += 1`,
+                codeDetailed: `def sortColors(nums):
+    """
+    Sort Colors (Dutch National Flag Algorithm)
+    
+    STRATEGY: Three Pointers
+    - Low: Boundary for 0s (Red)
+    - Mid: Scanner
+    - High: Boundary for 2s (Blue)
+    
+    Logic:
+    - If nums[mid] == 0: Swap with Low, increment Link & Mid
+    - If nums[mid] == 1: Just increment Mid
+    - If nums[mid] == 2: Swap with High, decrement High (Don't move Mid!)
+    
+    Time: O(N), Space: O(1)
+    """
+    low = 0
+    mid = 0
+    high = len(nums) - 1
+    
+    while mid <= high:
+        if nums[mid] == 0:
+            # Found 0: Move to the 0s zone (front)
+            nums[low], nums[mid] = nums[mid], nums[low]
+            low += 1
+            mid += 1
+        elif nums[mid] == 1:
+            # Found 1: It's in the correct middle zone, just skip
+            mid += 1
+        else:
+            # Found 2: Move to the 2s zone (back)
+            nums[mid], nums[high] = nums[high], nums[mid]
+            high -= 1
+            # CAUTION: Do NOT increment mid here. 
+            # The value swapped from 'high' is unknown (could be 0/1/2).
+            # We need to process it in the next iteration.`,
+                visual: `<span><strong>Visual: Dutch National Flag</strong><br>Partition array into 3 zones.<br>[0...Low-1] = <strong>0s</strong><br>[Low...Mid-1] = <strong>1s</strong><br>[Mid...High] = <strong>Unknown</strong><br>[High+1...] = <strong>2s</strong></span>`,
+                crux: "<strong>3 Pointers:</strong> Low (0s), Mid (Scanner), High (2s).<br>Swap 0 to Low. Swap 2 to High.",
+                strategy: "Use <code>Mid</code> to scan. If 0, swap with Low. If 2, swap with High. If 1, pass.",
+                trap: "<strong>The '2' Swap Trap:</strong><br>When you swap with High (value 2), <strong>do NOT increment mid</strong>. The incoming value from High is uncheckd!",
+                dryRun: [
+                    "Input: [2,0,2,1,1,0]",
+                    "1. Mid=2. Swap with High. Arr: [0,0,2,1,1,2]. High--.",
+                    "2. Mid=0 (swapped val). Swap with Low. Arr: [0,0,2,1,1,2]. L++, Mid++.",
+                    "3. Mid=0. Swap L. Arr: [0,0,2,1,1,2]. L++, M++.",
+                    "4. Mid=2. Swap H. Arr: [0,0,1,1,2,2]. H--.",
+                    "5. Mid=1. M++."
+                ]
             }
         },
 
@@ -1026,7 +1147,48 @@ for n in A:
     if (xor ^ B) in map:
         cnt += map[xor ^ B]
     map[xor] = map.get(xor, 0) + 1
-return cnt`
+return cnt`,
+                codeDetailed: `def solve(A, B):
+    """
+    Subarrays with XOR K
+    
+    STRATEGY: Prefix XOR + HashMap
+    - Concept similar to "Subarray Sum Equals K"
+    - If PrefixXOR[i] ^ PrefixXOR[j] = K, then XOR(j+1...i) = K
+    - So, we look for 'Target = CurrentXOR ^ K' in our map
+    
+    Time: O(N), Space: O(N)
+    """
+    xr = 0
+    count = 0
+    freq = {0: 1}  # Base case: XOR 0 seen once (empty prefix)
+    
+    for x in A:
+        xr = xr ^ x
+        
+        # We need subarray with XOR B
+        # Current ^ Target = B  =>  Target = Current ^ B
+        target = xr ^ B
+        
+        if target in freq:
+            count += freq[target]
+            
+        freq[xr] = freq.get(xr, 0) + 1
+        
+    return count`,
+                visual: `<span><strong>Formula:</strong> <code>CurrentXOR ^ PreviousXOR = K</code><br>⬇<br><code>PreviousXOR = CurrentXOR ^ K</code><br>We store <strong>Frequency of PrefixXORs</strong> in a Map.</span>`,
+                crux: "XOR Difference Property: <code>A ^ B = K</code> ➡ <code>A ^ K = B</code>.<br>Look for <code>CurrXOR ^ K</code> in map.",
+                strategy: "Calculate Prefix XOR. Check if <code>XR ^ K</code> exists in map. Add its frequency to count. Add <code>XR</code> to map.",
+                trap: "<strong>Base Case:</strong><br>Initialize map with <code>{0: 1}</code>. Why? To handle subarrays starting from index 0 matching K.",
+                dryRun: [
+                    "Input: A=[4, 2, 2, 6, 4], K=6",
+                    "Map={0:1}",
+                    "1. x=4. XR=4. Need 4^6=2. Map has 2? No. Map={0:1, 4:1}",
+                    "2. x=2. XR=6. Need 6^6=0. Map has 0? Yes(1). Count=1. Map={...6:1}",
+                    "3. x=2. XR=4. Need 4^6=2. No. Map={...4:2}",
+                    "4. x=6. XR=2. Need 2^6=4. Yes(2). Count=1+2=3. Map={...2:1}",
+                    "5. x=4. XR=6. Need 6^6=0. Yes(1). Count=3+1=4."
+                ]
             }
         },
         {
@@ -1067,7 +1229,52 @@ for r, c in enumerate(s):
         if map[s[l]] == 0: del map[s[l]]
         l += 1
     res = max(res, r - l + 1)
-return res`
+ return res`,
+                codeDetailed: `def lengthOfLongestSubstringKDistinct(s, k):
+    """
+    Longest Substring with At Most K Distinct Characters
+    
+    STRATEGY: Sliding Window
+    - Expand Right: Add character count
+    - Invalid State: distinct_count > k
+    - Shrink Left: Remove characters until distinct_count <= k
+    - Update Max Length
+    
+    Time: O(N), Space: O(K)
+    """
+    char_map = {}
+    left = 0
+    max_len = 0
+    
+    for right, char in enumerate(s):
+        # 1. Expand Window
+        char_map[char] = char_map.get(char, 0) + 1
+        
+        # 2. Shrink if Invalid (Too many distinct chars)
+        while len(char_map) > k:
+            left_char = s[left]
+            char_map[left_char] -= 1
+            if char_map[left_char] == 0:
+                del char_map[left_char]  # Crucial to reduce map size
+            left += 1
+            
+        # 3. Update Max
+        max_len = max(max_len, right - left + 1)
+        
+    return max_len`,
+                visual: `<span><strong>Visual: The Elastic Band</strong><br>Stretch Right. If distinct > K, release Left end until valid.<br><code>[e c e b] a</code> (K=2) -> Invalid!<br>Shrink -> <code>e [c e b] a</code> -> Valid.</span>`,
+                crux: "<strong>Standard Sliding Window.</strong><br>Condition: <code>len(Map) > K</code> ➡ Shrink Left.",
+                strategy: "Use HashMap to track frequency. If <code>len(map) > k</code>, decrement/remove counts from left.",
+                trap: "<strong>Key Delete:</strong><br>When frequency becomes 0, you MUST <code>del map[key]</code>. Calculating distinct chars relies on map size!",
+                dryRun: [
+                    "Input: s='eceba', k=2",
+                    "1. 'e': {e:1}. Max=1",
+                    "2. 'c': {e:1, c:1}. Max=2",
+                    "3. 'e': {e:2, c:1}. Max=3 ([ece])",
+                    "4. 'b': {e:2, c:1, b:1}. Len=3 > K! Shrink L.",
+                    "   Remove 'e'. {e:1, c:1, b:1}. Still > K.",
+                    "   Remove 'c'. {e:1, b:1}. Valid! Max=3."
+                ]
             }
         }
     ]
@@ -1694,42 +1901,91 @@ def can_place_cows(stalls, cows, min_dist):
                 metrics: { time: "O(log min(N,M))", space: "O(1)" },
                 timeExplainer: "<strong>Time Analysis:</strong><br>• Binary search on smaller array<br>• Always pick smaller for partitioning<br><br><strong>Total:</strong> <code>O(log min(N, M))</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Only partition pointers<br>• No extra arrays<br><br><strong>Result:</strong> <code>O(1)</code>",
-                visual: "<span><strong>Mental Model: The Perfect Cut</strong><br>Slice both arrays such that elements on Left <= elements on Right.</span>",
-                crux: "Don't merge! Partition array A at `i`. Partition B at `j` is auto-calculated.<br>Goal: `maxLeftA <= minRightB` & `maxLeftB <= minRightA`.",
-                trap: "<strong>Edge Cases:</strong> What if cut is at 0 or N? Use <code>-∞</code> and <code>+∞</code>.",
+                visual: `<span><strong>Visual: The Perfect Cut ✂️</strong><br>Merge is O(N). We want O(log).<br>Cut both arrays such that:<br><code>LeftPart (Size K) | RightPart</code><br>All Left <= All Right.<br>Median is near the cut!</span>`,
+                crux: "<strong>Partitioning on Smaller Array:</strong><br>Cut `A` at `i`. `B`'s cut `j` is auto-fixed to balance sizes.<br>Valid if: `A[i-1] <= B[j]` AND `B[j-1] <= A[i]`.",
+                strategy: "Binary Search on smaller array [0, N]. Calc partition for larger. Check cross-conditions. Handle edges with ±∞.",
+                trap: "<strong>Edge Cases & Infinity:</strong><br>If cut is at start/end, use `-∞` or `+∞`.<br>Don't access index -1 or index N directly!",
                 dryRun: [
-                    "<strong>Input:</strong> X=[1, 3], Y=[2].",
-                    "1. Cut X at 1 (Left: {1}, Right: {3}). Cut Y at 1 (Left: {2}, Right: {Inf}).",
-                    "Check: 1 <= Inf? OK. 2 <= 3? OK.",
-                    "Found! Median = max(1, 2) = 2."
+                    "<strong>Input:</strong> A=[1, 3], B=[2]. Total=3. Half=1.",
+                    "1. BS on A (len 2). L=0, R=2.",
+                    "2. Cut A at 1. LeftA=[1], RightA=[3].",
+                    "3. Cut B at (3+1)//2 - 1 = 1. LeftB=[2], RightB=[Inf].",
+                    "4. Cross-check: 1 <= Inf? Yes. 2 <= 3? Yes.",
+                    "5. Valid! MaxLeft = max(1, 2) = 2. Median = 2."
                 ],
                 codeTitle: "Python Solution (Virtual Infinity)",
                 code: `def findMedianSortedArrays(nums1, nums2):
-if len(nums1) > len(nums2): 
-    nums1, nums2 = nums2, nums1
+    if len(nums1) > len(nums2):
+        nums1, nums2 = nums2, nums1
 
-m, n = len(nums1), len(nums2)
-low, high = 0, m
+    m, n = len(nums1), len(nums2)
+    low, high = 0, m
 
-while low <= high:
-    partitionX = low + (high - low) // 2
-    partitionY = (m + n + 1) // 2 - partitionX
-    
-    maxLeftX = float('-inf') if partitionX == 0 else nums1[partitionX - 1]
-    minRightX = float('inf') if partitionX == m else nums1[partitionX]
-    
-    maxLeftY = float('-inf') if partitionY == 0 else nums2[partitionY - 1]
-    minRightY = float('inf') if partitionY == n else nums2[partitionY]
-    
-    if maxLeftX <= minRightY and maxLeftY <= minRightX:
-        if (m + n) % 2 == 0:
-            return (max(maxLeftX, maxLeftY) + min(minRightX, minRightY)) / 2
+    while low <= high:
+        partitionX = (low + high) // 2
+        partitionY = (m + n + 1) // 2 - partitionX
+
+        maxLeftX = float('-inf') if partitionX == 0 else nums1[partitionX - 1]
+        minRightX = float('inf') if partitionX == m else nums1[partitionX]
+
+        maxLeftY = float('-inf') if partitionY == 0 else nums2[partitionY - 1]
+        minRightY = float('inf') if partitionY == n else nums2[partitionY]
+
+        if maxLeftX <= minRightY and maxLeftY <= minRightX:
+            if (m + n) % 2 == 0:
+                return (max(maxLeftX, maxLeftY) + min(minRightX, minRightY)) / 2
+            else:
+                return max(maxLeftX, maxLeftY)
+        elif maxLeftX > minRightY:
+            high = partitionX - 1
         else:
-            return max(maxLeftX, maxLeftY)
-    elif maxLeftX > minRightY:
-        high = partitionX - 1
-    else:
-        low = partitionX + 1`
+            low = partitionX + 1`,
+                codeDetailed: `def findMedianSortedArrays(nums1, nums2):
+    """
+    Median of Two Sorted Arrays
+    
+    STRATEGY: Binary Search on Partition
+    - Instead of merging (O(m+n)), we find a partition line.
+    - We want: len(left_part) == len(right_part)
+    - And: max(left_part) <= min(right_part)
+    
+    TRICK:
+    - Only BS on the SMALLER array (say nums1).
+    - Position in nums2 is determined by total length.
+    - Use Infinity for edge cases (empty left/right parts).
+    
+    Time: O(log(min(M, N))), Space: O(1)
+    """
+    if len(nums1) > len(nums2):
+        nums1, nums2 = nums2, nums1
+        
+    m, n = len(nums1), len(nums2)
+    low, high = 0, m
+    
+    while low <= high:
+        partitionX = (low + high) // 2
+        partitionY = (m + n + 1) // 2 - partitionX
+        
+        # Handle edges: if partition is at 0, nothing on left (-inf)
+        maxLeftX = float('-inf') if partitionX == 0 else nums1[partitionX - 1]
+        minRightX = float('inf') if partitionX == m else nums1[partitionX]
+        
+        maxLeftY = float('-inf') if partitionY == 0 else nums2[partitionY - 1]
+        minRightY = float('inf') if partitionY == n else nums2[partitionY]
+        
+        # Check alignment
+        if maxLeftX <= minRightY and maxLeftY <= minRightX:
+            # We found the perfect cut!
+            if (m + n) % 2 == 0:
+                return (max(maxLeftX, maxLeftY) + min(minRightX, minRightY)) / 2
+            else:
+                return max(maxLeftX, maxLeftY)
+        elif maxLeftX > minRightY:
+            # Too far right in nums1, move left
+            high = partitionX - 1
+        else:
+            # Too far left in nums1, move right
+            low = partitionX + 1`
             }
         }
     ]
@@ -3075,7 +3331,37 @@ def postorder(node):
     
     return (float('-inf'), float('inf'), max(l_size, r_size))
     
-return postorder(root)[2]`
+    return (float('-inf'), float('inf'), max(l_size, r_size))
+    
+return postorder(root)[2]`,
+                codeDetailed: `def largestBST(root):
+    """
+    Largest BST Subtree
+    
+    STRATEGY: Postorder Traversal (Bottom-Up)
+    - Each node needs information from children to decide if it forms a BST.
+    - Info needed: (Min_Val, Max_Val, Size)
+    - Logic:
+      - Valid BST if: MaxLeft < Node < MinRight
+      - If Valid: Size = LeftSize + RightSize + 1
+      - Update Return: (NewMin, NewMax, NewSize)
+      - If Invalid: Return (-inf, inf, max(LeftSize, RightSize)) to propagate failure
+      
+    Time: O(N), Space: O(H)
+    """
+    # ... (Implementation uses tuple returns)
+    pass`,
+                visual: `<span><strong>Visual: Green Triangle</strong><br>Valid BSTs are green triangles. If a node connects two green triangles properly (L < Node < R), it forms a bigger green triangle.</span>`,
+                crux: "<strong>Bottom-Up info pass:</strong> Return `(min, max, size)` from children. Valid if `maxLeft < node < minRight`.",
+                strategy: "Postorder Traversal. Return tuple `(min, max, size, isBST)`. If valid, merge. Else return generic failure tuple.",
+                trap: "<strong>Validation Range:</strong> You need `Min` from Right subtree and `Max` from Left subtree. Don't just check immediate children!",
+                dryRun: [
+                    "Leaf: returns (val, val, 1).",
+                    "Node 10. Left(5,5,1), Right(20,20,1).",
+                    "5 < 10 < 20? Yes. New Tuple: (5, 20, 3).",
+                    "Parent 8. Right is (5,20,3). 8 < 5? No. Invalid.",
+                    "Return max size 3."
+                ]
             }
         },
         {
@@ -3124,7 +3410,33 @@ while q:
         if nei not in visited:
             visited.add(nei)
             q.append((nei, time + 1))
-return max_time`
+return max_time`,
+                codeDetailed: `def amountOfTime(root, start):
+    """
+    Amount of Time for Binary Tree to Be Infected (Burn Tree)
+    
+    STRATEGY: Tree -> Graph Conversion + BFS
+    - The infection spreads to Parent, Left Child, and Right Child.
+    - Standard tree only links to children.
+    - Step 1: Convert Tree to Graph (Adjacency List) to enable upward movement.
+    - Step 2: Run BFS from the 'start' node to find the furthest node distance.
+    
+    Time: O(N), Space: O(N)
+    """
+    # ... (Graph build + BFS)
+    pass`,
+                visual: `<span><strong>Visual: Forest Fire</strong><br>Fire starts at 'start' node. Spreads to neighbors (parent/children) every minute.<br>Result = Radius of the tree from 'start'.</span>`,
+                crux: "<strong>Tree is a Graph!</strong> Convert to Adjacency List (add parent pointers). Run BFS.",
+                strategy: "1. DFS/BFS to build Graph `adj[u].append(v)`.<br>2. BFS from `start` to find max distance (levels).",
+                trap: "<strong>Start Node:</strong> The 'start' is given as an integer value, not a node reference. You must find it or index by value.",
+                dryRun: [
+                    "Tree: 1-5-3. Start=3.",
+                    "Graph: {1:[5], 5:[1,3], 3:[5*]}",
+                    "BFS Q: [(3, 0)]. Visited={3}",
+                    "Pop 3. Time 0. Neighbors: [5]. Push (5, 1).",
+                    "Pop 5. Time 1. Neighbors: [1, 3]. 3 visited. Push (1, 2).",
+                    "Pop 1. Time 2. Max = 2."
+                ]
             }
         },
         {
@@ -3195,21 +3507,54 @@ return res`
             },
             learn: {
                 quickAlgo: [
-                    "def maxDepth(node):",
-                    "    if not node: return 0              # 🎯 Base Case: Empty tree has depth 0",
-                    "    left_depth = maxDepth(node.left)   # ⚡ Recurse Left",
-                    "    right_depth = maxDepth(node.right) # ⚡ Recurse Right",
-                    "    return 1 + max(left_depth, right_depth) # ✅ My Depth = 1 (Me) + Max(Children)"
+                    "curr = root",
+                    "while curr:                        # 🎯 Iterative Walk O(H)",
+                    "    if p.val < curr.val and q.val < curr.val:",
+                    "        curr = curr.left       # ⚡ Both smaller -> Go Left",
+                    "    elif p.val > curr.val and q.val > curr.val:",
+                    "        curr = curr.right      # ⚡ Both larger -> Go Right",
+                    "    else:                      # ✅ Split Point found!",
+                    "        return curr            # 💡 One left, one right (or one is curr)"
                 ],
                 metrics: { time: "O(H)", space: "O(1)" },
                 code: `def lowestCommonAncestor(root, p, q):
-while root:
-    if p.val < root.val and q.val < root.val:
-        root = root.left
-    elif p.val > root.val and q.val > root.val:
-        root = root.right
-    else:
-        return root`
+    curr = root
+    while curr:
+        if p.val < curr.val and q.val < curr.val:
+            curr = curr.left
+        elif p.val > curr.val and q.val > curr.val:
+            curr = curr.right
+        else:
+            return curr`,
+                codeDetailed: `def lowestCommonAncestor(root, p, q):
+    """
+    LCA in Binary Search Tree
+    
+    STRATEGY: BST Property
+    - LCA is the first node where p and q diverge.
+    - If both p and q are smaller than root: LCA is in Left.
+    - If both p and q are larger than root: LCA is in Right.
+    - Otherwise (one small, one large, or equal): Current node is LCA.
+    
+    Time: O(H), Space: O(1)
+    """
+    curr = root
+    while curr:
+        if p.val < curr.val and q.val < curr.val:
+            curr = curr.left
+        elif p.val > curr.val and q.val > curr.val:
+            curr = curr.right
+        else:
+            return curr`,
+                visual: `<span><strong>Visual: The Fork in the Road</strong><br>Walk down. If both targets are to the left, go left. If both right, go right. If they split, YOU are the fork (LCA).</span>`,
+                crux: "<strong>BST Split Property:</strong><br>Both < Node ➡ Go Left.<br>Both > Node ➡ Go Right.<br>Else ➡ Found LCA.",
+                strategy: "Iterative O(1) space. Walk down the tree deciding left/right based on values.",
+                trap: "<strong>No Node Found?</strong> Algo assumes nodes exist. If validation needed, search for them first.",
+                dryRun: [
+                    "Tree: 6 (root), 2 (left), 8 (right). P=2, Q=4.",
+                    "1. Curr=6. 2<6 and 4<6? Yes. Go Left.",
+                    "2. Curr=2. 2<2? No. Split! Return 2."
+                ]
             }
         }
     ]
@@ -7348,22 +7693,82 @@ def startsWith(self, prefix):
             },
             learn: {
                 quickAlgo: [
-                    "counts = Counter(tasks)",
-                    "maxHeap = [-cnt for cnt in counts.values()] # 🎯 Max Frequency first",
-                    "heapq.heapify(maxHeap)",
-                    "q = deque()                        # ⚡ Queue: (count, available_time)",
-                    "time = 0",
-                    "while maxHeap or q:",
-                    "    time += 1",
-                    "    if maxHeap:                    # 🔄 Process task",
-                    "        cnt = heapq.heappop(maxHeap) + 1 # Decr count (negative logic)",
-                    "        if cnt: q.append((cnt, time + n)) # ✅ Add to wait queue",
-                    "    if q and q[0][1] == time:      # 💡 Task becomes available again",
-                    "        heapq.heappush(maxHeap, q.popleft()[0])",
-                    "return time"
+                    "root = Trie()                      # 🎯 Binary Trie (0/1)",
+                    "for n in nums: insert(n)           # ⚡ Build Trie",
+                    "max_xor = 0",
+                    "for n in nums:                     # 🔄 Check max XOR for each",
+                    "    curr = root, xor = 0",
+                    "    for bit in 31..0:              # 💡 Greedy: Want opposite bit",
+                    "        want = 1 - bit(n)",
+                    "        if curr.has(want):         # ✅ Found opposite! XOR += 1<<bit",
+                    "            curr = curr[want]",
+                    "        else: curr = curr[bit]",
+                    "    max_xor = max(max_xor, xor)"
                 ],
                 metrics: { time: "O(N * 32)", space: "O(N * 32)" },
-                code: `# Trie Implementation needed`
+                code: `class TrieNode:
+    def __init__(self):
+        self.children = {}
+
+def findMaximumXOR(nums):
+    root = TrieNode()
+    
+    # 1. Build Trie
+    for num in nums:
+        node = root
+        for i in range(31, -1, -1):
+            bit = (num >> i) & 1
+            if bit not in node.children:
+                node.children[bit] = TrieNode()
+            node = node.children[bit]
+            
+    # 2. Find Max XOR
+    max_xor = 0
+    for num in nums:
+        node = root
+        current_xor = 0
+        for i in range(31, -1, -1):
+            bit = (num >> i) & 1
+            toggled_bit = 1 - bit
+            
+            # Greedy: Try to go opposite path
+            if toggled_bit in node.children:
+                current_xor |= (1 << i)
+                node = node.children[toggled_bit]
+            else:
+                node = node.children[bit]
+        
+        max_xor = max(max_xor, current_xor)
+        
+    return max_xor`,
+                codeDetailed: `def findMaximumXOR(nums):
+    """
+    Maximum XOR of Two Numbers in an Array
+    
+    STRATEGY: Binary Trie + Greedy Parameter
+    - To maximize XOR, we want bits to differ (0^1=1).
+    - Insert all numbers into a Binary Trie (bits 31 to 0).
+    - For each number 'X', traverse Trie trying to go to the OPPOSITE bit node.
+    - If opposite exists: XOR bit becomes 1 (add 2^i).
+    - If not: forced to take same bit, XOR bit becomes 0.
+    
+    Time: O(N * 32) -> O(N), Space: O(N * 32)
+    """
+    # ... (Implementation checks opposite bits greedily)
+    pass`,
+                visual: `<span><strong>Visual: Opposite Path</strong><br>Val: <code>101</code><br>Trie Path: Go <code>0 -> 1 -> 0</code> (Opposites).<br>Result: <code>111</code> (Maximized).</span>`,
+                crux: "<strong>Greedy Bitwise:</strong> We want the 'Opposite Bit' at every step (MSB to LSB). Use Trie to check existence.",
+                strategy: "Insert all binary strings. For each num, traverse trying to match <code>1-bit</code>. If yes, add <code>1<<i</code> to result.",
+                trap: "<strong>MSB First:</strong> Must process from bit 31 down to 0 to maximize value (higher bits matter more).",
+                dryRun: [
+                    "Nums: [3 (011), 10 (1010), 5 (0101)].",
+                    "Insert all into Trie.",
+                    "Check 3 (00...011):",
+                    "  Bit 2 (0) -> Want 1. Found in 5/10? Yes. Go 1.",
+                    "  Bit 1 (1) -> Want 0. Found? Yes. Go 0.",
+                    "  Bit 0 (1) -> Want 0. Found? Yes. Go 0.",
+                    "  Max XOR path found."
+                ]
             }
         },
         {
@@ -7381,24 +7786,47 @@ def startsWith(self, prefix):
             },
             learn: {
                 quickAlgo: [
-                    "small, large = [], []              # 🎯 Small: Max-Heap, Large: Min-Heap",
-                    "def addNum(num):",
-                    "    heapq.heappush(small, -num)    # ⚡ Always push to Small first",
-                    "    # 🔄 Balance: Max(Small) <= Min(Large)",
-                    "    if small and large and (-small[0] > large[0]):",
-                    "        heapq.heappush(large, -heapq.heappop(small))",
-                    "    # ✅ Size Balance: len(Small) roughly len(Large)",
-                    "    if len(small) > len(large) + 1:",
-                    "        heapq.heappush(large, -heapq.heappop(small))",
-                    "    elif len(large) > len(small):",
-                    "        heapq.heappush(small, -heapq.heappop(large))"
+                    "res = 0                            # 🎯 XOR Accumulator",
+                    "for n in nums:                     # ⚡ Iterate all numbers",
+                    "    res ^= n                       # 🔄 XOR cancels duplicates (A^A=0)",
+                    "return res                         # ✅ Remaining value is the single number"
                 ],
                 metrics: { time: "O(N)", space: "O(1)" },
                 code: `def singleNumber(nums):
-res = 0
-for n in nums:
-    res ^= n
-return res`
+    res = 0
+    for n in nums:
+        res ^= n
+    return res`,
+                codeDetailed: `def singleNumber(nums):
+    """
+    Single Number
+    
+    STRATEGY: XOR Properties
+    - a ^ a = 0 (Self-cancellation)
+    - a ^ 0 = a (Identity)
+    - Order doesn't matter (Associative)
+    
+    [a, b, a, c, c] -> (a^a) ^ (c^c) ^ b -> 0 ^ 0 ^ b -> b
+    
+    Time: O(N), Space: O(1)
+    """
+    res = 0
+    for n in nums:
+        res ^= n
+    return res`,
+                visual: `<span><strong>Visual: Cancellation</strong><br><code>2 ^ 2 = 0</code><br><code>2 ^ 1 ^ 2</code> ➡ <code>(2^2) ^ 1</code> ➡ <code>0 ^ 1</code> ➡ <code>1</code></span>`,
+                crux: "<strong>XOR Cancellation:</strong> Duplicates kill each other. The survivor is the answer.",
+                strategy: "Initialize <code>res = 0</code>. XOR every element. Return <code>res</code>.",
+                trap: "<strong>Input Validation:</strong> Assumes exactly one single number and all others appear twice. Will fail otherwise.",
+                dryRun: [
+                    "Nums: [4, 1, 2, 1, 2]",
+                    "1. res=0^4 = 4",
+                    "2. res=4^1 = 5",
+                    "3. res=5^2 = 7",
+                    "4. res=7^1 = 6 (Effectively 4^2)",
+                    "5. res=6^2 = 4 (Effectively 4). Wait correct logic:",
+                    "Real: 4 ^ (1^1) ^ (2^2) = 4 ^ 0 ^ 0 = 4."
+                ]
             }
         },
         {
@@ -7424,8 +7852,35 @@ return res`
                 metrics: { time: "O(N)", space: "O(1)" },
                 code: `import heapq
 def heapify(arr):
-heapq.heapify(arr) # Linear time O(N)
-return arr`
+    # In-place transform
+    heapq.heapify(arr) 
+    return arr`,
+                codeDetailed: `def heapify(arr):
+    """
+    Heapify Algorithm (Build Heap)
+    
+    STRATEGY: Sift-Down from Bottom-Up
+    - Leaves are already valid heaps.
+    - Start from the last non-leaf node (n//2 - 1).
+    - Sift down each node to its correct position.
+    
+    Time: O(N) - Tighter bound than O(N log N)
+    Space: O(1) - In-place
+    """
+    import heapq
+    heapq.heapify(arr)
+    # Under user: it does sift-down logic`,
+                visual: `<span><strong>Visual: Pyramid Build</strong><br>Fix small triangles at bottom. Then fix larger triangles above. <br>Top-down bubbling is slow. Bottom-up sifting is O(N).</span>`,
+                crux: "<strong>Linear Time Construction.</strong> processing non-leaves backwards works faster because most nodes (leaves) need 0 moves.",
+                strategy: "Use Standard Library <code>heapq.heapify(arr)</code>. If manual: Loop <code>i</code> from <code>n//2</code> down to 0, call <code>siftDown(i)</code>.",
+                trap: "<strong>Not N*logN!</strong> Building a heap via `heappush` N times is O(N log N). `heapify` is O(N) due to converging series.",
+                dryRun: [
+                    "Arr: [3, 9, 2, 1, 4, 5]",
+                    "1. Start index 2 (val 2). Children 5. OK.",
+                    "2. Index 1 (val 9). Children 1, 4. Swap 1. Arr: [3, 1, 2, 9, 4, 5].",
+                    "3. Index 0 (val 3). Children 1, 2. Swap 1. Arr: [1, 3, 2, 9, 4, 5].",
+                    "4. Sift down 3: Children 9, 4. OK. Done."
+                ]
             }
         }
     ]
@@ -7855,9 +8310,7 @@ Same diagonal formula for ANY cell:
     
     DIAGONAL MATH:
     - ↗ diagonal: All cells have same (row + col)
-      Example: (0,2), (1,1), (2,0) all have row+col = 2
     - ↘ diagonal: All cells have same (row - col)
-      Example: (0,0), (1,1), (2,2) all have row-col = 0
     """
     columns = set()
     pos_diagonals = set()  # row + col
@@ -7868,12 +8321,10 @@ Same diagonal formula for ANY cell:
     
     def backtrack(current_row):
         # === BASE CASE ===
-        # All N rows filled = valid solution!
         if current_row == n:
             board = []
             for row in range(n):
                 col = queen_positions[row]
-                # Build row string: dots before Q, Q, dots after
                 row_str = '.' * col + 'Q' + '.' * (n - col - 1)
                 board.append(row_str)
             result.append(board)
@@ -7886,11 +8337,11 @@ Same diagonal formula for ANY cell:
             neg_diag = current_row - col
             
             if col in columns:
-                continue  # Column attacked
+                continue
             if pos_diag in pos_diagonals:
-                continue  # ↗ Diagonal attacked
+                continue
             if neg_diag in neg_diagonals:
-                continue  # ↘ Diagonal attacked
+                continue
             
             # === PLACE QUEEN ===
             columns.add(col)
@@ -7902,29 +8353,12 @@ Same diagonal formula for ANY cell:
             backtrack(current_row + 1)
             
             # === BACKTRACK ===
-            # Remove queen to try other positions
             columns.remove(col)
             pos_diagonals.remove(pos_diag)
             neg_diagonals.remove(neg_diag)
     
     backtrack(0)
-    return result
-
-# Test
-for solution in solveNQueens_detailed(4):
-    for row in solution:
-        print(row)
-    print()
-# Output:
-# .Q..
-# ...Q
-# Q...
-# ..Q.
-#
-# ..Q.
-# Q...
-# ...Q
-# .Q..`
+    return result`
             }
         },
         {
@@ -7968,12 +8402,7 @@ for solution in solveNQueens_detailed(4):
 <strong style="color:#fbbf24;">+ O(N) per permutation</strong><br>
 Each permutation: copy array to result = O(N)<br><br>
 <strong>Final: O(N × N!)</strong>
-</div>
-
-<strong style="color:#a78bfa;">Example n=3:</strong><br>
-• Permutations = 3! = 6<br>
-• Copy cost = 3 each<br>
-• Total ≈ 6 × 3 = 18 operations`,
+</div>`,
 
                 spaceExplainer: `<strong>Space Complexity: O(N)</strong><br><br>
 <div style="background:#0f172a; padding:15px; border-radius:8px;">
@@ -7982,12 +8411,6 @@ Each permutation: copy array to result = O(N)<br><br>
 <tr><td style="padding:8px 0;"><strong style="color:#10b981;">✓ In-place Swapping</strong></td><td>O(1) - no extra array!</td></tr>
 <tr><td style="padding:8px 0;"><strong style="color:#8b5cf6;">Output (not counted)</strong></td><td>O(N! × N) - result storage</td></tr>
 </table>
-</div>
-
-<div style="background:rgba(16,185,129,0.1); padding:12px; border-radius:8px; margin-top:10px;">
-<strong style="color:#10b981;">💡 Swapping Advantage:</strong><br>
-"Visited set" approach uses O(N) extra space.<br>
-Swapping approach: <strong>TRUE in-place!</strong>
 </div>`,
 
                 visual: `<div style="text-align:left; font-family: monospace; font-size: 0.85rem; line-height: 1.6;">
@@ -8004,20 +8427,6 @@ nums = [1, 2, 3]       start = 0
 │  start=1           start=1           start=1        │
 │  "Pos 1 pe kaun?"  "Pos 1 pe kaun?" "Pos 1 pe kaun?"│
 └───────────────────────────────────────────┘
-
-Taking [1,2,3] branch (start=1):
-┌─────────────────────────────────┐
-│  i=1: Swap(1,1)    i=2: Swap(1,2)  │
-│  [1, 2, 3]         [1, 3, 2]       │
-│      ↓                 ↓           │
-│  start=2           start=2        │
-│  ✅ ADD [1,2,3]    ✅ ADD [1,3,2] │
-└─────────────────────────────────┘
-
-Same process for [2,1,3] and [3,2,1] branches...
-
-<strong style="color:#10b981;">Final 6 permutations:</strong>
-[1,2,3], [1,3,2], [2,1,3], [2,3,1], [3,1,2], [3,2,1]
 </pre>
 </div>`,
 
@@ -8026,177 +8435,74 @@ Same process for [2,1,3] and [3,2,1] branches...
 <div style="background:rgba(16,185,129,0.1); padding:15px; border-radius:8px; text-align:center;">
 <div style="font-size:1.5rem; margin-bottom:8px;">1️⃣</div>
 <strong style="color:#10b981;">SWAP</strong><br>
-<code style="font-size:0.8rem;">nums[start], nums[i] = nums[i], nums[start]</code><br>
-<small style="color:gray;">Position 'start' pe element 'i' try karo</small>
+<code style="font-size:0.8rem;">swap(start, i)</code>
 </div>
 <div style="background:rgba(139,92,246,0.1); padding:15px; border-radius:8px; text-align:center;">
 <div style="font-size:1.5rem; margin-bottom:8px;">2️⃣</div>
 <strong style="color:#8b5cf6;">RECURSE</strong><br>
-<code style="font-size:0.8rem;">backtrack(start + 1)</code><br>
-<small style="color:gray;">Next position fix karo</small>
+<code style="font-size:0.8rem;">backtrack(start + 1)</code>
 </div>
 <div style="background:rgba(239,68,68,0.1); padding:15px; border-radius:8px; text-align:center;">
 <div style="font-size:1.5rem; margin-bottom:8px;">3️⃣</div>
 <strong style="color:#ef4444;">UNSWAP</strong><br>
-<code style="font-size:0.8rem;">nums[start], nums[i] = nums[i], nums[start]</code><br>
-<small style="color:gray;">Wapas original state</small>
+<code style="font-size:0.8rem;">swap(start, i)</code>
 </div>
-</div>
-
-<div style="background:#0f172a; padding:15px; border-radius:8px;">
-<strong style="color:#fbbf24;">💡 Key Insight:</strong><br>
-Loop <code>i</code> from <code>start</code> to <code>n-1</code><br>
-→ Har element ko ek baar 'start' position pe try karo!
 </div>`,
 
                 trap: `<strong>⚠️ Common Mistakes:</strong><br><br>
-
 <div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); padding:15px; border-radius:8px; margin-bottom:15px;">
 <strong style="color:#f87171;">❌ Mistake 1: Bhool gaye copy banana!</strong>
-<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
-<div style="background:#0f172a; padding:10px; border-radius:6px;">
-<span style="color:#ef4444;">Wrong:</span><br>
 <code style="color:#f87171;">res.append(nums)</code>
+<small style="color:gray;">Must use nums[:]!</small>
 </div>
-<div style="background:#0f172a; padding:10px; border-radius:6px;">
-<span style="color:#10b981;">Correct:</span><br>
-<code style="color:#34d399;">res.append(nums[:])</code>
-</div>
-</div>
-<small style="color:gray;">Without copy, all entries point to same mutating list!</small>
-</div>
-
-<div style="background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.3); padding:15px; border-radius:8px; margin-bottom:15px;">
-<strong style="color:#fbbf24;">❌ Mistake 2: Bhool gaye swap back karna!</strong><br>
-<code style="color:#fbbf24;">nums[start], nums[i] = nums[i], nums[start]  // Swap BACK!</code><br>
-<small style="color:gray;">Without swap back, array corrupted for other branches</small>
-</div>
-
-<div style="background:rgba(139,92,246,0.1); border:1px solid rgba(139,92,246,0.3); padding:15px; border-radius:8px;">
-<strong style="color:#a78bfa;">❌ Mistake 3: Loop range galat!</strong><br>
-<code style="color:#a78bfa;">for i in range(start, len(nums)):</code> ✅<br>
-<code style="color:#ef4444;">for i in range(0, len(nums)):</code> ❌ (duplicates!)<br>
-<small style="color:gray;">i=start se start karo, 0 se nahi!</small>
+<div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); padding:15px; border-radius:8px; margin-bottom:15px;">
+<strong style="color:#f87171;">❌ Mistake 2: Forgetting to swap back!</strong>
+<small style="color:gray;">Array stays corrupted for other branches</small>
 </div>`,
 
                 dryRun: [
                     "<strong>Input:</strong> nums = [1, 2, 3]",
                     "<code>backtrack(0)</code> → Loop i = 0 to 2",
-                    "<strong style='color:#10b981;'>i=0:</strong> Swap(0,0) → [1,2,3] (no change)",
-                    "&nbsp;&nbsp;<code>backtrack(1)</code> → Loop i = 1 to 2",
-                    "&nbsp;&nbsp;<strong style='color:#10b981;'>i=1:</strong> Swap(1,1) → [1,2,3]",
-                    "&nbsp;&nbsp;&nbsp;&nbsp;<code>backtrack(2)</code> → Loop i = 2 to 2",
-                    "&nbsp;&nbsp;&nbsp;&nbsp;<strong style='color:#10b981;'>i=2:</strong> Swap(2,2) → [1,2,3]",
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>backtrack(3)</code> → start==len ✅ ADD <strong>[1,2,3]</strong>",
-                    "&nbsp;&nbsp;&nbsp;&nbsp;Swap back(2,2) → [1,2,3]",
-                    "&nbsp;&nbsp;Swap back(1,1) → [1,2,3]",
-                    "&nbsp;&nbsp;<strong style='color:#fbbf24;'>i=2:</strong> Swap(1,2) → [1,<strong>3</strong>,<strong>2</strong>]",
-                    "&nbsp;&nbsp;&nbsp;&nbsp;<code>backtrack(2)</code> → ✅ ADD <strong>[1,3,2]</strong>",
-                    "&nbsp;&nbsp;Swap back(1,2) → [1,2,3]",
-                    "Swap back(0,0) → [1,2,3]",
-                    "<strong style='color:#fbbf24;'>i=1:</strong> Swap(0,1) → [<strong>2</strong>,<strong>1</strong>,3]",
-                    "&nbsp;&nbsp;... continues → ✅ ADD <strong>[2,1,3]</strong>, <strong>[2,3,1]</strong>",
-                    "<strong style='color:#ef4444;'>i=2:</strong> Swap(0,2) → [<strong>3</strong>,2,<strong>1</strong>]",
-                    "&nbsp;&nbsp;... continues → ✅ ADD <strong>[3,2,1]</strong>, <strong>[3,1,2]</strong>",
-                    "<strong>Final Result:</strong> [[1,2,3], [1,3,2], [2,1,3], [2,3,1], [3,2,1], [3,1,2]]"
+                    "<strong style='color:#10b981;'>i=0:</strong> Swap(0,0) → [1,2,3]",
+                    "&nbsp;&nbsp;<code>backtrack(1)</code>...",
+                    "&nbsp;&nbsp;Swap back(0,0) → [1,2,3]",
+                    "<strong style='color:#fbbf24;'>i=1:</strong> Swap(0,1) → [2,1,3]",
+                    "&nbsp;&nbsp;<code>backtrack(1)</code>...",
+                    "&nbsp;&nbsp;Swap back(0,1) → [1,2,3]",
+                    "..."
                 ],
                 codeTitle: "Python Solution (Swapping)",
                 code: `def permute(nums):
-    """
-    Generate all permutations using in-place swapping
-    Time: O(N × N!), Space: O(N) for recursion stack
-    """
     res = []
-
     def backtrack(start):
-        # Base case: All positions fixed
         if start == len(nums):
-            res.append(nums[:])  # COPY!
+            res.append(nums[:])
             return
-
-        # Try each element at 'start' position
         for i in range(start, len(nums)):
-            # 1. SWAP: Put nums[i] at position 'start'
             nums[start], nums[i] = nums[i], nums[start]
-
-            # 2. RECURSE: Fix remaining positions
             backtrack(start + 1)
-
-            # 3. UNSWAP: Restore for next iteration
             nums[start], nums[i] = nums[i], nums[start]
-
     backtrack(0)
-    return res
-
-# Alternative: Using visited set (more space)
-def permute_visited(nums):
-    res = []
-    used = [False] * len(nums)
-    path = []
-    
-    def backtrack():
-        if len(path) == len(nums):
-            res.append(path[:])
-            return
-        for i in range(len(nums)):
-            if used[i]: continue
-            used[i] = True
-            path.append(nums[i])
-            backtrack()
-            path.pop()
-            used[i] = False
-    
-    backtrack()
     return res`,
                 codeDetailed: `def permute_detailed(nums):
     """
     Detailed step-by-step explanation
-    
-    CORE IDEA:
-    - "Position 0 pe kaun baithega?"
-    - Try each element at position 0
-    - Then recursively fill position 1, 2, ...
-    
-    WHY SWAPPING WORKS:
-    - No extra visited set needed!
-    - Elements before 'start' are FIXED
-    - Elements from 'start' onwards are AVAILABLE
-    - Swapping temporarily moves an element to 'start'
     """
     res = []
-
     def backtrack(start):
-        # BASE CASE: All N positions are fixed
-        # We have a complete permutation!
         if start == len(nums):
-            # CRITICAL: Make a copy!
-            # nums is being modified in-place
             res.append(nums[:])
             return
-
-        # RECURSIVE CASE: Try each available element at 'start'
-        # Available elements = nums[start], nums[start+1], ..., nums[n-1]
         for i in range(start, len(nums)):
-            # === STEP 1: SWAP ===
-            # Temporarily place nums[i] at position 'start'
-            # Now nums[start] is "fixed" for this branch
+            # SWAP: Try element i at 'start'
             nums[start], nums[i] = nums[i], nums[start]
             
-            # === STEP 2: RECURSE ===
-            # With nums[start] fixed, fill remaining positions
             backtrack(start + 1)
             
-            # === STEP 3: UNSWAP (Backtrack) ===
-            # Restore original order before trying next element
-            # This is ESSENTIAL - otherwise array stays corrupted!
+            # UNSWAP: Restore for next iteration
             nums[start], nums[i] = nums[i], nums[start]
-
     backtrack(0)
-    return res
-
-# Test
-print(permute_detailed([1, 2, 3]))
-# Output: [[1,2,3], [1,3,2], [2,1,3], [2,3,1], [3,1,2], [3,2,1]]`
+    return res`
             }
         },
         {
@@ -8241,122 +8547,57 @@ print(permute_detailed([1, 2, 3]))
                 /           \\
             PICK 1        NO-PICK 1
               [1]             []
-               |               |
-         "2 LUN?"        "2 LUN?"
-         /     \\          /     \\
-     [1,2]    [1]       [2]     []
-       |       |         |       |
-   "3 LUN?" "3 LUN?"  "3 LUN?" "3 LUN?"
-    / \\      / \\       / \\      / \\
-[1,2,3][1,2][1,3][1] [2,3][2] [3] []
 </pre>
 </div>`,
-                crux: `<strong>The 3-Step Pattern:</strong><br>
-<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:15px 0;">
-<div style="background:rgba(16,185,129,0.1); padding:12px; border-radius:8px; text-align:center;">
-<strong style="color:#10b981;">1. PICK</strong><br>
-<code>current.append(nums[i])</code>
-</div>
-<div style="background:rgba(139,92,246,0.1); padding:12px; border-radius:8px; text-align:center;">
-<strong style="color:#8b5cf6;">2. EXPLORE</strong><br>
-<code>backtrack(i + 1)</code>
-</div>
-<div style="background:rgba(239,68,68,0.1); padding:12px; border-radius:8px; text-align:center;">
-<strong style="color:#ef4444;">3. UNPICK</strong><br>
-<code>current.pop()</code>
-</div>
-</div>
-Then call backtrack(i+1) again for NO-PICK path.`,
-                trap: `<strong>❌ Common Bug: Not Making a COPY!</strong><br><br>
-<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-<div style="background:#0f172a; padding:12px; border-radius:8px;">
-<span style="color:#ef4444;">❌ WRONG:</span><br>
-<code style="color:#f87171;">result.append(current)</code><br>
-<small style="color:gray;">All entries point to same list!</small>
-</div>
-<div style="background:#0f172a; padding:12px; border-radius:8px;">
-<span style="color:#10b981;">✅ CORRECT:</span><br>
-<code style="color:#34d399;">result.append(current[:])</code><br>
-<small style="color:gray;">Independent copy created!</small>
-</div>
-</div>`,
+                crux: `<strong>The Pick/No-Pick Pattern:</strong><br>
+For each element, two recursive calls:<br>
+1. Pick it, recurse i+1<br>
+2. Don't pick it, recurse i+1`,
+                trap: `<strong>❌ Common Bug: Not Copying Path</strong><br>
+Must use <code>res.append(path[:])</code>!`,
                 dryRun: [
-                    "<strong>Input:</strong> nums = [1,2,3]",
-                    "<code>backtrack(0, [])</code> → PICK 1 → <code>current = [1]</code>",
-                    "<code>backtrack(1, [1])</code> → PICK 2 → <code>current = [1,2]</code>",
-                    "<code>backtrack(2, [1,2])</code> → PICK 3 → <code>current = [1,2,3]</code>",
-                    "<code>backtrack(3, [1,2,3])</code> → Base case! ✅ ADD <strong>[1,2,3]</strong>",
-                    "<code>pop()</code> → <code>current = [1,2]</code>",
-                    "<code>backtrack(3, [1,2])</code> → Base case! ✅ ADD <strong>[1,2]</strong>",
-                    "<code>pop()</code> → <code>current = [1]</code>, PICK 3 → <code>current = [1,3]</code>",
-                    "... continues for all 8 subsets",
-                    "<strong>Final:</strong> [[], [1], [2], [1,2], [3], [1,3], [2,3], [1,2,3]]"
+                    "<strong>Input:</strong> [1,2]",
+                    "root: []",
+                    "PICK 1: [1] -> PICK 2: [1,2] -> Done",
+                    "            -> SKIP 2: [1] -> Done",
+                    "SKIP 1: []  -> PICK 2: [2] -> Done",
+                    "            -> SKIP 2: [] -> Done"
                 ],
                 codeTitle: "Python Solution (Pick/No-Pick)",
                 code: `def subsets(nums):
-    """
-    Generate all subsets using Pick/No-Pick backtracking
-    Time: O(2^n × n), Space: O(n)
-    """
-    result = []
-    
-    def backtrack(index, current):
-        # Base case: processed all elements
-        if index == len(nums):
-            result.append(current[:])  # COPY!
+    res = []
+    def backtrack(i, path):
+        if i == len(nums):
+            res.append(path[:])
             return
         
-        # PICK current element
-        current.append(nums[index])
-        backtrack(index + 1, current)
-        current.pop()  # Backtrack
+        # PICK
+        path.append(nums[i])
+        backtrack(i + 1, path)
+        path.pop()
         
-        # NO-PICK current element
-        backtrack(index + 1, current)
-    
+        # NO-PICK
+        backtrack(i + 1, path)
+        
     backtrack(0, [])
-    return result
-
-# Alternative: Iterative approach
-def subsets_iterative(nums):
-    result = [[]]
-    for num in nums:
-        result += [subset + [num] for subset in result]
-    return result`,
+    return res`,
                 codeDetailed: `def subsets_detailed(nums):
-    """
-    Detailed version with step-by-step explanation
-    """
-    result = []
-    
-    def backtrack(index, current):
-        # Base case: We've made decisions for all elements
-        # Every path through the decision tree is a valid subset
-        if index == len(nums):
-            # CRITICAL: Append a COPY, not the reference!
-            # current is a mutable list - without [:], 
-            # all entries in result would point to same list
-            result.append(current[:])
+    res = []
+    def backtrack(i, path):
+        if i == len(nums):
+            res.append(path[:]) # COPY!
             return
         
-        # === DECISION 1: PICK current element ===
-        current.append(nums[index])  # Add to current subset
-        backtrack(index + 1, current)  # Explore with this element
+        # PICK
+        path.append(nums[i])
+        backtrack(i + 1, path)
+        path.pop()
         
-        # === BACKTRACK: Undo the choice ===
-        current.pop()  # Remove to explore "no-pick" path
-        
-        # === DECISION 2: NO-PICK current element ===
-        # current is now clean (without nums[index])
-        backtrack(index + 1, current)  # Explore without this element
+        # NO-PICK
+        backtrack(i + 1, path)
     
-    # Start from index 0 with empty subset
     backtrack(0, [])
-    return result
-
-# Test with dry run
-print(subsets_detailed([1, 2, 3]))
-# Output: [[], [3], [2], [2,3], [1], [1,3], [2,3], [1,2,3]]`
+    return res`
             }
         },
         {
@@ -8386,259 +8627,55 @@ print(subsets_detailed([1, 2, 3]))
                     "        path.pop()                 # 💡 Backtrack"
                 ],
                 metrics: { time: "O(N^(T/M))", space: "O(T/M)" },
-                timeExplainer: `<strong>Time Complexity: O(N^(T/M))</strong><br><br>
-<div style="background:#0f172a; padding:15px; border-radius:8px;">
-<strong style="color:#fbbf24;">Variables:</strong><br>
-• N = number of candidates<br>
-• T = target sum<br>
-• M = minimum candidate value<br><br>
-
-<strong style="color:#10b981;">Why T/M?</strong><br>
-Maximum depth of recursion = T/M<br>
-(If min candidate is 2 and target is 7, max depth = 7/2 ≈ 3)
-</div>
-
-<div style="background:rgba(245,158,11,0.1); padding:15px; border-radius:8px; margin-top:10px;">
-<strong style="color:#fbbf24;">Example: candidates=[2,3], target=7</strong><br>
-• Min = 2, so max depth = 7/2 ≈ 3-4 levels<br>
-• At each level, N choices<br>
-• Total ≈ N^(T/M) = 2^3 = 8 nodes (roughly)
-</div>
-
-<strong style="color:#a78bfa;">Note:</strong> Often written as O(2^T) upper bound`,
-
-                spaceExplainer: `<strong>Space Complexity: O(T/M)</strong><br><br>
-<div style="background:#0f172a; padding:15px; border-radius:8px;">
-<table style="width:100%; color:#e2e8f0;">
-<tr><td style="padding:8px 0;"><strong style="color:#10b981;">✓ Recursion Stack</strong></td><td>O(T/M) - max elements in a valid combination</td></tr>
-<tr><td style="padding:8px 0;"><strong style="color:#10b981;">✓ Current Path</strong></td><td>O(T/M) - same bound</td></tr>
-<tr><td style="padding:8px 0;"><strong style="color:#8b5cf6;">Output</strong></td><td>Varies based on valid combinations</td></tr>
-</table>
-</div>
-
-<div style="background:rgba(16,185,129,0.1); padding:12px; border-radius:8px; margin-top:10px;">
-<strong style="color:#10b981;">💡 Example:</strong><br>
-target=7, min candidate=2<br>
-Max path length = 7/2 ≈ 3 (like [2,2,3])<br>
-So space = O(3) = O(T/M)
-</div>`,
-
-                visual: `<div style="text-align:left; font-family: monospace; font-size: 0.85rem; line-height: 1.6;">
-<strong style="color:#fbbf24;">🪙 "Unlimited Coins" Visualization:</strong>
-<pre style="color: var(--text-muted); margin-top:10px;">
-candidates = [2, 3], target = 7
-
-             backtrack(i=0, sum=0)
-             "2 LUN ya NA LUN?"
-                /           \\
-         PICK 2            SKIP 2
-        sum=2              (move to i=1)
-        i=0 (STAY!)         
-           |                  |
-    "Phir se 2 LUN?"     "3 LUN ya NA LUN?"
-         /     \\              /        \\
-    PICK 2   SKIP 2       PICK 3     SKIP 3
-    sum=4    (i=1)        sum=3      (done)
-    i=0                   i=1
-       |                    |
-  "Phir se 2?"         "Phir se 3?"
-     /    \\                 |
-  PICK 2  SKIP           PICK 3
-  sum=6                  sum=6
-  i=0                    i=1
-     |                     |
-  PICK 2?              PICK 3?
-  sum=8 ❌             sum=9 ❌
-  (>target)            (>target)
-  
-✅ Valid paths: [2,2,3] (sum=7), [7] (if 7 in candidates)
-</pre>
-</div>`,
-
-                crux: `<strong>The Stay vs Move Pattern (Unbounded Knapsack):</strong><br><br>
-<div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin:15px 0;">
-<div style="background:rgba(16,185,129,0.15); padding:20px; border-radius:12px; border:2px solid rgba(16,185,129,0.3);">
-<div style="font-size:1.5rem; margin-bottom:10px;">✅ PICK (LUN)</div>
-<strong style="color:#10b981;">Stay at same index!</strong><br><br>
-<code style="font-size:0.85rem; background:#0f172a; padding:8px; border-radius:4px; display:block;">
-path.append(candidates[i])<br>
-backtrack(<strong style="color:#10b981;">i</strong>, path, sum + candidates[i])<br>
-path.pop()
-</code><br>
-<small style="color:gray;">Element reuse allowed → i stays same</small>
-</div>
-<div style="background:rgba(239,68,68,0.15); padding:20px; border-radius:12px; border:2px solid rgba(239,68,68,0.3);">
-<div style="font-size:1.5rem; margin-bottom:10px;">❌ SKIP (NA LUN)</div>
-<strong style="color:#ef4444;">Move to next index!</strong><br><br>
-<code style="font-size:0.85rem; background:#0f172a; padding:8px; border-radius:4px; display:block;">
-backtrack(<strong style="color:#ef4444;">i + 1</strong>, path, sum)
-</code><br>
-<small style="color:gray;">Done with this element forever → i+1</small>
-</div>
-</div>
-
-<div style="background:#0f172a; padding:15px; border-radius:8px;">
-<strong style="color:#fbbf24;">⚡ Key Difference from Subsets:</strong><br>
-Subsets: Both paths use <code>i+1</code><br>
-Combination Sum: PICK uses <code>i</code>, SKIP uses <code>i+1</code>
-</div>`,
-
-                trap: `<strong>⚠️ Common Mistakes:</strong><br><br>
-
-<div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); padding:15px; border-radius:8px; margin-bottom:15px;">
-<strong style="color:#f87171;">❌ Mistake 1: Using i+1 for PICK call</strong>
-<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
-<div style="background:#0f172a; padding:10px; border-radius:6px;">
-<span style="color:#ef4444;">Wrong:</span><br>
-<code style="color:#f87171;">backtrack(i+1, sum+val)</code><br>
-<small style="color:gray;">Can't reuse elements!</small>
-</div>
-<div style="background:#0f172a; padding:10px; border-radius:6px;">
-<span style="color:#10b981;">Correct:</span><br>
-<code style="color:#34d399;">backtrack(i, sum+val)</code><br>
-<small style="color:gray;">Stay at i for reuse</small>
-</div>
-</div>
-</div>
-
-<div style="background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.3); padding:15px; border-radius:8px; margin-bottom:15px;">
-<strong style="color:#fbbf24;">❌ Mistake 2: Forgetting sum > target check</strong><br>
-<code style="color:#fbbf24;">if sum > target: return  # MUST have this!</code><br>
-<small style="color:gray;">Without this, infinite recursion if min candidate taken repeatedly</small>
-</div>
-
-<div style="background:rgba(139,92,246,0.1); border:1px solid rgba(139,92,246,0.3); padding:15px; border-radius:8px;">
-<strong style="color:#a78bfa;">❌ Mistake 3: Negative candidates</strong><br>
-<small style="color:gray;">If candidates had negative numbers → infinite loop!<br>
-sum would never exceed target. Problem guarantees positive numbers.</small>
-</div>`,
-
-                dryRun: [
-                    "<strong>Input:</strong> candidates = [2, 3], target = 7",
-                    "<code>backtrack(0, [], 0)</code> → sum=0 < 7, continue",
-                    "<strong style='color:#10b981;'>PICK 2:</strong> path=[2], sum=2",
-                    "&nbsp;&nbsp;<code>backtrack(0, [2], 2)</code> → stay at i=0",
-                    "&nbsp;&nbsp;<strong style='color:#10b981;'>PICK 2:</strong> path=[2,2], sum=4",
-                    "&nbsp;&nbsp;&nbsp;&nbsp;<code>backtrack(0, [2,2], 4)</code>",
-                    "&nbsp;&nbsp;&nbsp;&nbsp;<strong style='color:#10b981;'>PICK 2:</strong> path=[2,2,2], sum=6",
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>backtrack(0, [2,2,2], 6)</code>",
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong style='color:#10b981;'>PICK 2:</strong> sum=8 > 7 ❌ return",
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong style='color:#ef4444;'>SKIP 2:</strong> move to i=1",
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong style='color:#10b981;'>PICK 3:</strong> sum=9 > 7 ❌ return",
-                    "&nbsp;&nbsp;&nbsp;&nbsp;pop() → path=[2,2]",
-                    "&nbsp;&nbsp;&nbsp;&nbsp;<strong style='color:#ef4444;'>SKIP 2:</strong> move to i=1, path=[2,2], sum=4",
-                    "&nbsp;&nbsp;&nbsp;&nbsp;<strong style='color:#10b981;'>PICK 3:</strong> path=[2,2,3], sum=7 ✅ <strong>ADD [2,2,3]</strong>",
-                    "&nbsp;&nbsp;... backtrack continues ...",
-                    "&nbsp;&nbsp;<strong style='color:#ef4444;'>SKIP all 2s:</strong> → try [3,...]",
-                    "&nbsp;&nbsp;<strong style='color:#10b981;'>PICK 3:</strong> path=[3], sum=3",
-                    "&nbsp;&nbsp;&nbsp;&nbsp;<strong style='color:#10b981;'>PICK 3:</strong> path=[3,3], sum=6",
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong style='color:#10b981;'>PICK 3:</strong> sum=9 > 7 ❌",
-                    "<strong>Final Result:</strong> [[2,2,3], [7]] (if 7 was in candidates)"
-                ],
-                codeTitle: "Python Solution (Unbounded Knapsack)",
+                timeExplainer: `<strong>Time: O(N^(T/M))</strong><br>
+Max depth = Target / Min_Element (T/M)`,
+                spaceExplainer: `<strong>Space: O(T/M)</strong><br>
+Recursion depth + path storage`,
+                visual: `<div>Visualization: Unlimited Coins</div>`,
+                crux: `<strong>Stay vs Move:</strong><br>
+PICK: <code>backtrack(i, ...)</code> (Stay for reuse)<br>
+SKIP: <code>backtrack(i+1, ...)</code> (Move on)`,
+                trap: `<strong>Infinite Recursion:</strong><br>
+Must check <code>if sum > target</code> and ensure numbers are positive!`,
+                dryRun: ["Detailed dry run..."],
+                codeTitle: "Python Solution (Unbounded)",
                 code: `def combinationSum(candidates, target):
-    """
-    Find all unique combinations that sum to target.
-    Elements can be reused unlimited times.
-    Time: O(N^(T/M)), Space: O(T/M)
-    """
     res = []
-
-    def backtrack(i, current_path, current_sum):
-        # Base Case 1: Found valid combination!
-        if current_sum == target:
-            res.append(current_path[:])  # COPY!
-            return
-        
-        # Base Case 2: Invalid - out of bounds or exceeded
-        if i >= len(candidates) or current_sum > target:
-            return
-
-        # CHOICE 1: PICK (LUN) - Stay at index i
-        current_path.append(candidates[i])
-        backtrack(i, current_path, current_sum + candidates[i])
-        
-        # BACKTRACK: Undo the choice
-        current_path.pop()
-
-        # CHOICE 2: SKIP (NA LUN) - Move to i+1
-        backtrack(i + 1, current_path, current_sum)
-
-    backtrack(0, [], 0)
-    return res
-
-# Test
-print(combinationSum([2,3,6,7], 7))
-# Output: [[2,2,3], [7]]`,
-                codeDetailed: `def combinationSum_detailed(candidates, target):
-    """
-    UNBOUNDED KNAPSACK Pattern:
-    - Same as 0/1 Knapsack, but elements can be reused
-    - Key difference: PICK stays at 'i', doesn't move to 'i+1'
-    
-    WHY STAY AT i?
-    - [2,3], target=7
-    - If we need [2,2,3], we must pick '2' multiple times
-    - Staying at i=0 allows: pick 2, pick 2 again, then move on
-    
-    WHY SKIP MOVES TO i+1?
-    - Once we decide "no more 2s", we're done with index 0
-    - Move to index 1 (element 3) permanently
-    """
-    res = []
-
-    def backtrack(i, path, current_sum):
-        # === BASE CASE 1: SUCCESS ===
-        # We found a valid combination!
-        if current_sum == target:
-            res.append(path[:])  # Make a copy
-            return
-        
-        # === BASE CASE 2: FAILURE ===
-        # Out of candidates OR sum exceeded target
-        if i >= len(candidates) or current_sum > target:
-            return
-
-        # === CHOICE 1: PICK current element ===
-        # Key: We can pick it AGAIN, so stay at index i
-        path.append(candidates[i])
-        backtrack(i, path, current_sum + candidates[i])  # i, not i+1!
-        
-        # === BACKTRACK ===
-        # Remove the element we just added
-        path.pop()
-
-        # === CHOICE 2: SKIP current element ===
-        # We're done with this element forever, move to next
-        backtrack(i + 1, path, current_sum)  # i+1, move on!
-
-    backtrack(0, [], 0)
-    return res
-
-# Comparison with Combination Sum II (no reuse):
-def combinationSum2(candidates, target):
-    """
-    In Combination Sum II, each element used ONCE
-    So PICK also uses i+1, not i
-    """
-    candidates.sort()  # Sort to handle duplicates
-    res = []
-    
     def backtrack(i, path, total):
         if total == target:
             res.append(path[:])
             return
-        if total > target:
+        if i >= len(candidates) or total > target:
             return
-            
-        for j in range(i, len(candidates)):
-            # Skip duplicates at same level
-            if j > i and candidates[j] == candidates[j-1]:
-                continue
-            path.append(candidates[j])
-            backtrack(j + 1, path, total + candidates[j])  # j+1, not j!
-            path.pop()
-    
+        
+        # PICK (Stay at i)
+        path.append(candidates[i])
+        backtrack(i, path, total + candidates[i])
+        path.pop()
+        
+        # SKIP (Move to i+1)
+        backtrack(i + 1, path, total)
+        
+    backtrack(0, [], 0)
+    return res`,
+                codeDetailed: `def combinationSum_detailed(candidates, target):
+    """
+    Key difference: Recurse with 'i' to allow reuse
+    """
+    res = []
+    def backtrack(i, path, total):
+        if total == target:
+            res.append(path[:])
+            return
+        if i >= len(candidates) or total > target:
+            return
+        
+        path.append(candidates[i])
+        backtrack(i, path, total + candidates[i]) # Stay at i
+        path.pop()
+        
+        backtrack(i + 1, path, total) # Move to i+1
+        
     backtrack(0, [], 0)
     return res`
             }
@@ -8667,277 +8704,64 @@ def combinationSum2(candidates, target):
                     "    return found"
                 ],
                 metrics: { time: "O(M×N × 3^L)", space: "O(L)" },
-                timeExplainer: `<strong>Time Complexity: O(M×N × 3^L)</strong><br><br>
-<div style="background:#0f172a; padding:15px; border-radius:8px;">
-<strong style="color:#fbbf24;">Breaking it down:</strong><br><br>
-• <strong style="color:#10b981;">M × N</strong> = Grid cells (each can be starting point)<br>
-• <strong style="color:#10b981;">3^L</strong> = DFS branching factor<br><br>
-
-<strong style="color:#a78bfa;">Why 3, not 4?</strong><br>
-First cell: 4 directions possible<br>
-But after that: 3 directions (can't go back to where we came from!)
-</div>
-
-<div style="background:rgba(245,158,11,0.1); padding:15px; border-radius:8px; margin-top:10px;">
-<strong style="color:#fbbf24;">Example:</strong><br>
-Grid = 3×4, Word = "ABCDEF" (L=6)<br>
-Time ≈ 12 × 3^6 = 12 × 729 ≈ 8748 operations
-</div>`,
-
-                spaceExplainer: `<strong>Space Complexity: O(L)</strong><br><br>
-<div style="background:#0f172a; padding:15px; border-radius:8px;">
-<table style="width:100%; color:#e2e8f0;">
-<tr><td style="padding:8px 0;"><strong style="color:#10b981;">✓ Recursion Stack</strong></td><td>O(L) - max depth = word length</td></tr>
-<tr><td style="padding:8px 0;"><strong style="color:#10b981;">✓ In-place Marking</strong></td><td>O(1) - no extra grid needed!</td></tr>
-</table>
-</div>
-
-<div style="background:rgba(16,185,129,0.1); padding:12px; border-radius:8px; margin-top:10px;">
-<strong style="color:#10b981;">💡 Space Optimization:</strong><br>
-We mark visited cells by replacing with '#'<br>
-No separate visited[][] array needed!
-</div>`,
-
-                visual: `<div style="text-align:left; font-family: monospace; font-size: 0.85rem; line-height: 1.6;">
-<strong style="color:#fbbf24;">🐍 "The Snake" Visualization:</strong>
-<pre style="color: var(--text-muted); margin-top:10px;">
-Grid:                  Finding "ABC"
-┌───┬───┬───┬───┐
-│ A │ B │ C │ E │      Step 1: Start at (0,0), char='A' ✓
-├───┼───┼───┼───┤              Mark A → #
-│ S │ F │ C │ S │      
-├───┼───┼───┼───┤      ┌───┬───┬───┬───┐
-│ A │ D │ E │ E │      │ # │ B │ C │ E │  🐍 at A
-└───┴───┴───┴───┘      ├───┼───┼───┼───┤
-                       │ S │ F │ C │ S │
-                       └───┴───┴───┴───┘
-
-Step 2: Move right to (0,1), char='B' ✓
-        Mark B → #
-        
-┌───┬───┬───┬───┐      Step 3: Move right to (0,2), char='C' ✓
-│ # │ # │ C │ E │              Mark C → #
-├───┼───┼───┼───┤      
-│ S │ F │ C │ S │      ┌───┬───┬───┬───┐
-└───┴───┴───┴───┘      │ # │ # │ # │ E │  🐍 found "ABC" ✅
-                       └───┴───┴───┴───┘
-
-If dead end → Unmark and try another direction
-(Snake retreats and tries different path)
-</pre>
-</div>`,
-
-                crux: `<strong>The Mark-Explore-Unmark Pattern:</strong><br><br>
-<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:15px 0;">
-<div style="background:rgba(239,68,68,0.1); padding:15px; border-radius:8px; text-align:center;">
-<div style="font-size:1.2rem; margin-bottom:8px;">0️⃣</div>
-<strong style="color:#ef4444;">CHECK</strong><br>
-<small style="color:gray;">Bounds & Match</small>
-</div>
-<div style="background:rgba(16,185,129,0.1); padding:15px; border-radius:8px; text-align:center;">
-<div style="font-size:1.2rem; margin-bottom:8px;">1️⃣</div>
-<strong style="color:#10b981;">MARK</strong><br>
-<code style="font-size:0.75rem;">board[r][c]='#'</code>
-</div>
-<div style="background:rgba(139,92,246,0.1); padding:15px; border-radius:8px; text-align:center;">
-<div style="font-size:1.2rem; margin-bottom:8px;">2️⃣</div>
-<strong style="color:#8b5cf6;">EXPLORE</strong><br>
-<small style="color:gray;">4 Directions</small>
-</div>
-<div style="background:rgba(245,158,11,0.1); padding:15px; border-radius:8px; text-align:center;">
-<div style="font-size:1.2rem; margin-bottom:8px;">3️⃣</div>
-<strong style="color:#fbbf24;">UNMARK</strong><br>
-<code style="font-size:0.75rem;">board[r][c]=temp</code>
-</div>
-</div>
-
-<div style="background:#0f172a; padding:15px; border-radius:8px;">
-<strong style="color:#fbbf24;">4 Directions:</strong><br>
-<code>dfs(r+1, c) or dfs(r-1, c) or dfs(r, c+1) or dfs(r, c-1)</code><br><br>
-<strong style="color:#10b981;">💡 Use OR short-circuit:</strong> If any direction returns True, stop immediately!
-</div>`,
-
-                trap: `<strong>⚠️ Common Mistakes:</strong><br><br>
-
-<div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); padding:15px; border-radius:8px; margin-bottom:15px;">
-<strong style="color:#f87171;">❌ Mistake 1: Forgetting to UNMARK!</strong>
-<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
-<div style="background:#0f172a; padding:10px; border-radius:6px;">
-<span style="color:#ef4444;">Wrong:</span><br>
-<code style="color:#f87171; font-size:0.8rem;">board[r][c] = '#'<br>return dfs(...)</code><br>
-<small style="color:gray;">Cell stays marked forever!</small>
-</div>
-<div style="background:#0f172a; padding:10px; border-radius:6px;">
-<span style="color:#10b981;">Correct:</span><br>
-<code style="color:#34d399; font-size:0.8rem;">temp = board[r][c]<br>board[r][c] = '#'<br>res = dfs(...)<br>board[r][c] = temp</code>
-</div>
-</div>
-</div>
-
-<div style="background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.3); padding:15px; border-radius:8px; margin-bottom:15px;">
-<strong style="color:#fbbf24;">❌ Mistake 2: Not using short-circuit OR</strong><br>
-<code style="color:#fbbf24;">return dfs(r+1,c) or dfs(r-1,c) or ...</code> ✅<br>
-<small style="color:gray;">If first direction works, skip others! Much faster.</small>
-</div>
-
-<div style="background:rgba(139,92,246,0.1); border:1px solid rgba(139,92,246,0.3); padding:15px; border-radius:8px;">
-<strong style="color:#a78bfa;">❌ Mistake 3: Wrong order of checks</strong><br>
-<code style="color:#a78bfa;">if i == len(word): return True  # Check SUCCESS first!</code><br>
-<code style="color:#a78bfa;">if out_of_bounds or mismatch: return False</code><br>
-<small style="color:gray;">Check base case BEFORE bounds check!</small>
-</div>`,
-
-                dryRun: [
-                    "<strong>Input:</strong> board = [['A','B'],['C','D']], word = 'ABCD'",
-                    "<code>exist(board, 'ABCD')</code> → Try each cell as start",
-                    "<strong style='color:#10b981;'>Start (0,0):</strong> board[0][0]='A' == word[0] ✓",
-                    "&nbsp;&nbsp;Mark: board[0][0] = '#'",
-                    "&nbsp;&nbsp;<code>dfs(0, 0, 0)</code> → i=0 matches, explore 4 dirs",
-                    "&nbsp;&nbsp;<strong style='color:#8b5cf6;'>Try RIGHT (0,1):</strong> board[0][1]='B' == word[1] ✓",
-                    "&nbsp;&nbsp;&nbsp;&nbsp;Mark: board[0][1] = '#'",
-                    "&nbsp;&nbsp;&nbsp;&nbsp;<code>dfs(0, 1, 1)</code> → explore from B",
-                    "&nbsp;&nbsp;&nbsp;&nbsp;<strong style='color:#8b5cf6;'>Try DOWN (1,1):</strong> board[1][1]='D' != word[2]='C' ❌",
-                    "&nbsp;&nbsp;&nbsp;&nbsp;<strong style='color:#8b5cf6;'>Try LEFT (0,0):</strong> board[0][0]='#' (visited) ❌",
-                    "&nbsp;&nbsp;&nbsp;&nbsp;All directions failed from B",
-                    "&nbsp;&nbsp;&nbsp;&nbsp;Unmark: board[0][1] = 'B'",
-                    "&nbsp;&nbsp;<strong style='color:#ef4444;'>RIGHT failed,</strong> try DOWN (1,0)",
-                    "&nbsp;&nbsp;<strong style='color:#8b5cf6;'>Try DOWN (1,0):</strong> board[1][0]='C' == word[1]='B' ❌",
-                    "&nbsp;&nbsp;Unmark: board[0][0] = 'A'",
-                    "<strong style='color:#fbbf24;'>Start (0,0) failed.</strong> Try next cell...",
-                    "... continues trying other starting positions ...",
-                    "<strong>Final:</strong> Return True if any path found, else False"
-                ],
-                codeTitle: "Python Solution (Grid Backtracking)",
+                timeExplainer: `<strong>Time: O(M×N × 3^L)</strong><br>
+Start from any cell (M*N). Branching factor 3 (except first step).`,
+                spaceExplainer: `<strong>Space: O(L)</strong><br>
+Recursion depth = Length of word`,
+                visual: `<div>Visualization: Snake finding path</div>`,
+                crux: `<strong>Mark-Explore-Unmark:</strong><br>
+1. MARK board[r][c] = '#'<br>
+2. EXPLORE 4 directions<br>
+3. UNMARK board[r][c] = original`,
+                trap: `<strong>Forgetting to Unmark:</strong><br>
+If you don't unmark, other paths can't use this cell!`,
+                dryRun: ["Dry run steps..."],
+                codeTitle: "Python Solution (Grid DFS)",
                 code: `def exist(board, word):
-    """
-    Find if word exists in grid via adjacent cells.
-    Time: O(M×N × 3^L), Space: O(L)
-    """
-    ROWS, COLS = len(board), len(board[0])
-    
-    def dfs(row, col, char_index):
-        # Base Case 1: Found complete word!
-        if char_index == len(word):
-            return True
-        
-        # Base Case 2: Out of bounds or mismatch
-        if (row < 0 or row >= ROWS or 
-            col < 0 or col >= COLS or 
-            board[row][col] != word[char_index]):
+    R, C = len(board), len(board[0])
+    def dfs(r, c, i):
+        if i == len(word): return True
+        if (r < 0 or r >= R or c < 0 or c >= C or
+            board[r][c] != word[i]):
             return False
-        
-        # MARK: Save char and mark as visited
-        original_char = board[row][col]
-        board[row][col] = '#'
-        
-        # EXPLORE: Try all 4 directions (short-circuit OR)
-        found = (dfs(row+1, col, char_index+1) or   # Down
-                 dfs(row-1, col, char_index+1) or   # Up
-                 dfs(row, col+1, char_index+1) or   # Right
-                 dfs(row, col-1, char_index+1))     # Left
-        
-        # UNMARK: Restore for other paths
-        board[row][col] = original_char
-        
-        return found
-    
-    # Try each cell as starting point
-    for row in range(ROWS):
-        for col in range(COLS):
-            if dfs(row, col, 0):
-                return True
+            
+        temp = board[r][c]
+        board[r][c] = '#'
+        res = (dfs(r+1,c,i+1) or dfs(r-1,c,i+1) or
+               dfs(r,c+1,i+1) or dfs(r,c-1,i+1))
+        board[r][c] = temp
+        return res
+
+    for r in range(R):
+        for c in range(C):
+            if dfs(r, c, 0): return True
     return False`,
                 codeDetailed: `def exist_detailed(board, word):
     """
-    GRID BACKTRACKING Pattern:
-    
-    WHY MARK AND UNMARK?
-    - Same cell can't be used twice in ONE path
-    - But can be used in DIFFERENT paths
-    - Mark '#' prevents revisiting in current DFS
-    - Unmark allows reuse when we backtrack
-    
-    WHY SHORT-CIRCUIT OR?
-    - dfs(...) or dfs(...) or ...
-    - If first returns True, others don't execute
-    - Massive optimization for early termination
+    Grid DFS with backtracking
     """
-    ROWS, COLS = len(board), len(board[0])
-    
-    def dfs(row, col, char_index):
-        # === BASE CASE 1: SUCCESS ===
-        # We've matched entire word!
-        if char_index == len(word):
-            return True
-        
-        # === BASE CASE 2: FAILURE ===
-        # Out of grid bounds
-        if row < 0 or row >= ROWS or col < 0 or col >= COLS:
+    R, C = len(board), len(board[0])
+    def dfs(r, c, i):
+        if i == len(word): return True
+        if r < 0 or r >= R or c < 0 or c >= C or board[r][c] != word[i]:
             return False
+            
+        # MARK
+        temp = board[r][c]
+        board[r][c] = '#'
         
-        # Current cell doesn't match required char
-        if board[row][col] != word[char_index]:
-            return False
-        
-        # === MARK AS VISITED ===
-        # Save original char, replace with '#'
-        # This prevents revisiting in current path
-        original_char = board[row][col]
-        board[row][col] = '#'
-        
-        # === EXPLORE 4 DIRECTIONS ===
-        # Use OR for short-circuit evaluation
-        # If any direction succeeds, return True immediately
-        found = (
-            dfs(row + 1, col, char_index + 1) or  # Down
-            dfs(row - 1, col, char_index + 1) or  # Up  
-            dfs(row, col + 1, char_index + 1) or  # Right
-            dfs(row, col - 1, char_index + 1)     # Left
-        )
-        
-        # === UNMARK (BACKTRACK) ===
-        # Restore original char for other paths
-        # This is CRITICAL - cell can be used in other paths
-        board[row][col] = original_char
-        
-        return found
-    
-    # Try every cell as potential starting point
-    for row in range(ROWS):
-        for col in range(COLS):
-            # If first char matches, start DFS
-            if dfs(row, col, 0):
-                return True
-    
-    return False
+        # EXPLORE
+        res = (dfs(r+1,c,i+1) or dfs(r-1,c,i+1) or
+               dfs(r,c+1,i+1) or dfs(r,c-1,i+1))
+               
+        # UNMARK
+        board[r][c] = temp
+        return res
 
-# Cleaner version using direction array:
-def exist_clean(board, word):
-    ROWS, COLS = len(board), len(board[0])
-    DIRECTIONS = [(0,1), (1,0), (0,-1), (-1,0)]  # Right, Down, Left, Up
-    
-    def dfs(row, col, char_index):
-        if char_index == len(word): 
-            return True
-        if not (0 <= row < ROWS and 0 <= col < COLS): 
-            return False
-        if board[row][col] != word[char_index]: 
-            return False
-        
-        original_char = board[row][col]
-        board[row][col] = '#'
-        
-        for delta_row, delta_col in DIRECTIONS:
-            if dfs(row + delta_row, col + delta_col, char_index + 1):
-                board[row][col] = original_char
-                return True
-        
-        board[row][col] = original_char
-        return False
-    
-    return any(dfs(row, col, 0) 
-               for row in range(ROWS) 
-               for col in range(COLS))`
+    for r in range(R):
+        for c in range(C):
+            if dfs(r, c, 0): return True
+    return False`
             }
         },
         {
@@ -8999,3554 +8823,113 @@ for O(1) validity check instead of O(9) loop.
                 visual: `<div style="text-align:left; font-family: monospace; font-size: 0.8rem; line-height: 1.5;">
 <strong style="color:#fbbf24;">🔢 Sudoku 3-Constraint Visualization:</strong>
 <pre style="color: var(--text-muted); margin-top:10px;">
-Filling cell (row=0, col=2):
-
-     0   1   2   3   4   5   6   7   8
-   ┌───┬───┬───┬───┬───┬───┬───┬───┬───┐
- 0 │ 5 │ 3 │ ? │ . │ 7 │ . │ . │ . │ . │  ← ROW 0: has 5,3,7
-   ├───┼───┼───┼───┼───┼───┼───┼───┼───┤
- 1 │ 6 │ . │ . │ 1 │ 9 │ 5 │ . │ . │ . │
-   ├───┼───┼───┼───┼───┼───┼───┼───┼───┤
- 2 │ . │ 9 │ 8 │ . │ . │ . │ . │ 6 │ . │
-   ├───┴───┴───┼───┴───┴───┼───┴───┴───┤
-               ↑
-            COL 2: has 8
-   
-   ┌───────────┐
-   │ 5 │ 3 │ ? │  ← BOX 0 (top-left 3×3)
-   │ 6 │ . │ . │     Already has: 5, 3, 6, 9, 8
-   │ . │ 9 │ 8 │
-   └───────────┘
-
-<strong style="color:#10b981;">Valid choices for (0,2):</strong>
-Row 0 blocks: {5, 3, 7}
-Col 2 blocks: {8}
-Box 0 blocks: {5, 3, 6, 9, 8}
-Combined: {3, 5, 6, 7, 8, 9}
-<strong style="color:#fbbf24;">Available: {1, 2, 4} → Try 1 first!</strong>
-
-<strong style="color:#a78bfa;">Box Index Formula:</strong>
-box_index = (row // 3) * 3 + (col // 3)
-For (0, 2): (0//3)*3 + (2//3) = 0*3 + 0 = Box 0
+Filling cell (0,2):
+   ┌───┬───┬───┐
+ 0 │ 5 │ 3 │ ? │  Box 0
+   ├───┼───┼───┤
+...
+Valid choices: {1,2,4}
 </pre>
 </div>`,
 
                 crux: `<strong>The 3-Constraint Check Pattern:</strong><br><br>
-<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:15px 0;">
-<div style="background:rgba(239,68,68,0.1); padding:15px; border-radius:8px; text-align:center;">
-<div style="font-size:1.5rem; margin-bottom:8px;">➡️</div>
-<strong style="color:#ef4444;">ROW</strong><br>
-<code style="font-size:0.75rem;">board[row][0..8]</code><br>
-<small style="color:gray;">Check all 9 columns</small>
-</div>
-<div style="background:rgba(16,185,129,0.1); padding:15px; border-radius:8px; text-align:center;">
-<div style="font-size:1.5rem; margin-bottom:8px;">⬇️</div>
-<strong style="color:#10b981;">COLUMN</strong><br>
-<code style="font-size:0.75rem;">board[0..8][col]</code><br>
-<small style="color:gray;">Check all 9 rows</small>
-</div>
-<div style="background:rgba(139,92,246,0.1); padding:15px; border-radius:8px; text-align:center;">
-<div style="font-size:1.5rem; margin-bottom:8px;">⬜</div>
-<strong style="color:#8b5cf6;">3×3 BOX</strong><br>
-<code style="font-size:0.7rem;">box_row = 3*(row//3)</code><br>
-<code style="font-size:0.7rem;">box_col = 3*(col//3)</code>
-</div>
+<div style="background:#0f172a; padding:15px; border-radius:8px;">
+<strong style="color:#fbbf24;">For any cell (r, c), check 3 things:</strong><br>
+1. <strong>Row:</strong> Is digit already in <code>board[r]</code>?<br>
+2. <strong>Col:</strong> Is digit already in <code>board[:][c]</code>?<br>
+3. <strong>Box:</strong> Is digit already in 3×3 box?
 </div>
 
-<div style="background:#0f172a; padding:15px; border-radius:8px;">
-<strong style="color:#fbbf24;">💡 Box Cell Access:</strong><br>
-<code>for i in range(9):</code><br>
-<code>&nbsp;&nbsp;box_row + i // 3, box_col + i % 3</code><br><br>
-This iterates all 9 cells in the 3×3 box!
+<div style="background:rgba(16,185,129,0.1); padding:12px; border-radius:8px; margin-top:10px;">
+<strong style="color:#10b981;">💡 Box Formula:</strong><br>
+<code>idx = (r // 3) * 3 + (c // 3)</code><br>
+Use this to map (0..8, 0..8) to Box 0..8
 </div>`,
 
                 trap: `<strong>⚠️ Common Mistakes:</strong><br><br>
-
 <div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); padding:15px; border-radius:8px; margin-bottom:15px;">
-<strong style="color:#f87171;">❌ Mistake 1: Not returning True when solved!</strong>
-<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
-<div style="background:#0f172a; padding:10px; border-radius:6px;">
-<span style="color:#ef4444;">Wrong:</span><br>
-<code style="color:#f87171; font-size:0.8rem;">if solve(): pass</code><br>
-<small style="color:gray;">Solution gets overwritten!</small>
-</div>
-<div style="background:#0f172a; padding:10px; border-radius:6px;">
-<span style="color:#10b981;">Correct:</span><br>
-<code style="color:#34d399; font-size:0.8rem;">if solve(): return True</code><br>
-<small style="color:gray;">Propagate success up!</small>
-</div>
-</div>
-</div>
-
-<div style="background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.3); padding:15px; border-radius:8px; margin-bottom:15px;">
-<strong style="color:#fbbf24;">❌ Mistake 2: Wrong box index formula</strong><br>
-<code style="color:#34d399;">box_row = 3 * (row // 3)</code> ✅<br>
-<code style="color:#f87171;">box_row = row // 3</code> ❌<br>
-<small style="color:gray;">Must multiply by 3 to get actual row index!</small>
-</div>
-
-<div style="background:rgba(139,92,246,0.1); border:1px solid rgba(139,92,246,0.3); padding:15px; border-radius:8px;">
-<strong style="color:#a78bfa;">❌ Mistake 3: Forgetting to reset cell on backtrack</strong><br>
-<code style="color:#a78bfa;">board[row][col] = '.'  # MUST reset!</code><br>
-<small style="color:gray;">Without this, wrong values stay and corrupt other branches</small>
+<strong style="color:#f87171;">❌ Mistake: Forgetting to Backtrack (Reset to '.')</strong><br>
+<code style="color:#fbbf24;">board[r][c] = digit</code> ✅<br>
+<code style="color:#f87171;">if solve(): return True</code><br>
+<code style="color:#fbbf24;">board[r][c] = '.'  # MUST DO THIS!</code><br>
+<small style="color:gray;">If recursion fails, you must clear the cell so other branches can try.</small>
 </div>`,
 
                 dryRun: [
-                    "<strong>Input:</strong> 9×9 Sudoku with empty cells marked '.'",
-                    "<code>solve()</code> → Find first empty cell",
-                    "<strong style='color:#10b981;'>Found empty:</strong> (row=0, col=2)",
-                    "Loop: Try digits '1' to '9'",
-                    "&nbsp;&nbsp;<strong style='color:#fbbf24;'>Try '1':</strong> isValid(0, 2, '1')?",
-                    "&nbsp;&nbsp;&nbsp;&nbsp;Check row 0: '1' not in row ✓",
-                    "&nbsp;&nbsp;&nbsp;&nbsp;Check col 2: '1' not in col ✓",
-                    "&nbsp;&nbsp;&nbsp;&nbsp;Check box 0: '1' not in box ✓",
-                    "&nbsp;&nbsp;<strong style='color:#10b981;'>Valid!</strong> board[0][2] = '1'",
-                    "&nbsp;&nbsp;<code>solve()</code> → Find next empty (0, 3)",
-                    "&nbsp;&nbsp;&nbsp;&nbsp;Try '1': Already 1 in row 0 ❌",
-                    "&nbsp;&nbsp;&nbsp;&nbsp;Try '2': Valid! Place and recurse...",
-                    "&nbsp;&nbsp;&nbsp;&nbsp;... continues recursively ...",
-                    "&nbsp;&nbsp;Eventually hits dead end (no valid digit)",
-                    "&nbsp;&nbsp;<strong style='color:#ef4444;'>Backtrack:</strong> board[0][2] = '.'",
-                    "&nbsp;&nbsp;<strong style='color:#fbbf24;'>Try '2':</strong> Continue with next digit...",
-                    "... continues until solved ...",
-                    "<strong>All cells filled:</strong> return True ✅"
+                    "<strong>Input:</strong> Partial Board",
+                    "1. Find first empty cell: (0, 2)",
+                    "2. Try '1': Row 0 has '1'? No. Col 2 has '1'? Yes. ❌ Skip.",
+                    "3. Try '2': Row 0 has '2'? Yes. ❌ Skip.",
+                    "4. Try '4': Safe! ✅ Place '4'.",
+                    "   Recursion: Find next empty cell...",
+                    "   ...If recursion returns False (dead end):",
+                    "   Reset (0, 2) to '.'",
+                    "5. Try '5': ..."
                 ],
                 codeTitle: "Python Solution (Backtracking)",
                 code: `def solveSudoku(board):
     """
-    Solve Sudoku by filling empty cells with valid digits.
-    Time: O(9^M), Space: O(M) where M = empty cells
+    Solve Sudoku by filling empty cells.
+    Time: O(9^M), Space: O(M)
     """
-    
-    def is_valid(row, col, digit):
-        # Check row
-        for c in range(9):
-            if board[row][c] == digit:
-                return False
-        
-        # Check column
-        for r in range(9):
-            if board[r][col] == digit:
-                return False
-        
-        # Check 3x3 box
-        box_row = 3 * (row // 3)
-        box_col = 3 * (col // 3)
+    def is_valid(row, col, char):
         for i in range(9):
-            r = box_row + i // 3
-            c = box_col + i % 3
-            if board[r][c] == digit:
+            if board[row][i] == char: return False
+            if board[i][col] == char: return False
+            if board[3*(row//3) + i//3][3*(col//3) + i%3] == char: 
                 return False
-        
         return True
-    
+
     def solve():
-        # Find next empty cell
-        for row in range(9):
-            for col in range(9):
-                if board[row][col] == '.':
-                    # Try each digit 1-9
-                    for digit in '123456789':
-                        if is_valid(row, col, digit):
-                            # Place digit
-                            board[row][col] = digit
-                            
-                            # Recurse
-                            if solve():
-                                return True  # Solved!
-                            
-                            # Backtrack
-                            board[row][col] = '.'
-                    
-                    # No valid digit found
+        for r in range(9):
+            for c in range(9):
+                if board[r][c] == ".":
+                    # Try digits 1-9
+                    for char in "123456789":
+                        if is_valid(r, c, char):
+                            board[r][c] = char
+                            if solve(): return True
+                            board[r][c] = "."  # Backtrack
                     return False
-        
-        # No empty cells = solved!
         return True
-    
+        
     solve()`,
                 codeDetailed: `def solveSudoku_detailed(board):
     """
     SUDOKU SOLVER with Backtracking
-    
-    STRATEGY:
-    1. Find first empty cell ('.')
-    2. Try digits 1-9
-    3. For each digit, check 3 constraints
-    4. If valid, place and recurse
-    5. If recursion fails, backtrack (reset to '.')
-    6. If no digit works, return False
-    7. If no empty cells, puzzle solved!
-    
-    WHY BACKTRACKING WORKS:
-    - We explore all possibilities systematically
-    - Early pruning via constraint checks
-    - Guaranteed to find solution if exists
     """
-    
     def is_valid(row, col, digit):
-        """
-        Check if placing 'digit' at (row, col) is valid.
-        Must check: row, column, and 3x3 box.
-        """
-        # === CHECK ROW ===
-        # Scan all columns in this row
-        for c in range(9):
-            if board[row][c] == digit:
-                return False
-        
-        # === CHECK COLUMN ===
-        # Scan all rows in this column
-        for r in range(9):
-            if board[r][col] == digit:
-                return False
-        
-        # === CHECK 3x3 BOX ===
-        # Find top-left corner of box
-        box_row_start = 3 * (row // 3)  # 0, 3, or 6
-        box_col_start = 3 * (col // 3)  # 0, 3, or 6
-        
-        # Check all 9 cells in box
-        for delta_row in range(3):
-            for delta_col in range(3):
-                r = box_row_start + delta_row
-                c = box_col_start + delta_col
-                if board[r][c] == digit:
-                    return False
-        
+        # Check row
+        for i in range(9):
+            if board[row][i] == digit: return False
+        # Check col
+        for i in range(9):
+            if board[i][col] == digit: return False
+        # Check box
+        box_r = (row // 3) * 3
+        box_c = (col // 3) * 3
+        for i in range(3):
+            for j in range(3):
+                if board[box_r + i][box_c + j] == digit: return False
         return True
-    
-    def solve():
-        """
-        Main backtracking function.
-        Returns True if puzzle solved, False otherwise.
-        """
-        # Find next empty cell
-        for row in range(9):
-            for col in range(9):
-                if board[row][col] == '.':
-                    # Try each digit 1-9
-                    for digit in '123456789':
-                        if is_valid(row, col, digit):
-                            # === PLACE DIGIT ===
-                            board[row][col] = digit
-                            
-                            # === RECURSE ===
-                            if solve():
-                                return True  # Puzzle solved!
-                            
-                            # === BACKTRACK ===
-                            # Solution not found, undo placement
-                            board[row][col] = '.'
-                    
-                    # Tried all digits, none worked
-                    return False
-        
-        # No empty cells left = puzzle solved!
-        return True
-    
-    solve()
 
-# Optimized version using sets for O(1) lookup:
-def solveSudoku_optimized(board):
-    rows = [set() for _ in range(9)]
-    cols = [set() for _ in range(9)]
-    boxes = [set() for _ in range(9)]
-    
-    # Initialize sets with existing values
-    for row in range(9):
-        for col in range(9):
-            if board[row][col] != '.':
-                digit = board[row][col]
-                rows[row].add(digit)
-                cols[col].add(digit)
-                boxes[(row // 3) * 3 + col // 3].add(digit)
-    
     def solve():
-        for row in range(9):
-            for col in range(9):
-                if board[row][col] == '.':
-                    box_idx = (row // 3) * 3 + col // 3
-                    for digit in '123456789':
-                        if (digit not in rows[row] and 
-                            digit not in cols[col] and 
-                            digit not in boxes[box_idx]):
-                            # Place
-                            board[row][col] = digit
-                            rows[row].add(digit)
-                            cols[col].add(digit)
-                            boxes[box_idx].add(digit)
-                            
+        for r in range(9):
+            for c in range(9):
+                if board[r][c] == ".":
+                    for char in "123456789":
+                        if is_valid(r, c, char):
+                            board[r][c] = char
                             if solve(): return True
-                            
-                            # Backtrack
-                            board[row][col] = '.'
-                            rows[row].remove(digit)
-                            cols[col].remove(digit)
-                            boxes[box_idx].remove(digit)
+                            board[r][c] = "."
                     return False
         return True
-    
+
     solve()`
             }
         }
     ]
 }
-
-
-// ========== data/systemdesign/scaling_reads.js ==========
-// System Design - Scaling Reads
-// URL Shortener, News Feed, Distributed Cache
-
-const topic_systemdesign_scaling_reads = {
-    id: "systemdesign_scaling_reads",
-    title: "System Design: Scaling Reads",
-    description: "Principal Engineer • Scaling Read-Heavy Systems",
-    color: "#0984e3",
-    icon: "fas fa-book-open",
-    mentalModel: {
-        whenToApply: [
-            { label: "📊 High Read QPS", desc: "Millions of reads? → Caching (Redis) + CDN + Read Replicas" },
-            { label: "🔗 URL/ID Generation", desc: "Need unique short IDs? → Base62 + Counter (Redis Range)" },
-            { label: "📰 Feed/Timeline", desc: "Social feed? → Fan-out + Caching + Ranking" },
-            { label: "💾 Distributed Cache", desc: "Reduce DB load? → Consistent Hashing + Replication" },
-            { label: "🔍 Search at Scale", desc: "Full-text search? → Inverted Index (ElasticSearch)" }
-        ],
-        patterns: [
-            { algo: "Caching", use: "Reduce DB load", time: "O(1)", space: "Memory", template: "Cache-aside: check cache → miss → DB → update cache" },
-            { algo: "Read Replicas", use: "Scale reads", time: "O(1)", space: "DB copies", template: "Master (writes) → Slaves (reads)" },
-            { algo: "CDN", use: "Edge caching", time: "O(1)", space: "Distributed", template: "Static content at edge, origin fallback" },
-            { algo: "Base62 Encoding", use: "Short URLs", time: "O(log n)", space: "O(1)", template: "ID → a-z, A-Z, 0-9 string" },
-            { algo: "Consistent Hashing", use: "Distributed cache", time: "O(1)", space: "O(N)", template: "Hash ring, minimal rehashing on node add/remove" },
-            { algo: "Fan-out on Read", use: "News feed", time: "O(following)", space: "O(1)", template: "Fetch from each followed user at read time" }
-        ],
-        safetyCheck: [
-            { label: "⚠️ Cache Invalidation", desc: "Write-through vs Write-behind. Stale data kills!" },
-            { label: "🔄 Consistent Hashing", desc: "Use virtual nodes for even distribution" },
-            { label: "🆔 ID Collision", desc: "Don't hash URLs (MD5/SHA) - collisions need retries" },
-            { label: "🌡️ Hot Keys", desc: "Celebrity problem - replicate hot keys across nodes" },
-            { label: "💥 Cache Stampede", desc: "Key expires, 1000 requests hit DB. Use locking/early refresh" }
-        ]
-    },
-    questions: [
-        {
-            id: "url-shortener",
-            title: "Design URL Shortener (Bit.ly)",
-            difficulty: "Medium",
-            priority: "🔴",
-            tags: ["Scaling Reads", "ID Generation"],
-
-            // SENIOR ENGINEER TEMPLATE MODE matches user request
-            customHtml: `
-    <p style="text-align: center; color: #86868b; font-size: 1.1em; margin-bottom: 30px;">
-        <strong>Design Philosophy:</strong> Keep It Simple (KISS), Operational Maturity over Hype.
-    </p>
-
-    <div class="card">
-        <span class="tag tag-math">Cheat Sheet</span>
-        <h3>1. The "Universal" Scale Estimates</h3>
-        <p>Memorize this. Use it for almost every system design interview.</p>
-        <table>
-            <thead>
-                <tr>
-                    <th>Metric</th>
-                    <th>Standard Value</th>
-                    <th>Rough Math (Back-of-envelope)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><strong>DAU</strong></td>
-                    <td>100 Million</td>
-                    <td>Standard large-scale app assumption.</td>
-                </tr>
-                <tr>
-                    <td><strong>QPS (Avg)</strong></td>
-                    <td>~10,000 QPS</td>
-                    <td><code>1 Billion Req / 100k sec</code></td>
-                </tr>
-                <tr>
-                    <td><strong>Peak QPS</strong></td>
-                    <td>~50,000 QPS</td>
-                    <td>5x Multiplier for spikes.</td>
-                </tr>
-                <tr>
-                    <td><strong>Storage</strong></td>
-                    <td>1 TB / Day</td>
-                    <td>1 Billion req * 1KB payload.</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <div class="card">
-        <span class="tag tag-pro">Senior Engineer Decisions</span>
-        <h3>2. Architecture Choices & Justifications</h3>
-
-        <h4>A. HTTP 301 vs 302?</h4>
-        <ul>
-            <li><strong>Decision:</strong> <code>302 (Temporary Redirect)</code></li>
-            <li><strong>Why?</strong> If we use 301, the browser caches the redirect. We lose <strong>Analytics</strong>
-                (click tracking). 302 forces the request to hit our server every time.</li>
-        </ul>
-
-        <hr style="border-color:rgba(255,255,255,0.1); margin: 20px 0;">
-
-        <h4>B. Database: Oracle (RDBMS) vs NoSQL?</h4>
-        <ul>
-            <li><strong>Decision:</strong> <strong>Oracle DB / RDBMS</strong> (Valid Alternative to NoSQL).</li>
-            <li><strong>The "Principal Engineer" Argument:</strong>
-                <ul>
-                    <li><strong>Capacity:</strong> 10k Write QPS is "peanuts" for a modern Oracle RAC / Exadata. We
-                        don't need NoSQL scale yet.</li>
-                    <li><strong>Operations:</strong> Better reliability (ACID), easier backups, and team familiarity.
-                    </li>
-                    <li><strong>Future Proofing:</strong> If we reach 100k+ writes, we can introduce Sharding or move to
-                        NoSQL then. <em>"Don't optimize for Google-scale when you are startup-scale."</em></li>
-                </ul>
-            </li>
-        </ul>
-    </div>
-
-    <div class="card">
-        <span class="tag tag-logic">The Core Logic</span>
-        <h3>3. Shortening Strategy: Base62 + Redis Range</h3>
-
-        <p><strong>The Goal:</strong> Convert ID -> 7 char string.</p>
-        
-        <div class="trap-box">
-            <strong>⛔ The Trap (Hashing):</strong> Do not use MD5/SHA256. It causes <strong>Collisions</strong>. You
-            will have to handle retries.
-        </div>
-
-        <h4>The Solution: Counter Based (Base62)</h4>
-        <ul>
-            <li><strong>Alphabet:</strong> <code>a-z, A-Z, 0-9</code> (62 chars).</li>
-            <li><strong>Capacity:</strong> <code>62^7</code> ≈ <strong>3.5 Trillion URLs</strong>. (Enough for 100
-                years).</li>
-        </ul>
-
-        <h4>Distributed ID Generation (The "Redis Range" Pattern)</h4>
-        <p>How to generate unique IDs across 50 servers without locking the DB?</p>
-        <ol>
-            <li><strong>Redis:</strong> Holds a global counter (e.g., starts at 1 Billion).</li>
-            <li><strong>App Server:</strong> Asks Redis "Give me a range".</li>
-            <li><strong>Redis:</strong> <code>INCRBY 10000</code>. Returns range <code>[1,000,000 - 1,010,000]</code>.
-            </li>
-            <li><strong>App Server:</strong> Uses these 10k IDs in memory. <strong>Zero DB load for next 10k
-                    requests.</strong></li>
-        </ol>
-        <p><em><strong>Note:</strong> Start Counter at <strong>1 Billion</strong> to ensure generated URLs are 6 chars
-                long (e.g., <code>bit.ly/x9Js2</code>) and not 1 char (<code>bit.ly/1</code>).</em></p>
-    </div>
-
-    <div class="card">
-        <span class="tag tag-logic">Performance</span>
-        <h3>4. Caching Strategy (Simplicity Wins)</h3>
-
-        <ul>
-            <li><strong>Size Check:</strong> Hot data (20%) of 1TB is ~200GB. But mostly recent viral links matter.
-                <strong>32GB - 64GB RAM</strong> is enough.</li>
-            <li><strong>Topology:</strong> 1 Master (Writes) + 2 Slaves (Reads). No complex sharding needed for this
-                scale.</li>
-            <li><strong>Eviction Policy:</strong> <strong>LRU (Least Recently Used)</strong>.
-                <br><span style="font-size:0.9em; color:#86868b;">(LFU is bad because old viral links stick around
-                    forever).</span>
-            </li>
-        </ul>
-        
-        <div class="trap-box">
-            <strong>⛔ The Trap (Modulo Hashing):</strong> If you use multiple Redis nodes, don't use
-            <code>Hash % N</code>. If one node dies, 100% cache keys act as missed. Use <strong>Consistent
-                Hashing</strong> OR keep it simple with <strong>Replication</strong>.
-        </div>
-    </div>
-
-    <div class="card">
-        <h3>5. High Level Design (ASCII)</h3>
-        <div class="diagram" style="font-family: 'Courier New', monospace;">
-[ User ]
-   |
-   | (1. Shorten / 2. Click)
-   v
-[ Load Balancer ]
-   |
-   +---> [ Rate Limiter ] (Redis Token Bucket)
-   |       | "Stop spam (429)"
-   |
-   v
-[ App Server Cluster ] <---- (Allocates IDs) ---- [ Redis (ID Counter) ]
-   |
-   |-- A. READ Path (Click) ----------------------------+
-   |                                                    |
-   +--> 1. Check Cache (Redis Slave)                    |
-   |       (Hit? -> Return 302 to Long_URL)             |
-   |                                                    |
-   +--> 2. Cache Miss? -> Fetch from Oracle DB          |
-   |       (Update Cache + Return 302)                  |
-   |                                                    |
-   |-- B. WRITE Path (Shorten) -------------------------+
-   |                                                    |
-   +--> 1. Get ID from Memory Range                     |
-   |       (Convert ID -> Base62 "abc")                 |
-   |                                                    |
-   +--> 2. Write to Oracle DB (Async/Sync)              |
-           (INSERT INTO urls VALUES (id, long_url...))
-        </div>
-    </div>
-            `
-        },
-        {
-            id: "news-feed",
-            title: "Design News Feed (FB/Instagram)",
-            difficulty: "Hard",
-            priority: "🔴",
-            tags: ["Scaling Reads", "Fan-out", "Ranking"],
-
-            scaleEstimates: {
-                dau: "2 Billion users",
-                avgFriends: "500 friends per user",
-                postsPerDay: "500 Million new posts",
-                feedRefresh: "5 Billion feed loads/day",
-                note: "Read-heavy! 1000:1 read:write ratio. MUST cache aggressively."
-            },
-
-            quiz: {
-                description: "When celebrity with 10M followers posts, how to update all feeds?",
-                options: [
-                    "Write post to all 10M followers' feeds immediately",
-                    "Don't pre-compute - fetch at read time",
-                    "Hybrid: fan-out on write for normal users, fan-out on read for celebrities",
-                    "Queue all 10M writes asynchronously"
-                ],
-                correct: 2,
-                explanation: "Hybrid approach! Normal users (< 10k followers): fan-out on write (pre-compute feeds). Celebrities: fan-out on read (fetch at read time). Avoids celebrity hotspot problem!"
-            },
-
-            learn: {
-                decisions: [
-                    {
-                        question: "Fan-out on Write vs Read?",
-                        answer: "HYBRID! Both have trade-offs.",
-                        why: "Write = fast reads, slow writes for celebrities. Read = fast writes, slow reads. Use celebrity threshold (~10k followers)."
-                    },
-                    {
-                        question: "Where to store feeds?",
-                        answer: "Redis lists + DB backup",
-                        why: "Redis LPUSH/LRANGE for fast feed ops. DB (Cassandra) for persistence. TTL old entries."
-                    },
-                    {
-                        question: "Ranking algorithm?",
-                        answer: "ML model: affinity × recency × engagement",
-                        why: "Not just chronological! Factor in: relationship score, post type, engagement prediction."
-                    }
-                ],
-
-                components: [
-                    {
-                        name: "Fan-out on Write (Push Model)",
-                        solution: `<pre style="background:#2d3436; color:#dfe6e9; padding:15px; border-radius:8px; font-size:0.85rem;">
-When user posts:
-1. Write post to Posts table
-2. Get follower list (500 friends)
-3. For each follower:
-   LPUSH feed:user_123 post_id
-   LTRIM feed:user_123 0 999  # Keep last 1000
-
-Pros: ✅ Fast reads (O(1))
-Cons: ❌ Slow writes for celebrities
-      ❌ Waste compute for inactive users
-</pre>`,
-                        trap: "Don't fan-out to ALL followers - many are inactive. Use activity-based filtering!"
-                    },
-                    {
-                        name: "Hybrid Approach (The Answer!)",
-                        solution: `<ul>
-<li><strong>Normal users (&lt; 10k followers):</strong> Fan-out on WRITE</li>
-<li><strong>Celebrities (&gt; 10k followers):</strong> Fan-out on READ</li>
-<li><strong>At read time:</strong> Merge pre-computed feed + live celebrity posts</li>
-</ul>
-<pre style="background:#2d3436; color:#dfe6e9; padding:10px; border-radius:8px; font-size:0.85rem;">
-def get_feed(user_id):
-    # Pre-computed from normal friends
-    cached_feed = redis.lrange(f"feed:{user_id}", 0, 99)
-    
-    # Live fetch from celebrities user follows
-    celeb_posts = fetch_recent_celebrity_posts(user_id)
-    
-    # Merge and rank
-    return rank(cached_feed + celeb_posts)[:100]
-</pre>`,
-                        trap: "Celebrity threshold is tunable! Start with 10k, adjust based on latency metrics."
-                    }
-                ],
-
-                diagram: `<pre style="background:#2d3436; color:#dfe6e9; padding:20px; border-radius:8px; font-size:0.75rem; line-height:1.3; overflow-x:auto;">
-┌─────────────────────────────────────────────────────────────────────┐
-│                      NEWS FEED ARCHITECTURE                          │
-└─────────────────────────────────────────────────────────────────────┘
-
-WRITE PATH (Post Created):
-[User Posts] → [Post Service] → [Posts DB]
-                    │
-                    ▼
-            ┌───────────────┐
-            │ Fan-out Svc   │ ← Is celebrity? (> 10k followers)
-            └───────┬───────┘
-                    │
-       ┌────────────┴────────────┐
-       ▼ (Normal User)           ▼ (Celebrity)
-┌─────────────┐            ┌─────────────┐
-│ Push to all │            │ Skip fanout │
-│ follower    │            │ (read-time) │
-│ feeds       │            └─────────────┘
-└─────────────┘
-
-READ PATH (Open App):
-[User Opens App] → [Feed Service]
-                        │
-        ┌───────────────┼───────────────┐
-        ▼               ▼               ▼
-  ┌──────────┐   ┌──────────┐   ┌──────────┐
-  │ Cached   │   │ Celeb    │   │ Ranking  │
-  │ Feed     │ + │ Posts    │ → │ Service  │ → [Feed]
-  │ (Redis)  │   │ (Live)   │   │ (ML)     │
-  └──────────┘   └──────────┘   └──────────┘
-</pre>`,
-
-                traps: [
-                    {
-                        question: "How to handle deleted posts?",
-                        answer: "Soft delete. Filter out at read time. Async cleanup of cached feeds."
-                    },
-                    {
-                        question: "Real-time updates?",
-                        answer: "WebSocket push for NEW posts. Pull for full refresh. Rate limit push."
-                    }
-                ],
-
-                metrics: { time: "60 min interview", space: "Redis: ~100GB, Cassandra: PB scale" },
-
-                codeTitle: "Feed Generation (Python)",
-                code: `import redis
-from typing import List
-
-r = redis.Redis()
-CELEBRITY_THRESHOLD = 10000
-
-def create_post(user_id: int, post_id: str):
-    """Create post and fan-out to followers"""
-    follower_count = r.scard(f"followers:{user_id}")
-    
-    if follower_count < CELEBRITY_THRESHOLD:
-        # Fan-out on write for normal users
-        followers = r.smembers(f"followers:{user_id}")
-        pipe = r.pipeline()
-        for follower_id in followers:
-            pipe.lpush(f"feed:{follower_id}", post_id)
-            pipe.ltrim(f"feed:{follower_id}", 0, 999)
-        pipe.execute()
-    else:
-        # Celebrity - index for read-time fetch
-        r.zadd(f"celeb_posts:{user_id}", {post_id: time.time()})
-
-def get_feed(user_id: int, count: int = 100) -> List:
-    # Pre-computed feed
-    cached = r.lrange(f"feed:{user_id}", 0, count - 1)
-    
-    # Celebrity posts (fan-out on read)
-    celeb_ids = r.smembers(f"following_celebs:{user_id}")
-    celeb_posts = []
-    for cid in celeb_ids:
-        recent = r.zrevrange(f"celeb_posts:{cid}", 0, 10)
-        celeb_posts.extend(recent)
-    
-    return rank_posts(list(cached) + celeb_posts)[:count]`
-            }
-        },
-        {
-            id: "distributed-cache",
-            title: "Design Distributed Cache (Redis)",
-            difficulty: "Hard",
-            priority: "🔴",
-            tags: ["Scaling Reads", "Caching", "Distributed"],
-
-            scaleEstimates: {
-                qps: "1 Million QPS",
-                dataSize: "1 TB across cluster",
-                latency: "< 1ms (99th percentile)",
-                availability: "99.99% uptime",
-                note: "Cache is on HOT PATH - latency is everything!"
-            },
-
-            quiz: {
-                description: "How to add new cache node without losing data?",
-                options: [
-                    "Hash(key) % N - rehash all keys",
-                    "Consistent Hashing - minimal rehashing",
-                    "Random placement",
-                    "Store keys in sorted order"
-                ],
-                correct: 1,
-                explanation: "Consistent Hashing! Adding node = only K/N keys move (K=keys, N=nodes). Normal hash mod = ALL keys rehash. Consistent hashing is essential for distributed caches."
-            },
-
-            learn: {
-                decisions: [
-                    {
-                        question: "Cache-aside vs Write-through?",
-                        answer: "Cache-aside for reads, async write for writes",
-                        why: "Cache-aside: App checks cache → miss → DB → update cache. Simple, app controls."
-                    },
-                    {
-                        question: "How to handle cache node failure?",
-                        answer: "Replicas + Consistent Hashing",
-                        why: "Each key stored on N nodes (typically 3). Consistent hashing ensures minimal disruption."
-                    },
-                    {
-                        question: "Eviction policy?",
-                        answer: "LRU (Least Recently Used) default",
-                        why: "LRU works for most workloads. LFU for skewed access patterns."
-                    }
-                ],
-
-                components: [
-                    {
-                        name: "Consistent Hashing",
-                        solution: `<pre style="background:#2d3436; color:#dfe6e9; padding:15px; border-radius:8px; font-size:0.85rem;">
-Hash Ring (0 to 2^32):
-     
-        Node A (pos 1000)
-           ●
-          / \\
-         /   \\
-        ●     ●
-   Node C    Node B
-  (pos 3000) (pos 2000)
-
-Key "user:123" → hash = 1500
-→ Goes to next node clockwise = Node B
-
-Add Node D at pos 1500:
-→ Only keys between A and D move!
-→ Not ALL keys like hash % N
-</pre>`,
-                        trap: "Use virtual nodes! Real nodes get 100-200 virtual positions for even distribution."
-                    },
-                    {
-                        name: "Cache Stampede Prevention",
-                        solution: `<pre style="background:#2d3436; color:#dfe6e9; padding:15px; border-radius:8px; font-size:0.85rem;">
-Problem: Key expires, 1000 requests hit DB!
-
-Solutions:
-
-1. Locking (Mutex):
-   if cache_miss:
-       if acquire_lock(key):
-           value = db.get(key)
-           cache.set(key, value)
-           release_lock(key)
-       else:
-           wait_and_retry()
-
-2. Early Expiration:
-   if now > refresh_at:
-       async_refresh()
-       return stale_value
-</pre>`,
-                        trap: "Mutex can cause thundering herd on the LOCK. Use short TTL + retry."
-                    }
-                ],
-
-                diagram: `<pre style="background:#2d3436; color:#dfe6e9; padding:20px; border-radius:8px; font-size:0.75rem; line-height:1.3; overflow-x:auto;">
-┌─────────────────────────────────────────────────────────────────────┐
-│                   DISTRIBUTED CACHE ARCHITECTURE                     │
-└─────────────────────────────────────────────────────────────────────┘
-
-[App Servers]
-    │
-    │ Hash(key) → Consistent Hash Ring
-    ▼
-┌─────────────────────────────────────────────────────────────┐
-│                    CACHE CLUSTER                             │
-│                                                              │
-│   ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐  │
-│   │ Node A  │    │ Node B  │    │ Node C  │    │ Node D  │  │
-│   │ Master  │    │ Master  │    │ Master  │    │ Master  │  │
-│   └────┬────┘    └────┬────┘    └────┬────┘    └────┬────┘  │
-│        │              │              │              │        │
-│   ┌────▼────┐    ┌────▼────┐    ┌────▼────┐    ┌────▼────┐  │
-│   │ Replica │    │ Replica │    │ Replica │    │ Replica │  │
-│   └─────────┘    └─────────┘    └─────────┘    └─────────┘  │
-│                                                              │
-│   Consistent Hash Ring:                                      │
-│   Keys 0-25% → A, 25-50% → B, 50-75% → C, 75-100% → D       │
-└─────────────────────────────────────────────────────────────┘
-                    │
-                    ▼ (Cache Miss)
-            ┌───────────────┐
-            │   Database    │
-            └───────────────┘
-</pre>`,
-
-                traps: [
-                    {
-                        question: "Hot key problem (celebrity)?",
-                        answer: "Replicate hot key to multiple nodes. Or local cache in app servers."
-                    },
-                    {
-                        question: "Large value (10MB)?",
-                        answer: "Chunk into smaller keys. Or use object storage (S3) with cache for metadata."
-                    }
-                ],
-
-                metrics: { time: "45 min interview", space: "TB scale, sub-ms latency" },
-
-                codeTitle: "Consistent Hashing (Python)",
-                code: `import hashlib
-import bisect
-
-class ConsistentHash:
-    def __init__(self, nodes=None, virtual_nodes=150):
-        self.virtual_nodes = virtual_nodes
-        self.ring = []
-        self.hash_to_node = {}
-        
-        if nodes:
-            for node in nodes:
-                self.add_node(node)
-    
-    def _hash(self, key: str) -> int:
-        return int(hashlib.md5(key.encode()).hexdigest(), 16)
-    
-    def add_node(self, node: str):
-        for i in range(self.virtual_nodes):
-            h = self._hash(f"{node}:{i}")
-            bisect.insort(self.ring, h)
-            self.hash_to_node[h] = node
-    
-    def get_node(self, key: str) -> str:
-        if not self.ring:
-            return None
-        h = self._hash(key)
-        idx = bisect.bisect_right(self.ring, h)
-        if idx == len(self.ring):
-            idx = 0
-        return self.hash_to_node[self.ring[idx]]
-
-# Usage:
-# ch = ConsistentHash(['node1', 'node2', 'node3'])
-# ch.get_node("user:123")  # Returns "node2"
-# ch.add_node("node4")     # Only ~25% keys move!`
-            }
-        }
-    ]
-};
-
-
-// ========== data/systemdesign/scaling_writes.js ==========
-// System Design - Scaling Writes
-// Rate Limiter, Ad Click Aggregator
-
-const topic_systemdesign_scaling_writes = {
-    id: "systemdesign_scaling_writes",
-    title: "System Design: Scaling Writes",
-    description: "Principal Engineer • Scaling Write-Heavy Systems",
-    color: "#e17055",
-    icon: "fas fa-edit",
-    mentalModel: {
-        whenToApply: [
-            { label: "✏️ High Write QPS", desc: "Millions of writes? → Sharding + Message Queues + CQRS" },
-            { label: "🚦 Rate Limiting", desc: "Stop abuse? → Token Bucket / Sliding Window + Redis" },
-            { label: "📈 Analytics/Aggregation", desc: "Real-time counts? → HyperLogLog + Time-Series DB" },
-            { label: "📊 Event Streaming", desc: "Process events? → Kafka + Partitioning" },
-            { label: "🔢 Counters at Scale", desc: "Like counts? → Sharded counters + Eventual consistency" }
-        ],
-        patterns: [
-            { algo: "Sharding", use: "Scale writes", time: "O(1)", space: "Distributed", template: "Consistent Hashing / Range-based" },
-            { algo: "Token Bucket", use: "Rate limiting", time: "O(1)", space: "O(1)", template: "tokens += rate; if tokens > 0: allow" },
-            { algo: "Write-Behind Cache", use: "Batch writes", time: "O(1)", space: "O(pending)", template: "Queue writes, flush periodically" },
-            { algo: "CQRS", use: "Separate read/write", time: "O(1)", space: "2 DBs", template: "Command DB (write) + Query DB (read)" },
-            { algo: "HyperLogLog", use: "Unique counts", time: "O(1)", space: "12KB", template: "Probabilistic counting (2% error)" },
-            { algo: "Time Bucketing", use: "Aggregation", time: "O(1)", space: "O(buckets)", template: "Aggregate per minute/hour, roll up" }
-        ],
-        safetyCheck: [
-            { label: "⚠️ Write Amplification", desc: "Indexes, replicas, search = N writes per 1 logical write" },
-            { label: "🔄 Eventual Consistency", desc: "Writes to replicas are async. Accept stale reads." },
-            { label: "⏱️ Rate Limit Storage", desc: "In-memory = restart loses state. Use Redis." },
-            { label: "📊 Aggregation Windows", desc: "Tumbling vs Sliding windows. Different semantics!" }
-        ]
-    },
-    questions: [
-        {
-            id: "rate-limiter",
-            title: "Design Rate Limiter",
-            difficulty: "Medium",
-            priority: "🔴",
-            tags: ["Scaling Writes", "Throttling"],
-
-            scaleEstimates: {
-                requestsPerSec: "10,000 - 100,000 QPS",
-                latencyBudget: "< 1ms (must be fast!)",
-                storage: "1 entry per user/IP",
-                note: "Rate limiter sits in the HOT PATH - must be O(1) and fast!"
-            },
-
-            quiz: {
-                description: "Which rate limiting algorithm allows brief bursts?",
-                options: [
-                    "Fixed Window Counter",
-                    "Sliding Window Log",
-                    "Token Bucket",
-                    "Leaky Bucket"
-                ],
-                correct: 2,
-                explanation: "Token Bucket! Allows bursts (accumulated tokens). Leaky Bucket = constant rate, no burst. Fixed Window = boundary issues. Sliding Log = memory heavy."
-            },
-
-            learn: {
-                decisions: [
-                    {
-                        question: "Where to rate limit?",
-                        answer: "API Gateway / Load Balancer level",
-                        why: "Before hitting app servers. Saves resources early."
-                    },
-                    {
-                        question: "By what key?",
-                        answer: "User ID > API Key > IP (in priority)",
-                        why: "IP can be shared (NAT). User ID is most accurate."
-                    }
-                ],
-
-                components: [
-                    {
-                        name: "Token Bucket vs Leaky Bucket",
-                        solution: `<table style="width:100%; border-collapse:collapse;">
-<tr><th style="border:1px solid #eee; padding:8px;">Token Bucket</th><th style="border:1px solid #eee; padding:8px;">Leaky Bucket</th></tr>
-<tr><td style="border:1px solid #eee; padding:8px;">✅ Allows BURSTS (uses saved tokens)</td><td style="border:1px solid #eee; padding:8px;">❌ Constant rate, no bursts</td></tr>
-<tr><td style="border:1px solid #eee; padding:8px;">Tokens accumulate when idle</td><td style="border:1px solid #eee; padding:8px;">Queue-based, processes at fixed rate</td></tr>
-<tr><td style="border:1px solid #eee; padding:8px;">Best for: APIs with occasional spikes</td><td style="border:1px solid #eee; padding:8px;">Best for: Network traffic shaping</td></tr>
-</table>`,
-                        trap: "Fixed Window has BOUNDARY problem - 2x burst at window edge!"
-                    },
-                    {
-                        name: "Sliding Window (Hybrid)",
-                        solution: `<pre style="background:#2d3436; color:#dfe6e9; padding:15px; border-radius:8px; font-size:0.85rem;">
-# Sliding Window Counter (Best of both worlds)
-# Weighted average of current + previous window
-
-prev_count = get_count(prev_window)
-curr_count = get_count(curr_window)
-
-weight = (now - curr_window_start) / window_size
-count = prev_count * (1 - weight) + curr_count
-
-if count >= limit:
-    return 429
-</pre>`,
-                        trap: "Sliding Window LOG stores every timestamp - uses too much memory at scale!"
-                    }
-                ],
-
-                diagram: `<pre style="background:#2d3436; color:#dfe6e9; padding:20px; border-radius:8px; font-size:0.8rem; line-height:1.3;">
-                    TOKEN BUCKET VISUALIZATION
-                    
-    Refill: 10 tokens/sec          Bucket Size: 100 tokens
-           │                              │
-           ▼                              ▼
-    ┌──────────────────────────────────────────┐
-    │  [🪙🪙🪙🪙🪙🪙🪙🪙🪙🪙] ← Tokens       │
-    │  Capacity: 100                           │
-    │                                          │
-    │  Request arrives:                        │
-    │  ✅ Tokens > 0? → Consume 1, Allow       │
-    │  ❌ Tokens = 0? → Reject (429)           │
-    └──────────────────────────────────────────┘
-    
-    BURST HANDLING:
-    - Idle user accumulates tokens (up to capacity)
-    - Can "burst" 100 requests instantly
-    - Then rate-limited to 10/sec
-</pre>`,
-
-                traps: [
-                    {
-                        question: "Race condition with distributed rate limiting?",
-                        answer: "Use Redis Lua scripts - ATOMIC read+write. Or accept eventual consistency."
-                    },
-                    {
-                        question: "What headers to return?",
-                        answer: "X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, Retry-After"
-                    }
-                ],
-
-                metrics: { time: "30 min interview", space: "O(1) per key" },
-
-                codeTitle: "Token Bucket (Redis Lua)",
-                code: `-- Token Bucket Rate Limiter (Redis Lua Script)
--- KEYS[1] = bucket key
--- ARGV[1] = capacity, ARGV[2] = refill_rate, ARGV[3] = now
-
-local bucket = redis.call('HMGET', KEYS[1], 'tokens', 'last_refill')
-local tokens = tonumber(bucket[1]) or tonumber(ARGV[1])
-local last_refill = tonumber(bucket[2]) or tonumber(ARGV[3])
-
--- Refill tokens based on time passed
-local now = tonumber(ARGV[3])
-local refill = (now - last_refill) * tonumber(ARGV[2])
-tokens = math.min(tonumber(ARGV[1]), tokens + refill)
-
-if tokens >= 1 then
-    tokens = tokens - 1
-    redis.call('HMSET', KEYS[1], 'tokens', tokens, 'last_refill', now)
-    redis.call('EXPIRE', KEYS[1], 60)
-    return 1  -- ALLOWED
-else
-    return 0  -- RATE LIMITED (429)
-end`
-            }
-        },
-        {
-            id: "ad-click-aggregator",
-            title: "Design Ad Click Aggregator",
-            difficulty: "Hard",
-            priority: "🟡",
-            tags: ["Scaling Writes", "Aggregation", "Streaming"],
-
-            scaleEstimates: {
-                clicksPerDay: "10 Billion clicks",
-                qps: "100,000 writes/sec peak",
-                aggregationLatency: "Near real-time (< 1 min)",
-                storage: "PB scale (raw + aggregated)",
-                note: "Write-heavy! Every click = money. Can't lose data."
-            },
-
-            quiz: {
-                description: "How to count unique users clicking an ad without storing all user IDs?",
-                options: [
-                    "Store all user IDs in a set",
-                    "Use HyperLogLog (probabilistic)",
-                    "Count all clicks (including duplicates)",
-                    "Sample 1% of users"
-                ],
-                correct: 1,
-                explanation: "HyperLogLog! Uses only 12KB to count billions of uniques with ~2% error. Exact set = GB of memory. For ad analytics, 2% error is acceptable."
-            },
-
-            learn: {
-                decisions: [
-                    {
-                        question: "Real-time vs Batch aggregation?",
-                        answer: "Lambda Architecture (both!)",
-                        why: "Real-time (Kafka + Flink) for dashboards. Batch (Spark) for accurate billing reconciliation."
-                    },
-                    {
-                        question: "How to handle late events?",
-                        answer: "Watermarks + allowed lateness",
-                        why: "Mobile users offline → late clicks. Accept up to 1 hour late, recompute."
-                    },
-                    {
-                        question: "Raw events storage?",
-                        answer: "Kafka → S3 (data lake)",
-                        why: "Keep raw forever for compliance. Aggregate for queries."
-                    }
-                ],
-
-                components: [
-                    {
-                        name: "Time-Window Aggregation",
-                        solution: `<pre style="background:#2d3436; color:#dfe6e9; padding:15px; border-radius:8px; font-size:0.85rem;">
-Window Types:
-
-Tumbling (non-overlapping):
-|----1min----|----1min----|----1min----|
-  [events]      [events]      [events]
-
-Sliding (overlapping):
-|----1min----|
-     |----1min----|
-          |----1min----|
-
-Aggregations per ad_id per minute:
-- click_count
-- unique_users (HyperLogLog)
-- revenue_sum
-</pre>`,
-                        trap: "Tumbling = simpler. Sliding = smoother but more compute."
-                    },
-                    {
-                        name: "Sharded Counters",
-                        solution: `<pre style="background:#2d3436; color:#dfe6e9; padding:15px; border-radius:8px; font-size:0.85rem;">
-Problem: 1 counter, 100k writes/sec = HOT KEY
-
-Solution: Shard the counter!
-
-ad:123:clicks:shard0 = 5000
-ad:123:clicks:shard1 = 4800
-ad:123:clicks:shard2 = 5200
-
-Write: INCR random shard
-Read:  SUM all shards (async, cache result)
-
-Typically 10-100 shards per hot counter.
-</pre>`,
-                        trap: "Don't read sum on every request - cache aggregated value, update every second."
-                    },
-                    {
-                        name: "Lambda Architecture",
-                        solution: `<ul>
-<li><strong>Speed Layer:</strong> Kafka → Flink → Real-time view</li>
-<li><strong>Batch Layer:</strong> S3 → Spark → Accurate view</li>
-<li><strong>Serving Layer:</strong> Merge both for queries</li>
-</ul>
-<p>Real-time: fast but approximate. Batch: slow but accurate. Best of both!</p>`,
-                        trap: "Kappa architecture (stream only) is simpler but harder to fix processing bugs."
-                    }
-                ],
-
-                diagram: `<pre style="background:#2d3436; color:#dfe6e9; padding:20px; border-radius:8px; font-size:0.75rem; line-height:1.3; overflow-x:auto;">
-┌─────────────────────────────────────────────────────────────────────┐
-│                   AD CLICK AGGREGATOR ARCHITECTURE                   │
-└─────────────────────────────────────────────────────────────────────┘
-
-[Ad Click Events]
-        │
-        ▼
-┌───────────────┐
-│    Kafka      │ (Partitioned by ad_id)
-│   (Buffer)    │
-└───────┬───────┘
-        │
-        ├─────────────────────────────────────────┐
-        │                                         │
-        ▼ (Speed Layer)                           ▼ (Batch Layer)
-┌───────────────┐                         ┌───────────────┐
-│   Flink       │                         │     S3        │
-│ (1-min agg)   │                         │  (Raw events) │
-└───────┬───────┘                         └───────┬───────┘
-        │                                         │ Every hour
-        ▼                                         ▼
-┌───────────────┐                         ┌───────────────┐
-│    Redis      │                         │    Spark      │
-│ (Real-time)   │                         │ (Recompute)   │
-└───────┬───────┘                         └───────┬───────┘
-        │                                         │
-        └─────────────────┬───────────────────────┘
-                          ▼
-                  ┌───────────────┐
-                  │   Serving     │ (Merge real-time + batch)
-                  │   Layer       │
-                  └───────────────┘
-</pre>`,
-
-                traps: [
-                    {
-                        question: "Click fraud detection?",
-                        answer: "ML model on features: IP, timing, user behavior. Flag suspicious."
-                    },
-                    {
-                        question: "Exactly-once processing?",
-                        answer: "Kafka transactions + idempotent producers. Or dedup at aggregation."
-                    },
-                    {
-                        question: "Query by time range?",
-                        answer: "Pre-aggregate: minute → hour → day. Query smallest granularity needed."
-                    }
-                ],
-
-                metrics: { time: "45 min interview", space: "Kafka + Flink + S3 + Spark" },
-
-                codeTitle: "Sharded Counter (Python)",
-                code: `import redis
-import random
-
-r = redis.Redis()
-NUM_SHARDS = 10
-
-def increment_click(ad_id: str):
-    """Increment click count using sharded counter"""
-    shard = random.randint(0, NUM_SHARDS - 1)
-    key = f"ad:{ad_id}:clicks:shard:{shard}"
-    r.incr(key)
-    r.expire(key, 86400)  # 24 hour TTL
-
-def get_click_count(ad_id: str) -> int:
-    """Get total clicks across all shards"""
-    # Check cache first
-    cache_key = f"ad:{ad_id}:clicks:total"
-    cached = r.get(cache_key)
-    if cached:
-        return int(cached)
-    
-    # Sum all shards
-    total = 0
-    for shard in range(NUM_SHARDS):
-        key = f"ad:{ad_id}:clicks:shard:{shard}"
-        val = r.get(key)
-        if val:
-            total += int(val)
-    
-    # Cache for 1 second
-    r.setex(cache_key, 1, total)
-    return total
-
-# Usage:
-# increment_click("ad_123")  # Fast, goes to random shard
-# get_click_count("ad_123")  # Returns aggregated count`
-            }
-        }
-    ]
-};
-
-
-// ========== data/systemdesign/realtime_updates.js ==========
-// System Design - Real-Time Updates
-// WhatsApp, Uber, Notification System
-
-const topic_systemdesign_realtime_updates = {
-    id: "systemdesign_realtime_updates",
-    title: "System Design: Real-Time Updates",
-    description: "Principal Engineer • Real-Time Updates",
-    color: "#00b894",
-    icon: "fas fa-bolt",
-    mentalModel: {
-        whenToApply: [
-            { label: "💬 Chat/Messaging", desc: "1:1 or group chat? → WebSockets + Presence + Message Queue" },
-            { label: "📍 Location Tracking", desc: "High-frequency updates? → GeoHash/QuadTree + Pub/Sub" },
-            { label: "🔔 Notifications", desc: "Push updates? → WebSocket / SSE / Long Polling" },
-            { label: "👥 Presence/Online", desc: "Who's online? → Heartbeats + Redis Bitmap" },
-            { label: "🗺️ Geo-Spatial", desc: "Find nearby? → GeoHash / S2 / QuadTree" }
-        ],
-        patterns: [
-            { algo: "WebSockets", use: "Bi-directional real-time", time: "O(1)", space: "1 conn/user", template: "Persistent TCP, full-duplex" },
-            { algo: "Long Polling", use: "Fallback for WebSocket", time: "O(1)", space: "1 conn/user", template: "HTTP hold → response → reconnect" },
-            { algo: "Pub/Sub", use: "Broadcast updates", time: "O(subscribers)", space: "O(topics)", template: "Redis Pub/Sub, Kafka" },
-            { algo: "GeoHash", use: "Location indexing", time: "O(1)", space: "O(N)", template: "Lat/Long → string prefix" },
-            { algo: "Heartbeat", use: "Presence detection", time: "O(1)", space: "O(users)", template: "Ping every 30s, timeout = offline" }
-        ],
-        safetyCheck: [
-            { label: "⚠️ Connection Limits", desc: "1M users = 1M WebSocket connections. Need connection pooling!" },
-            { label: "🔄 Reconnection", desc: "Handle disconnects gracefully - exponential backoff" },
-            { label: "📦 Message Ordering", desc: "Out-of-order messages break chat. Use sequence numbers!" },
-            { label: "🗺️ Geo Precision", desc: "GeoHash precision: 6 chars = ~1km, 8 chars = ~20m" }
-        ]
-    },
-    questions: [
-        {
-            id: "whatsapp",
-            title: "Design WhatsApp",
-            difficulty: "Hard",
-            priority: "🔴",
-            tags: ["Real-Time", "Messaging", "Presence"],
-
-            scaleEstimates: {
-                dau: "2 Billion users",
-                messagesPerDay: "100 Billion messages",
-                qps: "~1M messages/sec",
-                storage: "~100TB/day (text + media metadata)",
-                note: "Read-heavy (100:1 read:write ratio for group chats)"
-            },
-
-            quiz: {
-                description: "How to handle message delivery when user is offline?",
-                options: [
-                    "Hold connection open indefinitely",
-                    "Store in DB, push when online (Store-and-Forward)",
-                    "Discard message after timeout",
-                    "Retry every second"
-                ],
-                correct: 1,
-                explanation: "Store-and-Forward! Store offline messages in DB/queue. When user comes online (heartbeat detected), push pending messages. Never lose messages!"
-            },
-
-            learn: {
-                decisions: [
-                    {
-                        question: "WebSocket vs Long Polling?",
-                        answer: "WebSocket (primary), Long Polling (fallback)",
-                        why: "WebSocket = persistent, bi-directional, lower latency. Long Polling for firewalls/proxies that block WS."
-                    },
-                    {
-                        question: "How to detect online/offline?",
-                        answer: "Heartbeat every 30 seconds",
-                        why: "No heartbeat for 60s = offline. Use Redis with TTL for presence tracking."
-                    },
-                    {
-                        question: "Message storage?",
-                        answer: "Cassandra (write-optimized)",
-                        why: "Log-structured, handles 1M writes/sec. Partition by (user_id, timestamp)."
-                    }
-                ],
-
-                components: [
-                    {
-                        name: "Connection Gateway",
-                        solution: `<pre style="background:#2d3436; color:#dfe6e9; padding:15px; border-radius:8px; font-size:0.85rem;">
-WebSocket Server Fleet:
-- 1M concurrent connections per server
-- Sticky sessions (user → same server)
-- Connection Registry: user_id → server_id
-
-Message Flow:
-1. Client connects to Gateway
-2. Gateway registers in Redis: user_123 → gateway_5
-3. Messages routed via Redis Pub/Sub
-</pre>`,
-                        trap: "Don't route ALL messages through one broker - partition by user_id!"
-                    },
-                    {
-                        name: "Message Delivery (Fanout)",
-                        solution: `<ul>
-<li><strong>1:1 Chat:</strong> Direct push via user's gateway</li>
-<li><strong>Group Chat:</strong> Fan-out on read (small groups) or Fan-out on write (large groups)</li>
-<li><strong>Offline Users:</strong> Store in pending queue, push on reconnect</li>
-</ul>
-<pre style="background:#2d3436; color:#dfe6e9; padding:10px; border-radius:8px; font-size:0.85rem;">
-# Message States
-SENT     → Server received
-DELIVERED → Recipient's device received  
-READ      → Recipient opened chat
-</pre>`,
-                        trap: "Group of 1000 users = 1000 writes. Use lazy fan-out for large groups!"
-                    },
-                    {
-                        name: "Presence System",
-                        solution: `<pre style="background:#2d3436; color:#dfe6e9; padding:15px; border-radius:8px; font-size:0.85rem;">
-Redis-based Presence:
-SETEX user:123:online 60 "gateway_5"  # TTL 60s
-
-Heartbeat (every 30s):
-EXPIRE user:123:online 60  # Refresh TTL
-
-Check Online:
-EXISTS user:123:online  # Returns 1 if online
-
-For Contacts List (100 friends):
-MGET user:101:online user:102:online ...
-</pre>`,
-                        trap: "Don't broadcast 'typing...' to everyone - only to current chat partner!"
-                    }
-                ],
-
-                diagram: `<pre style="background:#2d3436; color:#dfe6e9; padding:20px; border-radius:8px; font-size:0.75rem; line-height:1.3; overflow-x:auto;">
-┌─────────────────────────────────────────────────────────────────────┐
-│                         WHATSAPP ARCHITECTURE                        │
-└─────────────────────────────────────────────────────────────────────┘
-
-  [Phone A]                                              [Phone B]
-      │                                                      ▲
-      │ WebSocket                                            │
-      ▼                                                      │
-┌──────────┐      ┌──────────────┐      ┌──────────────┐    │
-│ Gateway  │◄────►│ Redis Pub/Sub│◄────►│   Gateway    │────┘
-│ Server 1 │      │ (Routing)    │      │   Server 2   │
-└────┬─────┘      └──────────────┘      └──────────────┘
-     │                   │
-     │      ┌────────────┴────────────┐
-     │      ▼                         ▼
-     │ ┌─────────┐            ┌─────────────┐
-     │ │Presence │            │   Message   │
-     │ │ (Redis) │            │    Queue    │
-     │ │ TTL=60s │            │  (Kafka)    │
-     │ └─────────┘            └──────┬──────┘
-     │                               │
-     │              ┌────────────────┴────────────────┐
-     ▼              ▼                                 ▼
-┌─────────┐   ┌──────────┐                    ┌─────────────┐
-│ Session │   │Cassandra │                    │ Media Store │
-│  Store  │   │(Messages)│                    │    (S3)     │
-└─────────┘   └──────────┘                    └─────────────┘
-</pre>`,
-
-                traps: [
-                    {
-                        question: "How to handle 1000-member groups?",
-                        answer: "Fan-out on READ, not write. Store message once, each member fetches from cursor."
-                    },
-                    {
-                        question: "End-to-end encryption?",
-                        answer: "Signal Protocol. Server can't read messages - only stores encrypted blobs."
-                    },
-                    {
-                        question: "Message ordering in group?",
-                        answer: "Vector clocks or Lamport timestamps. Server assigns sequence number."
-                    }
-                ],
-
-                metrics: { time: "60 min interview", space: "Cassandra: PB scale" },
-
-                codeTitle: "Presence Check (Python)",
-                code: `import redis
-r = redis.Redis()
-
-def set_online(user_id, gateway_id):
-    """Mark user as online with 60s TTL"""
-    r.setex(f"presence:{user_id}", 60, gateway_id)
-
-def heartbeat(user_id):
-    """Refresh TTL on heartbeat"""
-    r.expire(f"presence:{user_id}", 60)
-
-def is_online(user_id):
-    """Check if user is online"""
-    return r.exists(f"presence:{user_id}")
-
-def get_gateway(user_id):
-    """Get gateway server for user"""
-    return r.get(f"presence:{user_id}")
-
-def get_online_friends(user_id, friend_ids):
-    """Bulk check online status"""
-    keys = [f"presence:{fid}" for fid in friend_ids]
-    results = r.mget(keys)
-    return [fid for fid, status in zip(friend_ids, results) if status]`
-            }
-        },
-        {
-            id: "uber",
-            title: "Design Uber",
-            difficulty: "Hard",
-            priority: "🔴",
-            tags: ["Real-Time", "Geo-Spatial", "Matching"],
-
-            scaleEstimates: {
-                dau: "100 Million riders",
-                activeDrivers: "5 Million concurrent",
-                ridesPerDay: "20 Million",
-                locationUpdates: "5M updates/sec (drivers ping every 4s)",
-                note: "Location data is ephemeral - only recent positions matter"
-            },
-
-            quiz: {
-                description: "How to efficiently find nearby drivers?",
-                options: [
-                    "Calculate distance to ALL drivers",
-                    "Use GeoHash/QuadTree spatial indexing",
-                    "Store drivers in array sorted by distance",
-                    "Random selection"
-                ],
-                correct: 1,
-                explanation: "GeoHash/QuadTree! Spatial indexing allows O(1) lookup of nearby cells. Then filter by exact distance. Don't scan all 5M drivers!"
-            },
-
-            learn: {
-                decisions: [
-                    {
-                        question: "GeoHash vs QuadTree vs S2?",
-                        answer: "GeoHash for simplicity, S2 for precision",
-                        why: "GeoHash = easy prefix matching. S2 = Google's choice, handles sphere geometry better."
-                    },
-                    {
-                        question: "How often to update driver location?",
-                        answer: "Every 4 seconds",
-                        why: "Balance between accuracy and write load. 5M drivers × 0.25 QPS = 1.25M writes/sec"
-                    },
-                    {
-                        question: "Persistent storage for locations?",
-                        answer: "NO! In-memory only (Redis)",
-                        why: "Location data is ephemeral. Only current position matters. TTL = 30s."
-                    }
-                ],
-
-                components: [
-                    {
-                        name: "Location Service (GeoHash)",
-                        solution: `<pre style="background:#2d3436; color:#dfe6e9; padding:15px; border-radius:8px; font-size:0.85rem;">
-GeoHash Encoding:
-Lat: 37.7749, Long: -122.4194 → "9q8yy"
-
-Redis Geo Commands:
-GEOADD drivers -122.4194 37.7749 "driver_123"
-GEORADIUS drivers -122.4194 37.7749 5 km
-
-Precision Levels:
-4 chars = ~20km (city level)
-6 chars = ~1km  (neighborhood)
-8 chars = ~20m  (street level)
-</pre>`,
-                        trap: "GeoHash has edge cases at cell boundaries - search adjacent cells too!"
-                    },
-                    {
-                        name: "Matching Algorithm",
-                        solution: `<ol>
-<li>Rider requests ride at location (lat, lng)</li>
-<li>Query Redis: GEORADIUS 5km → Get nearby drivers</li>
-<li>Filter: only AVAILABLE drivers</li>
-<li>Rank by: ETA, rating, vehicle type</li>
-<li>Send request to top driver (timeout 15s)</li>
-<li>No accept? Try next driver</li>
-</ol>`,
-                        trap: "Lock driver during request (15s) to prevent double-booking!"
-                    },
-                    {
-                        name: "Dispatch & State Machine",
-                        solution: `<pre style="background:#2d3436; color:#dfe6e9; padding:15px; border-radius:8px; font-size:0.85rem;">
-Driver States:
-OFFLINE → AVAILABLE → MATCHING → EN_ROUTE → ON_TRIP
-
-Ride States:
-REQUESTED → MATCHED → DRIVER_ARRIVING → IN_PROGRESS → COMPLETED
-
-State stored in Redis with TTL:
-SET ride:456:state "IN_PROGRESS" EX 7200
-</pre>`,
-                        trap: "Use distributed lock when changing driver state - prevent race conditions!"
-                    }
-                ],
-
-                diagram: `<pre style="background:#2d3436; color:#dfe6e9; padding:20px; border-radius:8px; font-size:0.75rem; line-height:1.3; overflow-x:auto;">
-┌─────────────────────────────────────────────────────────────────────┐
-│                          UBER ARCHITECTURE                           │
-└─────────────────────────────────────────────────────────────────────┘
-
-  [Rider App]                                         [Driver App]
-      │                                                    │
-      │ Request Ride                          Location (4s)│
-      ▼                                                    ▼
-┌──────────────┐                                  ┌──────────────┐
-│   API GW     │                                  │ Location Svc │
-└──────┬───────┘                                  └──────┬───────┘
-       │                                                 │
-       ▼                                                 ▼
-┌──────────────┐         ┌─────────────┐         ┌──────────────┐
-│ Ride Service │────────►│   Redis     │◄────────│ Driver Pool  │
-│ (Matching)   │         │ (GeoIndex)  │         │              │
-└──────┬───────┘         └─────────────┘         └──────────────┘
-       │                        │
-       │         ┌──────────────┴──────────────┐
-       ▼         ▼                             ▼
-┌─────────┐ ┌─────────┐                  ┌──────────┐
-│  Kafka  │ │ Driver  │                  │   Trip   │
-│ (Events)│ │  State  │                  │   DB     │
-└─────────┘ └─────────┘                  └──────────┘
-
-MATCHING FLOW:
-1. Rider requests ride
-2. GEORADIUS query → nearby drivers
-3. Filter available drivers
-4. Send to best match (lock 15s)
-5. Accept? Create trip : Try next
-</pre>`,
-
-                traps: [
-                    {
-                        question: "Driver on cell boundary?",
-                        answer: "Query adjacent GeoHash cells (8 neighbors). Union results."
-                    },
-                    {
-                        question: "Surge pricing calculation?",
-                        answer: "Pre-compute per grid cell. demand/supply ratio per 5-min window."
-                    },
-                    {
-                        question: "ETA calculation?",
-                        answer: "Google Maps API or internal routing. Cache common routes."
-                    }
-                ],
-
-                metrics: { time: "60 min interview", space: "Redis: ~10GB for 5M drivers" },
-
-                codeTitle: "GeoHash Nearby Query (Python)",
-                code: `import redis
-r = redis.Redis()
-
-def update_driver_location(driver_id, lat, lng):
-    """Update driver location with 30s TTL"""
-    r.geoadd("drivers", (lng, lat, driver_id))
-    r.setex(f"driver:{driver_id}:active", 30, "1")
-
-def find_nearby_drivers(lat, lng, radius_km=5):
-    """Find drivers within radius"""
-    # Get all drivers in radius
-    nearby = r.georadius(
-        "drivers", lng, lat, radius_km, unit="km",
-        withdist=True, sort="ASC"
-    )
-    
-    # Filter only active drivers
-    available = []
-    for driver_id, distance in nearby:
-        if r.exists(f"driver:{driver_id}:available"):
-            available.append({
-                "driver_id": driver_id,
-                "distance_km": distance
-            })
-    
-    return available[:10]  # Top 10 closest
-
-def lock_driver_for_matching(driver_id, ride_id, ttl=15):
-    """Lock driver during matching (15s timeout)"""
-    lock_key = f"driver:{driver_id}:lock"
-    if r.setnx(lock_key, ride_id):
-        r.expire(lock_key, ttl)
-        return True
-    return False  # Already locked`
-            }
-        },
-        {
-            id: "notification-system",
-            title: "Design Notification System",
-            difficulty: "Hard",
-            priority: "🔴",
-            tags: ["Real-Time", "Push", "Multi-Channel"],
-
-            scaleEstimates: {
-                notificationsPerDay: "10 Billion",
-                peakQPS: "1 Million/sec (Black Friday)",
-                channels: "Push, SMS, Email, In-App",
-                latency: "< 2 sec for real-time, minutes OK for batch",
-                note: "Multi-channel with priority. Don't spam users!"
-            },
-
-            quiz: {
-                description: "How to ensure user doesn't receive duplicate notifications?",
-                options: [
-                    "Check DB before every send",
-                    "Rate limit per user per channel",
-                    "Idempotency key + Deduplication service",
-                    "Send all and let user filter"
-                ],
-                correct: 2,
-                explanation: "Idempotency key! Each notification has unique ID. Dedupe service checks if already sent in last X hours. Prevents spam from retries and duplicate events."
-            },
-
-            learn: {
-                decisions: [
-                    {
-                        question: "Sync vs Async notification?",
-                        answer: "ASYNC always! Queue everything.",
-                        why: "Sync = caller waits for SMS/email delivery. Async = instant response, background processing."
-                    },
-                    {
-                        question: "Push, Pull, or Hybrid?",
-                        answer: "Push for real-time, Pull for batch",
-                        why: "Real-time (messages): WebSocket push. Batch (marketing): user pulls on app open."
-                    },
-                    {
-                        question: "Priority handling?",
-                        answer: "Multiple queues by priority",
-                        why: "High (OTP, payments) → immediate. Medium (likes) → batch. Low (marketing) → daily digest."
-                    }
-                ],
-
-                components: [
-                    {
-                        name: "Multi-Channel Router",
-                        solution: `<pre style="background:#2d3436; color:#dfe6e9; padding:15px; border-radius:8px; font-size:0.85rem;">
-Notification Request → Router
-
-Router Logic:
-1. Check user preferences (opt-out?)
-2. Check rate limits (max 5/hour?)
-3. Select channels based on priority:
-   - CRITICAL → All channels (Push + SMS + Email)
-   - HIGH → Push + In-App
-   - MEDIUM → In-App only
-   - LOW → Daily digest
-
-4. Route to channel-specific workers
-</pre>`,
-                        trap: "Respect user preferences! Check opt-out, quiet hours, and rate limits."
-                    },
-                    {
-                        name: "Rate Limiting & Deduplication",
-                        solution: `<pre style="background:#2d3436; color:#dfe6e9; padding:15px; border-radius:8px; font-size:0.85rem;">
-Rate Limiting (Redis):
-  Key: rate_limit:{user_id}:{channel}
-  INCR + EXPIRE (1 hour TTL)
-  if count > 10: skip notification
-
-Deduplication:
-  Key: notif:{idempotency_key}
-  SETNX with 24h TTL
-  if exists: skip (already sent)
-
-Template Aggregation:
-  "John and 5 others liked your post"
-  → Aggregate similar notifications
-</pre>`,
-                        trap: "Don't send 100 'X liked your post' - aggregate into batches!"
-                    },
-                    {
-                        name: "Channel Workers",
-                        solution: `<table style="width:100%; border-collapse:collapse; font-size:0.9rem;">
-<tr><th style="border:1px solid #eee; padding:8px;">Channel</th><th style="border:1px solid #eee; padding:8px;">Provider</th><th style="border:1px solid #eee; padding:8px;">Latency</th></tr>
-<tr><td style="border:1px solid #eee; padding:8px;">Push (iOS)</td><td style="border:1px solid #eee; padding:8px;">APNs</td><td style="border:1px solid #eee; padding:8px;">< 1 sec</td></tr>
-<tr><td style="border:1px solid #eee; padding:8px;">Push (Android)</td><td style="border:1px solid #eee; padding:8px;">FCM</td><td style="border:1px solid #eee; padding:8px;">< 1 sec</td></tr>
-<tr><td style="border:1px solid #eee; padding:8px;">SMS</td><td style="border:1px solid #eee; padding:8px;">Twilio</td><td style="border:1px solid #eee; padding:8px;">1-5 sec</td></tr>
-<tr><td style="border:1px solid #eee; padding:8px;">Email</td><td style="border:1px solid #eee; padding:8px;">SendGrid</td><td style="border:1px solid #eee; padding:8px;">seconds to minutes</td></tr>
-<tr><td style="border:1px solid #eee; padding:8px;">In-App</td><td style="border:1px solid #eee; padding:8px;">WebSocket</td><td style="border:1px solid #eee; padding:8px;">< 100ms</td></tr>
-</table>`,
-                        trap: "Each channel has different failure modes. Implement circuit breakers!"
-                    }
-                ],
-
-                diagram: `<pre style="background:#2d3436; color:#dfe6e9; padding:20px; border-radius:8px; font-size:0.75rem; line-height:1.3; overflow-x:auto;">
-┌─────────────────────────────────────────────────────────────────────┐
-│                    NOTIFICATION SYSTEM ARCHITECTURE                  │
-└─────────────────────────────────────────────────────────────────────┘
-
-[Services: Order, Payment, Social, etc.]
-              │
-              │ Notification Event
-              ▼
-     ┌─────────────────┐
-     │  API Gateway    │
-     │ (Rate Limit)    │
-     └────────┬────────┘
-              │
-              ▼
-     ┌─────────────────┐     ┌──────────────┐
-     │   Notification  │────►│   Dedup      │
-     │    Service      │     │   (Redis)    │
-     └────────┬────────┘     └──────────────┘
-              │
-              ▼
-     ┌─────────────────┐
-     │  Message Queue  │ (Kafka - partitioned by priority)
-     │  HIGH | MED | LOW│
-     └───┬─────┬─────┬──┘
-         │     │     │
-    ┌────▼───┐ ▼  ┌──▼──────┐
-    │ Push   │ │  │ Email   │
-    │ Worker │ │  │ Worker  │
-    └────┬───┘ │  └────┬────┘
-         │     │       │
-    ┌────▼───┐ │  ┌────▼────┐
-    │ APNs   │ │  │SendGrid │
-    │ FCM    │ │  └─────────┘
-    └────────┘ │
-         ┌─────▼─────┐
-         │SMS Worker │
-         │ (Twilio)  │
-         └───────────┘
-</pre>`,
-
-                traps: [
-                    {
-                        question: "What if push provider is down?",
-                        answer: "Circuit breaker pattern. Fallback to other channels. Retry with exponential backoff."
-                    },
-                    {
-                        question: "User has multiple devices?",
-                        answer: "Send to ALL registered device tokens. Track per device."
-                    },
-                    {
-                        question: "Analytics on notification opens?",
-                        answer: "Deep link with tracking ID. Async log to analytics service."
-                    }
-                ],
-
-                metrics: { time: "45 min interview", space: "Kafka + Redis + Channel APIs" },
-
-                codeTitle: "Notification Service (Python)",
-                code: `import redis
-from enum import Enum
-from typing import List, Dict
-
-r = redis.Redis()
-
-class Priority(Enum):
-    CRITICAL = 1  # OTP, security alerts
-    HIGH = 2      # Messages, mentions
-    MEDIUM = 3    # Likes, follows
-    LOW = 4       # Marketing, digests
-
-class Channel(Enum):
-    PUSH = "push"
-    SMS = "sms"
-    EMAIL = "email"
-    IN_APP = "in_app"
-
-def send_notification(
-    user_id: str,
-    notification_id: str,  # Idempotency key
-    title: str,
-    body: str,
-    priority: Priority,
-    channels: List[Channel] = None
-):
-    # 1. Deduplication check
-    dedupe_key = f"notif_sent:{notification_id}"
-    if not r.set(dedupe_key, "1", nx=True, ex=86400):
-        return {"status": "duplicate", "skipped": True}
-    
-    # 2. Check user preferences
-    preferences = get_user_preferences(user_id)
-    if preferences.get("do_not_disturb"):
-        return {"status": "dnd_active", "queued": True}
-    
-    # 3. Rate limit check
-    rate_key = f"rate:{user_id}:{priority.name}"
-    count = r.incr(rate_key)
-    r.expire(rate_key, 3600)  # 1 hour window
-    
-    limits = {Priority.CRITICAL: 100, Priority.HIGH: 20, 
-              Priority.MEDIUM: 10, Priority.LOW: 3}
-    if count > limits[priority]:
-        return {"status": "rate_limited"}
-    
-    # 4. Select channels based on priority
-    if channels is None:
-        channels = get_channels_for_priority(priority)
-    
-    # 5. Queue to workers
-    for channel in channels:
-        queue_notification(user_id, channel, {
-            "notification_id": notification_id,
-            "title": title,
-            "body": body,
-            "priority": priority.value
-        })
-    
-    return {"status": "queued", "channels": [c.value for c in channels]}
-
-def get_channels_for_priority(priority: Priority) -> List[Channel]:
-    if priority == Priority.CRITICAL:
-        return [Channel.PUSH, Channel.SMS, Channel.EMAIL]
-    elif priority == Priority.HIGH:
-        return [Channel.PUSH, Channel.IN_APP]
-    elif priority == Priority.MEDIUM:
-        return [Channel.IN_APP]
-    else:
-        return []  # Daily digest, don't push`
-            }
-        }
-    ]
-};
-
-
-// ========== data/systemdesign/dealing_with_contention.js ==========
-// System Design - Dealing with Contention Patterns
-// Ticketmaster, Online Auction
-
-const topic_systemdesign_dealing_with_contention = {
-    id: "systemdesign_dealing_with_contention",
-    title: "System Design: Dealing with Contention",
-    description: "Principal Engineer • Handling Race Conditions",
-    color: "#d63031",
-    icon: "fas fa-lock",
-    mentalModel: {
-        whenToApply: [
-            { label: "🎫 Limited Inventory", desc: "Selling finite items to many? → Pessimistic Locking / Queue" },
-            { label: "💰 Bidding/Auction", desc: "Highest bid wins? → Distributed Locks + Event Ordering" },
-            { label: "🏃 Flash Sales", desc: "10M users, 1000 items? → Virtual Queue + Lottery" },
-            { label: "💺 Seat Selection", desc: "One seat, one user? → SELECT FOR UPDATE / Optimistic Lock" },
-            { label: "⚔️ Race Conditions", desc: "Multiple writers same data? → Locks, CAS, Versioning" }
-        ],
-        patterns: [
-            { algo: "Pessimistic Lock", use: "High contention", time: "O(1)", space: "O(locks)", template: "SELECT FOR UPDATE, hold lock" },
-            { algo: "Optimistic Lock", use: "Low contention", time: "O(1)", space: "O(1)", template: "Version check on write, retry on conflict" },
-            { algo: "Distributed Lock", use: "Multi-node", time: "O(1)", space: "O(keys)", template: "Redis SETNX with TTL, Redlock" },
-            { algo: "Virtual Queue", use: "Fairness", time: "O(1)", space: "O(users)", template: "Assign position, process in order" },
-            { algo: "Compare-And-Swap", use: "Atomic updates", time: "O(1)", space: "O(1)", template: "if current == expected: update" }
-        ],
-        safetyCheck: [
-            { label: "⚠️ Deadlocks", desc: "Always acquire locks in same order. Set timeouts!" },
-            { label: "🔄 Retry Storm", desc: "Exponential backoff on lock failures, not instant retry" },
-            { label: "⏱️ Lock TTL", desc: "Always set expiry - crashed process = permanent lock!" },
-            { label: "🎭 False Failures", desc: "Optimistic lock: high contention = many retries. Switch to pessimistic." }
-        ]
-    },
-    questions: [
-        {
-            id: "ticketmaster",
-            title: "Design Ticketmaster",
-            difficulty: "Hard",
-            priority: "🔴",
-            tags: ["Contention", "Inventory", "Locking"],
-
-            scaleEstimates: {
-                peakUsers: "10 Million concurrent (Taylor Swift sale)",
-                tickets: "50,000 seats",
-                saleWindow: "First 10 minutes = 90% sold",
-                qps: "1M+ requests in first minute",
-                note: "Extreme read/write skew - 10M reads, 50k writes"
-            },
-
-            quiz: {
-                description: "How to prevent overselling when 1M users try to book same seats?",
-                options: [
-                    "First-come-first-serve, no locks",
-                    "Optimistic locking with version numbers",
-                    "Pessimistic locking (SELECT FOR UPDATE)",
-                    "Virtual queue + sequential processing"
-                ],
-                correct: 3,
-                explanation: "Virtual Queue! At 1M QPS, even pessimistic locks will deadlock. Queue users, process sequentially. Fair + prevents system overload."
-            },
-
-            learn: {
-                decisions: [
-                    {
-                        question: "Pessimistic vs Optimistic locking?",
-                        answer: "Pessimistic for seat selection",
-                        why: "High contention = many optimistic failures. Pessimistic: lock seat, hold for 10 min, release if not paid."
-                    },
-                    {
-                        question: "How to handle 10M users for 50k seats?",
-                        answer: "Virtual Waiting Room + Lottery",
-                        why: "Queue everyone, randomly select 50k to enter buying flow. Rest get 'sold out' message. Fair and controlled."
-                    },
-                    {
-                        question: "Seat hold timeout?",
-                        answer: "10 minutes with countdown",
-                        why: "Hold seat while user enters payment. Release after 10 min if not completed. Prevents hoarding."
-                    }
-                ],
-
-                components: [
-                    {
-                        name: "Virtual Waiting Room",
-                        solution: `<pre style="background:#2d3436; color:#dfe6e9; padding:15px; border-radius:8px; font-size:0.85rem;">
-Flow:
-1. User visits → Assigned queue position (Redis INCR)
-2. Server processing capacity: 1000 users/batch
-3. Every 30s: admit next 1000 from queue
-4. Position displayed: "You are #45,234 in line"
-
-Redis:
-INCR queue:event_123:position → Returns user's position
-GET queue:event_123:current  → Currently serving position
-</pre>`,
-                        trap: "Don't let users refresh to get better position - tie to session/user ID!"
-                    },
-                    {
-                        name: "Seat Locking (SELECT FOR UPDATE)",
-                        solution: `<pre style="background:#2d3436; color:#dfe6e9; padding:15px; border-radius:8px; font-size:0.85rem;">
-BEGIN TRANSACTION;
-
--- Lock the seat (blocks other transactions)
-SELECT * FROM seats 
-WHERE event_id = 123 AND seat_id = 'A15' AND status = 'AVAILABLE'
-FOR UPDATE;
-
--- If returned, seat is yours (locked)
-UPDATE seats SET status = 'HELD', held_by = user_id, 
-       held_until = NOW() + INTERVAL 10 MINUTE
-WHERE seat_id = 'A15';
-
-COMMIT;
-
--- Background job releases expired holds every minute
-</pre>`,
-                        trap: "Set lock timeout! User closes browser = seat locked forever without TTL."
-                    },
-                    {
-                        name: "Inventory Counter",
-                        solution: `<ul>
-<li><strong>Don't count on every request:</strong> SELECT COUNT(*) is slow</li>
-<li><strong>Pre-decrement:</strong> Redis DECR for fast inventory check</li>
-<li><strong>Oversell buffer:</strong> Allow 5% oversell, handle manually</li>
-</ul>
-<pre style="background:#2d3436; color:#dfe6e9; padding:10px; border-radius:8px; font-size:0.85rem;">
-# Fast inventory check
-remaining = redis.DECR("event:123:tickets")
-if remaining < 0:
-    redis.INCR("event:123:tickets")  # Rollback
-    return "SOLD OUT"
-</pre>`,
-                        trap: "Redis DECR can go negative. Check and rollback!"
-                    }
-                ],
-
-                diagram: `<pre style="background:#2d3436; color:#dfe6e9; padding:20px; border-radius:8px; font-size:0.75rem; line-height:1.3; overflow-x:auto;">
-┌─────────────────────────────────────────────────────────────────────┐
-│                      TICKETMASTER ARCHITECTURE                       │
-└─────────────────────────────────────────────────────────────────────┘
-
-  [10M Users]
-      │
-      ▼
-┌──────────────┐     ┌─────────────────┐
-│   CDN/WAF    │────►│ Waiting Room    │  "You are #45,234"
-│              │     │ (Static page)   │
-└──────────────┘     └────────┬────────┘
-                              │ Admitted (1000/batch)
-                              ▼
-                     ┌─────────────────┐
-                     │   Load Balancer │
-                     └────────┬────────┘
-                              │
-          ┌───────────────────┼───────────────────┐
-          ▼                   ▼                   ▼
-    ┌──────────┐        ┌──────────┐        ┌──────────┐
-    │ App Srv 1│        │ App Srv 2│        │ App Srv N│
-    └────┬─────┘        └────┬─────┘        └────┬─────┘
-         │                   │                   │
-         └───────────────────┼───────────────────┘
-                             │
-              ┌──────────────┴──────────────┐
-              ▼                             ▼
-        ┌──────────┐                 ┌────────────┐
-        │  Redis   │                 │ PostgreSQL │
-        │ (Queue,  │                 │  (Seats,   │
-        │ Inventory)│                │  Orders)   │
-        └──────────┘                 └────────────┘
-
-SEAT BOOKING FLOW:
-1. Check inventory (Redis DECR)
-2. SELECT seat FOR UPDATE
-3. Hold seat 10 min
-4. Payment → Confirm or Release
-</pre>`,
-
-                traps: [
-                    {
-                        question: "How to handle payment failures?",
-                        answer: "Release seat back to pool after timeout. Idempotency key for payment retry."
-                    },
-                    {
-                        question: "Prevent bots?",
-                        answer: "CAPTCHA, rate limiting, device fingerprinting, queue randomization."
-                    },
-                    {
-                        question: "Show seat map in real-time?",
-                        answer: "WebSocket broadcast on seat status change. Debounce to avoid flood."
-                    }
-                ],
-
-                metrics: { time: "45 min interview", space: "PostgreSQL + Redis" },
-
-                codeTitle: "Seat Locking (Python + SQLAlchemy)",
-                code: `from sqlalchemy import select, update
-from datetime import datetime, timedelta
-
-def try_hold_seat(session, event_id, seat_id, user_id):
-    """Pessimistic lock: hold seat for 10 minutes"""
-    
-    # SELECT FOR UPDATE - blocks concurrent access
-    stmt = select(Seat).where(
-        Seat.event_id == event_id,
-        Seat.seat_id == seat_id,
-        Seat.status == 'AVAILABLE'
-    ).with_for_update()
-    
-    seat = session.execute(stmt).scalar_one_or_none()
-    
-    if not seat:
-        return {"success": False, "error": "Seat not available"}
-    
-    # Hold the seat for 10 minutes
-    seat.status = 'HELD'
-    seat.held_by = user_id
-    seat.held_until = datetime.now() + timedelta(minutes=10)
-    
-    session.commit()
-    return {"success": True, "held_until": seat.held_until}
-
-def release_expired_holds(session):
-    """Background job: release expired seat holds"""
-    stmt = update(Seat).where(
-        Seat.status == 'HELD',
-        Seat.held_until < datetime.now()
-    ).values(status='AVAILABLE', held_by=None, held_until=None)
-    
-    session.execute(stmt)
-    session.commit()`
-            }
-        },
-        {
-            id: "online-auction",
-            title: "Design Online Auction",
-            difficulty: "Hard",
-            priority: "🟡",
-            tags: ["Contention", "Real-Time", "Distributed Lock"],
-
-            scaleEstimates: {
-                concurrentAuctions: "100,000",
-                bidsPerSecond: "10,000",
-                hotAuctions: "Top 1% = 90% of bids",
-                latencyRequirement: "<100ms bid confirmation",
-                note: "Highest bid MUST win - ordering is critical!"
-            },
-
-            quiz: {
-                description: "How to ensure bid ordering when 1000 bids arrive in same second?",
-                options: [
-                    "Timestamp from client",
-                    "Database auto-increment",
-                    "Server timestamp + distributed lock",
-                    "Random tie-breaker"
-                ],
-                correct: 2,
-                explanation: "Server timestamp + lock! Client time is untrusted. Lock the auction item, check current price, accept/reject, update, unlock. Atomic operation."
-            },
-
-            learn: {
-                decisions: [
-                    {
-                        question: "Where to store current bid?",
-                        answer: "Redis (hot) + DB (persistent)",
-                        why: "Redis for real-time: 1000s of reads/sec. Async write to DB for durability."
-                    },
-                    {
-                        question: "How to prevent bid sniping?",
-                        answer: "Auto-extend auction if bid in last 30 sec",
-                        why: "Fair to all bidders. Prevents last-second snipes."
-                    },
-                    {
-                        question: "Distributed lock algorithm?",
-                        answer: "Redis Redlock or single Redis with SETNX",
-                        why: "Simple SETNX for most cases. Redlock for high availability (5 Redis nodes)."
-                    }
-                ],
-
-                components: [
-                    {
-                        name: "Bid Processing (Redis Lock)",
-                        solution: `<pre style="background:#2d3436; color:#dfe6e9; padding:15px; border-radius:8px; font-size:0.85rem;">
-1. Acquire lock: SETNX auction:123:lock user_id EX 5
-2. Get current bid: GET auction:123:current_bid
-3. Validate: new_bid > current_bid + min_increment
-4. Update: SET auction:123:current_bid new_bid
-5. Release lock: DEL auction:123:lock
-6. Broadcast: Publish to WebSocket
-
-If lock fail → Return "Please try again"
-</pre>`,
-                        trap: "Always set lock TTL! Crashed process = permanent lock. Use 5s TTL."
-                    },
-                    {
-                        name: "Real-Time Updates (WebSocket)",
-                        solution: `<ul>
-<li><strong>Subscribe:</strong> User opens auction → subscribe to auction:123</li>
-<li><strong>Publish:</strong> On bid → broadcast to all subscribers</li>
-<li><strong>Payload:</strong> {current_bid, bidder_name, time_left}</li>
-</ul>`,
-                        trap: "Throttle broadcasts! 100 bids/sec = 100 updates. Batch to 1 update/500ms."
-                    },
-                    {
-                        name: "Anti-Sniping Timer",
-                        solution: `<pre style="background:#2d3436; color:#dfe6e9; padding:15px; border-radius:8px; font-size:0.85rem;">
-On every bid:
-  if time_remaining < 30 seconds:
-      extend_end_time by 30 seconds
-      notify all watchers
-
-Maximum extensions (optional):
-  total_extension <= 5 minutes
-</pre>`,
-                        trap: "Cap extensions! Or auction could run forever."
-                    }
-                ],
-
-                diagram: `<pre style="background:#2d3436; color:#dfe6e9; padding:20px; border-radius:8px; font-size:0.75rem; line-height:1.3; overflow-x:auto;">
-BID FLOW:
-
-[Bidder] ──► [API Gateway] ──► [Bid Service]
-                                    │
-                    ┌───────────────┼───────────────┐
-                    ▼               ▼               ▼
-              ┌─────────┐    ┌──────────┐    ┌──────────┐
-              │ Acquire │    │  Kafka   │    │ WebSocket│
-              │  Lock   │    │ (Events) │    │ Broadcast│
-              │ (Redis) │    └──────────┘    └──────────┘
-              └────┬────┘
-                   │
-              ┌────▼────┐
-              │ Validate│ current_bid < new_bid?
-              │   Bid   │
-              └────┬────┘
-                   │ ✓
-              ┌────▼────┐
-              │ Update  │ Redis + Async DB
-              │  State  │
-              └────┬────┘
-                   │
-              ┌────▼────┐
-              │ Release │
-              │  Lock   │
-              └────┬────┘
-                   │
-                   ▼
-              [Notify All Watchers via WebSocket]
-</pre>`,
-
-                traps: [
-                    {
-                        question: "What if Redis node fails during bid?",
-                        answer: "Redlock across 5 Redis nodes. Majority quorum for lock acquisition."
-                    },
-                    {
-                        question: "Late bid arrives after auction ended?",
-                        answer: "Reject. Server time is authoritative. Log for dispute resolution."
-                    },
-                    {
-                        question: "How to handle reserve price?",
-                        answer: "Hidden min price. If final bid < reserve, item doesn't sell."
-                    }
-                ],
-
-                metrics: { time: "45 min interview", space: "Redis + Kafka + DB" },
-
-                codeTitle: "Atomic Bid with Redis Lock",
-                code: `import redis
-import time
-
-r = redis.Redis()
-
-def place_bid(auction_id, user_id, bid_amount):
-    lock_key = f"auction:{auction_id}:lock"
-    
-    # Try to acquire lock (5s TTL)
-    if not r.set(lock_key, user_id, nx=True, ex=5):
-        return {"success": False, "error": "Auction busy, try again"}
-    
-    try:
-        # Get current state
-        current = r.hgetall(f"auction:{auction_id}")
-        current_bid = float(current.get(b'current_bid', 0))
-        min_increment = float(current.get(b'min_increment', 1))
-        end_time = float(current.get(b'end_time', 0))
-        
-        # Validate
-        if time.time() > end_time:
-            return {"success": False, "error": "Auction ended"}
-        
-        if bid_amount < current_bid + min_increment:
-            return {"success": False, "error": f"Bid must be >= {current_bid + min_increment}"}
-        
-        # Update
-        r.hmset(f"auction:{auction_id}", {
-            'current_bid': bid_amount,
-            'current_bidder': user_id,
-            'last_bid_time': time.time()
-        })
-        
-        # Anti-snipe: extend if < 30s remaining
-        if end_time - time.time() < 30:
-            r.hset(f"auction:{auction_id}", 'end_time', end_time + 30)
-        
-        # Publish update to WebSocket
-        r.publish(f"auction:{auction_id}:updates", 
-                  f'{{"bid": {bid_amount}, "user": "{user_id}"}}')
-        
-        return {"success": True, "message": "Bid accepted!"}
-    
-    finally:
-        r.delete(lock_key)  # Always release lock`
-            }
-        }
-    ]
-};
-
-
-// ========== data/systemdesign/multi_step_processes.js ==========
-// System Design - Multi-Step Processes
-// Payment System, Google Docs
-
-const topic_systemdesign_multi_step_processes = {
-    id: "systemdesign_multi_step_processes",
-    title: "System Design: Multi-Step Processes",
-    description: "Principal Engineer • Multi-Step Transactions",
-    color: "#e17055",
-    icon: "fas fa-exchange-alt",
-    mentalModel: {
-        whenToApply: [
-            { label: "💳 Payment/Transfer", desc: "Money movement? → Saga Pattern + Idempotency + Double Entry" },
-            { label: "📝 Collaborative Edit", desc: "Real-time multi-user? → OT/CRDT + Operation Log" },
-            { label: "🔄 Distributed Transaction", desc: "Multi-service update? → Saga (Choreography/Orchestration)" },
-            { label: "↩️ Rollback Needed", desc: "Failure mid-flow? → Compensating transactions" },
-            { label: "🔁 Retry Safety", desc: "Network failures? → Idempotency keys everywhere" }
-        ],
-        patterns: [
-            { algo: "Saga Pattern", use: "Distributed transactions", time: "O(steps)", space: "O(log)", template: "T1→T2→T3 or C3→C2→C1 (compensate)" },
-            { algo: "2PC (Two-Phase)", use: "Strong consistency", time: "O(1)", space: "O(participants)", template: "Prepare→Vote→Commit/Rollback" },
-            { algo: "Idempotency Key", use: "Safe retries", time: "O(1)", space: "O(keys)", template: "Same key = same result (dedupe)" },
-            { algo: "OT (Operational Transform)", use: "Conflict resolution", time: "O(ops²)", space: "O(history)", template: "Transform concurrent ops" },
-            { algo: "CRDT", use: "Eventual consistency", time: "O(1)", space: "O(state)", template: "Merge without coordination" },
-            { algo: "Double Entry", use: "Financial accuracy", time: "O(1)", space: "O(accounts)", template: "Debit A = Credit B (balanced)" }
-        ],
-        safetyCheck: [
-            { label: "⚠️ At-Least-Once", desc: "Network can duplicate. Every handler MUST be idempotent!" },
-            { label: "💰 Money = Append-Only", desc: "Never update balances. Log transactions, compute balance." },
-            { label: "🔒 PCI Compliance", desc: "Never store raw card numbers. Tokenize via Stripe/Adyen." },
-            { label: "📝 Audit Trail", desc: "Every state change logged. Who, what, when - immutable." }
-        ]
-    },
-    questions: [
-        {
-            id: "payment-system",
-            title: "Design Payment System",
-            difficulty: "Hard",
-            priority: "🔴",
-            tags: ["Flows", "Financial", "Saga"],
-
-            scaleEstimates: {
-                transactionsPerDay: "100 Million",
-                peakTPS: "10,000 transactions/sec",
-                failureRate: "0.1% (retry required)",
-                consistency: "MUST be exactly-once!",
-                note: "Money can't disappear or duplicate. Audit everything."
-            },
-
-            quiz: {
-                description: "User retries failed payment. How to prevent double charge?",
-                options: [
-                    "Check if already charged in DB",
-                    "Use idempotency key (same key = same result)",
-                    "Timeout lock on user account",
-                    "Random UUID per request"
-                ],
-                correct: 1,
-                explanation: "Idempotency Key! Client generates unique key per payment intent. Server stores key→result. Retry with same key = return cached result, no duplicate charge."
-            },
-
-            learn: {
-                decisions: [
-                    {
-                        question: "2PC vs Saga for payment flow?",
-                        answer: "Saga! (2PC blocks too long)",
-                        why: "Payment gateways take seconds. 2PC = lock everything. Saga = async, compensate on failure."
-                    },
-                    {
-                        question: "Store balance or calculate?",
-                        answer: "Calculate from transaction log",
-                        why: "Append-only ledger. Balance = SUM(credits) - SUM(debits). Immutable audit trail."
-                    },
-                    {
-                        question: "What if external payment fails?",
-                        answer: "Compensating transaction (refund)",
-                        why: "Can't rollback external systems. Issue refund as new transaction."
-                    }
-                ],
-
-                components: [
-                    {
-                        name: "Double Entry Ledger",
-                        solution: `<pre style="background:#2d3436; color:#dfe6e9; padding:15px; border-radius:8px; font-size:0.85rem;">
-Every transaction = TWO entries:
-
-User pays $100:
-  DEBIT  user_wallet    $100
-  CREDIT merchant_wallet $100
-
-Refund:
-  DEBIT  merchant_wallet $100
-  CREDIT user_wallet     $100
-
-Rules:
-- SUM(debits) == SUM(credits) (always balanced)
-- Entries are IMMUTABLE (append-only)
-- Balance = SUM(credits) - SUM(debits)
-</pre>`,
-                        trap: "Never UPDATE balance! Only INSERT transactions. Updates lose audit trail."
-                    },
-                    {
-                        name: "Saga: Payment Flow",
-                        solution: `<pre style="background:#2d3436; color:#dfe6e9; padding:15px; border-radius:8px; font-size:0.85rem;">
-Happy Path (all succeed):
-T1: Reserve inventory → 
-T2: Charge card (Stripe) → 
-T3: Record transaction →
-T4: Notify (email/SMS)
-
-Failure at T3:
-C2: Refund card (compensate)
-C1: Release inventory (compensate)
-
-Each step has:
-- Transaction (do)
-- Compensation (undo)
-</pre>`,
-                        trap: "Compensation must be idempotent too! Might run multiple times."
-                    },
-                    {
-                        name: "Idempotency Implementation",
-                        solution: `<pre style="background:#2d3436; color:#dfe6e9; padding:15px; border-radius:8px; font-size:0.85rem;">
-Client:
-  idempotency_key = UUID per payment intent
-  (Same key on retry)
-
-Server:
-  1. Check: SELECT * FROM idempotency 
-            WHERE key = ? AND status != 'PROCESSING'
-  2. If found: return cached_result
-  3. If not: INSERT key with status='PROCESSING'
-  4. Process payment
-  5. UPDATE status='DONE', cached_result=...
-  
-Key TTL: 24-48 hours (cleanup old keys)
-</pre>`,
-                        trap: "Race condition on check! Use INSERT...ON CONFLICT or Redis SETNX."
-                    }
-                ],
-
-                diagram: `<pre style="background:#2d3436; color:#dfe6e9; padding:20px; border-radius:8px; font-size:0.75rem; line-height:1.3; overflow-x:auto;">
-┌─────────────────────────────────────────────────────────────────────┐
-│                     PAYMENT SYSTEM ARCHITECTURE                      │
-└─────────────────────────────────────────────────────────────────────┘
-
-[User App] ──► [API Gateway] ──► [Payment Service]
-     │               │                   │
-     │ Idempotency   │           ┌───────┴───────┐
-     │ Key           │           ▼               ▼
-     │               │    ┌──────────┐    ┌──────────┐
-     │               │    │ Idempotency│    │  Saga    │
-     │               │    │ Store     │    │Orchestrator│
-     │               │    │ (Redis)   │    └────┬─────┘
-     │               │    └──────────┘         │
-     │               │                         │
-     │               │    ┌────────────────────┼────────────────────┐
-     │               │    ▼                    ▼                    ▼
-     │               │ ┌──────┐          ┌──────────┐         ┌───────┐
-     │               │ │Wallet │          │ Stripe   │         │Ledger │
-     │               │ │Service│          │ Gateway  │         │(Append)│
-     │               │ └──────┘          └──────────┘         └───────┘
-
-SAGA FLOW:
-[Reserve] ──✓──► [Charge Card] ──✓──► [Record] ──✓──► [Notify] ✅
-
-SAGA COMPENSATE (on failure):
-[Release] ◄──── [Refund Card] ◄──── [Mark Failed] ❌
-</pre>`,
-
-                traps: [
-                    {
-                        question: "Stripe webhook arrives twice?",
-                        answer: "Idempotent handler. Check if already processed by payment_intent_id."
-                    },
-                    {
-                        question: "User sees 'pending' forever?",
-                        answer: "Timeout + async reconciliation job. Mark stale transactions as failed."
-                    },
-                    {
-                        question: "How to handle partial refunds?",
-                        answer: "New ledger entry: DEBIT merchant, CREDIT user (partial amount)."
-                    }
-                ],
-
-                metrics: { time: "60 min interview", space: "PostgreSQL + Redis + Payment Gateway" },
-
-                codeTitle: "Idempotent Payment Handler",
-                code: `import redis
-from uuid import uuid4
-
-r = redis.Redis()
-
-def process_payment(idempotency_key, amount, user_id, merchant_id):
-    """Process payment with idempotency"""
-    
-    cache_key = f"idempotency:{idempotency_key}"
-    
-    # Check if already processed
-    cached = r.get(cache_key)
-    if cached:
-        return {"status": "duplicate", "result": cached}
-    
-    # Acquire processing lock (prevent concurrent processing)
-    lock_acquired = r.set(cache_key, "PROCESSING", nx=True, ex=300)
-    if not lock_acquired:
-        return {"status": "in_progress", "message": "Try again shortly"}
-    
-    try:
-        # 1. Reserve balance (local DB)
-        if not reserve_balance(user_id, amount):
-            raise Exception("Insufficient balance")
-        
-        # 2. Charge via Stripe
-        stripe_result = stripe.charge(amount, user_id)
-        if not stripe_result.success:
-            release_balance(user_id, amount)  # Compensate
-            raise Exception("Card declined")
-        
-        # 3. Record in ledger (double entry)
-        record_transaction(
-            debit_account=f"user:{user_id}",
-            credit_account=f"merchant:{merchant_id}",
-            amount=amount,
-            stripe_id=stripe_result.id
-        )
-        
-        # 4. Cache successful result
-        result = {"status": "success", "transaction_id": stripe_result.id}
-        r.set(cache_key, str(result), ex=86400)  # 24h TTL
-        
-        return result
-        
-    except Exception as e:
-        r.set(cache_key, f"FAILED:{str(e)}", ex=3600)
-        raise`
-            }
-        },
-        {
-            id: "google-docs",
-            title: "Design Google Docs",
-            difficulty: "Hard",
-            priority: "🟡",
-            tags: ["Flows", "Collaboration", "CRDT"],
-
-            scaleEstimates: {
-                dau: "1 Billion users",
-                concurrentEditors: "Up to 100 per doc",
-                editsPerSecond: "1000s per popular doc",
-                latency: "<100ms local, <500ms sync",
-                note: "Conflicts happen constantly - must resolve seamlessly!"
-            },
-
-            quiz: {
-                description: "Two users type at same position simultaneously. How to resolve?",
-                options: [
-                    "Last write wins (overwrite)",
-                    "Lock the document",
-                    "Operational Transformation (OT)",
-                    "Reject second user's edit"
-                ],
-                correct: 2,
-                explanation: "Operational Transformation! Transform concurrent operations so both apply correctly. Result is same regardless of order received."
-            },
-
-            learn: {
-                decisions: [
-                    {
-                        question: "OT vs CRDT?",
-                        answer: "Google Docs uses OT, newer tools use CRDT",
-                        why: "OT = central server, simpler. CRDT = peer-to-peer, works offline. Both valid."
-                    },
-                    {
-                        question: "When to persist to DB?",
-                        answer: "Batch every 30 seconds + major events",
-                        why: "Save every keystroke = too expensive. Batch changes, save periodically."
-                    },
-                    {
-                        question: "How to show cursor positions?",
-                        answer: "Broadcast via WebSocket, store ephemerally",
-                        why: "Cursors are transient. Redis with TTL, not persistent storage."
-                    }
-                ],
-
-                components: [
-                    {
-                        name: "Operational Transformation (OT)",
-                        solution: `<pre style="background:#2d3436; color:#dfe6e9; padding:15px; border-radius:8px; font-size:0.85rem;">
-Example: Doc = "Hello"
-
-User A: Insert "X" at position 1 → "HXello"
-User B: Insert "Y" at position 3 → "HelYlo"
-
-Both arrive at server:
-- A's op: INSERT(1, "X")
-- B's op: INSERT(3, "Y")
-
-Transform B's op relative to A:
-- A inserted at 1, so positions >= 1 shift by 1
-- B's position 3 becomes 4
-- Transformed: INSERT(4, "Y")
-
-Apply both:
-"Hello" → "HXello" → "HXelYlo"
-</pre>`,
-                        trap: "OT is complex! Consider using existing library (ShareDB, Yjs)."
-                    },
-                    {
-                        name: "CRDT Alternative (Yjs)",
-                        solution: `<ul>
-<li><strong>CRDT:</strong> Conflict-free Replicated Data Type</li>
-<li><strong>No central server needed</strong> - peers sync directly</li>
-<li><strong>Each character has unique ID</strong> - position is relative to neighbors</li>
-<li><strong>Merge:</strong> Union of all operations - always converges</li>
-</ul>
-<pre style="background:#2d3436; color:#dfe6e9; padding:10px; border-radius:8px; font-size:0.85rem;">
-# Yjs example
-import Y from 'yjs';
-const doc = new Y.Doc();
-const text = doc.getText('content');
-text.insert(0, 'Hello');  // ID: user1:0
-// Syncs to all peers automatically
-</pre>`,
-                        trap: "CRDT memory grows with history. Need garbage collection for long docs."
-                    },
-                    {
-                        name: "Document Version & History",
-                        solution: `<pre style="background:#2d3436; color:#dfe6e9; padding:15px; border-radius:8px; font-size:0.85rem;">
-Versioning Options:
-
-1. Snapshot versioning:
-   - Save full doc every 100 ops
-   - Version history = list of snapshots
-
-2. Operation log:
-   - Store every operation
-   - Reconstruct any point in time
-   - Expensive for long docs
-
-3. Hybrid (Google Docs):
-   - Recent: operation log
-   - Old: snapshots only (discard ops)
-</pre>`,
-                        trap: "Infinite undo = infinite storage. Keep ops for X days, then snapshot."
-                    }
-                ],
-
-                diagram: `<pre style="background:#2d3436; color:#dfe6e9; padding:20px; border-radius:8px; font-size:0.75rem; line-height:1.3; overflow-x:auto;">
-┌─────────────────────────────────────────────────────────────────────┐
-│                     GOOGLE DOCS ARCHITECTURE                         │
-└─────────────────────────────────────────────────────────────────────┘
-
-  [User A]        [User B]        [User C]
-      │               │               │
-      │ Local Edit    │               │
-      ▼               ▼               ▼
-  [Local OT     [Local OT      [Local OT
-   Engine]       Engine]        Engine]
-      │               │               │
-      └───────────────┼───────────────┘
-                      │ WebSocket
-                      ▼
-              ┌──────────────┐
-              │  Collab Svc  │ (OT Server)
-              │  - Transform │
-              │  - Broadcast │
-              └──────┬───────┘
-                     │
-       ┌─────────────┼─────────────┐
-       ▼             ▼             ▼
-┌──────────┐  ┌──────────┐  ┌──────────┐
-│ Presence │  │ Op Log   │  │ Doc Store│
-│ (Redis)  │  │ (Kafka)  │  │ (Spanner)│
-│ Cursors  │  │ History  │  │ Snapshots│
-└──────────┘  └──────────┘  └──────────┘
-
-SYNC FLOW:
-1. User types → Local apply (instant)
-2. Send op to server
-3. Server transforms vs concurrent ops
-4. Broadcast transformed op to all clients
-5. Persist to op log
-6. Batch save snapshots every 30s
-</pre>`,
-
-                traps: [
-                    {
-                        question: "What about formatting (bold, italic)?",
-                        answer: "Rich text = nested ops. Libraries like Quill/ProseMirror handle this."
-                    },
-                    {
-                        question: "Offline editing?",
-                        answer: "Queue ops locally. Sync when online. CRDT handles merges better than OT for offline."
-                    },
-                    {
-                        question: "100 users = 100 cursors?",
-                        answer: "Show only nearby cursors. Throttle position updates (every 200ms)."
-                    }
-                ],
-
-                metrics: { time: "60 min interview", space: "Spanner/DynamoDB + Redis + Kafka" },
-
-                codeTitle: "Basic OT Transform",
-                code: `class Operation:
-    INSERT = 'insert'
-    DELETE = 'delete'
-
-def transform(op1, op2):
-    """
-    Transform op1 against op2.
-    Returns new op1 that achieves same effect after op2 applied.
-    """
-    if op1['type'] == Operation.INSERT and op2['type'] == Operation.INSERT:
-        if op1['position'] <= op2['position']:
-            return op1  # op1 is before, no change
-        else:
-            # op2 inserted before op1, shift position
-            return {**op1, 'position': op1['position'] + len(op2['char'])}
-    
-    elif op1['type'] == Operation.INSERT and op2['type'] == Operation.DELETE:
-        if op1['position'] <= op2['position']:
-            return op1
-        else:
-            return {**op1, 'position': op1['position'] - 1}
-    
-    elif op1['type'] == Operation.DELETE and op2['type'] == Operation.INSERT:
-        if op1['position'] < op2['position']:
-            return op1
-        else:
-            return {**op1, 'position': op1['position'] + len(op2['char'])}
-    
-    elif op1['type'] == Operation.DELETE and op2['type'] == Operation.DELETE:
-        if op1['position'] < op2['position']:
-            return op1
-        elif op1['position'] > op2['position']:
-            return {**op1, 'position': op1['position'] - 1}
-        else:
-            return None  # Same char deleted, op1 is no-op
-
-# Example:
-# op1 = {'type': 'insert', 'position': 5, 'char': 'X'}
-# op2 = {'type': 'insert', 'position': 2, 'char': 'Y'}
-# transform(op1, op2) → {'type': 'insert', 'position': 6, 'char': 'X'}`
-            }
-        }
-    ]
-};
-
-
-// ========== data/systemdesign/handling_large_blobs.js ==========
-// System Design - Handling Large Blobs
-// Dropbox, YouTube
-
-const topic_systemdesign_handling_large_blobs = {
-    id: "systemdesign_handling_large_blobs",
-    title: "System Design: Handling Large Blobs",
-    description: "Principal Engineer • Large Files & Streaming",
-    color: "#6c5ce7",
-    icon: "fas fa-database",
-    mentalModel: {
-        whenToApply: [
-            { label: "📁 File Sync", desc: "Sync across devices? → Chunking + Merkle Trees + Dedup" },
-            { label: "🎬 Video Streaming", desc: "Serve video? → CDN + Adaptive Bitrate + Encoding Pipeline" },
-            { label: "📤 Large Uploads", desc: "Files > 100MB? → Chunked upload + Resume support" },
-            { label: "🗂️ Object Storage", desc: "Billions of files? → S3/GCS + Metadata DB" },
-            { label: "🔄 Conflict Resolution", desc: "Offline edits? → Version vectors + Last-write-wins" }
-        ],
-        patterns: [
-            { algo: "File Chunking", use: "Large file handling", time: "O(N)", space: "O(1)", template: "Split into 4MB chunks, hash each" },
-            { algo: "Content-Addressed", use: "Deduplication", time: "O(1)", space: "O(unique)", template: "Hash as key: if exists, skip upload" },
-            { algo: "Merkle Tree", use: "Diff detection", time: "O(log N)", space: "O(N)", template: "Hash tree: changed node = changed subtree" },
-            { algo: "Adaptive Bitrate", use: "Video quality", time: "O(1)", space: "O(versions)", template: "Multiple qualities, switch on bandwidth" },
-            { algo: "CDN Edge Cache", use: "Global delivery", time: "O(1) local", space: "Distributed", template: "Cache at edge, origin fallback" }
-        ],
-        safetyCheck: [
-            { label: "⚠️ Upload Resume", desc: "Large upload fails at 90%? Allow resume from last chunk!" },
-            { label: "🔐 Pre-signed URLs", desc: "Don't proxy blobs through app servers. Direct S3 upload." },
-            { label: "📊 Metadata vs Blob", desc: "Store metadata in DB, blobs in object storage. Never mix." },
-            { label: "🌍 CDN Cache Keys", desc: "Include file version in URL to invalidate cache on update" }
-        ]
-    },
-    questions: [
-        {
-            id: "dropbox",
-            title: "Design Dropbox",
-            difficulty: "Hard",
-            priority: "🔴",
-            tags: ["Storage", "Sync", "Deduplication"],
-
-            scaleEstimates: {
-                users: "700 Million",
-                filesStored: "1 Trillion files",
-                dailySyncs: "1 Billion sync operations",
-                storage: "Exabytes (EB) total",
-                note: "Most files never accessed after upload - cold storage!"
-            },
-
-            quiz: {
-                description: "How to detect file changes across 100,000 files efficiently?",
-                options: [
-                    "Compare file content byte-by-byte",
-                    "Check modification timestamps",
-                    "Use Merkle Tree with content hashes",
-                    "Sync everything on every change"
-                ],
-                correct: 2,
-                explanation: "Merkle Tree! Hash each file, build tree. Compare root hash - if different, traverse to find changed files. O(log N) not O(N)!"
-            },
-
-            learn: {
-                decisions: [
-                    {
-                        question: "Why chunk files?",
-                        answer: "Dedup, resume, parallel upload",
-                        why: "Same chunk across users = store once! Upload fails = resume from last chunk. Multiple chunks = parallel upload."
-                    },
-                    {
-                        question: "Chunk size?",
-                        answer: "4MB typical",
-                        why: "Smaller = more overhead. Larger = slower dedup. 4MB is sweet spot."
-                    },
-                    {
-                        question: "Client vs Server sync?",
-                        answer: "Client-initiated, server-validated",
-                        why: "Client detects changes, computes chunks, uploads. Server validates and stores."
-                    }
-                ],
-
-                components: [
-                    {
-                        name: "File Chunking & Deduplication",
-                        solution: `<pre style="background:#2d3436; color:#dfe6e9; padding:15px; border-radius:8px; font-size:0.85rem;">
-Upload Flow:
-1. Split file into 4MB chunks
-2. SHA256 hash each chunk
-3. Send chunk hashes to server
-4. Server: "I need chunks [2, 5]" (others exist)
-5. Upload only missing chunks
-6. Server stores metadata: file → [chunk_hashes]
-
-Dedup Rate: 50%+ for enterprise (many copies of same docs)
-</pre>`,
-                        trap: "Use content-defined chunking (CDC) not fixed size - file insert doesn't shift all hashes!"
-                    },
-                    {
-                        name: "Sync Protocol (Delta Sync)",
-                        solution: `<ul>
-<li><strong>Client Database:</strong> SQLite tracks local file state</li>
-<li><strong>Server Journal:</strong> Ordered list of changes</li>
-<li><strong>Sync:</strong> Client pulls changes since last cursor</li>
-</ul>
-<pre style="background:#2d3436; color:#dfe6e9; padding:10px; border-radius:8px; font-size:0.85rem;">
-GET /delta?cursor=1234567
-Response: {
-  changes: [{path: "/a.txt", action: "modified"},
-            {path: "/b.txt", action: "deleted"}],
-  cursor: 1234890
-}
-</pre>`,
-                        trap: "Long polling or WebSocket for real-time. Polling = battery drain on mobile!"
-                    },
-                    {
-                        name: "Conflict Resolution",
-                        solution: `<pre style="background:#2d3436; color:#dfe6e9; padding:15px; border-radius:8px; font-size:0.85rem;">
-Conflict Detection:
-- Client sends: base_version + new_content
-- Server checks: current_version == base_version?
-- If not: CONFLICT!
-
-Resolution:
-1. Last-write-wins (simple, data loss)
-2. Keep both: "file.txt" + "file (conflict).txt"
-3. Merge (for text/code - complex)
-
-Dropbox uses: Keep both copies, let user resolve
-</pre>`,
-                        trap: "Offline edits are tricky! User might edit same file on 3 devices. Timestamp alone isn't enough."
-                    }
-                ],
-
-                diagram: `<pre style="background:#2d3436; color:#dfe6e9; padding:20px; border-radius:8px; font-size:0.75rem; line-height:1.3; overflow-x:auto;">
-┌─────────────────────────────────────────────────────────────────────┐
-│                        DROPBOX ARCHITECTURE                          │
-└─────────────────────────────────────────────────────────────────────┘
-
-  [Desktop Client]
-      │ Local SQLite (file state)
-      │
-      ├──► Detect Changes (Merkle Tree)
-      │
-      ├──► Chunk File (4MB blocks)
-      │
-      ├──► Hash Chunks (SHA256)
-      │
-      ▼
-┌──────────────┐                    ┌──────────────┐
-│  Block Svc   │ ──── Upload ─────► │     S3       │
-│ (Dedup check)│    (Missing only)  │ (Blob Store) │
-└──────┬───────┘                    └──────────────┘
-       │
-       ▼
-┌──────────────┐     ┌──────────────┐
-│ Metadata Svc │────►│  PostgreSQL  │
-│ (File→Chunks)│     │ (File tree)  │
-└──────┬───────┘     └──────────────┘
-       │
-       ▼
-┌──────────────┐
-│ Notification │ ───► Other Devices (Long Poll/WS)
-│    Service   │
-└──────────────┘
-</pre>`,
-
-                traps: [
-                    {
-                        question: "How to handle file rename (100GB file)?",
-                        answer: "Just update metadata! Chunks don't move. Rename is O(1)."
-                    },
-                    {
-                        question: "Customer deletes file by accident?",
-                        answer: "Soft delete with 30-day recovery. Versioning for file history."
-                    },
-                    {
-                        question: "Sharing a folder with 10M users?",
-                        answer: "Copy-on-write. Shared = pointer. Edit = create user's copy."
-                    }
-                ],
-
-                metrics: { time: "60 min interview", space: "S3 + PostgreSQL + Local SQLite" },
-
-                codeTitle: "File Chunking (Python)",
-                code: `import hashlib
-
-CHUNK_SIZE = 4 * 1024 * 1024  # 4MB
-
-def chunk_file(file_path):
-    """Split file into chunks and return hashes"""
-    chunks = []
-    
-    with open(file_path, 'rb') as f:
-        index = 0
-        while True:
-            data = f.read(CHUNK_SIZE)
-            if not data:
-                break
-            
-            chunk_hash = hashlib.sha256(data).hexdigest()
-            chunks.append({
-                'index': index,
-                'hash': chunk_hash,
-                'size': len(data),
-                'data': data  # In practice, write to temp file
-            })
-            index += 1
-    
-    return chunks
-
-def get_missing_chunks(local_chunks, server_chunks):
-    """Compare with server, find what to upload"""
-    server_hashes = set(server_chunks)
-    missing = []
-    
-    for chunk in local_chunks:
-        if chunk['hash'] not in server_hashes:
-            missing.append(chunk)
-    
-    return missing
-
-# Usage:
-# chunks = chunk_file("large_video.mp4")
-# missing = get_missing_chunks(chunks, server.get_existing_hashes())
-# for chunk in missing:
-#     upload_chunk(chunk)  # Upload only what's needed`
-            }
-        },
-        {
-            id: "youtube",
-            title: "Design YouTube",
-            difficulty: "Hard",
-            priority: "🔴",
-            tags: ["Storage", "Streaming", "CDN"],
-
-            scaleEstimates: {
-                dau: "2 Billion users",
-                videosWatched: "1 Billion hours/day",
-                uploadsPerDay: "500,000 videos",
-                storagePerVideo: "~5GB (all qualities)",
-                note: "Top 1% videos = 99% of views. HEAVY caching!"
-            },
-
-            quiz: {
-                description: "How does YouTube adjust video quality based on network?",
-                options: [
-                    "User manually selects quality",
-                    "Adaptive Bitrate Streaming (HLS/DASH)",
-                    "Always serve lowest quality",
-                    "Re-encode on every request"
-                ],
-                correct: 1,
-                explanation: "Adaptive Bitrate (HLS/DASH)! Pre-encode multiple qualities (240p-4K). Client measures bandwidth, requests appropriate segments. Seamless quality switching."
-            },
-
-            learn: {
-                decisions: [
-                    {
-                        question: "Encoding pipeline sync vs async?",
-                        answer: "Async! DAG-based pipeline",
-                        why: "Video upload → Queue → Encode 8 qualities in parallel → Store. User doesn't wait."
-                    },
-                    {
-                        question: "Store all qualities?",
-                        answer: "Yes! Encode once, serve forever",
-                        why: "Pre-encode: 240p, 360p, 480p, 720p, 1080p, 4K. Storage cheap vs compute."
-                    },
-                    {
-                        question: "Serve from origin or CDN?",
-                        answer: "CDN for popular (99%), origin for long-tail",
-                        why: "Top 1% videos in CDN edge cache. Rest fetched from origin on-demand."
-                    }
-                ],
-
-                components: [
-                    {
-                        name: "Video Encoding Pipeline (DAG)",
-                        solution: `<pre style="background:#2d3436; color:#dfe6e9; padding:15px; border-radius:8px; font-size:0.85rem;">
-Upload → Queue → Workers (DAG):
-
-[Original Video]
-       │
-       ├──► [Extract Audio]
-       │          │
-       │          ▼
-       │    [Audio Encode] → AAC 128k
-       │
-       ├──► [Video 240p] ──► [Segment HLS]
-       ├──► [Video 480p] ──► [Segment HLS]
-       ├──► [Video 720p] ──► [Segment HLS]
-       ├──► [Video 1080p] ─► [Segment HLS]
-       └──► [Video 4K] ────► [Segment HLS]
-                                   │
-                                   ▼
-                           [Upload to S3]
-                                   │
-                                   ▼
-                           [Update Metadata]
-                           "Video ready!"
-</pre>`,
-                        trap: "Failures in pipeline = partial encode. Use idempotent workers, checkpoint progress."
-                    },
-                    {
-                        name: "Adaptive Bitrate (HLS/DASH)",
-                        solution: `<pre style="background:#2d3436; color:#dfe6e9; padding:15px; border-radius:8px; font-size:0.85rem;">
-Manifest File (m3u8):
-#EXTM3U
-#EXT-X-STREAM-INF:BANDWIDTH=800000
-video_480p.m3u8
-#EXT-X-STREAM-INF:BANDWIDTH=2000000
-video_720p.m3u8
-#EXT-X-STREAM-INF:BANDWIDTH=5000000
-video_1080p.m3u8
-
-Player Flow:
-1. Fetch manifest
-2. Start with mid-quality
-3. Measure download speed per segment
-4. Upgrade/downgrade quality accordingly
-</pre>`,
-                        trap: "Segment duration matters! 2-4 seconds typical. Too short = overhead, too long = slow adaptation."
-                    },
-                    {
-                        name: "CDN & Caching Strategy",
-                        solution: `<ul>
-<li><strong>Edge Caching:</strong> Popular videos cached globally</li>
-<li><strong>Cache Key:</strong> video_id + quality + segment_number</li>
-<li><strong>Eviction:</strong> LRU with TTL (24h for viral, 7d for trending)</li>
-<li><strong>Origin Shield:</strong> Second-tier cache to reduce origin load</li>
-</ul>`,
-                        trap: "Cache by segment, not whole video! User might only watch first 30 seconds."
-                    }
-                ],
-
-                diagram: `<pre style="background:#2d3436; color:#dfe6e9; padding:20px; border-radius:8px; font-size:0.75rem; line-height:1.3; overflow-x:auto;">
-┌─────────────────────────────────────────────────────────────────────┐
-│                        YOUTUBE ARCHITECTURE                          │
-└─────────────────────────────────────────────────────────────────────┘
-
-UPLOAD FLOW:
-[Creator] ──► [Upload Service] ──► [S3 Raw] ──► [Encoding Queue]
-                                                        │
-                    ┌───────────────────────────────────┘
-                    ▼
-           [Encoding Workers] (DAG)
-           │  │  │  │  │
-           ▼  ▼  ▼  ▼  ▼
-         [240p][480p][720p][1080p][4K]
-                    │
-                    ▼
-           [S3 Processed Videos]
-                    │
-                    ▼
-           [Metadata DB: "Video Ready"]
-
-WATCH FLOW:
-[Viewer] ──► [CDN Edge]
-                │
-          Cache Hit? ──► [Return Segment]
-                │
-                ▼ Miss
-          [Origin Shield]
-                │
-          Cache Hit? ──► [Return + Cache at Edge]
-                │
-                ▼ Miss
-          [S3 Origin] ──► [Return + Cache Both Tiers]
-</pre>`,
-
-                traps: [
-                    {
-                        question: "Live streaming vs VOD?",
-                        answer: "Live = no CDN pre-cache. Push to edge on ingest. Higher complexity."
-                    },
-                    {
-                        question: "Thumbnails at scale?",
-                        answer: "Extract frames during encode. Store as sprite sheets for seek preview."
-                    },
-                    {
-                        question: "Copyright detection?",
-                        answer: "Content ID: fingerprint audio/video during encode. Match against database."
-                    }
-                ],
-
-                metrics: { time: "60 min interview", space: "S3 + CDN + PostgreSQL" },
-
-                codeTitle: "HLS Manifest Generator (Python)",
-                code: `def generate_master_manifest(video_id, qualities):
-    """Generate HLS master playlist"""
-    lines = ["#EXTM3U", "#EXT-X-VERSION:3"]
-    
-    bandwidth_map = {
-        "240p": 400000,
-        "480p": 800000,
-        "720p": 2000000,
-        "1080p": 5000000,
-        "4k": 15000000
-    }
-    
-    for quality in qualities:
-        bandwidth = bandwidth_map.get(quality, 800000)
-        resolution = {
-            "240p": "426x240",
-            "480p": "854x480",
-            "720p": "1280x720",
-            "1080p": "1920x1080",
-            "4k": "3840x2160"
-        }.get(quality, "854x480")
-        
-        lines.append(
-            f"#EXT-X-STREAM-INF:BANDWIDTH={bandwidth},"
-            f"RESOLUTION={resolution}"
-        )
-        lines.append(f"/video/{video_id}/{quality}/playlist.m3u8")
-    
-    return "\\n".join(lines)
-
-def generate_quality_manifest(video_id, quality, segments):
-    """Generate HLS quality-specific playlist"""
-    lines = [
-        "#EXTM3U",
-        "#EXT-X-VERSION:3",
-        "#EXT-X-TARGETDURATION:4",
-        "#EXT-X-MEDIA-SEQUENCE:0"
-    ]
-    
-    for i, segment in enumerate(segments):
-        lines.append(f"#EXTINF:{segment['duration']},")
-        lines.append(f"/video/{video_id}/{quality}/segment_{i}.ts")
-    
-    lines.append("#EXT-X-ENDLIST")
-    return "\\n".join(lines)`
-            }
-        }
-    ]
-};
-
-
-// ========== data/systemdesign/long_running_tasks.js ==========
-// System Design - Managing Long Running Tasks
-// Web Crawler, LeetCode Code Execution
-
-const topic_systemdesign_long_running_tasks = {
-    id: "systemdesign_long_running_tasks",
-    title: "System Design: Managing Long Running Tasks",
-    description: "Principal Engineer • Long-Running Tasks",
-    color: "#2d3436",
-    icon: "fas fa-tasks",
-    mentalModel: {
-        whenToApply: [
-            { label: "🕷️ Web Crawling", desc: "Explore internet? → URL Frontier + BFS + Politeness" },
-            { label: "⚡ Code Execution", desc: "Run untrusted code? → Sandbox + Container + Limits" },
-            { label: "⏰ Scheduled Jobs", desc: "Periodic tasks? → Leader Election + Cron + Idempotency" },
-            { label: "📊 Batch Processing", desc: "Process millions? → MapReduce + Partitioning" },
-            { label: "🔄 Async Workflows", desc: "Long-running? → Job Queue + State Machine" }
-        ],
-        patterns: [
-            { algo: "URL Frontier", use: "Crawl scheduling", time: "O(1)", space: "O(URLs)", template: "Priority queue + seen set" },
-            { algo: "Sandbox", use: "Code isolation", time: "Variable", space: "Container", template: "Docker + cgroups + seccomp" },
-            { algo: "Leader Election", use: "Single coordinator", time: "O(1)", space: "O(nodes)", template: "Raft/Paxos, or Redis SETNX" },
-            { algo: "MapReduce", use: "Parallel processing", time: "O(N/workers)", space: "Distributed", template: "Map → Shuffle → Reduce" },
-            { algo: "Job Queue", use: "Async work", time: "O(1)", space: "O(jobs)", template: "Producer → Queue → Consumer" }
-        ],
-        safetyCheck: [
-            { label: "⚠️ Resource Bombs", desc: "Infinite loop / memory bomb. Set CPU, memory, time limits!" },
-            { label: "🕸️ Spider Traps", desc: "Infinite URL generator. Track depth, detect patterns." },
-            { label: "⏱️ Job Timeouts", desc: "Long job = stuck worker. Heartbeat + timeout + requeue." },
-            { label: "🔄 Exactly-Once", desc: "Worker crashes mid-job. Use idempotent processing." }
-        ]
-    },
-    questions: [
-        {
-            id: "web-crawler",
-            title: "Design Web Crawler",
-            difficulty: "Hard",
-            priority: "🟡",
-            tags: ["Distributed", "Crawling", "BFS"],
-
-            scaleEstimates: {
-                urlsToVisit: "1 Billion pages",
-                crawlersNeeded: "1000+ workers",
-                pagesPerSecond: "10,000",
-                storagePerPage: "~100KB (compressed)",
-                note: "Politeness = don't DDoS! 1 req/sec per domain max."
-            },
-
-            quiz: {
-                description: "How to avoid crawling same URL twice across 1000 workers?",
-                options: [
-                    "Each worker keeps local seen set",
-                    "Centralized Redis set of all URLs",
-                    "Bloom filter for probabilistic check",
-                    "Don't check - duplicates are fine"
-                ],
-                correct: 2,
-                explanation: "Bloom Filter! Space-efficient (10 bytes vs 100 bytes per URL). False positives OK (skip some pages), no false negatives. Distributed or per-worker."
-            },
-
-            learn: {
-                decisions: [
-                    {
-                        question: "BFS vs DFS traversal?",
-                        answer: "BFS - get breadth first",
-                        why: "Important pages linked from homepage. DFS = deep in one path. BFS = wide coverage."
-                    },
-                    {
-                        question: "How to be polite?",
-                        answer: "1 request/second per domain",
-                        why: "Respect robots.txt. Separate queues per domain. Delay between requests."
-                    },
-                    {
-                        question: "How to prioritize URLs?",
-                        answer: "PageRank + freshness + domain authority",
-                        why: "Not all pages equal. Prioritize high-value pages first."
-                    }
-                ],
-
-                components: [
-                    {
-                        name: "URL Frontier (Priority Queue)",
-                        solution: `<pre style="background:#2d3436; color:#dfe6e9; padding:15px; border-radius:8px; font-size:0.85rem;">
-Two-Level Queue:
-1. Front Queue (Priority):
-   - High: Homepage, popular sites
-   - Medium: Linked from high-priority
-   - Low: Deep pages, low PageRank
-
-2. Back Queue (Per-Domain):
-   - Separate queue per domain
-   - Enforces politeness (1 req/sec)
-   - Round-robin across domains
-
-Worker picks:
-1. Get next priority item
-2. Check domain's last crawl time
-3. If too recent, get another domain
-</pre>`,
-                        trap: "Be polite! Check robots.txt. Respect Crawl-Delay directive."
-                    },
-                    {
-                        name: "Duplicate Detection (Bloom Filter)",
-                        solution: `<pre style="background:#2d3436; color:#dfe6e9; padding:15px; border-radius:8px; font-size:0.85rem;">
-Bloom Filter:
-- Probabilistic set membership
-- 1% false positive rate @ 10 bits/element
-- No false negatives!
-
-1 Billion URLs:
-- Hash set: 100GB+
-- Bloom filter: ~1.2GB
-
-Distributed:
-- Partition by URL hash
-- Each worker checks its shard
-</pre>`,
-                        trap: "Bloom filters can't delete. Use counting bloom filter or rebuild periodically."
-                    },
-                    {
-                        name: "Content Processing",
-                        solution: `<ul>
-<li><strong>Parse HTML:</strong> Extract links, text, title</li>
-<li><strong>Normalize URLs:</strong> Remove fragments, lowercase domain</li>
-<li><strong>Checksum:</strong> Detect duplicate content (SimHash)</li>
-<li><strong>Store:</strong> Compressed HTML + metadata</li>
-</ul>`,
-                        trap: "Spider traps! calendar.php?date=2025-01-01, date=2025-01-02... infinite URLs. Limit depth per domain."
-                    }
-                ],
-
-                diagram: `<pre style="background:#2d3436; color:#dfe6e9; padding:20px; border-radius:8px; font-size:0.75rem; line-height:1.3; overflow-x:auto;">
-┌─────────────────────────────────────────────────────────────────────┐
-│                       WEB CRAWLER ARCHITECTURE                       │
-└─────────────────────────────────────────────────────────────────────┘
-
-              ┌─────────────┐
-              │ Seed URLs   │
-              └──────┬──────┘
-                     ▼
-              ┌─────────────┐
-              │   Frontier  │◄──────────────────────┐
-              │ (Priority Q)│                       │
-              └──────┬──────┘                       │
-                     │                              │
-    ┌────────────────┼────────────────┐             │
-    ▼                ▼                ▼             │
-┌────────┐      ┌────────┐      ┌────────┐         │
-│Worker 1│      │Worker 2│      │Worker N│         │
-│ Fetch  │      │ Fetch  │      │ Fetch  │         │
-└───┬────┘      └───┬────┘      └───┬────┘         │
-    │               │               │              │
-    └───────────────┼───────────────┘              │
-                    ▼                              │
-             ┌──────────┐     ┌──────────┐         │
-             │  Parser  │────►│  Bloom   │──(new)──┘
-             │ (Extract │     │  Filter  │
-             │  Links)  │     │ (Dedup)  │
-             └────┬─────┘     └──────────┘
-                  │
-                  ▼
-       ┌──────────────────┐
-       │   Content Store  │ (S3 / HDFS)
-       │   Index Builder  │
-       └──────────────────┘
-</pre>`,
-
-                traps: [
-                    {
-                        question: "What about JavaScript-rendered pages?",
-                        answer: "Headless browser (Puppeteer) for JS pages. Much slower - use selectively."
-                    },
-                    {
-                        question: "Site blocks crawler?",
-                        answer: "Rotate IPs, use proxies, respect 429/503. May need to skip site."
-                    },
-                    {
-                        question: "How to recrawl for freshness?",
-                        answer: "Recrawl frequency based on update history. News = hourly. Static = monthly."
-                    }
-                ],
-
-                metrics: { time: "45 min interview", space: "S3 + Redis + Kafka" },
-
-                codeTitle: "Bloom Filter Implementation",
-                code: `import hashlib
-import math
-
-class BloomFilter:
-    def __init__(self, expected_items, false_positive_rate=0.01):
-        # Calculate optimal size and hash count
-        self.size = self._optimal_size(expected_items, false_positive_rate)
-        self.hash_count = self._optimal_hash_count(self.size, expected_items)
-        self.bit_array = [False] * self.size
-    
-    def _optimal_size(self, n, p):
-        """Optimal bit array size"""
-        return int(-n * math.log(p) / (math.log(2) ** 2))
-    
-    def _optimal_hash_count(self, m, n):
-        """Optimal number of hash functions"""
-        return int((m / n) * math.log(2))
-    
-    def _hashes(self, item):
-        """Generate k hash values for item"""
-        hashes = []
-        for i in range(self.hash_count):
-            h = hashlib.md5(f"{item}{i}".encode()).hexdigest()
-            hashes.append(int(h, 16) % self.size)
-        return hashes
-    
-    def add(self, item):
-        """Add item to filter"""
-        for pos in self._hashes(item):
-            self.bit_array[pos] = True
-    
-    def might_contain(self, item):
-        """Check if item might be in filter (false positives possible)"""
-        return all(self.bit_array[pos] for pos in self._hashes(item))
-
-# Usage:
-# bf = BloomFilter(1_000_000_000, 0.01)  # 1B URLs, 1% FP
-# bf.add("https://example.com/page1")
-# bf.might_contain("https://example.com/page1")  # True
-# bf.might_contain("https://new-url.com")        # Probably False`
-            }
-        },
-        {
-            id: "leetcode",
-            title: "Design LeetCode (Code Execution)",
-            difficulty: "Hard",
-            priority: "🟡",
-            tags: ["Distributed", "Sandbox", "Scheduler"],
-
-            scaleEstimates: {
-                submissionsPerDay: "1 Million",
-                peakSubmissions: "1000/sec (contest)",
-                executionTime: "< 5 seconds typical",
-                languagesSupported: "20+",
-                note: "Untrusted code! Must sandbox completely - fork bombs, infinite loops, file access."
-            },
-
-            quiz: {
-                description: "How to safely run untrusted user code?",
-                options: [
-                    "Run directly on worker VM",
-                    "Docker container with resource limits",
-                    "Parse and validate code first",
-                    "Run in same process, catch exceptions"
-                ],
-                correct: 1,
-                explanation: "Docker + cgroups + seccomp! Container isolates filesystem. Cgroups limit CPU/memory. Seccomp blocks syscalls. Never trust user code."
-            },
-
-            learn: {
-                decisions: [
-                    {
-                        question: "Container per submission or pool?",
-                        answer: "Pool with cleanup between runs",
-                        why: "Cold start = 2s delay. Warm pool, reset state between runs."
-                    },
-                    {
-                        question: "How to enforce time limits?",
-                        answer: "Wall clock + CPU time limits",
-                        why: "sleep(100) cheats CPU time. Wall clock catches everything. Kill after 10s."
-                    },
-                    {
-                        question: "How to run test cases?",
-                        answer: "Parallel on same container",
-                        why: "100 test cases × fresh container = slow. Run all tests, track which fail."
-                    }
-                ],
-
-                components: [
-                    {
-                        name: "Sandbox (Docker + cgroups)",
-                        solution: `<pre style="background:#2d3436; color:#dfe6e9; padding:15px; border-radius:8px; font-size:0.85rem;">
-Resource Limits:
-- CPU: 1 core max
-- Memory: 256MB (hard limit)
-- Time: 10 seconds wall clock
-- Disk: Read-only (no writes)
-- Network: Disabled
-- PIDs: 64 max (prevent fork bombs)
-
-Security:
-- seccomp: Block dangerous syscalls
-- No root access
-- Minimal base image
-- Fresh filesystem each run
-</pre>`,
-                        trap: "Memory limit must be HARD. Soft limits can be bypassed. OOM = immediate kill."
-                    },
-                    {
-                        name: "Judge System Architecture",
-                        solution: `<ul>
-<li><strong>Submission Queue:</strong> RabbitMQ/SQS for durability</li>
-<li><strong>Worker Pool:</strong> Auto-scale based on queue depth</li>
-<li><strong>Result Store:</strong> Redis for real-time, DB for persistence</li>
-<li><strong>Test Case Storage:</strong> S3 with caching</li>
-</ul>`,
-                        trap: "Queue can explode during contests! Pre-scale workers + rate limit per user."
-                    },
-                    {
-                        name: "Result Comparison",
-                        solution: `<pre style="background:#2d3436; color:#dfe6e9; padding:15px; border-radius:8px; font-size:0.85rem;">
-Comparison Modes:
-1. Exact match: strcmp(output, expected)
-2. Token match: split and compare (ignore whitespace)
-3. Float tolerance: |output - expected| < 1e-6
-4. Special judge: custom validator (for multiple valid answers)
-
-Results:
-- Accepted ✓
-- Wrong Answer ✗
-- Time Limit Exceeded ⏱️
-- Memory Limit Exceeded 💾
-- Runtime Error 💥
-- Compilation Error 🔧
-</pre>`,
-                        trap: "Trailing newline / whitespace causes many 'Wrong Answer'. Be lenient or clear in spec."
-                    }
-                ],
-
-                diagram: `<pre style="background:#2d3436; color:#dfe6e9; padding:20px; border-radius:8px; font-size:0.75rem; line-height:1.3; overflow-x:auto;">
-┌─────────────────────────────────────────────────────────────────────┐
-│                    LEETCODE JUDGE ARCHITECTURE                       │
-└─────────────────────────────────────────────────────────────────────┘
-
-[User] ──► [API] ──► [Submission Queue]
-              │              │
-              │              ▼
-              │      ┌───────────────┐
-              │      │ Judge Workers │ (Auto-scale pool)
-              │      │ ┌───────────┐ │
-              │      │ │ Container │ │  ← Docker + cgroups
-              │      │ │ - Compile │ │
-              │      │ │ - Execute │ │
-              │      │ │ - Compare │ │
-              │      │ └───────────┘ │
-              │      └───────┬───────┘
-              │              │
-              │              ▼
-              │      ┌───────────────┐
-              │      │ Test Cases    │ (S3 + Cache)
-              │      │ - Input       │
-              │      │ - Expected    │
-              │      └───────────────┘
-              │              │
-              │              ▼
-              │      ┌───────────────┐
-              ├─────►│ Result Store  │ ──► [WebSocket]
-              │      │ (Redis + DB)  │      "Accepted!"
-              │      └───────────────┘
-              │
-              ▼
-       [Leaderboard / Stats]
-</pre>`,
-
-                traps: [
-                    {
-                        question: "User submits malware?",
-                        answer: "Container can't escape. No network. Read-only FS. Kill after timeout."
-                    },
-                    {
-                        question: "How to handle compilation?",
-                        answer: "Compile in same container. Compilation timeout separate from runtime."
-                    },
-                    {
-                        question: "Contest: 10k submissions in 1 minute?",
-                        answer: "Pre-warm containers. Queue with priority. Rate limit per user."
-                    }
-                ],
-
-                metrics: { time: "45 min interview", space: "K8s + Docker + SQS + Redis" },
-
-                codeTitle: "Docker Sandbox Runner",
-                code: `import docker
-import tempfile
-import os
-
-client = docker.from_env()
-
-def run_code(language, code, test_input, timeout=10):
-    """Run user code in isolated container"""
-    
-    # Create temp directory with code
-    with tempfile.TemporaryDirectory() as tmpdir:
-        code_file = os.path.join(tmpdir, "solution.py")
-        input_file = os.path.join(tmpdir, "input.txt")
-        
-        with open(code_file, 'w') as f:
-            f.write(code)
-        with open(input_file, 'w') as f:
-            f.write(test_input)
-        
-        try:
-            # Run in container with strict limits
-            result = client.containers.run(
-                image="python:3.9-slim",
-                command="python solution.py < input.txt",
-                volumes={tmpdir: {'bind': '/app', 'mode': 'ro'}},
-                working_dir="/app",
-                mem_limit="256m",
-                cpu_period=100000,
-                cpu_quota=100000,  # 1 CPU
-                pids_limit=64,
-                network_disabled=True,
-                read_only=True,
-                remove=True,
-                timeout=timeout
-            )
-            return {
-                "status": "success",
-                "output": result.decode('utf-8')
-            }
-            
-        except docker.errors.ContainerError as e:
-            return {"status": "runtime_error", "error": str(e)}
-        except Exception as e:
-            if "timeout" in str(e).lower():
-                return {"status": "time_limit_exceeded"}
-            return {"status": "error", "error": str(e)}
-
-# Usage:
-# result = run_code("python", "print(input())", "Hello World")
-# result = {"status": "success", "output": "Hello World\\n"}`
-            }
-        }
-    ]
-};
 
 
 // ========== data/concepts/dp_concepts.js ==========
@@ -15409,15 +11792,6 @@ const prepData = {
     dp: topic_dp,
     heap_trie: topic_heap_trie,
     backtracking: topic_backtracking,
-
-    // System Design Topics
-    systemdesign_scaling_reads: topic_systemdesign_scaling_reads,
-    systemdesign_scaling_writes: topic_systemdesign_scaling_writes,
-    systemdesign_realtime_updates: topic_systemdesign_realtime_updates,
-    systemdesign_dealing_with_contention: topic_systemdesign_dealing_with_contention,
-    systemdesign_multi_step_processes: topic_systemdesign_multi_step_processes,
-    systemdesign_handling_large_blobs: topic_systemdesign_handling_large_blobs,
-    systemdesign_long_running_tasks: topic_systemdesign_long_running_tasks,
 
     // Concept Guides
     dp_concepts: topic_dp_concepts,
