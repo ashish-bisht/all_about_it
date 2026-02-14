@@ -4,16 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Principal Prep | Learning Mode</title>
+    <title>Learn | Learning Mode</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <meta name="theme-color" content="#818cf8">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🔥</text></svg>">
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="style.css">
     <!-- JetBrains Mono for code -->
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-    <!-- Highlight.js (GitHub Dark Theme) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <!-- Highlight.js theme is loaded dynamically by script.js based on selected site theme -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
     <style>
@@ -57,7 +57,7 @@
         .metric-explainer {
             display: none;
             background: var(--bg-card);
-            color: #f1f5f9;
+            color: var(--text-secondary);
             padding: 24px;
             border-radius: var(--radius-md);
             margin: 20px 0;
@@ -358,36 +358,36 @@
             /* VS Code Default Dark */
             border-radius: 12px;
             overflow: hidden;
-            border: 1px solid #333;
+            border: 1px solid var(--code-panel-border);
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
             transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         details:hover {
             box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
-            border-color: #444;
+            border-color: var(--border-hover);
         }
 
         summary {
-            background: #252526;
+            background: var(--code-panel-header-bg);
             /* VS Code Header */
             padding: 12px 20px;
             cursor: pointer;
-            color: #cccccc;
+            color: var(--text-secondary);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
             font-size: 0.9rem;
             font-weight: 500;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-bottom: 1px solid #1e1e1e;
+            border-bottom: 1px solid var(--code-panel-border);
             user-select: none;
             transition: background 0.2s;
         }
 
         summary:hover {
-            background: #2a2d2e;
-            color: white;
+            background: color-mix(in srgb, var(--code-panel-header-bg) 70%, var(--primary-dim));
+            color: var(--text-main);
         }
 
         /* Mac Window Controls Simulation */
@@ -411,7 +411,7 @@
             /* Down Arrow */
             font-family: 'Font Awesome 6 Free';
             font-weight: 900;
-            color: #858585;
+            color: var(--text-muted);
             transition: transform 0.2s;
         }
 
@@ -430,7 +430,7 @@
             line-height: 1.6;
             overflow-x: auto;
             margin: 0 !important;
-            border-top: 1px solid #333;
+            border-top: 1px solid var(--code-panel-border);
             position: relative;
         }
 
@@ -460,8 +460,8 @@
         }
 
         .copy-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
+            background: var(--code-panel-btn-bg-hover);
+            color: var(--code-panel-btn-text-hover);
             transform: translateY(-1px);
         }
 
@@ -506,18 +506,18 @@
         .code-panel {
             border-radius: 12px;
             overflow: hidden;
-            border: 1px solid #333;
+            border: 1px solid var(--code-panel-border);
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
             margin-top: 20px;
         }
 
         .code-panel-header {
-            background: #252526;
+            background: var(--code-panel-header-bg);
             padding: 10px 16px;
             display: flex;
             align-items: center;
             gap: 12px;
-            border-bottom: 1px solid #1e1e1e;
+            border-bottom: 1px solid var(--code-panel-border);
         }
 
         .code-panel-dots::before {
@@ -532,16 +532,16 @@
 
         .code-panel-title {
             flex: 1;
-            color: #ccc;
+            color: var(--code-panel-title);
             font-size: 0.9rem;
             font-weight: 500;
             margin-left: 40px;
         }
 
         .code-panel .copy-btn {
-            background: rgba(255, 255, 255, 0.08);
+            background: var(--code-panel-btn-bg);
             border: none;
-            color: #858585;
+            color: var(--code-panel-btn-text);
             padding: 4px 12px;
             border-radius: 6px;
             cursor: pointer;
@@ -551,8 +551,8 @@
         }
 
         .code-panel .copy-btn:hover {
-            background: rgba(255, 255, 255, 0.15);
-            color: #fff;
+            background: var(--code-panel-btn-bg-hover);
+            color: var(--code-panel-btn-text-hover);
         }
 
         /* --- Complexity Panel --- */
@@ -571,11 +571,11 @@
         }
 
         .complexity-item.time {
-            border-top: 2px solid #fbbf24;
+            border-top: 2px solid var(--warning);
         }
 
         .complexity-item.space {
-            border-top: 2px solid #a78bfa;
+            border-top: 2px solid var(--primary);
         }
 
         .complexity-badge {
@@ -589,11 +589,11 @@
         }
 
         .complexity-item.time .complexity-badge i {
-            color: #fbbf24;
+            color: var(--warning);
         }
 
         .complexity-item.space .complexity-badge i {
-            color: #a78bfa;
+            color: var(--primary);
         }
 
         .complexity-label {
@@ -608,7 +608,7 @@
             font-family: 'JetBrains Mono', monospace;
             font-weight: 700;
             font-size: 1rem;
-            color: #a5f3fc;
+            color: var(--cyan);
             margin-left: auto;
         }
 
@@ -676,7 +676,7 @@
             justify-content: center;
             font-size: 0.65rem;
             font-weight: 700;
-            color: #a78bfa;
+            color: var(--primary);
             flex-shrink: 0;
             margin-top: 3px;
         }
@@ -692,8 +692,8 @@
         .mm-code {
             font-family: 'JetBrains Mono', 'Fira Code', monospace;
             font-size: 0.85rem;
-            color: #e2e8f0;
-            background: rgba(0, 0, 0, 0.3);
+            color: var(--code-text);
+            background: var(--code-bg);
             padding: 3px 8px;
             border-radius: 5px;
             display: inline-block;
@@ -702,7 +702,7 @@
 
         .mm-comment {
             font-size: 0.78rem;
-            color: #8b5cf6;
+            color: var(--primary);
             font-weight: 500;
             padding-left: 8px;
         }
@@ -746,8 +746,8 @@
         }
 
         .dryrun-text code {
-            background: rgba(0, 0, 0, 0.3);
-            color: #a5f3fc;
+            background: var(--code-bg);
+            color: var(--cyan);
             padding: 1px 6px;
             border-radius: 4px;
             font-size: 0.85rem;
@@ -828,8 +828,8 @@
             bottom: 30px;
             left: 50%;
             transform: translateX(-50%) translateY(20px);
-            background: rgba(50, 215, 75, 0.95);
-            color: #000;
+            background: color-mix(in srgb, var(--success) 86%, white);
+            color: color-mix(in srgb, var(--bg-dark) 90%, black);
             padding: 10px 24px;
             border-radius: 50px;
             font-weight: 700;
@@ -943,9 +943,9 @@
         .code-panel .hljs-ln-numbers {
             user-select: none;
             text-align: right;
-            color: #4a5568;
+            color: var(--code-panel-ln);
             padding-right: 12px;
-            border-right: 1px solid #333;
+            border-right: 1px solid var(--code-panel-border);
             margin-right: 12px;
         }
 
@@ -961,7 +961,7 @@
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.75rem;
             font-weight: 500;
-            color: #94a3b8;
+            color: var(--text-muted);
             letter-spacing: 0.02em;
             background: none;
             border: none;
@@ -1000,8 +1000,8 @@
         }
 
         .pro-content code {
-            background: rgba(0, 0, 0, 0.3);
-            color: #a5f3fc;
+            background: var(--code-bg);
+            color: var(--cyan);
             padding: 1px 6px;
             border-radius: 4px;
             font-size: 0.9rem;
@@ -1025,7 +1025,7 @@
             left: 0;
             right: 0;
             height: 3px;
-            background: linear-gradient(90deg, #22d3ee, #818cf8, #a78bfa);
+            background: linear-gradient(90deg, var(--cyan), var(--primary), color-mix(in srgb, var(--primary) 65%, #a78bfa));
             z-index: 1;
         }
 
@@ -1043,16 +1043,16 @@
             gap: 6px;
             margin-bottom: 14px !important;
             padding: 6px 14px;
-            background: rgba(167, 139, 250, 0.1) !important;
+            background: var(--primary-dim) !important;
             border-radius: 8px;
-            border: 1px solid rgba(167, 139, 250, 0.15);
-            color: #c4b5fd !important;
+            border: 1px solid color-mix(in srgb, var(--primary) 20%, transparent);
+            color: var(--primary) !important;
         }
 
         .visual-container code {
             display: block;
-            background: rgba(0, 0, 0, 0.3) !important;
-            color: #67e8f9 !important;
+            background: var(--code-bg) !important;
+            color: var(--code-text) !important;
             padding: 18px 22px !important;
             border-radius: 10px;
             font-family: 'JetBrains Mono', monospace;
@@ -1067,7 +1067,7 @@
         .visual-container pre {
             border: none !important;
             border-top: none !important;
-            background: rgba(0, 0, 0, 0.3) !important;
+            background: var(--code-bg) !important;
             padding: 18px 22px !important;
             border-radius: 10px;
             margin: 8px 0;
@@ -1077,8 +1077,8 @@
 
         /* --- Crux text better readability --- */
         .insight-text code {
-            background: rgba(94, 92, 230, 0.15);
-            color: #c4b5fd;
+            background: var(--primary-dim);
+            color: var(--primary);
             padding: 1px 6px;
             border-radius: 4px;
             font-size: 0.95rem;
@@ -1086,7 +1086,7 @@
         }
 
         .insight-text strong {
-            color: #fff;
+            color: var(--text-main);
         }
 
         /* --- Smooth scroll offset for sticky nav --- */
@@ -1414,7 +1414,7 @@
     <nav class="navbar">
         <div class="nav-content">
             <a href="index.html" class="nav-logo">
-                <i class="fas fa-fire"></i> Principal Prep
+                <i class="fas fa-fire"></i> Learn
             </a>
             <button class="nav-hamburger"
                 onclick="this.classList.toggle('open'); document.querySelector('.nav-links').classList.toggle('open');">
@@ -1448,6 +1448,16 @@
         <span class="kbd">Esc</span>
     </div>
 
+    <!-- Reading Mode Toggle (focus view) -->
+    <div id="reading-toggle" style="display:none; position:fixed; bottom:calc(16px + env(safe-area-inset-bottom)); left:16px; z-index:2000; display:flex; gap:8px; flex-wrap:wrap;">
+        <button id="reading-toggle-btn" class="ctrl" style="padding:8px 12px; border-radius:10px;" title="Reading mode">
+            <i class="fas fa-book"></i> Reading
+        </button>
+        <button id="sharp-toggle-btn" class="ctrl" style="padding:8px 12px; border-radius:10px;" title="Sharper text">
+            <i class="fas fa-circle-half-stroke"></i> Sharp
+        </button>
+    </div>
+
     <div class="container" id="app">
         <div class="nav-bar">
             <a href="index.html" class="back-btn" id="nav-back-btn"><i class="fas fa-arrow-left"></i> Dashboard</a>
@@ -1466,7 +1476,7 @@
          4. #focus-view
     -->
 
-    <script src="data.js?v=2"></script>
+    <!-- Topic data is now lazy-loaded per-topic (see topicLoader below) -->
     <script>
         // Store current data globally for easy access
         let currentTopicData = null;
@@ -1489,6 +1499,10 @@
             document.querySelector('.navbar').style.display = 'block';
             const kbdHint = document.getElementById('kbd-hint');
             if (kbdHint) kbdHint.style.display = 'flex';
+
+            // Show reading toggle
+            const rt = document.getElementById('reading-toggle');
+            if (rt) rt.style.display = 'block';
 
             // Render content into focus view
             const contentDiv = document.getElementById('focus-content');
@@ -1900,6 +1914,10 @@
             const kbdHint = document.getElementById('kbd-hint');
             if (kbdHint) kbdHint.style.display = 'none';
 
+            // Hide reading toggle
+            const rt = document.getElementById('reading-toggle');
+            if (rt) rt.style.display = 'none';
+
             // Disconnect sidebar observer
             if (sidebarObserver) sidebarObserver.disconnect();
 
@@ -2002,13 +2020,83 @@
             }
         });
 
+        // Reading mode toggle (persist across reloads)
+        (function initReadingMode() {
+            const KEY = 'principal_reading_mode';
+            const btn = document.getElementById('reading-toggle-btn');
+            if (!btn) return;
+
+            const apply = (on) => {
+                document.body.classList.toggle('reading-mode', Boolean(on));
+                btn.innerHTML = on
+                    ? '<i class="fas fa-align-left"></i> Normal'
+                    : '<i class="fas fa-book"></i> Reading';
+            };
+
+            const saved = localStorage.getItem(KEY);
+            apply(saved === '1');
+
+            btn.addEventListener('click', () => {
+                const on = !document.body.classList.contains('reading-mode');
+                localStorage.setItem(KEY, on ? '1' : '0');
+                apply(on);
+            });
+        })();
+
+        // Sharp text toggle (persist across reloads)
+        (function initSharpText() {
+            const KEY = 'principal_sharp_text';
+            const btn = document.getElementById('sharp-toggle-btn');
+            if (!btn) return;
+
+            const apply = (on) => {
+                document.body.classList.toggle('sharp-text', Boolean(on));
+                btn.innerHTML = on
+                    ? '<i class="fas fa-circle-half-stroke"></i> Soft'
+                    : '<i class="fas fa-circle-half-stroke"></i> Sharp';
+            };
+
+            const saved = localStorage.getItem(KEY);
+            apply(saved === '1');
+
+            btn.addEventListener('click', () => {
+                const on = !document.body.classList.contains('sharp-text');
+                localStorage.setItem(KEY, on ? '1' : '0');
+                apply(on);
+            });
+        })();
+
+        // --- Topic Loader (Lazy) ---
+        // Loads: data/topics/<topicId>.js which sets window.currentTopicData
+        async function loadTopicData(topicId) {
+            // Reset any previous data to avoid accidental reuse
+            window.currentTopicData = null;
+
+            // Basic sanitization: topic ids in this app are alnum/underscore
+            if (!/^[a-z0-9_]+$/i.test(topicId)) return null;
+
+            // Remove old topic script if any
+            const old = document.getElementById('topic-script');
+            if (old) old.remove();
+
+            return new Promise((resolve) => {
+                const s = document.createElement('script');
+                s.id = 'topic-script';
+                // Bump version to break cache when content changes
+                s.src = `data/topics/${topicId}.js?v=1`;
+                s.onload = () => resolve(window.currentTopicData || null);
+                s.onerror = () => resolve(null);
+                document.head.appendChild(s);
+            });
+        }
+
         // --- Render Logic ---
-        function renderPage() {
+        async function renderPage() {
             const params = new URLSearchParams(window.location.search);
             const topicId = params.get('topic');
             const app = document.getElementById('app');
 
-            if (!topicId || !prepData[topicId]) {
+            if (!topicId) {
                 app.innerHTML = `
                 <div class="nav-bar"><a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Dashboard</a></div>
                 <div style="text-align:center; padding:50px;">
@@ -2017,8 +2105,24 @@
                 return;
             }
 
-            currentTopicData = prepData[topicId];
-            document.title = `Principal Prep | ${currentTopicData.title}`;
+            // Show loader
+            const loader = document.getElementById('content-loader');
+            if (loader) loader.style.display = 'block';
+
+            const topicData = await loadTopicData(topicId);
+
+            if (!topicData) {
+                app.innerHTML = `
+                <div class="nav-bar"><a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Dashboard</a></div>
+                <div style="text-align:center; padding:50px;">
+                    <h1>Topic Not Found</h1>
+                    <p style="color:var(--text-muted);">Missing file: <code>data/topics/${topicId}.js</code></p>
+                </div>`;
+                return;
+            }
+
+            currentTopicData = topicData;
+            document.title = `Learn | ${currentTopicData.title}`;
 
             // SPECIAL: Guide Mode (Tabbed sections for Mastery content)
             if (currentTopicData.type === 'guide') {
@@ -2176,19 +2280,22 @@
                         ${currentTopicData.questions.map((q, idx) => {
                 if (!q.learn && !q.customHtml) return '';
                 const priorityClass = q.difficulty === 'Must Do' ? 'must' : (q.difficulty === 'Good to Do' ? 'good' : 'bonus');
-                const timeC = q.learn && q.learn.metrics ? q.learn.metrics.time : '';
-                const spaceC = q.learn && q.learn.metrics ? q.learn.metrics.space : '';
+                // Clean tiles: no time/space clutter in grid (can show inside focus view)
+                // Micro hint: auto-generated from tags (keeps it maintainable)
+                const hint = (q.tags && q.tags.length)
+                    ? q.tags.slice(0, 3).join(' • ')
+                    : (q.difficulty === 'Must Do' ? 'Core pattern' : (q.difficulty === 'Good to Do' ? 'Practice' : 'Stretch'));
                 return `
                             <div class="question-tile ${priorityClass}" data-priority="${q.difficulty}" onclick="openQuestion(${idx})">
                                 <div class="tile-header">
                                     <span class="tile-badge ${priorityClass}">${q.difficulty}</span>
-                                    <i class="${currentTopicData.icon} tile-icon"></i>
+                                    <div class="tile-right">
+                                        <i class="${currentTopicData.icon} tile-icon"></i>
+                                        <span class="tile-arrow" aria-hidden="true">→</span>
+                                    </div>
                                 </div>
                                 <div class="tile-title">${q.title}</div>
-                                ${timeC ? `<div class="tile-meta">
-                                    <span class="tile-complexity">⏱ ${timeC}</span>
-                                    <span class="tile-complexity">💾 ${spaceC}</span>
-                                </div>` : ''}
+                                <div class="tile-subtitle muted">${hint}</div>
                                 <div class="tile-tags">
                                     ${q.tags.slice(0, 3).map(t => `<span class="tile-tag">${t}</span>`).join('')}
                                 </div>

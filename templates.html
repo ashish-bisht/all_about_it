@@ -5,37 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#8b5cf6">
-    <title>Principal Prep | Pattern Mastery</title>
+    <title>Learn | Pattern Mastery</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <style>
-        :root {
-            --bg-dark: #0b0f1a;
-            --bg-card: #1a1f2e;
-            --bg-glass: rgba(17, 24, 39, 0.85);
-            --text-main: #f1f5f9;
-            --text-muted: #64748b;
-            --primary: #818cf8;
-            --primary-glow: rgba(129, 140, 248, 0.25);
-            --border-light: rgba(255, 255, 255, 0.06);
-            --success: #34d399;
-            --danger: #f87171;
-            --warning: #fbbf24;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
-            background: var(--bg-dark);
-            min-height: 100vh;
-            color: var(--text-main);
-        }
+        /* Page-specific layout only. Theme/colors come from style.css tokens. */
 
         /* Topic Pills */
         .topic-selector {
@@ -44,7 +19,7 @@
             padding: 12px 20px;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.18);
         }
 
         .topic-btn {
@@ -72,7 +47,7 @@
             gap: 6px;
             padding: 10px 20px;
             overflow-x: auto;
-            background: rgba(0, 0, 0, 0.15);
+            background: rgba(0, 0, 0, 0.14);
             border-bottom: 1px solid var(--border);
         }
 
@@ -90,21 +65,21 @@
 
         .section-btn.active {
             background: rgba(139, 92, 246, 0.2);
-            color: #a78bfa;
-            border-color: #8b5cf6;
+            color: var(--primary);
+            border-color: var(--primary);
         }
 
         /* Progress */
         .progress-wrapper {
             padding: 8px 20px;
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.18);
         }
 
         .progress-info {
             display: flex;
             justify-content: space-between;
             font-size: 0.7rem;
-            color: #64748b;
+            color: var(--text-muted);
             margin-bottom: 4px;
         }
 
@@ -117,7 +92,7 @@
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, var(--primary), #bf5af2);
+            background: linear-gradient(90deg, var(--primary), color-mix(in srgb, var(--primary) 55%, #bf5af2));
             transition: width 0.3s;
         }
 
@@ -210,7 +185,7 @@
         .keyboard-hint {
             text-align: center;
             font-size: 0.65rem;
-            color: #475569;
+            color: var(--text-muted);
             padding-bottom: 15px;
         }
 
@@ -225,13 +200,13 @@
         .empty-state {
             text-align: center;
             padding: 60px 20px;
-            color: #64748b;
+            color: var(--text-muted);
         }
 
         .empty-state i {
             font-size: 3rem;
             margin-bottom: 15px;
-            color: #475569;
+            color: var(--text-muted);
         }
 
         /* Flashcard inner content */
@@ -254,7 +229,7 @@
     <nav class="navbar">
         <div class="nav-content">
             <a href="index.html" class="nav-logo">
-                <i class="fas fa-fire"></i> Principal Prep
+                <i class="fas fa-fire"></i> Learn
             </a>
             <button class="nav-hamburger"
                 onclick="this.classList.toggle('open'); document.querySelector('.nav-links').classList.toggle('open');">
@@ -318,11 +293,16 @@
         <span class="key">→</span> Next Section
     </div>
 
-    <script src="data.js?v=8"></script>
+    <!-- Concept topic data is lazy-loaded (no monolithic data.js) -->
+    <script src="topicLoader.js?v=1"></script>
     <script>
         let currentTopic = null;
         let sections = [];
         let currentSectionIndex = 0;
+
+        async function loadTopicData(topicId) {
+            return window.TopicLoader?.loadTopicData(topicId, { version: '1' });
+        }
 
         // Concept topics mapping
         const conceptTopics = {
@@ -334,7 +314,7 @@
             'stack': 'stack_concepts'
         };
 
-        function renderTopicSelector() {
+        async function renderTopicSelector() {
             const selector = document.getElementById('topicSelector');
             const topics = [
                 { key: 'backtracking', name: 'Backtracking' },
@@ -345,10 +325,16 @@
                 { key: 'stack', name: 'Stack' }
             ];
 
-            selector.innerHTML = topics.map(t => {
+            // Load all concept topics to decide which buttons to show
+            const existsMap = {};
+            for (const t of topics) {
                 const conceptKey = conceptTopics[t.key];
-                const exists = prepData[conceptKey];
-                if (!exists) return '';
+                const conceptData = await loadTopicData(conceptKey);
+                existsMap[t.key] = Boolean(conceptData);
+            }
+
+            selector.innerHTML = topics.map(t => {
+                if (!existsMap[t.key]) return '';
                 return `<button class="topic-btn" data-topic="${t.key}">${t.name}</button>`;
             }).join('');
 
@@ -361,10 +347,10 @@
             });
         }
 
-        function loadTopic(topicKey) {
+        async function loadTopic(topicKey) {
             currentTopic = topicKey;
             const conceptKey = conceptTopics[topicKey];
-            const conceptData = prepData[conceptKey];
+            const conceptData = await loadTopicData(conceptKey);
 
             if (!conceptData || !conceptData.sections) {
                 sections = [];

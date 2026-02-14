@@ -1,14 +1,16 @@
-// Service Worker for Principal Prep PWA
-const CACHE_NAME = 'principal-prep-v2-latest';
+// Service Worker for Learn PWA
+const CACHE_NAME = 'principal-prep-v3-latest';
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',
     '/learn.html',
     '/game.html',
-    '/stats.html',
-    '/question_list.html',
-    '/data.js',
+    '/flashcard.html',
+    '/revision.html',
+    '/templates.html',
     '/script.js',
+    '/style.css',
+    '/topicLoader.js',
     'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap',
     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'
 ];

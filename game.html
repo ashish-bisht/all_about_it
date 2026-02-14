@@ -48,7 +48,7 @@
 
         .star {
             position: absolute;
-            background: white;
+            background: color-mix(in srgb, var(--text-main) 75%, transparent);
             border-radius: 50%;
             animation: twinkle 3s infinite;
         }
@@ -65,17 +65,7 @@
             }
         }
 
-        /* Navbar with XP Bar */
-        .navbar {
-            background: rgba(11, 15, 26, 0.9);
-            backdrop-filter: blur(20px) saturate(1.2);
-            -webkit-backdrop-filter: blur(20px) saturate(1.2);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-            padding: 1rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
+        /* Navbar: use global themed navbar from style.css (do not override here) */
 
         .nav-content {
             max-width: 1200px;
@@ -135,7 +125,7 @@
         .xp-bar-container {
             width: 100%;
             height: 8px;
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--game-soft-2);
             border-radius: 10px;
             overflow: hidden;
             position: relative;
@@ -198,9 +188,9 @@
 
         /* Topic Filter Dropdown */
         #topic-filter {
-            background: rgba(15, 23, 42, 0.8);
+            background: var(--game-panel-bg);
             color: var(--text-main);
-            border: 2px solid var(--glass-border);
+            border: 2px solid var(--game-panel-border);
             padding: 10px 15px;
             border-radius: 12px;
             font-size: 1rem;
@@ -220,9 +210,9 @@
         }
 
         .mode-card {
-            background: var(--glass-bg);
+            background: var(--game-panel-bg);
             backdrop-filter: blur(12px);
-            border: 2px solid var(--glass-border);
+            border: 2px solid var(--game-panel-border);
             border-radius: 20px;
             padding: 25px;
             cursor: pointer;
@@ -244,12 +234,12 @@
         .mode-card:hover {
             transform: translateY(-5px);
             border-color: var(--game-accent);
-            box-shadow: 0 10px 40px rgba(244, 114, 182, 0.3);
+            box-shadow: 0 10px 40px color-mix(in srgb, var(--game-accent) 30%, transparent);
         }
 
         .mode-card.active {
             border-color: var(--game-accent);
-            background: rgba(244, 114, 182, 0.1);
+            background: color-mix(in srgb, var(--game-accent) 14%, transparent);
         }
 
         .mode-icon {
@@ -277,9 +267,9 @@
         }
 
         .stat-card {
-            background: var(--glass-bg);
+            background: var(--game-panel-bg);
             backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border);
+            border: 1px solid var(--game-panel-border);
             border-radius: 16px;
             padding: 20px;
             text-align: center;
@@ -334,9 +324,9 @@
 
         /* Question Card */
         .question-card {
-            background: var(--glass-bg);
+            background: var(--game-panel-bg);
             backdrop-filter: blur(12px);
-            border: 2px solid var(--glass-border);
+            border: 2px solid var(--game-panel-border);
             border-radius: 24px;
             padding: 40px;
             margin-bottom: 30px;
@@ -448,8 +438,8 @@
         }
 
         .answer-btn {
-            background: rgba(255, 255, 255, 0.03);
-            border: 2px solid var(--glass-border);
+            background: var(--game-soft);
+            border: 2px solid var(--game-panel-border);
             padding: 20px 25px;
             border-radius: 16px;
             color: var(--text-main);
@@ -472,7 +462,7 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            background: linear-gradient(90deg, transparent, var(--game-soft-2), transparent);
             transition: left 0.5s;
         }
 
@@ -481,7 +471,7 @@
         }
 
         .answer-btn:hover {
-            background: rgba(255, 255, 255, 0.08);
+            background: var(--game-soft-2);
             border-color: var(--game-accent);
             transform: translateX(10px);
         }
@@ -540,7 +530,7 @@
         .option-letter {
             width: 40px;
             height: 40px;
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--game-soft-2);
             border-radius: 10px;
             display: flex;
             align-items: center;
@@ -758,30 +748,30 @@
         .btn-primary {
             background: linear-gradient(135deg, var(--game-accent), #ec4899);
             color: white;
-            box-shadow: 0 4px 20px rgba(244, 114, 182, 0.4);
+            box-shadow: 0 4px 20px color-mix(in srgb, var(--game-accent) 40%, transparent);
         }
 
         .btn-primary:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 30px rgba(244, 114, 182, 0.6);
+            box-shadow: 0 6px 30px color-mix(in srgb, var(--game-accent) 60%, transparent);
         }
 
         .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--game-soft-2);
             color: var(--text-main);
-            border: 2px solid var(--glass-border);
+            border: 2px solid var(--game-panel-border);
         }
 
         .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.15);
+            background: color-mix(in srgb, var(--game-soft-2) 80%, var(--primary-dim));
             border-color: var(--primary);
         }
 
         /* Leaderboard */
         .leaderboard {
-            background: var(--glass-bg);
+            background: var(--game-panel-bg);
             backdrop-filter: blur(12px);
-            border: 2px solid var(--glass-border);
+            border: 2px solid var(--game-panel-border);
             border-radius: 20px;
             padding: 30px;
             margin-top: 30px;
@@ -798,14 +788,14 @@
         }
 
         .leaderboard-entry {
-            background: rgba(255, 255, 255, 0.03);
+            background: var(--game-soft);
             padding: 15px 20px;
             border-radius: 12px;
             margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border: 1px solid var(--glass-border);
+            border: 1px solid var(--game-panel-border);
         }
 
         .leaderboard-entry.rank-1 {
@@ -1250,7 +1240,7 @@
     <nav class="navbar">
         <div class="nav-content">
             <a href="index.html" class="nav-logo">
-                <i class="fas fa-fire"></i> Principal Prep
+                <i class="fas fa-fire"></i> Learn
             </a>
             <button class="nav-hamburger"
                 onclick="this.classList.toggle('open'); document.querySelector('.nav-links').classList.toggle('open');">
@@ -1423,13 +1413,14 @@
 
     </div>
 
-    <script src="data.js?v=2"></script>
+    <!-- Topic data is lazy-loaded (no more monolithic data.js) -->
 
     <!-- Confetti Canvas -->
     <canvas id="confetti-canvas"
         style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999;"></canvas>
 
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="topicLoader.js?v=1"></script>
 
     <script>
         // Generate animated stars
@@ -1473,15 +1464,21 @@
 
         // Populate Topic Filter
         function populateTopicFilter() {
-            if (typeof prepData === 'undefined') return;
+            // prepData is no longer global; topics are lazy-loaded on demand
+            // Keep the UI functional without requiring all topics loaded.
             const select = document.getElementById('topic-filter');
             // Clear existing options except 'all'
             select.innerHTML = '<option value="all">All Topics (Mixed)</option>';
+            // Static topic list (must match ids generated in data/topics/)
+            const TOPICS = [
+                'arrays', 'binary_search', 'linked_list', 'stack', 'trees', 'graphs', 'dp', 'heap_trie', 'backtracking',
+                'dp_concepts', 'arrays_concepts', 'graphs_concepts', 'trees_concepts', 'complexity_concepts', 'stack_concepts', 'backtracking_concepts'
+            ];
 
-            Object.keys(prepData).forEach(key => {
+            TOPICS.forEach(key => {
                 const option = document.createElement('option');
                 option.value = key;
-                option.textContent = key.replace(/_/g, ' ').toUpperCase();
+                option.textContent = key.replace(/_/g, ' ');
                 select.appendChild(option);
             });
         }
@@ -1549,46 +1546,59 @@
             // console.log(`Playing audio: ${type}`);
         }
 
-        // Get random question based on mode (Hybrid: data.js + legacy)
-        function getRandomQuestion() {
-            let allQuestions = [];
-
-            if (typeof prepData !== 'undefined') {
-                Object.keys(prepData).forEach(topicKey => {
-                    // Filter by Topic
-                    if (gameState.selectedTopic !== 'all' && topicKey !== gameState.selectedTopic) return;
-
-                    const module = prepData[topicKey];
-                    if (!module.questions) return;
-
-                    module.questions.forEach(q => {
-                        if (!q.quiz) return;
-
-                        const gameQ = {
-                            title: q.title,
-                            difficulty: q.difficulty,
-                            description: q.quiz.description,
-                            options: q.quiz.options,
-                            correct: q.quiz.correct,
-                            explanation: q.quiz.explanation,
-                            learn: q.learn, // Capture rich learning data
-                            topic: topicKey
-                        };
-
-                        if (gameState.mode === 'boss') {
-                            if (gameQ.difficulty === 'Must Do' || gameQ.difficulty === 'Hard') allQuestions.push(gameQ);
-                        } else {
-                            allQuestions.push(gameQ);
-                        }
-                    });
-                });
-            }
-
-            if (allQuestions.length === 0) return null;
-            return allQuestions[Math.floor(Math.random() * allQuestions.length)];
+        async function loadTopicData(topicId) {
+            return window.TopicLoader?.loadTopicData(topicId, { version: '1' });
         }
 
-        function nextQuestion() {
+        function topicToGameQuestions(topic, topicKey) {
+            if (!topic || !topic.questions) return [];
+            const qs = [];
+            topic.questions.forEach(q => {
+                if (!q.quiz) return;
+                qs.push({
+                    title: q.title,
+                    difficulty: q.difficulty,
+                    description: q.quiz.description,
+                    options: q.quiz.options,
+                    correct: q.quiz.correct,
+                    explanation: q.quiz.explanation,
+                    learn: q.learn,
+                    topic: topicKey
+                });
+            });
+            return qs;
+        }
+
+        // Pick a random question based on selected topic (lazy-load)
+        async function getRandomQuestion() {
+            const pickFrom = [];
+
+            if (gameState.selectedTopic && gameState.selectedTopic !== 'all') {
+                const topicKey = gameState.selectedTopic;
+                const module = await loadTopicData(topicKey);
+                if (!module) return null;
+                pickFrom.push(...topicToGameQuestions(module, topicKey));
+            } else {
+                // Mixed mode: choose a random topic, then choose a random question from it
+                const TOPICS = [
+                    'arrays', 'binary_search', 'linked_list', 'stack', 'trees', 'graphs', 'dp', 'heap_trie', 'backtracking'
+                ];
+                const randomTopic = TOPICS[Math.floor(Math.random() * TOPICS.length)];
+                const module = await loadTopicData(randomTopic);
+                if (!module) return null;
+                pickFrom.push(...topicToGameQuestions(module, randomTopic));
+            }
+
+            // Boss mode filter (optional)
+            const filtered = (gameState.mode === 'boss')
+                ? pickFrom.filter(q => q.difficulty === 'Must Do' || q.difficulty === 'Hard')
+                : pickFrom;
+
+            if (filtered.length === 0) return null;
+            return filtered[Math.floor(Math.random() * filtered.length)];
+        }
+
+        async function nextQuestion() {
             // Boss Gauntlet Check
             if (gameState.mode === 'boss' && gameState.bossGauntlet.current >= 5) {
                 gameWin(); // Boss Gauntlet Complete
@@ -1596,7 +1606,7 @@
             }
             if (gameState.mode === 'boss') gameState.bossGauntlet.current++;
 
-            gameState.currentQuestion = getRandomQuestion();
+            gameState.currentQuestion = await getRandomQuestion();
 
             // Fallback if no questions found
             if (!gameState.currentQuestion) {

@@ -15,7 +15,7 @@ git init
 
 # Add all files
 git add .
-git commit -m "Principal Prep v1.0 - DSA Interview Platform"
+git commit -m "Learn v1.0 - DSA Interview Platform"
 
 # Create GitHub repo and push
 # Go to github.com/new and create "principal-prep" repo

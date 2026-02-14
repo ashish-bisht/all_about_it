@@ -4,43 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Principal Prep | Daily Quick Revision</title>
+    <title>Learn | Daily Quick Revision</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
     <link rel="stylesheet" href="style.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap');
-
-        :root {
-            --bg: #0b0f1a;
-            --card: #1a1f2e;
-            --card-hover: #222838;
-            --border: rgba(255, 255, 255, 0.06);
-            --text: #f1f5f9;
-            --text-muted: #64748b;
-            --purple: #a78bfa;
-            --blue: #818cf8;
-            --red: #f87171;
-            --orange: #fbbf24;
-            --green: #4ade80;
-            --cyan: #67e8f9;
-            --pink: #f472b6;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: 'Inter', -apple-system, sans-serif;
-        }
+        /* Page-specific layout only. Theme/colors come from style.css tokens. */
 
 
         /* Container */
@@ -60,7 +31,7 @@
             font-size: 2.5rem;
             font-weight: 800;
             letter-spacing: -1.5px;
-            background: linear-gradient(135deg, #fff 0%, #a78bfa 50%, #c026d3 100%);
+            background: linear-gradient(135deg, var(--text-main) 0%, var(--primary) 55%, #c026d3 100%);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -78,7 +49,7 @@
             align-items: center;
             gap: 8px;
             background: rgba(94, 92, 230, 0.12);
-            color: var(--purple);
+            color: var(--primary);
             padding: 7px 16px;
             border-radius: 20px;
             font-size: 0.8rem;
@@ -97,7 +68,7 @@
         .stat-num {
             font-size: 1.6rem;
             font-weight: 800;
-            color: #fff;
+            color: var(--text-main);
         }
 
         .stat-lbl {
@@ -135,9 +106,9 @@
         }
 
         .tab.active {
-            background: var(--blue);
+            background: var(--primary);
             color: #fff;
-            border-color: var(--blue);
+            border-color: var(--primary);
         }
 
         /* Controls */
@@ -170,7 +141,7 @@
             border: 1px solid var(--border);
             border-radius: 16px;
             overflow: hidden;
-            background: rgba(16, 22, 40, 0.5);
+            background: rgba(0, 0, 0, 0.18);
         }
 
         .pg-head {
@@ -263,7 +234,7 @@
         }
 
         .q-num {
-            color: var(--blue);
+            color: var(--primary);
             font-size: 0.8rem;
             font-weight: 800;
         }
@@ -275,7 +246,7 @@
         }
 
         .q-link:hover {
-            color: var(--purple);
+            color: var(--primary);
         }
 
         .q-meta {
@@ -294,44 +265,44 @@
 
         .badge.must {
             background: rgba(255, 69, 58, 0.15);
-            color: var(--red);
+            color: var(--danger);
         }
 
         .badge.good {
             background: rgba(255, 159, 10, 0.15);
-            color: var(--orange);
+            color: var(--warning);
         }
 
         .badge.bonus {
             background: rgba(50, 215, 75, 0.15);
-            color: var(--green);
+            color: var(--success);
         }
 
         .badge.tc {
             background: rgba(94, 92, 230, 0.12);
-            color: var(--purple);
+            color: var(--primary);
         }
 
         /* Quiz / Recall Prompt */
         .q-recall {
             background: rgba(167, 139, 250, 0.06);
-            border-left: 3px solid var(--purple);
+            border-left: 3px solid var(--primary);
             border-radius: 0 8px 8px 0;
             padding: 10px 14px;
             margin-bottom: 10px;
             font-size: 0.85rem;
-            color: #d1d5db;
+            color: var(--text-secondary);
             line-height: 1.5;
         }
 
         .q-recall strong {
-            color: var(--purple);
+            color: var(--primary);
         }
 
         .q-recall .answer {
             display: none;
             margin-top: 8px;
-            color: var(--green);
+            color: var(--success);
         }
 
         .q-recall:hover .answer {
@@ -340,7 +311,7 @@
 
         /* Algo Steps (HTML formatted) */
         .algo-steps {
-            background: rgba(13, 17, 23, 0.7);
+            background: rgba(0, 0, 0, 0.26);
             border: 1px solid var(--border);
             border-radius: 10px;
             padding: 14px 18px;
@@ -351,8 +322,8 @@
             padding: 4px 0;
             font-size: 0.85rem;
             line-height: 1.6;
-            color: #c9d1d9;
-            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-secondary);
+            font-family: var(--font-mono);
         }
 
         .algo-steps .step code {
@@ -364,12 +335,12 @@
         }
 
         .algo-steps .step strong {
-            color: #e5c07b;
+            color: var(--gold);
         }
 
         /* Code Block (Python pseudocode) */
         .code-box {
-            background: #0d1117;
+            background: rgba(0, 0, 0, 0.35);
             border: 1px solid var(--border);
             border-radius: 10px;
             overflow: hidden;
@@ -391,7 +362,7 @@
         .code-box pre {
             margin: 0;
             padding: 12px 16px;
-            font-family: 'JetBrains Mono', monospace;
+            font-family: var(--font-mono);
             font-size: 0.82rem;
             line-height: 1.55;
             overflow-x: auto;
@@ -405,16 +376,16 @@
         /* Crux */
         .crux {
             background: rgba(255, 159, 10, 0.07);
-            border-left: 3px solid var(--orange);
+            border-left: 3px solid var(--warning);
             border-radius: 0 8px 8px 0;
             padding: 8px 14px;
             font-size: 0.82rem;
-            color: #d1d5db;
+            color: var(--text-secondary);
             line-height: 1.5;
         }
 
         .crux strong {
-            color: #fbbf24;
+            color: var(--warning);
         }
 
         /* Toggle for code */
@@ -472,7 +443,7 @@
     <nav class="navbar">
         <div class="nav-content">
             <a href="index.html" class="nav-logo">
-                <i class="fas fa-fire"></i> Principal Prep
+                <i class="fas fa-fire"></i> Learn
             </a>
             <button class="nav-hamburger"
                 onclick="this.classList.toggle('open'); document.querySelector('.nav-links').classList.toggle('open');">
@@ -523,13 +494,18 @@
         <div id="content"></div>
     </div>
 
-    <script src="data.js?v=2"></script>
+    <!-- Topic data is lazy-loaded (no monolithic data.js) -->
+    <script src="topicLoader.js?v=1"></script>
     <script>
         document.getElementById('today').textContent = new Date().toLocaleDateString('en-IN', {
             weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
         });
 
         const topics = ['arrays', 'binary_search', 'linked_list', 'stack', 'trees', 'heap_trie', 'graphs', 'dp', 'backtracking'];
+
+        async function loadTopicData(topicId) {
+            return window.TopicLoader?.loadTopicData(topicId, { version: '1' });
+        }
 
         const topicEmoji = {
             arrays: '🔢', binary_search: '🔍', linked_list: '🔗', stack: '📚',
@@ -561,43 +537,45 @@
 
         let showCode = false;
 
-        // Build data
+        // Build data (lazy)
         const groups = [];
         let totalQ = 0, totalP = 0;
 
-        topics.forEach(tk => {
-            const t = prepData[tk];
-            if (!t || !t.questions) return;
+        async function buildGroups() {
+            for (const tk of topics) {
+                const t = await loadTopicData(tk);
+                if (!t || !t.questions) continue;
 
-            const pats = new Map();
-            t.questions.forEach(q => {
-                if (!q.learn && !q.customHtml) return;
-                totalQ++;
-                const tag = (q.tags && q.tags[0]) || 'General';
-                if (!pats.has(tag)) pats.set(tag, []);
-                pats.get(tag).push(q);
-            });
+                const pats = new Map();
+                t.questions.forEach(q => {
+                    if (!q.learn && !q.customHtml) return;
+                    totalQ++;
+                    const tag = (q.tags && q.tags[0]) || 'General';
+                    if (!pats.has(tag)) pats.set(tag, []);
+                    pats.get(tag).push(q);
+                });
 
-            if (pats.size > 0) {
-                totalP += pats.size;
-                groups.push({ key: tk, title: t.title, patterns: pats });
+                if (pats.size > 0) {
+                    totalP += pats.size;
+                    groups.push({ key: tk, title: t.title, patterns: pats });
+                }
             }
-        });
 
-        // Stats
-        document.getElementById('stats').innerHTML = `
-            <div><div class="stat-num">${totalQ}</div><div class="stat-lbl">Questions</div></div>
-            <div><div class="stat-num">${topics.length}</div><div class="stat-lbl">Topics</div></div>
-            <div><div class="stat-num">${totalP}</div><div class="stat-lbl">Patterns</div></div>
-        `;
+            // Stats
+            document.getElementById('stats').innerHTML = `
+                <div><div class="stat-num">${totalQ}</div><div class="stat-lbl">Questions</div></div>
+                <div><div class="stat-num">${topics.length}</div><div class="stat-lbl">Topics</div></div>
+                <div><div class="stat-num">${totalP}</div><div class="stat-lbl">Patterns</div></div>
+            `;
 
-        // Tabs
-        document.getElementById('tabs').innerHTML =
-            `<button class="tab active" data-t="all" onclick="filter('all')">All</button>` +
-            groups.map(g => {
-                const label = g.title.replace(' Mastery', '').replace(' & Sliding Window', '');
-                return `<button class="tab" data-t="${g.key}" onclick="filter('${g.key}')">${topicEmoji[g.key] || '📌'} ${label}</button>`;
-            }).join('');
+            // Tabs
+            document.getElementById('tabs').innerHTML =
+                `<button class="tab active" data-t="all" onclick="filter('all')">All</button>` +
+                groups.map(g => {
+                    const label = g.title.replace(' Mastery', '').replace(' & Sliding Window', '');
+                    return `<button class="tab" data-t="${g.key}" onclick="filter('${g.key}')">${topicEmoji[g.key] || '📌'} ${label}</button>`;
+                }).join('');
+        }
 
         function render() {
             const el = document.getElementById('content');
@@ -726,7 +704,10 @@
                 : '<i class="fas fa-code"></i> Show Code';
         }
 
-        render();
+        (async () => {
+            await buildGroups();
+            render();
+        })();
     </script>
     <script src='script.js'></script>
 </body>

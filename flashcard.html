@@ -7,7 +7,7 @@
     <meta name="theme-color" content="#818cf8">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <link rel="manifest" href="manifest.json">
-    <title>🃏 Flashcard Mode | Principal Prep</title>
+    <title>🃏 Flashcard Mode | Learn</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -465,7 +465,7 @@
     <nav class="navbar">
         <div class="nav-content">
             <a href="index.html" class="nav-logo">
-                <i class="fas fa-fire"></i> Principal Prep
+                <i class="fas fa-fire"></i> Learn
             </a>
             <button class="nav-hamburger"
                 onclick="this.classList.toggle('open'); document.querySelector('.nav-links').classList.toggle('open');">
@@ -601,7 +601,8 @@
         </div>
     </div>
 
-    <script src="data.js?v=2"></script>
+    <!-- Topic data is lazy-loaded (no monolithic data.js) -->
+    <script src="topicLoader.js?v=1"></script>
     <script>
         // State
         let allCards = [];
@@ -610,18 +611,22 @@
         let strongCards = [];
         let weakCards = [];
 
+        async function loadTopicData(topicId) {
+            return window.TopicLoader?.loadTopicData(topicId, { version: '1' });
+        }
+
         // Initialize
-        function init() {
-            loadAllCards();
+        async function init() {
+            await loadAllCards();
             filterByTopic();
         }
 
-        function loadAllCards() {
+        async function loadAllCards() {
             allCards = [];
             const topics = ['arrays', 'binary_search', 'linked_list', 'stack', 'trees', 'graphs', 'dp', 'heap_trie', 'backtracking'];
 
-            topics.forEach(topicId => {
-                const topic = prepData[topicId];
+            for (const topicId of topics) {
+                const topic = await loadTopicData(topicId);
                 if (topic && topic.questions) {
                     topic.questions.forEach(q => {
                         if (q.learn || q.quiz) {
@@ -633,7 +638,7 @@
                         }
                     });
                 }
-            });
+            }
         }
 
         function filterByTopic() {

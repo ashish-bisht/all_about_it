@@ -1,3 +1,8 @@
+// Auto-generated from data/ folder
+// Run `python3 build_data.py` to regenerate
+// Source: data/dsa/arrays.js
+// Topic: arrays
+
 // Arrays data
 // Extracted from data.js
 
@@ -9,12 +14,12 @@ const topic_arrays = {
     icon: "fas fa-layer-group",
     mentalModel: {
         whenToApply: [
-            { label: "🔍 Fast Lookup", desc: "Need O(1) lookup? → HashMap (Two Sum, Subarray Sum K)" },
-            { label: "📊 Sorted Data", desc: "Array sorted? → Two Pointers from ends (3Sum, Container Water)" },
-            { label: "📐 Contiguous Subarray", desc: "Max/Min subarray? → Kadane's or Sliding Window" },
-            { label: "🪟 K Window", desc: "Fixed/variable window? → Sliding Window technique" },
-            { label: "↔️ Prefix/Suffix", desc: "Need left+right info? → Prefix/Suffix arrays (Product Except Self)" },
-            { label: "📅 Intervals", desc: "Overlapping ranges? → Sort by start, track end (Merge Intervals)" }
+            { label: "🔍 Fast Lookup", desc: "Kuch ‘pair/target’ type dhoondna ho → <strong>HashMap</strong> (Two Sum, Prefix Sum/XOR)." },
+            { label: "📊 Sorted / Order matters", desc: "Array sorted ho ya sort kar sakte ho → <strong>Two Pointers</strong> (3Sum, Water, etc.)." },
+            { label: "📐 Contiguous subarray", desc: "‘continuous’ / ‘subarray’ words dikhein → <strong>Kadane</strong> ya <strong>Sliding Window</strong>." },
+            { label: "🪟 Window / longest / at most", desc: "‘k size’, ‘at most’, ‘longest’ → <strong>Sliding Window</strong> + freq map/set." },
+            { label: "↔️ Left + Right info", desc: "Har index pe left-product + right-product chahiye → <strong>Prefix/Suffix</strong> (Product Except Self)." },
+            { label: "📅 Intervals", desc: "Overlapping ranges → <strong>Sort by start</strong> then merge/heap." }
         ],
         patterns: [
             { algo: "HashMap Lookup", use: "Find pair/triplet with sum", time: "O(N)", space: "O(N)", template: "if target-num in map: found!" },
@@ -27,39 +32,20 @@ const topic_arrays = {
             { algo: "Interval Merge", use: "Overlapping intervals", time: "O(N log N)", space: "O(N)", template: "sort by start, merge if overlap" }
         ],
         decisionTree: `
-<div style="background:#1e293b; padding:25px; border-radius:16px; margin:15px 0; border:1px solid rgba(255,255,255,0.1);">
-<h4 style="color:#a78bfa; margin-bottom:20px; text-align:center; font-size:1.1rem;">🧠 Arrays Pattern Recognition</h4>
-<div style="font-family:monospace; font-size:0.85rem; line-height:1.8;">
-<pre style="color:#e2e8f0; text-align:left; margin:0;">
-                    ┌─────────────────────────┐
-                    │ "Array problem type?"   │
-                    └───────────┬─────────────┘
-                                │
-    ┌───────────────────────────┼───────────────────────────┐
-    ▼                           ▼                           ▼
-┌────────────┐          ┌─────────────┐          ┌──────────────┐
-│ FIND PAIR  │          │  SUBARRAY   │          │  INTERVALS   │
-│ with sum   │          │  max/min    │          │  overlapping │
-└─────┬──────┘          └──────┬──────┘          └──────┬───────┘
-      │                        │                        │
-      ▼                        ▼                        ▼
-┌───────────────┐      ┌─────────────────┐      ┌──────────────┐
-│ Sorted?       │      │ Contiguous?     │      │ Sort by start│
-│ → Two Pointer │      │ → Kadane's      │      │ Track max end│
-│ Unsorted?     │      │ Fixed window?   │      └──────────────┘
-│ → HashMap     │      │ → Sliding Window│
-└───────────────┘      └─────────────────┘
-
-         "Need left AND right info?"        "3-way partition?"
-              │                                   │
-              ▼                                   ▼
-      ┌───────────────┐                   ┌────────────────┐
-      │ Prefix/Suffix │                   │ Dutch National │
-      │ Two passes    │                   │ Flag Algorithm │
-      │ left→ then ←  │                   │ 0,1,2 sorting  │
-      └───────────────┘                   └────────────────┘
-</pre>
-</div>
+<div style="background:var(--bg-card); padding:18px; border-radius:16px; margin:15px 0; border:1px solid var(--border);">
+  <h4 style="color:var(--primary); margin-bottom:12px; text-align:center; font-size:1.05rem;">🧠 Arrays: 10-sec Pattern Picker</h4>
+  <div style="color:var(--text-secondary); font-size:0.92rem; line-height:1.7;">
+    <p style="margin:0 0 10px 0;"><strong>Step 1:</strong> Question ko 1 line me bolo: “Mujhe kya chahiye?”</p>
+    <ul style="margin:0; padding-left:18px;">
+      <li><strong>Pair/target</strong> → HashMap (Two Sum / Prefix Sum)</li>
+      <li><strong>Sorted / can sort</strong> → Two pointers (L/R)</li>
+      <li><strong>Contiguous subarray</strong> → Kadane / Sliding window</li>
+      <li><strong>At most / longest / k distinct</strong> → Sliding window + freq map</li>
+      <li><strong>Per index left×right</strong> → Prefix/Suffix two pass</li>
+      <li><strong>Intervals</strong> → Sort + merge / heap</li>
+    </ul>
+    <p style="margin:10px 0 0 0; color:var(--text-muted);"><strong>Step 2:</strong> Ek trap check: duplicates? zeros? empty array? (Safety Checks below)</p>
+  </div>
 </div>`,
         codeTemplates: `
 <div style="background:#0f172a; padding:20px; border-radius:12px; margin:15px 0;">
@@ -236,14 +222,13 @@ def merge(intervals):
     <div style="color:#94a3b8;">need = target - num → if need in seen → done, else seen[num] = index</div>
   </div>
 </div>`,
-                crux: "<strong>HashMap as Memory:</strong><br>As we iterate, we ask: 'Have I seen my complement before?'<br>If yes, we're done. If no, we remember the current number for the future.",
-                trap: "<strong>Self-Usage Trap:</strong><br>Same element twice allowed nahi hai. Isliye <strong>pehle check</strong>, phir store.<br><br><strong>Example:</strong> nums=[3,3], target=6 works because at index=1, seen already has 3 from index=0.",
+                crux: "<strong>Soch:</strong> Har number pe ek sawal — ‘mujhe aur kya chahiye?’ → <code>need = target - num</code>. Agar need pehle se map me hai, pair mil gaya.",
+                trap: "<strong>Trap (same element use na ho):</strong><br><ul><li><strong>Galti:</strong> pehle store kar doge, phir check → same index reuse ho sakta hai.</li><li><strong>Fix:</strong> <strong>check first</strong>, then store.</li></ul><strong>Mini:</strong> nums=[3,3], target=6 → index0 store 3; index1 pe need=3 mil gaya ✅",
                 dryRun: [
-                    "<strong>Input:</strong> nums=[2, 7, 11, 15], target=9",
-                    "<strong>Init:</strong> seen = {}",
-                    "index=0, num=2 → need 7. 7 in seen? NO → store seen[2]=0",
-                    "index=1, num=7 → need 2. 2 in seen? YES (0) → return [0,1]",
-                    "<strong>Return:</strong> [0, 1]"
+                    "<strong>nums=[2,7,11,15], target=9</strong>",
+                    "seen = {}",
+                    "i=0, num=2 → need=7 (not in seen) → seen[2]=0",
+                    "i=1, num=7 → need=2 (in seen at 0) → answer=[0,1]"
                 ],
                 codeTitle: "Python Solution (One Pass)",
                 code: `def twoSum(nums, target):
@@ -336,32 +321,48 @@ def merge(intervals):
                 },
                 timeExplainer: "<strong>Time: O(N²)</strong><br>• Sorting takes O(N log N).<br>• We iterate N times (Anchor).<br>• Inside loop, max O(N) work (Two Pointers).<br>Total = N * N = O(N²).",
                 spaceExplainer: "<strong>Space: O(1)</strong><br>We only use pointers (left, right, index). Ignoring output array space.",
-                visual: `<div style="font-family:monospace; font-size:0.85rem;">
-                    <strong style="color:#8b5cf6;">3Sum: "Anchor + Two Pointer Squeeze"</strong>
-                    <div style="background:#1e293b; padding:16px; border-radius:10px; margin:12px 0;">
-                        <div style="color:#94a3b8; font-size:0.8rem; margin-bottom:10px;">Sorted: [-4, -1, -1, 0, 1, 2] → Target = 0</div>
-                        <div style="display:flex; gap:6px; align-items:center; justify-content:center; margin:12px 0;">
-                            <span style="padding:6px 10px; background:rgba(251,191,36,0.3); border:2px solid #fbbf24; border-radius:8px; color:#fbbf24;">-1</span>
-                            <span style="padding:6px 10px; background:rgba(56,189,248,0.2); border:1px solid #38bdf8; border-radius:8px; color:#38bdf8;">0</span>
-                            <span style="padding:6px 10px; background:#1e293b; border:1px solid #475569; border-radius:8px; color:#cbd5e1;">1</span>
-                            <span style="padding:6px 10px; background:rgba(248,113,113,0.2); border:1px solid #f87171; border-radius:8px; color:#f87171;">2</span>
-                        </div>
-                        <div style="text-align:center; font-size:0.75rem; color:#94a3b8;">
-                            <span style="color:#fbbf24;">⬆ Anchor</span>&nbsp;&nbsp;&nbsp;
-                            <span style="color:#38bdf8;">⬆ L</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            <span style="color:#f87171;">⬆ R</span>
-                        </div>
-                        <div style="display:flex; flex-direction:column; gap:6px; margin-top:12px; font-size:0.82rem;">
-                            <div style="color:#f87171;">L+R = 0+2 = 2 → Too big, R-- ←</div>
-                            <div style="color:#38bdf8;">L+R = 0+1 = 1 → Too big, R-- ←</div>
-                            <div style="color:#4ade80; font-weight:bold;">[-1, 0, 1] = 0 ✓ FOUND!</div>
-                        </div>
-                    </div>
-                    <div style="background:#0f172a; padding:10px; border-radius:6px;">
-                        <div style="color:#fbbf24;">Sort → Fix anchor → Two pointers squeeze remaining</div>
-                        <div style="color:#94a3b8;">Skip duplicates: if nums[i] == nums[i-1]: continue</div>
-                    </div>
-                </div>`,
+                visual: `
+<div style="font-family:var(--font-mono); font-size:0.85rem; line-height:1.6;">
+  <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px;">
+    <strong style="color:var(--cyan); font-size:0.95rem;">3Sum — Anchor + Squeeze</strong>
+    <span style="background:var(--primary-dim); border:1px solid color-mix(in srgb, var(--primary) 35%, transparent); color:var(--primary); padding:4px 10px; border-radius:999px; font-weight:800;">target = 0</span>
+  </div>
+
+  <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:14px; padding:14px;">
+    <div style="color:var(--text-muted); font-size:0.78rem; margin-bottom:10px;">
+      Sorted nums = [-4, -1, -1, 0, 1, 2]
+    </div>
+
+    <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center; justify-content:center; margin:10px 0 8px;">
+      <span style="padding:6px 10px; border-radius:10px; border:1px solid var(--border); background:var(--game-soft); color:var(--text-secondary);">-4</span>
+      <span style="padding:6px 10px; border-radius:10px; border:2px solid var(--warning); background:color-mix(in srgb, var(--warning) 18%, transparent); color:var(--warning); font-weight:900;">-1 (A)</span>
+      <span style="padding:6px 10px; border-radius:10px; border:1px solid var(--border); background:var(--game-soft); color:var(--text-secondary);">-1</span>
+      <span style="padding:6px 10px; border-radius:10px; border:2px solid var(--cyan); background:color-mix(in srgb, var(--cyan) 16%, transparent); color:var(--cyan); font-weight:900;">0 (L)</span>
+      <span style="padding:6px 10px; border-radius:10px; border:1px solid var(--border); background:var(--game-soft); color:var(--text-secondary);">1</span>
+      <span style="padding:6px 10px; border-radius:10px; border:2px solid var(--danger); background:color-mix(in srgb, var(--danger) 16%, transparent); color:var(--danger); font-weight:900;">2 (R)</span>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr; gap:8px; margin-top:10px;">
+      <div style="background:var(--game-soft); border:1px solid var(--border); border-radius:12px; padding:10px 12px;">
+        <div style="color:var(--text-secondary);"><strong>Rule:</strong> A fixed. Now do 2Sum on (L..R)</div>
+        <div style="color:var(--text-muted); font-size:0.78rem;">If sum < 0 → L++ (need bigger). If sum > 0 → R-- (need smaller).</div>
+      </div>
+
+      <div style="background:color-mix(in srgb, var(--success) 10%, transparent); border:1px solid color-mix(in srgb, var(--success) 30%, transparent); border-radius:12px; padding:10px 12px;">
+        <div style="color:var(--success); font-weight:900;">Example move:</div>
+        <div style="color:var(--text-secondary);">A=-1, L=0, R=1 → sum = -1+0+1 = 0 ✅ → answer [-1,0,1]</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:10px; background:var(--bg-surface); border:1px solid var(--border); border-radius:12px; padding:10px 12px;">
+    <div style="color:var(--warning); font-weight:900;">Duplicate skip:</div>
+    <div style="color:var(--text-muted); font-size:0.78rem;">
+      Anchor duplicates: <code>if i>0 and nums[i]==nums[i-1]</code>.
+      Found triplet ke baad: L/R duplicates while-skip.
+    </div>
+  </div>
+</div>`,
                 crux: "3Sum = 1 Fixed Number + 2Sum (Sorted).<br><strong>Formula:</strong> <code>nums[L] + nums[R] + Anchor = 0</code>",
                 strategy: "Sort First. Fix <code>i</code>, then solve 2Sum on <code>nums[i+1:]</code>.",
                 trap: "<strong>Duplicates:</strong><br>1. Anchor duplicates: <code>if i > 0 and nums[i] == nums[i-1]: continue</code><br>2. Pointer duplicates: <code>while nums[L] == nums[L-1]: L++</code>",
@@ -512,37 +513,44 @@ def merge(intervals):
                 metrics: { time: "O(N)", space: "O(1)" },
                 timeExplainer: "<strong>Time: O(N)</strong><br>Single pass through array. Each element processed in O(1).",
                 spaceExplainer: "<strong>Space: O(1)</strong><br>Only two variables: <code>prev_max</code> and <code>max_so_far</code>.",
-                visual: `<div style="font-family:monospace; font-size:0.85rem;">
-                    <strong style="color:#10b981;">Kadane's: "Continue or Fresh Start?"</strong>
-                    <div style="background:#1e293b; padding:16px; border-radius:10px; margin:12px 0;">
-                        <div style="color:#94a3b8; font-size:0.8rem; margin-bottom:10px;">nums = [-2, 1, -3, 4, -1, 2, 1, -5, 4]</div>
-                        <div style="display:flex; gap:4px; align-items:flex-end; justify-content:center; height:90px; margin:8px 0;">
-                            <div style="display:flex; flex-direction:column; align-items:center; gap:2px;"><div style="height:20px; width:28px; background:rgba(248,113,113,0.4); border:1px solid #f87171; border-radius:3px;"></div><span style="font-size:0.7rem; color:#f87171;">-2</span></div>
-                            <div style="display:flex; flex-direction:column; align-items:center; gap:2px;"><div style="height:35px; width:28px; background:rgba(74,222,128,0.4); border:1px solid #4ade80; border-radius:3px;"></div><span style="font-size:0.7rem; color:#4ade80;">1</span></div>
-                            <div style="display:flex; flex-direction:column; align-items:center; gap:2px;"><div style="height:15px; width:28px; background:rgba(248,113,113,0.4); border:1px solid #f87171; border-radius:3px;"></div><span style="font-size:0.7rem; color:#f87171;">-3</span></div>
-                            <div style="display:flex; flex-direction:column; align-items:center; gap:2px;"><div style="height:65px; width:28px; background:rgba(74,222,128,0.6); border:2px solid #4ade80; border-radius:3px;"></div><span style="font-size:0.7rem; color:#4ade80; font-weight:bold;">4★</span></div>
-                            <div style="display:flex; flex-direction:column; align-items:center; gap:2px;"><div style="height:50px; width:28px; background:rgba(74,222,128,0.3); border:1px solid #4ade80; border-radius:3px;"></div><span style="font-size:0.7rem; color:#94a3b8;">-1</span></div>
-                            <div style="display:flex; flex-direction:column; align-items:center; gap:2px;"><div style="height:60px; width:28px; background:rgba(74,222,128,0.3); border:1px solid #4ade80; border-radius:3px;"></div><span style="font-size:0.7rem; color:#94a3b8;">2</span></div>
-                            <div style="display:flex; flex-direction:column; align-items:center; gap:2px;"><div style="height:70px; width:28px; background:rgba(56,189,248,0.4); border:2px solid #38bdf8; border-radius:3px;"></div><span style="font-size:0.7rem; color:#38bdf8; font-weight:bold;">1</span></div>
-                            <div style="display:flex; flex-direction:column; align-items:center; gap:2px;"><div style="height:10px; width:28px; background:rgba(248,113,113,0.4); border:1px solid #f87171; border-radius:3px;"></div><span style="font-size:0.7rem; color:#f87171;">-5</span></div>
-                            <div style="display:flex; flex-direction:column; align-items:center; gap:2px;"><div style="height:40px; width:28px; background:rgba(139,92,246,0.3); border:1px solid #8b5cf6; border-radius:3px;"></div><span style="font-size:0.7rem; color:#94a3b8;">4</span></div>
-                        </div>
-                        <div style="text-align:center; margin-top:8px;">
-                            <span style="color:#38bdf8; font-weight:bold; padding:4px 10px; background:rgba(56,189,248,0.1); border-radius:6px;">Max subarray: [4,-1,2,1] = 6</span>
-                        </div>
-                    </div>
-                    <div style="display:flex; gap:8px; margin-top:8px;">
-                        <div style="flex:1; background:rgba(74,222,128,0.1); padding:10px; border-radius:6px; border-left:3px solid #4ade80;">
-                            <div style="color:#4ade80; font-weight:bold; font-size:0.8rem;">Continue ✓</div>
-                            <div style="color:#94a3b8; font-size:0.78rem;">prev + nums[i]</div>
-                        </div>
-                        <div style="flex:1; background:rgba(251,191,36,0.1); padding:10px; border-radius:6px; border-left:3px solid #fbbf24;">
-                            <div style="color:#fbbf24; font-weight:bold; font-size:0.8rem;">Fresh Start ★</div>
-                            <div style="color:#94a3b8; font-size:0.78rem;">nums[i] alone</div>
-                        </div>
-                    </div>
-                </div>`,
-                crux: "<strong>Decision at each index:</strong><br>Continue previous subarray (<code>prev_max + nums[i]</code>) OR start fresh (<code>nums[i]</code>)?<br><br><strong>Why?</strong> Negative prev_max is a burden - fresh start better!",
+                visual: `
+<div style="font-family:var(--font-mono); font-size:0.85rem; line-height:1.6;">
+  <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px;">
+    <strong style="color:var(--success); font-size:0.95rem;">Kadane — “Carry ya Reset?”</strong>
+    <span style="background:color-mix(in srgb, var(--success) 12%, transparent); border:1px solid color-mix(in srgb, var(--success) 35%, transparent); color:var(--success); padding:4px 10px; border-radius:999px; font-weight:900;">1 pass</span>
+  </div>
+
+  <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:14px; padding:14px;">
+    <div style="color:var(--text-muted); font-size:0.78rem; margin-bottom:10px;">nums = [-2, 1, -3, 4, -1, 2, 1]</div>
+
+    <div style="display:grid; grid-template-columns:1fr; gap:8px;">
+      <div style="background:var(--game-soft); border:1px solid var(--border); border-radius:12px; padding:10px 12px;">
+        <div style="color:var(--text-secondary);"><strong>At i:</strong> <code>curr = max(nums[i], curr + nums[i])</code></div>
+        <div style="color:var(--text-muted); font-size:0.78rem;">Matlab: ya to carry kar, ya yahi se fresh start.</div>
+      </div>
+
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <div style="flex:1; min-width:220px; background:color-mix(in srgb, var(--success) 10%, transparent); border:1px solid color-mix(in srgb, var(--success) 28%, transparent); border-radius:12px; padding:10px 12px;">
+          <div style="color:var(--success); font-weight:900;">Carry ✓</div>
+          <div style="color:var(--text-secondary);">curr + nums[i]</div>
+          <div style="color:var(--text-muted); font-size:0.78rem;">jab curr positive ho (help kar raha ho)</div>
+        </div>
+        <div style="flex:1; min-width:220px; background:color-mix(in srgb, var(--warning) 10%, transparent); border:1px solid color-mix(in srgb, var(--warning) 26%, transparent); border-radius:12px; padding:10px 12px;">
+          <div style="color:var(--warning); font-weight:900;">Reset ★</div>
+          <div style="color:var(--text-secondary);">nums[i]</div>
+          <div style="color:var(--text-muted); font-size:0.78rem;">jab curr negative ho (burden ban gaya)</div>
+        </div>
+      </div>
+
+      <div style="background:var(--bg-surface); border:1px solid var(--border); border-radius:12px; padding:10px 12px;">
+        <div style="color:var(--cyan); font-weight:900;">Mini visual (best segment):</div>
+        <div style="color:var(--text-secondary);">[-2, 1, -3, <strong style=\"color:var(--success)\">4, -1, 2, 1</strong>] → best = 6</div>
+        <div style="color:var(--text-muted); font-size:0.78rem;">4 se start hota hai kyunki uske pehle curr negative ho chuka tha.</div>
+      </div>
+    </div>
+  </div>
+</div>`,
+                crux: "<strong>Soch:</strong> Har index pe decide: <em>carry</em> karu ya <em>reset</em>?<br><code>curr = max(nums[i], curr + nums[i])</code> — negative curr ho to reset is best.",
                 strategy: "Track TWO things: <code>prev_max</code> (best ending at previous) and <code>max_so_far</code> (global peak).",
                 trap: "<strong>All Negatives Trap:</strong><br>Array <code>[-5, -2, -3]</code> → Answer is <code>-2</code> (least negative).<br><strong>Fix:</strong> Init with <code>nums[0]</code>, NOT 0!",
                 dryRun: [
@@ -638,47 +646,57 @@ def merge(intervals):
                 },
                 timeExplainer: "<strong>Time: O(N)</strong><br>Two passes through array: O(2N) = O(N).",
                 spaceExplainer: "<strong>Space: O(1)</strong><br>Output array doesn't count. Only two variables used.",
-                visual: `<div style="font-family:monospace; font-size:0.85rem;">
-                    <strong style="color:#f59e0b;">Product Except Self: "Sandwich from Both Sides"</strong>
-                    <div style="background:#1e293b; padding:16px; border-radius:10px; margin:12px 0;">
-                        <div style="color:#94a3b8; font-size:0.8rem; margin-bottom:12px;">nums = [1, 2, 3, 4]</div>
-                        <div style="display:flex; flex-direction:column; gap:10px;">
-                            <div>
-                                <div style="color:#38bdf8; font-weight:bold; font-size:0.8rem; margin-bottom:6px;">← Left Pass (prefix products):</div>
-                                <div style="display:flex; gap:6px; align-items:center;">
-                                    <span style="padding:5px 12px; background:rgba(56,189,248,0.2); border:1px solid #38bdf8; border-radius:6px; color:#38bdf8;">1</span>
-                                    <span style="padding:5px 12px; background:rgba(56,189,248,0.2); border:1px solid #38bdf8; border-radius:6px; color:#38bdf8;">1</span>
-                                    <span style="padding:5px 12px; background:rgba(56,189,248,0.2); border:1px solid #38bdf8; border-radius:6px; color:#38bdf8;">2</span>
-                                    <span style="padding:5px 12px; background:rgba(56,189,248,0.2); border:1px solid #38bdf8; border-radius:6px; color:#38bdf8;">6</span>
-                                </div>
-                            </div>
-                            <div style="color:#94a3b8; text-align:center;">× (multiply)</div>
-                            <div>
-                                <div style="color:#f87171; font-weight:bold; font-size:0.8rem; margin-bottom:6px;">→ Right Pass (suffix products):</div>
-                                <div style="display:flex; gap:6px; align-items:center;">
-                                    <span style="padding:5px 12px; background:rgba(248,113,113,0.2); border:1px solid #f87171; border-radius:6px; color:#f87171;">24</span>
-                                    <span style="padding:5px 12px; background:rgba(248,113,113,0.2); border:1px solid #f87171; border-radius:6px; color:#f87171;">12</span>
-                                    <span style="padding:5px 12px; background:rgba(248,113,113,0.2); border:1px solid #f87171; border-radius:6px; color:#f87171;">4</span>
-                                    <span style="padding:5px 12px; background:rgba(248,113,113,0.2); border:1px solid #f87171; border-radius:6px; color:#f87171;">1</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div style="margin-top:12px; text-align:center;">
-                            <div style="color:#94a3b8;">= Final: </div>
-                            <div style="display:flex; gap:6px; justify-content:center; margin-top:4px;">
-                                <span style="padding:5px 12px; background:rgba(74,222,128,0.2); border:2px solid #4ade80; border-radius:6px; color:#4ade80; font-weight:bold;">24</span>
-                                <span style="padding:5px 12px; background:rgba(74,222,128,0.2); border:2px solid #4ade80; border-radius:6px; color:#4ade80; font-weight:bold;">12</span>
-                                <span style="padding:5px 12px; background:rgba(74,222,128,0.2); border:2px solid #4ade80; border-radius:6px; color:#4ade80; font-weight:bold;">8</span>
-                                <span style="padding:5px 12px; background:rgba(74,222,128,0.2); border:2px solid #4ade80; border-radius:6px; color:#4ade80; font-weight:bold;">6</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div style="background:#0f172a; padding:10px; border-radius:6px;">
-                        <div style="color:#fbbf24;">res[i] = left_product[i] × right_product[i]</div>
-                        <div style="color:#94a3b8;">No division needed! Two passes O(N)</div>
-                    </div>
-                </div>`,
-                crux: "<strong>Division banned!</strong><br>res[i] = (product of LEFT elements) × (product of RIGHT elements)<br><br><strong>Two Passes:</strong><br>1. Left → Right: Store left products<br>2. Right → Left: Multiply with right products",
+                visual: `
+<div style="font-family:var(--font-mono); font-size:0.85rem; line-height:1.6;">
+  <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px;">
+    <strong style="color:var(--warning); font-size:0.95rem;">Product Except Self — Left × Right</strong>
+    <span style="background:color-mix(in srgb, var(--warning) 12%, transparent); border:1px solid color-mix(in srgb, var(--warning) 35%, transparent); color:var(--warning); padding:4px 10px; border-radius:999px; font-weight:900;">No division</span>
+  </div>
+
+  <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:14px; padding:14px;">
+    <div style="color:var(--text-muted); font-size:0.78rem; margin-bottom:10px;">nums = [1, 2, 3, 4]</div>
+
+    <div style="display:grid; grid-template-columns:1fr; gap:10px;">
+      <div style="background:var(--game-soft); border:1px solid var(--border); border-radius:12px; padding:10px 12px;">
+        <div style="color:var(--cyan); font-weight:900;">Pass-1 (Left products)</div>
+        <div style="color:var(--text-muted); font-size:0.78rem;">res[i] ko “left side ka product” bana do.</div>
+        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;">
+          <span style="padding:6px 10px; border-radius:10px; border:1px solid var(--border); background:color-mix(in srgb, var(--cyan) 12%, transparent); color:var(--cyan); font-weight:900;">1</span>
+          <span style="padding:6px 10px; border-radius:10px; border:1px solid var(--border); background:color-mix(in srgb, var(--cyan) 12%, transparent); color:var(--cyan); font-weight:900;">1</span>
+          <span style="padding:6px 10px; border-radius:10px; border:1px solid var(--border); background:color-mix(in srgb, var(--cyan) 12%, transparent); color:var(--cyan); font-weight:900;">2</span>
+          <span style="padding:6px 10px; border-radius:10px; border:1px solid var(--border); background:color-mix(in srgb, var(--cyan) 12%, transparent); color:var(--cyan); font-weight:900;">6</span>
+        </div>
+      </div>
+
+      <div style="background:var(--game-soft); border:1px solid var(--border); border-radius:12px; padding:10px 12px;">
+        <div style="color:var(--danger); font-weight:900;">Pass-2 (Multiply right products)</div>
+        <div style="color:var(--text-muted); font-size:0.78rem;">Right se aate hue right_product multiply karo.</div>
+        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;">
+          <span style="padding:6px 10px; border-radius:10px; border:1px solid var(--border); background:color-mix(in srgb, var(--danger) 12%, transparent); color:var(--danger); font-weight:900;">×24</span>
+          <span style="padding:6px 10px; border-radius:10px; border:1px solid var(--border); background:color-mix(in srgb, var(--danger) 12%, transparent); color:var(--danger); font-weight:900;">×12</span>
+          <span style="padding:6px 10px; border-radius:10px; border:1px solid var(--border); background:color-mix(in srgb, var(--danger) 12%, transparent); color:var(--danger); font-weight:900;">×4</span>
+          <span style="padding:6px 10px; border-radius:10px; border:1px solid var(--border); background:color-mix(in srgb, var(--danger) 12%, transparent); color:var(--danger); font-weight:900;">×1</span>
+        </div>
+      </div>
+
+      <div style="background:color-mix(in srgb, var(--success) 10%, transparent); border:1px solid color-mix(in srgb, var(--success) 30%, transparent); border-radius:12px; padding:10px 12px;">
+        <div style="color:var(--success); font-weight:900;">Final res</div>
+        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;">
+          <span style="padding:6px 10px; border-radius:10px; border:1px solid var(--border); background:color-mix(in srgb, var(--success) 12%, transparent); color:var(--success); font-weight:900;">24</span>
+          <span style="padding:6px 10px; border-radius:10px; border:1px solid var(--border); background:color-mix(in srgb, var(--success) 12%, transparent); color:var(--success); font-weight:900;">12</span>
+          <span style="padding:6px 10px; border-radius:10px; border:1px solid var(--border); background:color-mix(in srgb, var(--success) 12%, transparent); color:var(--success); font-weight:900;">8</span>
+          <span style="padding:6px 10px; border-radius:10px; border:1px solid var(--border); background:color-mix(in srgb, var(--success) 12%, transparent); color:var(--success); font-weight:900;">6</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:10px; background:var(--bg-surface); border:1px solid var(--border); border-radius:12px; padding:10px 12px;">
+    <div style="color:var(--warning); font-weight:900;">Formula:</div>
+    <div style="color:var(--text-muted); font-size:0.78rem;">res[i] = (product of left) × (product of right)</div>
+  </div>
+</div>`,
+                crux: "<strong>Soch:</strong> Har index ka answer = <strong>Left product</strong> × <strong>Right product</strong>.<br>Isliye 2 passes: pehle left store, phir right multiply.",
                 strategy: "Use result array to store left products first, then multiply with right products in second pass.",
                 trap: "<strong>Zero Handling:</strong><br>Array <code>[1, 0, 3, 4]</code> → Only index of 0 gets non-zero value.<br>Prefix/Suffix logic handles this naturally!",
                 dryRun: [
@@ -784,36 +802,50 @@ def merge(intervals):
                 },
                 timeExplainer: "<strong>Time: O(N)</strong><br>Each element processed exactly once. Two pointers meet in middle.",
                 spaceExplainer: "<strong>Space: O(1)</strong><br>Only 4 variables: two pointers + two max heights.",
-                visual: `<div style="font-family:monospace; font-size:0.85rem;">
-                    <strong style="color:#38bdf8;">Trapping Rain Water: "Process the Smaller Side"</strong>
-                    <div style="background:#1e293b; padding:16px; border-radius:10px; margin:12px 0;">
-                        <div style="color:#94a3b8; font-size:0.8rem; margin-bottom:10px;">height = [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]</div>
-                        <div style="display:flex; gap:3px; align-items:flex-end; justify-content:center; height:100px; margin:8px 0;">
-                            <div style="width:22px; height:5px; background:#475569; border-radius:2px;"></div>
-                            <div style="width:22px; height:25px; background:#6366f1; border-radius:2px;"></div>
-                            <div style="width:22px; height:25px; background:rgba(56,189,248,0.4); border:1px dashed #38bdf8; border-radius:2px;"></div>
-                            <div style="width:22px; height:50px; background:#6366f1; border-radius:2px;"></div>
-                            <div style="width:22px; height:25px; background:#6366f1; border-radius:2px; position:relative;"><div style="position:absolute;top:0;width:100%;height:25px;background:rgba(56,189,248,0.3);border-radius:2px;"></div></div>
-                            <div style="width:22px; height:50px; background:rgba(56,189,248,0.4); border:1px dashed #38bdf8; border-radius:2px;"></div>
-                            <div style="width:22px; height:25px; background:#6366f1; border-radius:2px; position:relative;"><div style="position:absolute;top:0;width:100%;height:25px;background:rgba(56,189,248,0.3);border-radius:2px;"></div></div>
-                            <div style="width:22px; height:75px; background:#6366f1; border-radius:2px;"></div>
-                            <div style="width:22px; height:50px; background:#6366f1; border-radius:2px;"></div>
-                            <div style="width:22px; height:25px; background:#6366f1; border-radius:2px; position:relative;"><div style="position:absolute;top:0;width:100%;height:25px;background:rgba(56,189,248,0.3);border-radius:2px;"></div></div>
-                            <div style="width:22px; height:50px; background:#6366f1; border-radius:2px;"></div>
-                            <div style="width:22px; height:25px; background:#6366f1; border-radius:2px;"></div>
-                        </div>
-                        <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#94a3b8; margin-top:4px;">
-                            <span style="color:#38bdf8;">⬆ L (smaller→process)</span>
-                            <span style="color:#38bdf8;">💧 water fills</span>
-                            <span style="color:#f87171;">⬆ R</span>
-                        </div>
-                    </div>
-                    <div style="background:rgba(56,189,248,0.1); padding:10px; border-radius:6px; border-left:3px solid #38bdf8;">
-                        <div style="color:#38bdf8; font-weight:bold;">If h[L] < h[R]: process LEFT (water guaranteed!)</div>
-                        <div style="color:#94a3b8;">Wall = update max | Valley = trap water (max - height)</div>
-                    </div>
-                </div>`,
-                crux: "<strong>Process SMALLER side!</strong><br>Agar left chhota hai → left ka water confirm (right mein badi wall hai)<br><br><strong>Wall vs Valley:</strong><br>• height >= max → Naya wall (update max)<br>• height < max → Valley (trap water!)",
+                visual: `
+<div style="font-family:var(--font-mono); font-size:0.85rem; line-height:1.6;">
+  <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px;">
+    <strong style="color:var(--cyan); font-size:0.95rem;">Trap Rain Water — Smaller Side First</strong>
+    <span style="background:color-mix(in srgb, var(--cyan) 12%, transparent); border:1px solid color-mix(in srgb, var(--cyan) 35%, transparent); color:var(--cyan); padding:4px 10px; border-radius:999px; font-weight:900;">L/R pointers</span>
+  </div>
+
+  <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:14px; padding:14px;">
+    <div style="color:var(--text-muted); font-size:0.78rem; margin-bottom:10px;">Example: height = [0,1,0,2]</div>
+
+    <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:center; margin:8px 0 10px;">
+      <span style="padding:6px 10px; border-radius:10px; border:2px solid var(--cyan); background:color-mix(in srgb, var(--cyan) 14%, transparent); color:var(--cyan); font-weight:900;">0 (L)</span>
+      <span style="padding:6px 10px; border-radius:10px; border:1px solid var(--border); background:var(--game-soft); color:var(--text-secondary);">1</span>
+      <span style="padding:6px 10px; border-radius:10px; border:1px solid var(--border); background:var(--game-soft); color:var(--text-secondary);">0</span>
+      <span style="padding:6px 10px; border-radius:10px; border:2px solid var(--danger); background:color-mix(in srgb, var(--danger) 14%, transparent); color:var(--danger); font-weight:900;">2 (R)</span>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr; gap:8px;">
+      <div style="background:var(--game-soft); border:1px solid var(--border); border-radius:12px; padding:10px 12px;">
+        <div style="color:var(--text-secondary);"><strong>Key:</strong> jis side ki height chhoti hai, <strong>usi side</strong> ka water decide kar sakte ho.</div>
+        <div style="color:var(--text-muted); font-size:0.78rem;">Kyun? opposite side pe at least ek wall badi hai (current R/L).</div>
+      </div>
+
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <div style="flex:1; min-width:240px; background:color-mix(in srgb, var(--cyan) 10%, transparent); border:1px solid color-mix(in srgb, var(--cyan) 28%, transparent); border-radius:12px; padding:10px 12px;">
+          <div style="color:var(--cyan); font-weight:900;">If h[L] < h[R]</div>
+          <div style="color:var(--text-secondary);">water += maxLeft - h[L] (if positive)</div>
+          <div style="color:var(--text-muted); font-size:0.78rem;">else maxLeft = h[L]</div>
+        </div>
+        <div style="flex:1; min-width:240px; background:color-mix(in srgb, var(--danger) 10%, transparent); border:1px solid color-mix(in srgb, var(--danger) 28%, transparent); border-radius:12px; padding:10px 12px;">
+          <div style="color:var(--danger); font-weight:900;">Else (process right)</div>
+          <div style="color:var(--text-secondary);">water += maxRight - h[R] (if positive)</div>
+          <div style="color:var(--text-muted); font-size:0.78rem;">else maxRight = h[R]</div>
+        </div>
+      </div>
+
+      <div style="background:color-mix(in srgb, var(--success) 10%, transparent); border:1px solid color-mix(in srgb, var(--success) 30%, transparent); border-radius:12px; padding:10px 12px;">
+        <div style="color:var(--success); font-weight:900;">Mini intuition:</div>
+        <div style="color:var(--text-secondary);">[0,1,0,2] me beech ka 0, left max=1 aur right me wall=2 → water = 1-0 = 1</div>
+      </div>
+    </div>
+  </div>
+</div>`,
+                crux: "<strong>Soch:</strong> Hamesha <strong>smaller side</strong> process karo. Us side ka water ‘guaranteed’ decide ho jata hai, kyunki opposite side pe at least ek badi wall maujood hai.",
                 strategy: "Two pointers from ends. Compare heights. Move smaller side inward. Track max on each side.",
                 trap: "<strong>Why no min() needed?</strong><br>We always process smaller side, so opposite side definitely has bigger wall!<br><code>water = local_max - height</code> is enough.",
                 dryRun: [
@@ -937,39 +969,47 @@ def merge(intervals):
                 metrics: { time: "O(N log N)", space: "O(N)" },
                 timeExplainer: "<strong>Time: O(N log N)</strong><br>Sorting + single pass merge.",
                 spaceExplainer: "<strong>Space: O(N)</strong><br>Result array. Worst case: no merges.",
-                visual: `<div style="font-family:monospace; font-size:0.85rem;">
-                    <strong style="color:#f59e0b;">Merge Intervals: "Sort → Overlap → Extend"</strong>
-                    <div style="background:#1e293b; padding:16px; border-radius:10px; margin:12px 0;">
-                        <div style="color:#94a3b8; font-size:0.8rem; margin-bottom:10px;">Sorted: [1,3] [2,6] [8,10]</div>
-                        <div style="display:flex; flex-direction:column; gap:10px; font-size:0.82rem;">
-                            <div style="display:flex; align-items:center; gap:8px;">
-                                <span style="padding:4px 0; width:200px; position:relative;">
-                                    <span style="display:inline-block; width:60px; height:20px; background:rgba(74,222,128,0.3); border:1px solid #4ade80; border-radius:4px; text-align:center; line-height:20px; color:#4ade80; font-size:0.75rem;">[1,3]</span>
-                                </span>
-                            </div>
-                            <div style="display:flex; align-items:center; gap:8px;">
-                                <span style="padding:4px 0; width:200px; position:relative;">
-                                    <span style="display:inline-block; margin-left:20px; width:100px; height:20px; background:rgba(56,189,248,0.3); border:1px solid #38bdf8; border-radius:4px; text-align:center; line-height:20px; color:#38bdf8; font-size:0.75rem;">[2,6]</span>
-                                </span>
-                                <span style="color:#4ade80;">2 ≤ 3 → Overlap! Merge → [1,6]</span>
-                            </div>
-                            <div style="display:flex; align-items:center; gap:8px;">
-                                <span style="padding:4px 0; width:200px; position:relative;">
-                                    <span style="display:inline-block; margin-left:150px; width:50px; height:20px; background:rgba(248,113,113,0.3); border:1px solid #f87171; border-radius:4px; text-align:center; line-height:20px; color:#f87171; font-size:0.75rem;">[8,10]</span>
-                                </span>
-                                <span style="color:#f87171;">8 > 6 → No overlap! Add new</span>
-                            </div>
-                        </div>
-                        <div style="margin-top:12px; text-align:center; padding:6px; background:rgba(74,222,128,0.1); border-radius:6px;">
-                            <span style="color:#4ade80; font-weight:bold;">Result: [[1,6], [8,10]]</span>
-                        </div>
-                    </div>
-                    <div style="background:#0f172a; padding:10px; border-radius:6px;">
-                        <div style="color:#fbbf24;">Overlap check: result[-1][1] >= intervals[i][0]</div>
-                        <div style="color:#94a3b8;">Merge: result[-1][1] = max(result[-1][1], current_end)</div>
-                    </div>
-                </div>`,
-                crux: "<strong>Sort first!</strong> Then check: <code>result[-1][1] >= intervals[index][0]</code><br><br><strong>Merge formula:</strong> <code>result[-1][1] = max(result[-1][1], current_end)</code>",
+                visual: `
+<div style="font-family:var(--font-mono); font-size:0.85rem; line-height:1.6;">
+  <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px;">
+    <strong style="color:var(--warning); font-size:0.95rem;">Merge Intervals — Sort → Compare → Extend</strong>
+    <span style="background:color-mix(in srgb, var(--warning) 12%, transparent); border:1px solid color-mix(in srgb, var(--warning) 35%, transparent); color:var(--warning); padding:4px 10px; border-radius:999px; font-weight:900;">Greedy</span>
+  </div>
+
+  <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:14px; padding:14px;">
+    <div style="color:var(--text-muted); font-size:0.78rem; margin-bottom:10px;">intervals(sorted) = [[1,3], [2,6], [8,10]]</div>
+
+    <div style="display:grid; grid-template-columns:1fr; gap:8px;">
+      <div style="background:var(--game-soft); border:1px solid var(--border); border-radius:12px; padding:10px 12px;">
+        <div style="color:var(--text-secondary);"><strong>Rule:</strong> current.start ≤ lastMerged.end → overlap ✅</div>
+        <div style="color:var(--text-muted); font-size:0.78rem;">overlap ho to end extend: <code>last.end = max(last.end, curr.end)</code></div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr; gap:8px;">
+        <div style="background:color-mix(in srgb, var(--success) 10%, transparent); border:1px solid color-mix(in srgb, var(--success) 30%, transparent); border-radius:12px; padding:10px 12px;">
+          <div style="color:var(--success); font-weight:900;">Step 1</div>
+          <div style="color:var(--text-secondary);">Start result = [[1,3]]</div>
+        </div>
+
+        <div style="background:color-mix(in srgb, var(--cyan) 10%, transparent); border:1px solid color-mix(in srgb, var(--cyan) 30%, transparent); border-radius:12px; padding:10px 12px;">
+          <div style="color:var(--cyan); font-weight:900;">Step 2</div>
+          <div style="color:var(--text-secondary);">curr=[2,6], last=[1,3] → 2 ≤ 3 ✅ overlap → merge = [1,6]</div>
+        </div>
+
+        <div style="background:color-mix(in srgb, var(--danger) 10%, transparent); border:1px solid color-mix(in srgb, var(--danger) 30%, transparent); border-radius:12px; padding:10px 12px;">
+          <div style="color:var(--danger); font-weight:900;">Step 3</div>
+          <div style="color:var(--text-secondary);">curr=[8,10], last=[1,6] → 8 ≤ 6 ❌ no overlap → push</div>
+        </div>
+      </div>
+
+      <div style="background:var(--bg-surface); border:1px solid var(--border); border-radius:12px; padding:10px 12px;">
+        <div style="color:var(--success); font-weight:900;">Final</div>
+        <div style="color:var(--text-secondary);">[[1,6], [8,10]]</div>
+      </div>
+    </div>
+  </div>
+</div>`,
+                crux: "<strong>Soch:</strong> Pehle sort. Phir har interval ko <strong>last merged</strong> se compare karo. Overlap ho to extend, warna new add.",
                 strategy: "Sort by start. Compare current interval with LAST merged interval.",
                 trap: "<strong>⚠️ Use result[-1] not result[index-1]!</strong><br>result length differs from intervals length!<br><code>result[index-1]</code> → IndexError",
                 dryRun: [
@@ -1058,33 +1098,40 @@ def merge(intervals):
                 timeExplainer: "<strong>Time Breakdown:</strong><br>• Sorting: <code>O(N log N)</code><br>• Heap operations: <code>O(N log N)</code><br><br><strong>Total:</strong> <code>O(N log N)</code>",
                 spaceExplainer: "<strong>Space Analysis:</strong><br>• Min-Heap stores end times<br>• Worst case: all meetings overlap = <code>O(N)</code>",
                 visual: `
-                    <h4 style="color:#c026d3;">🏢 Meeting Rooms: Min-Heap of End Times</h4>
-                    <div style="display:flex; flex-direction:column; gap:12px; margin:15px 0; max-width:600px;">
-                        <div style="background:#1e293b; padding:16px; border-radius:12px;">
-                            <div style="font-size:0.8rem; color:#94a3b8; margin-bottom:10px;">Meetings (sorted by start): [0,30], [5,10], [15,20]</div>
-                            <div style="display:flex; flex-direction:column; gap:8px; font-family:monospace; font-size:0.82rem;">
-                                <div style="display:flex; align-items:center; gap:8px;">
-                                    <span style="color:#fbbf24; width:30px;">M1:</span>
-                                    <div style="background:rgba(74,222,128,0.15); height:22px; border-radius:4px; width:200px; display:flex; align-items:center; padding:0 8px; font-size:0.75rem; color:#4ade80;">[0 ──────────────── 30]</div>
-                                </div>
-                                <div style="display:flex; align-items:center; gap:8px;">
-                                    <span style="color:#fbbf24; width:30px;">M2:</span>
-                                    <div style="margin-left:33px; background:rgba(56,189,248,0.15); height:22px; border-radius:4px; width:40px; display:flex; align-items:center; padding:0 8px; font-size:0.75rem; color:#38bdf8;">[5-10]</div>
-                                </div>
-                                <div style="display:flex; align-items:center; gap:8px;">
-                                    <span style="color:#fbbf24; width:30px;">M3:</span>
-                                    <div style="margin-left:100px; background:rgba(248,113,113,0.15); height:22px; border-radius:4px; width:40px; display:flex; align-items:center; padding:0 8px; font-size:0.75rem; color:#f87171;">[15-20]</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div style="background:#0f172a; padding:12px; border-radius:8px;">
-                            <div style="display:grid; grid-template-columns:80px 1fr; gap:6px; font-size:0.82rem; color:#cbd5e1;">
-                                <span style="color:#4ade80;">Add M1:</span><span>Heap=[<span style="color:#4ade80;">30</span>] → Rooms=1</span>
-                                <span style="color:#38bdf8;">Add M2:</span><span>5 < 30? New room! Heap=[<span style="color:#38bdf8;">10</span>,30] → Rooms=2</span>
-                                <span style="color:#f87171;">Add M3:</span><span>15 ≥ 10? Reuse! Heap=[<span style="color:#f87171;">20</span>,30] → Rooms=2 ✅</span>
-                            </div>
-                        </div>
-                    </div>`,
+<div style="font-family:var(--font-mono); font-size:0.85rem; line-height:1.6;">
+  <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px;">
+    <strong style="color:var(--purple); font-size:0.95rem;">Meeting Rooms II — Min-Heap (end times)</strong>
+    <span style="background:color-mix(in srgb, var(--purple) 12%, transparent); border:1px solid color-mix(in srgb, var(--purple) 35%, transparent); color:var(--purple); padding:4px 10px; border-radius:999px; font-weight:900;">heap size = rooms</span>
+  </div>
+
+  <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:14px; padding:14px;">
+    <div style="color:var(--text-muted); font-size:0.78rem; margin-bottom:10px;">Sorted meetings = [[0,30],[5,10],[15,20]]</div>
+
+    <div style="display:grid; grid-template-columns:1fr; gap:8px;">
+      <div style="background:var(--game-soft); border:1px solid var(--border); border-radius:12px; padding:10px 12px;">
+        <div style="color:var(--text-secondary);"><strong>Heap meaning:</strong> heap me har room ka <strong>end time</strong> pada hai.</div>
+        <div style="color:var(--text-muted); font-size:0.78rem;">Agar next start ≥ minEnd → pop (reuse room). Always push current end.</div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr; gap:8px;">
+        <div style="background:color-mix(in srgb, var(--success) 10%, transparent); border:1px solid color-mix(in srgb, var(--success) 30%, transparent); border-radius:12px; padding:10px 12px;">
+          <div style="color:var(--success); font-weight:900;">Add [0,30]</div>
+          <div style="color:var(--text-secondary);">heap = [30] → rooms = 1</div>
+        </div>
+
+        <div style="background:color-mix(in srgb, var(--cyan) 10%, transparent); border:1px solid color-mix(in srgb, var(--cyan) 30%, transparent); border-radius:12px; padding:10px 12px;">
+          <div style="color:var(--cyan); font-weight:900;">Add [5,10]</div>
+          <div style="color:var(--text-secondary);">5 < minEnd(30) → new room → heap = [10,30] → rooms = 2</div>
+        </div>
+
+        <div style="background:color-mix(in srgb, var(--warning) 10%, transparent); border:1px solid color-mix(in srgb, var(--warning) 30%, transparent); border-radius:12px; padding:10px 12px;">
+          <div style="color:var(--warning); font-weight:900;">Add [15,20]</div>
+          <div style="color:var(--text-secondary);">15 ≥ minEnd(10) → pop 10 (reuse) → push 20 → heap = [20,30] → rooms = 2 ✅</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>`,
                 crux: "Track occupied rooms.<br><strong>Strategy:</strong><br>1. Sort by Start Time.<br>2. Min-Heap stores End Times.<br>3. If <code>start >= heap[0]</code>, pop (room freed).<br>4. Push new end time.",
                 trap: "<strong>Just Finished:</strong> [1, 5] and [5, 10]. Reuse is allowed.",
                 dryRun: [
@@ -1182,49 +1229,41 @@ def min_meeting_rooms(intervals):
                 metrics: { time: "O(N)", space: "O(N)" },
                 timeExplainer: "<strong>Time: O(N)</strong><br>Each char added once, removed at most once. 2N ops = O(N).",
                 spaceExplainer: "<strong>Space: O(N)</strong><br>Worst case (all unique): Set stores all N chars.",
-                visual: `<div style="font-family:monospace; font-size:0.85rem;">
-                    <strong style="color:#a78bfa;">Longest Substring: "Elastic Window Expands & Shrinks"</strong>
-                    <div style="background:#1e293b; padding:16px; border-radius:10px; margin:12px 0;">
-                        <div style="color:#94a3b8; font-size:0.8rem; margin-bottom:10px;">s = "abcabcbb"</div>
-                        <div style="display:flex; flex-direction:column; gap:8px;">
-                            <div style="display:flex; gap:4px; align-items:center;">
-                                <span style="width:45px; color:#94a3b8; font-size:0.75rem;">R=2:</span>
-                                <span style="padding:4px 8px; background:rgba(74,222,128,0.2); border:1px solid #4ade80; border-radius:4px; color:#4ade80;">a</span>
-                                <span style="padding:4px 8px; background:rgba(74,222,128,0.2); border:1px solid #4ade80; border-radius:4px; color:#4ade80;">b</span>
-                                <span style="padding:4px 8px; background:rgba(74,222,128,0.2); border:1px solid #4ade80; border-radius:4px; color:#4ade80;">c</span>
-                                <span style="padding:4px 8px; background:#0f172a; border:1px solid #334155; border-radius:4px; color:#475569;">a</span>
-                                <span style="padding:4px 8px; background:#0f172a; border:1px solid #334155; border-radius:4px; color:#475569;">b</span>
-                                <span style="padding:4px 8px; background:#0f172a; border:1px solid #334155; border-radius:4px; color:#475569;">c</span>
-                                <span style="padding:4px 8px; background:#0f172a; border:1px solid #334155; border-radius:4px; color:#475569;">b</span>
-                                <span style="padding:4px 8px; background:#0f172a; border:1px solid #334155; border-radius:4px; color:#475569;">b</span>
-                                <span style="color:#4ade80; margin-left:8px;">len=3 ✓</span>
-                            </div>
-                            <div style="display:flex; gap:4px; align-items:center;">
-                                <span style="width:45px; color:#94a3b8; font-size:0.75rem;">R=3:</span>
-                                <span style="padding:4px 8px; background:rgba(248,113,113,0.2); border:1px solid #f87171; border-radius:4px; color:#f87171; text-decoration:line-through;">a</span>
-                                <span style="padding:4px 8px; background:rgba(56,189,248,0.2); border:1px solid #38bdf8; border-radius:4px; color:#38bdf8;">b</span>
-                                <span style="padding:4px 8px; background:rgba(56,189,248,0.2); border:1px solid #38bdf8; border-radius:4px; color:#38bdf8;">c</span>
-                                <span style="padding:4px 8px; background:rgba(56,189,248,0.2); border:1px solid #38bdf8; border-radius:4px; color:#38bdf8;">a</span>
-                                <span style="padding:4px 8px; background:#0f172a; border:1px solid #334155; border-radius:4px; color:#475569;">b</span>
-                                <span style="padding:4px 8px; background:#0f172a; border:1px solid #334155; border-radius:4px; color:#475569;">c</span>
-                                <span style="padding:4px 8px; background:#0f172a; border:1px solid #334155; border-radius:4px; color:#475569;">b</span>
-                                <span style="padding:4px 8px; background:#0f172a; border:1px solid #334155; border-radius:4px; color:#475569;">b</span>
-                                <span style="color:#f87171; margin-left:8px;">dup 'a'! shrink L</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div style="display:flex; gap:8px; margin-top:8px;">
-                        <div style="flex:1; background:rgba(74,222,128,0.1); padding:8px; border-radius:6px; border-left:3px solid #4ade80;">
-                            <div style="color:#4ade80; font-weight:bold; font-size:0.8rem;">Expand R →</div>
-                            <div style="color:#94a3b8; font-size:0.78rem;">Add char to set</div>
-                        </div>
-                        <div style="flex:1; background:rgba(248,113,113,0.1); padding:8px; border-radius:6px; border-left:3px solid #f87171;">
-                            <div style="color:#f87171; font-weight:bold; font-size:0.8rem;">← Shrink L</div>
-                            <div style="color:#94a3b8; font-size:0.78rem;">Remove until no dup</div>
-                        </div>
-                    </div>
-                </div>`,
-                crux: "<strong>Expand Right, Shrink Left if duplicate!</strong><br><br>Window size formula: <code>right - left + 1</code>",
+                visual: `
+<div style="font-family:var(--font-mono); font-size:0.85rem; line-height:1.6;">
+  <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px;">
+    <strong style="color:var(--purple); font-size:0.95rem;">Longest Substring — Elastic Window</strong>
+    <span style="background:color-mix(in srgb, var(--purple) 12%, transparent); border:1px solid color-mix(in srgb, var(--purple) 35%, transparent); color:var(--purple); padding:4px 10px; border-radius:999px; font-weight:900;">Set</span>
+  </div>
+
+  <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:14px; padding:14px;">
+    <div style="color:var(--text-muted); font-size:0.78rem; margin-bottom:10px;">s = "abcabcbb"</div>
+
+    <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:center; margin-bottom:10px;">
+      <span style="padding:6px 10px; border-radius:10px; border:2px solid var(--cyan); background:color-mix(in srgb, var(--cyan) 14%, transparent); color:var(--cyan); font-weight:900;">L</span>
+      <span style="color:var(--text-muted); display:flex; align-items:center;">→</span>
+      <span style="padding:6px 10px; border-radius:10px; border:2px solid var(--warning); background:color-mix(in srgb, var(--warning) 14%, transparent); color:var(--warning); font-weight:900;">R</span>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr; gap:8px;">
+      <div style="background:var(--game-soft); border:1px solid var(--border); border-radius:12px; padding:10px 12px;">
+        <div style="color:var(--text-secondary);"><strong>Rule:</strong> Expand R. Agar duplicate aa jaye → <strong>L ko aage badhao</strong> jab tak duplicate na nikle.</div>
+        <div style="color:var(--text-muted); font-size:0.78rem;">Window valid = all unique chars. Answer = max(window length).</div>
+      </div>
+
+      <div style="background:color-mix(in srgb, var(--success) 10%, transparent); border:1px solid color-mix(in srgb, var(--success) 30%, transparent); border-radius:12px; padding:10px 12px;">
+        <div style="color:var(--success); font-weight:900;">Snapshot (unique window)</div>
+        <div style="color:var(--text-secondary);">"<strong style=\"color:var(--success)\">abc</strong>" → len=3 ✅</div>
+      </div>
+
+      <div style="background:color-mix(in srgb, var(--danger) 10%, transparent); border:1px solid color-mix(in srgb, var(--danger) 30%, transparent); border-radius:12px; padding:10px 12px;">
+        <div style="color:var(--danger); font-weight:900;">When dup happens</div>
+        <div style="color:var(--text-secondary);">Next char = 'a' (duplicate) → remove from left until 'a' gone, then continue.</div>
+      </div>
+    </div>
+  </div>
+</div>`,
+                crux: "<strong>Soch:</strong> Right pointer hamesha expand karta hai. Duplicate pe <strong>Left shrink</strong> karo (while loop). Window size = <code>R-L+1</code>.",
                 strategy: "Use SET for O(1) lookup. If <code>s[right]</code> in Set → shrink window from left until valid.",
                 trap: "<strong>while not if!</strong><br>Multiple chars may need removal. Ex: 'abcc' → remove 'a', 'b', 'c' to clear duplicate 'c'.",
                 dryRun: [
@@ -1635,3 +1674,5 @@ for r, c in enumerate(s):
         }
     ]
 }
+
+window.currentTopicData = topic_arrays;
