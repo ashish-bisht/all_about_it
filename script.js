@@ -13,7 +13,8 @@
         { id: 'oled', label: 'OLED Black', icon: 'fas fa-circle' },
         { id: 'light', label: 'Light', icon: 'fas fa-sun' },
         { id: 'apple-dark', label: 'Apple Dark', icon: 'fab fa-apple' },
-        { id: 'paper', label: 'Paper', icon: 'fas fa-book-open' }
+        { id: 'paper', label: 'Paper', icon: 'fas fa-book-open' },
+        { id: 'ace', label: 'Ace', icon: 'fas fa-bolt' }
     ];
 
     // User settings (site-wide)
