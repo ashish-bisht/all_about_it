@@ -21,6 +21,224 @@
             padding: 20px;
         }
 
+        /* Sticky quick controls */
+        .quickbar {
+            position: sticky;
+            top: 72px;
+            z-index: 20;
+            margin: 8px auto 18px;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(10px);
+        }
+
+        .quickbar-grid {
+            display: grid;
+            grid-template-columns: 1.2fr auto;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .search-wrap {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search {
+            flex: 1;
+            min-width: 220px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .search i {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .search input {
+            width: 100%;
+            border: none;
+            outline: none;
+            background: transparent;
+            color: var(--text-main);
+            font-size: 0.85rem;
+        }
+
+        .chips {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .chip {
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            font-weight: 700;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .chip.active {
+            background: rgba(94, 92, 230, 0.15);
+            border-color: rgba(94, 92, 230, 0.35);
+            color: var(--primary);
+        }
+
+        .summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            padding-top: 8px;
+            margin-top: 10px;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.78rem;
+        }
+
+        .summary strong {
+            color: var(--text-main);
+        }
+
+        /* Pattern index */
+        .index {
+            margin: 12px 0 18px;
+            padding: 12px 12px 10px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Inline playbook (quick cheatsheet) */
+        .playbook {
+            margin: 12px 0 18px;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: rgba(0, 0, 0, 0.22);
+        }
+
+        .pb-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .pb-title {
+            font-size: 0.95rem;
+            margin: 0;
+            color: var(--text-main);
+            font-weight: 800;
+            letter-spacing: 0.2px;
+        }
+
+        .pb-sub {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .pb-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .pb-card {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 10px 12px;
+        }
+
+        .pb-card h3 {
+            margin: 0 0 6px;
+            font-size: 0.85rem;
+            color: var(--primary);
+            letter-spacing: 0.2px;
+        }
+
+        .pb-lines {
+            margin: 0;
+            padding-left: 18px;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            line-height: 1.6;
+        }
+
+        .pb-lines code {
+            background: rgba(110, 118, 129, 0.2);
+            padding: 1px 5px;
+            border-radius: 5px;
+            color: var(--cyan);
+        }
+
+        @media (max-width: 768px) {
+            .pb-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .index-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .index-title h2 {
+            font-size: 0.9rem;
+            margin: 0;
+            color: var(--text-main);
+            letter-spacing: 0.2px;
+        }
+
+        .index-hint {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+        }
+
+        .index-list {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .index a {
+            text-decoration: none;
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.25);
+            color: var(--text-secondary);
+            font-size: 0.72rem;
+            font-weight: 700;
+            transition: all 0.15s;
+        }
+
+        .index a:hover {
+            border-color: rgba(94, 92, 230, 0.45);
+            color: var(--primary);
+        }
+
         /* Hero */
         .hero {
             text-align: center;
@@ -225,6 +443,10 @@
             gap: 6px;
         }
 
+        .q.is-hidden {
+            display: none;
+        }
+
         .q-title {
             font-weight: 700;
             font-size: 0.95rem;
@@ -281,6 +503,10 @@
         .badge.tc {
             background: rgba(94, 92, 230, 0.12);
             color: var(--primary);
+        }
+
+        .muted {
+            color: var(--text-muted);
         }
 
         /* Quiz / Recall Prompt */
@@ -414,6 +640,60 @@
             display: none;
         }
 
+        /* Playbook modal (optional "view full") */
+        #playbookModal {
+            position: fixed;
+            inset: 0;
+            display: none;
+            z-index: 60;
+        }
+
+        #playbookModal.open {
+            display: block;
+        }
+
+        .pm-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.65);
+        }
+
+        .pm {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: min(980px, calc(100vw - 24px));
+            max-height: min(86vh, 900px);
+            overflow: auto;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            background: rgba(10, 10, 12, 0.98);
+            box-shadow: 0 30px 120px rgba(0, 0, 0, 0.6);
+        }
+
+        .pm-head {
+            position: sticky;
+            top: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .pm-title {
+            color: var(--text-main);
+            font-weight: 800;
+            letter-spacing: 0.2px;
+        }
+
+        .pm-body {
+            padding: 14px;
+        }
+
         @media (max-width: 768px) {
             .hero h1 {
                 font-size: 1.8rem;
@@ -434,6 +714,14 @@
 
             .nav-links {
                 gap: 12px;
+            }
+
+            .quickbar {
+                top: 64px;
+            }
+
+            .quickbar-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -484,11 +772,47 @@
         <div class="stats" id="stats"></div>
         <div class="tabs" id="tabs"></div>
 
-        <div class="ctrls">
-            <button class="ctrl" onclick="expandAll()"><i class="fas fa-expand-alt"></i> Expand All</button>
-            <button class="ctrl" onclick="collapseAll()"><i class="fas fa-compress-alt"></i> Collapse All</button>
-            <button class="ctrl" id="code-toggle" onclick="toggleAllCode()"><i class="fas fa-code"></i> Show
-                Code</button>
+        <div class="quickbar">
+            <div class="quickbar-grid">
+                <div class="search-wrap">
+                    <div class="search">
+                        <i class="fas fa-magnifying-glass"></i>
+                        <input id="search" type="text" placeholder="Search title / pattern / topic…" autocomplete="off" />
+                    </div>
+                    <div class="chips" id="diffChips">
+                        <span class="chip active" data-d="all">All</span>
+                        <span class="chip" data-d="Must Do">Must</span>
+                        <span class="chip" data-d="Good to Do">Good</span>
+                        <span class="chip" data-d="Bonus">Bonus</span>
+                    </div>
+                </div>
+                <div class="ctrls" style="margin:0; justify-content:flex-end;">
+                    <button class="ctrl" onclick="expandAll()"><i class="fas fa-expand-alt"></i> Expand</button>
+                    <button class="ctrl" onclick="collapseAll()"><i class="fas fa-compress-alt"></i> Collapse</button>
+                    <button class="ctrl" id="code-toggle" onclick="toggleAllCode()"><i class="fas fa-code"></i> Show
+                        Code</button>
+                </div>
+            </div>
+            <div class="summary" id="summary"></div>
+        </div>
+
+        <div class="playbook" id="playbook" style="display:none;">
+            <div class="pb-head">
+                <div>
+                    <h2 class="pb-title" id="pbTitle">Playbook</h2>
+                    <div class="pb-sub" id="pbSub">Quick one-liners for fast revision</div>
+                </div>
+                <div class="chips" id="pbActions" style="justify-content:flex-end;"></div>
+            </div>
+            <div class="pb-grid" id="pbGrid"></div>
+        </div>
+
+        <div class="index" id="index" style="display:none;">
+            <div class="index-title">
+                <h2>Jump to pattern</h2>
+                <div class="index-hint">Tip: use search + filters to keep it focused</div>
+            </div>
+            <div class="index-list" id="indexList"></div>
         </div>
 
         <div id="content"></div>
@@ -496,12 +820,34 @@
 
     <!-- Topic data is lazy-loaded (no monolithic data.js) -->
     <script src="topicLoader.js?v=1"></script>
+    <!-- Concepts (for topic playbook) -->
+    <script src="data/concepts/arrays_concepts.js?v=1"></script>
+    <script src="data/concepts/stack_concepts.js?v=1"></script>
+    <script src="data/concepts/trees_concepts.js?v=1"></script>
+    <script src="data/concepts/graphs_concepts.js?v=1"></script>
+    <script src="data/concepts/dp_concepts.js?v=1"></script>
+    <script src="data/concepts/backtracking_concepts.js?v=1"></script>
     <script>
         document.getElementById('today').textContent = new Date().toLocaleDateString('en-IN', {
             weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
         });
 
         const topics = ['arrays', 'binary_search', 'linked_list', 'stack', 'trees', 'heap_trie', 'graphs', 'dp', 'backtracking'];
+
+        const conceptVarByTopic = {
+            arrays: 'topic_arrays_concepts',
+            stack: 'topic_stack_concepts',
+            trees: 'topic_trees_concepts',
+            graphs: 'topic_graphs_concepts',
+            dp: 'topic_dp_concepts',
+            backtracking: 'topic_backtracking_concepts'
+        };
+
+        function getTopicConcept(topicKey) {
+            const varName = conceptVarByTopic[topicKey];
+            if (!varName) return null;
+            return window[varName] || null;
+        }
 
         async function loadTopicData(topicId) {
             return window.TopicLoader?.loadTopicData(topicId, { version: '1' });
@@ -536,10 +882,14 @@
         }
 
         let showCode = false;
+        let activeDifficulty = 'all';
+        let searchTerm = '';
+        let activeTopic = 'all';
 
         // Build data (lazy)
         const groups = [];
         let totalQ = 0, totalP = 0;
+        const uniquePatterns = new Set();
 
         async function buildGroups() {
             for (const tk of topics) {
@@ -550,6 +900,7 @@
                 t.questions.forEach(q => {
                     if (!q.learn && !q.customHtml) return;
                     totalQ++;
+                    // Prefer primary tag for grouping; if no tag exists -> General
                     const tag = (q.tags && q.tags[0]) || 'General';
                     if (!pats.has(tag)) pats.set(tag, []);
                     pats.get(tag).push(q);
@@ -557,6 +908,8 @@
 
                 if (pats.size > 0) {
                     totalP += pats.size;
+                    // unique pattern keys across all topics
+                    pats.forEach((_, pat) => uniquePatterns.add(pat));
                     groups.push({ key: tk, title: t.title, patterns: pats });
                 }
             }
@@ -565,7 +918,7 @@
             document.getElementById('stats').innerHTML = `
                 <div><div class="stat-num">${totalQ}</div><div class="stat-lbl">Questions</div></div>
                 <div><div class="stat-num">${topics.length}</div><div class="stat-lbl">Topics</div></div>
-                <div><div class="stat-num">${totalP}</div><div class="stat-lbl">Patterns</div></div>
+                <div><div class="stat-num">${uniquePatterns.size}</div><div class="stat-lbl">Unique Patterns</div></div>
             `;
 
             // Tabs
@@ -575,19 +928,40 @@
                     const label = g.title.replace(' Mastery', '').replace(' & Sliding Window', '');
                     return `<button class="tab" data-t="${g.key}" onclick="filter('${g.key}')">${topicEmoji[g.key] || '📌'} ${label}</button>`;
                 }).join('');
+
+            // Difficulty chips
+            document.getElementById('diffChips').addEventListener('click', (e) => {
+                const chip = e.target.closest('.chip');
+                if (!chip) return;
+                document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                activeDifficulty = chip.dataset.d;
+                applyQuery();
+            });
+
+            // Search
+            const s = document.getElementById('search');
+            s.addEventListener('input', () => {
+                searchTerm = (s.value || '').trim().toLowerCase();
+                applyQuery();
+            });
         }
 
         function render() {
             const el = document.getElementById('content');
             let html = '', n = 0;
+            const indexItems = [];
 
             groups.forEach(g => {
                 const emoji = topicEmoji[g.key] || '📌';
 
                 g.patterns.forEach((qs, pat) => {
                     const color = tagColor[pat] || '#5e5ce6';
+                    const pgId = `pg-${g.key}-${pat}`.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
-                    html += `<div class="pg" data-t="${g.key}">
+                    indexItems.push({ id: pgId, label: `${pat} · ${g.title.replace(' Mastery', '')}` });
+
+                    html += `<div class="pg" id="${pgId}" data-t="${g.key}" data-pattern="${esc(pat)}">
                         <div class="pg-head" onclick="this.parentElement.classList.toggle('open')">
                             <div class="pg-left">
                                 <div class="pg-icon" style="background:${color}22;color:${color}">${emoji}</div>
@@ -653,6 +1027,7 @@
                         }
 
                         html += `<div class="q">
+                            <div class="muted" style="display:none" data-search-haystack>${esc(`${g.title} ${pat} ${q.title} ${(q.tags || []).join(' ')}`)}</div>
                             <div class="q-top">
                                 <div class="q-title">
                                     <span class="q-num">#${n}</span>
@@ -676,6 +1051,157 @@
 
             el.innerHTML = html;
             hljs?.highlightAll();
+
+            // Build index
+            const index = document.getElementById('index');
+            const list = document.getElementById('indexList');
+            list.innerHTML = indexItems
+                .slice(0, 80)
+                .map(it => `<a href="#${it.id}" title="${esc(it.label)}">${esc(it.label.split('·')[0].trim())}</a>`)
+                .join('');
+            index.style.display = indexItems.length ? 'block' : 'none';
+
+            applyQuery();
+        }
+
+        function makeQuickLines(html) {
+            const raw = (html || '')
+                .replace(/<script[\s\S]*?<\/script>/gi, '')
+                .replace(/<style[\s\S]*?<\/style>/gi, '')
+                .replace(/<br\s*\/?>/gi, '\n')
+                .replace(/<\/p>/gi, '\n')
+                .replace(/<\/li>/gi, '\n')
+                .replace(/<\/tr>/gi, '\n')
+                .replace(/<[^>]+>/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim();
+
+            // Split into pseudo-lines based on punctuation and typical separators
+            const parts = raw
+                .replace(/\s*→\s*/g, ' -> ')
+                .replace(/\s*\|\s*/g, ' | ')
+                .split(/(?<=[.!?])\s+|\s+\|\s+|\n+/)
+                .map(s => s.trim())
+                .filter(Boolean);
+
+            // Pick best short items
+            const lines = [];
+            for (const p of parts) {
+                if (lines.length >= 4) break;
+                if (p.length < 18) continue;
+                lines.push(p.length > 90 ? p.slice(0, 90) + '…' : p);
+            }
+            return lines.length ? lines : (parts.slice(0, 3));
+        }
+
+        function renderPlaybook() {
+            const pb = document.getElementById('playbook');
+            const pbTitle = document.getElementById('pbTitle');
+            const pbSub = document.getElementById('pbSub');
+            const pbGrid = document.getElementById('pbGrid');
+            const pbActions = document.getElementById('pbActions');
+            const index = document.getElementById('index');
+
+            if (activeTopic === 'all') {
+                pb.style.display = 'none';
+                pbGrid.innerHTML = '';
+                pbActions.innerHTML = '';
+                pbTitle.textContent = 'Playbook';
+                pbSub.textContent = 'Quick one-liners for fast revision';
+                return;
+            }
+
+            const c = getTopicConcept(activeTopic);
+            const topicLabel = (groups.find(g => g.key === activeTopic)?.title || activeTopic).replace(' Mastery', '');
+
+            pb.style.display = 'block';
+            pbTitle.textContent = `${topicEmoji[activeTopic] || '📌'} ${topicLabel} · Quick Playbook`;
+            pbSub.textContent = 'Read → recall → solve (no scrolling)';
+
+            if (!c || !Array.isArray(c.sections) || c.sections.length === 0) {
+                pbGrid.innerHTML = `<div class="pb-card"><h3>No playbook yet</h3><ul class="pb-lines"><li>Add concepts for this topic in <code>data/concepts</code></li></ul></div>`;
+                pbActions.innerHTML = '';
+                return;
+            }
+
+            pbActions.innerHTML = `<span class="chip" onclick="openPlaybook('${esc(activeTopic)}','${esc(c.sections[0].id)}')">View full</span>`;
+
+            pbGrid.innerHTML = c.sections.slice(0, 6).map(sec => {
+                const lines = makeQuickLines(sec.content);
+                const li = lines.map(l => `<li>${esc(l)}</li>`).join('');
+                return `<div class="pb-card">
+                    <h3>${esc(sec.title)}</h3>
+                    <ul class="pb-lines">${li}</ul>
+                </div>`;
+            }).join('');
+
+            // Keep jump index visible for patterns (still useful inside topic)
+            index.style.display = 'block';
+            index.querySelector('.index-title h2').textContent = 'Jump to pattern';
+            index.querySelector('.index-hint').textContent = 'Patterns under this topic';
+        }
+
+        function openPlaybook(topicKey, sectionId) {
+            const c = getTopicConcept(topicKey);
+            const sec = c?.sections?.find(s => s.id === sectionId);
+            if (!sec) return;
+
+            // lightweight modal
+            let modal = document.getElementById('playbookModal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'playbookModal';
+                modal.innerHTML = `
+                <div class="pm-backdrop" onclick="closePlaybook()"></div>
+                <div class="pm">
+                    <div class="pm-head">
+                        <div class="pm-title" id="pmTitle"></div>
+                        <button class="ctrl" onclick="closePlaybook()"><i class="fas fa-xmark"></i> Close</button>
+                    </div>
+                    <div class="pm-body" id="pmBody"></div>
+                </div>`;
+                document.body.appendChild(modal);
+            }
+            document.getElementById('pmTitle').innerHTML = `<strong>${topicEmoji[topicKey] || '📌'}</strong> ${esc(sec.title)}`;
+            document.getElementById('pmBody').innerHTML = sec.content;
+            modal.classList.add('open');
+        }
+
+        function closePlaybook() {
+            document.getElementById('playbookModal')?.classList.remove('open');
+        }
+
+        function applyQuery() {
+            // Filter questions by difficulty + search term (within currently visible topics)
+            const qEls = Array.from(document.querySelectorAll('.q'));
+            let shownQ = 0;
+
+            qEls.forEach(q => {
+                const diffText = (q.querySelector('.badge.must,.badge.good,.badge.bonus')?.textContent || '').trim();
+                const matchesDiff = (activeDifficulty === 'all') || (diffText === activeDifficulty);
+                const hay = (q.querySelector('[data-search-haystack]')?.textContent || '').toLowerCase();
+                const matchesSearch = !searchTerm || hay.includes(searchTerm);
+
+                const show = matchesDiff && matchesSearch;
+                q.classList.toggle('is-hidden', !show);
+                if (show) shownQ++;
+            });
+
+            // Hide empty pattern groups
+            document.querySelectorAll('.pg').forEach(pg => {
+                const visibleQs = pg.querySelectorAll('.q:not(.is-hidden)').length;
+                pg.style.display = (visibleQs > 0) ? 'block' : 'none';
+            });
+
+            // Update summary
+            const visibleGroups = document.querySelectorAll('.pg').length;
+            const visibleAfterFilter = document.querySelectorAll('.pg[style="display: block;"]').length;
+            const sum = document.getElementById('summary');
+            sum.innerHTML = `
+                <div><strong>${shownQ}</strong> questions showing <span class="muted">(search + difficulty)</span></div>
+                <div><span class="muted">Tip:</span> hover on Recall to reveal answer</div>
+                <div><span class="muted">Groups:</span> ${visibleAfterFilter}/${visibleGroups}</div>
+            `;
         }
 
         function expandAll() {
@@ -687,11 +1213,18 @@
         }
 
         function filter(t) {
+            activeTopic = t;
             document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
             document.querySelector(`.tab[data-t="${t}"]`).classList.add('active');
             document.querySelectorAll('.pg').forEach(g => {
                 g.style.display = (t === 'all' || g.dataset.t === t) ? 'block' : 'none';
             });
+
+            // Re-apply query on top of tab filter
+            applyQuery();
+
+            // Topic playbook / index
+            renderPlaybook();
         }
 
         function toggleAllCode() {
@@ -707,6 +1240,7 @@
         (async () => {
             await buildGroups();
             render();
+            renderPlaybook();
         })();
     </script>
     <script src='script.js'></script>

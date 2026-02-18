@@ -177,6 +177,7 @@ def aggressiveCows(stalls, k):
         {
             id: "search-rotated-sorted-array-ii",
             title: "Search Rotated Sorted Array II",
+            problem: "Given a rotated sorted array (may contain duplicates) and a target, return whether the target exists in the array.",
             leetcodeUrl: "https://leetcode.com/problems/search-in-rotated-sorted-array-ii/",
             difficulty: "Must Do",
             priority: "🔴",
@@ -338,6 +339,7 @@ def aggressiveCows(stalls, k):
         {
             id: "koko-eating-bananas",
             title: "Koko Eating Bananas",
+            problem: "You are given banana piles and an integer h. Koko can eat k bananas per hour from one pile at a time. Find the minimum integer k such that she can finish all bananas within h hours.",
             leetcodeUrl: "https://leetcode.com/problems/koko-eating-bananas/",
             difficulty: "Must Do",
             priority: "🔴",
@@ -356,7 +358,7 @@ def aggressiveCows(stalls, k):
             learn: {
                 quickAlgo: [
                     "left_pointer = 1                               # Ek to min khayega koko",
-                    "right_pointer = max(piles)                     # Atleast 1 to khayega hi",
+                    "right_pointer = max(piles)                     # Upper bound: speed=max(piles) ⇒ 1 hour per largest pile (always feasible)",
                     "result = right_pointer",
                     "while left_pointer <= right_pointer:",
                     "    koko_current_speed = (left_pointer + right_pointer) // 2",
@@ -407,7 +409,10 @@ def aggressiveCows(stalls, k):
                 </div>`,
                 crux: "<strong>BS on ANSWER!</strong><br>Search space: <code>[1, max(piles)]</code><br><br><strong>Decision:</strong><br>• hours <= h → Store result, try slower<br>• hours > h → Need faster speed",
                 strategy: "For each speed, calculate total hours. Binary search for minimum valid speed.",
-                trap: "<strong>Ceiling division without math.ceil:</strong><br><code>(pile + speed - 1) // speed</code><br><br>Faster than <code>math.ceil(pile/speed)</code>!",
+                trap: "<strong>Ceiling division (ceil) trick:</strong><br>\
+                <div style=\"margin-top:6px;\"><code>⌈a/b⌉ = ⌊(a + b − 1) / b⌋</code></div>\
+                <div style=\"margin-top:8px;\">In code (integer math): <code>(a + b - 1) // b</code></div>\
+                <div style=\"margin-top:8px; color:var(--text-muted);\">Ya agar yaad nahi rahe: simply <code>math.ceil(a/b)</code> use kar lo ✅</div>",
                 dryRun: [
                     "<strong>Input:</strong> piles=[3, 6, 7, 11], hours=8",
                     "<strong>Init:</strong> left=1, right=11, result=11",
@@ -422,7 +427,7 @@ def aggressiveCows(stalls, k):
     # Take wo sare kele kha le saans lete lete 🍌
     
     left_pointer = 1            # Ek to min khayega koko
-    right_pointer = max(piles)  # Atleast 1 to khayega hi
+    right_pointer = max(piles)  # Upper bound: speed=max(piles) ⇒ each pile ≤ 1 hour
     result = right_pointer
     
     while left_pointer <= right_pointer:
@@ -479,6 +484,7 @@ def aggressiveCows(stalls, k):
         {
             id: "aggressive-cows",
             title: "Aggressive Cows",
+            problem: "Given stall positions and k cows, place the cows in stalls such that the minimum distance between any two cows is maximized. Return that maximum minimum distance.",
             leetcodeUrl: "https://www.spoj.com/problems/AGGRCOW/",
             difficulty: "Must Do",
             priority: "🔴",
@@ -652,6 +658,7 @@ def can_place_cows(stalls, cows, min_dist):
         {
             id: "median-of-two-sorted-arrays",
             title: "Median of 2 Sorted Arrays",
+            problem: "Given two sorted arrays nums1 and nums2, return the median of the two sorted arrays in O(log(min(m,n))) time.",
             leetcodeUrl: "https://leetcode.com/problems/median-of-two-sorted-arrays/",
             difficulty: "HARD",
             priority: "🟡",

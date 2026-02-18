@@ -1652,6 +1652,16 @@
 
                     <!-- 2. CRUX + COMPLEXITY (Side by Side) -->
                     <div class="insight-bar focus-animate" id="sec-crux">
+                        ${q.problem ? `
+                        <div class="pro-section" id="sec-problem" style="margin-top:0;">
+                            <div class="pro-header">
+                                <i class="fas fa-bullseye" style="color:var(--primary)"></i> Problem Goal
+                            </div>
+                            <div class="pro-content">
+                                <p>${q.problem}</p>
+                            </div>
+                        </div>
+                        ` : ''}
                         <div class="insight-card">
                             <div class="insight-label">The Crux</div>
                             <div class="insight-text">

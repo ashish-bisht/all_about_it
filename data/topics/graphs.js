@@ -9,6 +9,7 @@
 const topic_graphs = {
     id: "graphs",
     title: "Graph Mastery",
+            problem: "Goal: Solve the problem 'Graph Mastery' and return the required output as per the prompt.",
     description: "Principal Engineer DSA • Day 6",
     color: "#c026d3",
     icon: "fas fa-project-diagram",
@@ -496,6 +497,7 @@ def orangesRotting(grid):
         {
             id: "course-schedule",
             title: "Course Schedule",
+            problem: "Goal: Solve the problem 'Course Schedule' and return the required output as per the prompt.",
             leetcodeUrl: "https://leetcode.com/problems/course-schedule/",
             difficulty: "Must Do",
             priority: "🔴",
@@ -784,6 +786,7 @@ def course_schedule(num_courses, prerequisites):
         {
             id: "network-delay-time",
             title: "Network Delay Time",
+            problem: "Goal: Solve the problem 'Network Delay Time' and return the required output as per the prompt.",
             leetcodeUrl: "https://leetcode.com/problems/network-delay-time/",
             difficulty: "Must Do",
             priority: "🔴",
@@ -1099,6 +1102,7 @@ def course_schedule(num_courses, prerequisites):
         {
             id: "number-of-provinces",
             title: "Number of Provinces",
+            problem: "Goal: Solve the problem 'Number of Provinces' and return the required output as per the prompt.",
             leetcodeUrl: "https://leetcode.com/problems/number-of-provinces/",
             difficulty: "Must Do",
             priority: "🔴",
@@ -1344,6 +1348,7 @@ def course_schedule(num_courses, prerequisites):
         {
             id: "clone-graph",
             title: "Clone Graph",
+            problem: "Goal: Solve the problem 'Clone Graph' and return the required output as per the prompt.",
             leetcodeUrl: "https://leetcode.com/problems/clone-graph/",
             difficulty: "Good to Do",
             priority: "🟢",
@@ -1585,6 +1590,7 @@ def cloneGraph(node):
         {
             id: "is-graph-bipartite",
             title: "Is Graph Bipartite?",
+            problem: "Goal: Solve the problem 'Is Graph Bipartite?' and return the required output as per the prompt.",
             leetcodeUrl: "https://leetcode.com/problems/is-graph-bipartite/",
             difficulty: "Good to Do",
             priority: "🟡",
@@ -1815,6 +1821,7 @@ def isBipartite(graph):
         {
             id: "detect-cycle-directed",
             title: "Detect Cycle (Directed)",
+            problem: "Goal: Solve the problem 'Detect Cycle (Directed)' and return the required output as per the prompt.",
             leetcodeUrl: "https://practice.geeksforgeeks.org/problems/detect-cycle-in-a-directed-graph/1",
             difficulty: "Must Do",
             priority: "🔴",

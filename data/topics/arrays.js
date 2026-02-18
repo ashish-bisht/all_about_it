@@ -9,6 +9,7 @@
 const topic_arrays = {
     id: "arrays",
     title: "Arrays & Sliding Window",
+            problem: "Goal: Solve the problem 'Arrays & Sliding Window' and return the required output as per the prompt.",
     description: "Principal Engineer DSA • Day 1",
     color: "var(--primary)", // #6366f1
     icon: "fas fa-layer-group",
@@ -276,6 +277,7 @@ def merge(intervals):
         {
             id: "3sum",
             title: "3Sum",
+            problem: "Given an integer array, return all unique triplets [a,b,c] such that a+b+c = 0.",
             leetcodeUrl: "https://leetcode.com/problems/3sum/",
             difficulty: "Must Do",
             priority: "🔴",
@@ -486,6 +488,7 @@ def merge(intervals):
         {
             id: "max-subarray",
             title: "Kadane's Algorithm",
+            problem: "Given an integer array, find the contiguous subarray with the largest sum and return that sum.",
             leetcodeUrl: "https://leetcode.com/problems/maximum-subarray/",
             difficulty: "Must Do",
             priority: "🔴",
@@ -606,6 +609,7 @@ def merge(intervals):
         {
             id: "product-except-self",
             title: "Product Except Self",
+            problem: "Given an integer array nums, return an array output where output[i] is the product of all elements except nums[i], without using division.",
             leetcodeUrl: "https://leetcode.com/problems/product-of-array-except-self/",
             difficulty: "Must Do",
             priority: "🔴",
@@ -753,6 +757,7 @@ def merge(intervals):
         {
             id: "trapping-rain-water",
             title: "Trapping Rain Water",
+            problem: "Given non-negative integers representing elevation map bars, compute how much water can be trapped after raining.",
             leetcodeUrl: "https://leetcode.com/problems/trapping-rain-water/",
             difficulty: "Must Do",
             priority: "🔴",
@@ -940,6 +945,7 @@ def merge(intervals):
         {
             id: "merge-intervals",
             title: "Merge Intervals",
+            problem: "Given an array of intervals, merge all overlapping intervals and return the resulting intervals.",
             leetcodeUrl: "https://leetcode.com/problems/merge-intervals/",
             difficulty: "Must Do",
             priority: "🔴",
@@ -1069,6 +1075,7 @@ def merge(intervals):
         {
             id: "meeting-rooms-ii",
             title: "Meeting Rooms II",
+            problem: "Goal: Solve the problem 'Meeting Rooms II' and return the required output as per the prompt.",
             leetcodeUrl: "https://leetcode.com/problems/meeting-rooms-ii/",
             difficulty: "Must Do",
             priority: "🔴",
@@ -1199,6 +1206,7 @@ def min_meeting_rooms(intervals):
         {
             id: "longest-substring",
             title: "Longest Substring Without Repeating",
+            problem: "Given a string, find the length of the longest substring without repeating characters.",
             leetcodeUrl: "https://leetcode.com/problems/longest-substring-without-repeating-characters/",
             difficulty: "Must Do",
             priority: "🔴",
@@ -1331,6 +1339,7 @@ def min_meeting_rooms(intervals):
         {
             id: "sort-colors",
             title: "Sort Colors",
+            problem: "Given an array with values 0,1,2, sort it in-place so that same colors are adjacent (Dutch National Flag).",
             leetcodeUrl: "https://leetcode.com/problems/sort-colors/",
             difficulty: "Good to Do",
             priority: "🟡",
@@ -1453,6 +1462,7 @@ while i <= r:
         {
             id: "subarray-sum-xor-k",
             title: "Subarrays with XOR K",
+            problem: "Given an array and integer k, count the number of subarrays whose XOR equals k.",
             leetcodeUrl: "https://www.interviewbit.com/problems/subarray-with-given-xor/",
             difficulty: "Good to Do",
             priority: "🟡",
@@ -1551,6 +1561,7 @@ return cnt`,
         {
             id: "longest-substring-k-distinct",
             title: "Longest Substring K Distinct",
+            problem: "Goal: Solve the problem 'Longest Substring K Distinct' and return the required output as per the prompt.",
             leetcodeUrl: "https://leetcode.com/problems/longest-substring-with-at-most-k-distinct-characters/",
             difficulty: "Good to Do",
             priority: "🟡",

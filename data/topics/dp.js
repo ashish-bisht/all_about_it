@@ -9,6 +9,7 @@
 const topic_dp = {
     id: "dp",
     title: "Dynamic Programming",
+            problem: "Goal: Solve the problem 'Dynamic Programming' and return the required output as per the prompt.",
     description: "Principal Engineer DSA • Day 7",
     color: "#ec4899",
     icon: "fas fa-braille",
@@ -448,6 +449,7 @@ print(rob([100]))         # 100 (single house, bas wahi rob karo)`
         {
             id: "longest-increasing-subsequence",
             title: "LIS",
+            problem: "Goal: Solve the problem 'LIS' and return the required output as per the prompt.",
             leetcodeUrl: "https://leetcode.com/problems/longest-increasing-subsequence/",
             visualizerUrl: "visualizers/lis.html",
             difficulty: "Must Do",
@@ -723,6 +725,7 @@ print(lengthOfLIS([0,1,0,3,2,3]))           # 4 -> [0,1,2,3]`
         {
             id: "longest-common-subsequence",
             title: "LCS",
+            problem: "Goal: Solve the problem 'LCS' and return the required output as per the prompt.",
             leetcodeUrl: "https://leetcode.com/problems/longest-common-subsequence/",
             visualizerUrl: "visualizers/lcs.html",
             difficulty: "Must Do",
@@ -989,6 +992,7 @@ print(longestCommonSubsequence("abc", "def"))    # 0 -> koi common nahi`
         {
             id: "coin-change",
             title: "Coin Change",
+            problem: "Goal: Solve the problem 'Coin Change' and return the required output as per the prompt.",
             leetcodeUrl: "https://leetcode.com/problems/coin-change/",
             visualizerUrl: "visualizers/min_coins.html",
             difficulty: "Must Do",
@@ -1268,6 +1272,7 @@ print(coinChange([2], 3))       # -1 -> impossible (sirf even bana sakte)`
         {
             id: "word-break",
             title: "Word Break",
+            problem: "Goal: Solve the problem 'Word Break' and return the required output as per the prompt.",
             leetcodeUrl: "https://leetcode.com/problems/word-break/",
             visualizerUrl: "visualizers/word_break.html",
             difficulty: "Good to Do",
@@ -1713,6 +1718,7 @@ print(wordBreak("catsandog", ["cats","dog","sand","and","cat"]))  # False`
         {
             id: "partition-equal-subset-sum",
             title: "0/1 Knapsack (Partition)",
+            problem: "Goal: Solve the problem '0/1 Knapsack (Partition)' and return the required output as per the prompt.",
             leetcodeUrl: "https://leetcode.com/problems/partition-equal-subset-sum/",
             difficulty: "Good to Do",
             priority: "🟡",
@@ -2120,6 +2126,7 @@ print(canPartition([1, 2, 3, 5]))   # False -> total=11 (odd)`
         {
             id: "edit-distance",
             title: "Edit Distance",
+            problem: "Goal: Solve the problem 'Edit Distance' and return the required output as per the prompt.",
             leetcodeUrl: "https://leetcode.com/problems/edit-distance/",
             difficulty: "Good to Do",
             priority: "🟡",

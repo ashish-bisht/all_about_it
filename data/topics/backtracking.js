@@ -9,6 +9,7 @@
 const topic_backtracking = {
     id: "backtracking",
     title: "Backtracking Mastery",
+            problem: "Goal: Solve the problem 'Backtracking Mastery' and return the required output as per the prompt.",
     description: "Principal Engineer DSA • Part 2",
     color: "#4c1d95",
     icon: "fas fa-chess-queen",
@@ -480,6 +481,7 @@ Same diagonal formula for ANY cell:
         {
             id: "permutations",
             title: "Permutations",
+            problem: "Goal: Solve the problem 'Permutations' and return the required output as per the prompt.",
             leetcodeUrl: "https://leetcode.com/problems/permutations/",
             difficulty: "Must Do",
             priority: "🔴",
@@ -653,6 +655,7 @@ Each permutation: copy array to result = O(N)<br><br>
         {
             id: "subsets",
             title: "Subsets",
+            problem: "Goal: Solve the problem 'Subsets' and return the required output as per the prompt.",
             leetcodeUrl: "https://leetcode.com/problems/subsets/",
             difficulty: "Must Do",
             priority: "🔴",
@@ -770,6 +773,7 @@ Must use <code>res.append(path[:])</code>!`,
         {
             id: "combination-sum",
             title: "Combination Sum",
+            problem: "Goal: Solve the problem 'Combination Sum' and return the required output as per the prompt.",
             leetcodeUrl: "https://leetcode.com/problems/combination-sum/",
             difficulty: "Must Do",
             priority: "🔴",
@@ -870,6 +874,7 @@ Must check <code>if sum > target</code> and ensure numbers are positive!`,
         {
             id: "word-search",
             title: "Word Search",
+            problem: "Goal: Solve the problem 'Word Search' and return the required output as per the prompt.",
             leetcodeUrl: "https://leetcode.com/problems/word-search/",
             difficulty: "Must Do",
             priority: "🔴",
@@ -1002,6 +1007,7 @@ If you don't unmark, other paths can't use this cell!`,
         {
             id: "sudoku-solver",
             title: "Sudoku Solver",
+            problem: "Goal: Solve the problem 'Sudoku Solver' and return the required output as per the prompt.",
             leetcodeUrl: "https://leetcode.com/problems/sudoku-solver/",
             difficulty: "Bonus",
             priority: "🟡",

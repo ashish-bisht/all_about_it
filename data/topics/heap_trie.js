@@ -9,6 +9,7 @@
 const topic_heap_trie = {
     id: "heap_trie",
     title: "Heaps & Tries",
+            problem: "Goal: Solve the problem 'Heaps & Tries' and return the required output as per the prompt.",
     description: "Principal Engineer DSA • Day 8",
     color: "#d97706",
     icon: "fas fa-sitemap",
@@ -252,6 +253,7 @@ class KthLargest:
         {
             id: "merge-k-sorted-lists",
             title: "Merge K Sorted Lists",
+            problem: "Goal: Solve the problem 'Merge K Sorted Lists' and return the required output as per the prompt.",
             leetcodeUrl: "https://leetcode.com/problems/merge-k-sorted-lists/",
             difficulty: "Must Do",
             priority: "🔴",
@@ -353,6 +355,7 @@ def mergeKLists(lists):
         {
             id: "implement-trie-prefix-tree",
             title: "Implement Trie",
+            problem: "Goal: Solve the problem 'Implement Trie' and return the required output as per the prompt.",
             leetcodeUrl: "https://leetcode.com/problems/implement-trie-prefix-tree/",
             difficulty: "Must Do",
             priority: "🔴",
@@ -475,6 +478,7 @@ class Trie:
         {
             id: "maximum-xor-of-two-numbers-in-an-array",
             title: "Max XOR of Two Numbers",
+            problem: "Goal: Solve the problem 'Max XOR of Two Numbers' and return the required output as per the prompt.",
             leetcodeUrl: "https://leetcode.com/problems/maximum-xor-of-two-numbers-in-an-array/",
             difficulty: "Good to Do",
             priority: "🟡",
@@ -592,6 +596,7 @@ def findMaximumXOR(nums):
         {
             id: "single-number",
             title: "Single Number",
+            problem: "Goal: Solve the problem 'Single Number' and return the required output as per the prompt.",
             leetcodeUrl: "https://leetcode.com/problems/single-number/",
             difficulty: "Bonus",
             priority: "🟢",
@@ -672,6 +677,7 @@ def findMaximumXOR(nums):
         {
             id: "heapify-algorithm",
             title: "Heapify Algorithm",
+            problem: "Goal: Solve the problem 'Heapify Algorithm' and return the required output as per the prompt.",
             difficulty: "Bonus",
             priority: "🟢",
             tags: ["Heap"],
