@@ -9,7 +9,6 @@
 const topic_stack = {
     id: "stack",
     title: "Monotonic Stack Mastery",
-            problem: "Goal: Solve the problem 'Monotonic Stack Mastery' and return the required output as per the prompt.",
     description: "Principal Engineer DSA • Day 3",
     color: "#7c3aed",
     icon: "fas fa-layer-group",
@@ -273,7 +272,6 @@ def asteroidCollision(asteroids):
         {
             id: "largest-rectangle-in-histogram",
             title: "Largest Rectangle in Histogram",
-            problem: "Goal: Solve the problem 'Largest Rectangle in Histogram' and return the required output as per the prompt.",
             leetcodeUrl: "https://leetcode.com/problems/largest-rectangle-in-histogram/",
             difficulty: "Must Do",
             priority: "🔴",
@@ -376,7 +374,6 @@ def asteroidCollision(asteroids):
         {
             id: "trapping-rain-water-stack",
             title: "Trapping Rain Water (Stack)",
-            problem: "Goal: Solve the problem 'Trapping Rain Water (Stack)' and return the required output as per the prompt.",
             leetcodeUrl: "https://leetcode.com/problems/trapping-rain-water/",
             difficulty: "Good to Do",
             priority: "🟡",
@@ -477,7 +474,6 @@ def asteroidCollision(asteroids):
         {
             id: "asteroid-collision",
             title: "Asteroid Collision",
-            problem: "Goal: Solve the problem 'Asteroid Collision' and return the required output as per the prompt.",
             leetcodeUrl: "https://leetcode.com/problems/asteroid-collision/",
             difficulty: "Bonus",
             priority: "🟢",

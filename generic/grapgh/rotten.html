@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rotten Oranges — Multi-Source BFS</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f; --surface: #111118; --surface2: #0d0d14;
+    --border: #1e1e2e; --accent: #7c3aed; --cyan: #06b6d4;
+    --amber: #f59e0b; --green: #10b981; --red: #ef4444;
+    --orange: #f97316; --pink: #ec4899; --text: #e2e8f0; --muted: #64748b;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'JetBrains Mono',monospace; min-height:100vh; }
+  .noise { position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E"); }
+  .grid-bg { position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);
+    background-size:48px 48px;opacity:0.22; }
+  .wrap { position:relative;z-index:1;max-width:1020px;margin:0 auto;padding:36px 20px 60px; }
+
+  h1 { font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(1.8rem,4vw,3rem);
+    background:linear-gradient(120deg,#fff 0%,var(--orange) 50%,var(--red) 100%);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    line-height:1.1;margin-bottom:6px; }
+  .sub { color:var(--muted);font-size:0.8rem;margin-bottom:36px;letter-spacing:0.06em; }
+
+  .sec-title { font-family:'Syne',sans-serif;font-weight:800;font-size:1.05rem;
+    margin-bottom:14px;display:flex;align-items:center;gap:10px; }
+  .dot { width:8px;height:8px;border-radius:50%;flex-shrink:0; }
+  .section { margin-bottom:28px; }
+
+  .card { background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;position:relative;overflow:hidden; }
+  .card::before { content:'';position:absolute;top:0;left:0;right:0;height:2px; }
+  .card.c-orange::before { background:linear-gradient(90deg,var(--orange),var(--red)); }
+  .card.c-cyan::before { background:linear-gradient(90deg,var(--cyan),var(--accent)); }
+  .card.c-amber::before { background:linear-gradient(90deg,var(--amber),var(--orange)); }
+  .card.c-green::before { background:linear-gradient(90deg,var(--green),var(--cyan)); }
+
+  /* GRID */
+  .grid-controls { display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px; }
+  .btn { font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem;
+    padding:8px 18px;border-radius:8px;border:none;cursor:pointer;transition:all 0.15s;letter-spacing:0.04em; }
+  .btn-run { background:var(--orange);color:#000; }
+  .btn-run:hover { background:#fb923c;transform:translateY(-1px); }
+  .btn-reset { background:var(--surface2);color:var(--muted);border:1px solid var(--border); }
+  .btn-reset:hover { color:var(--text); }
+  .btn-eg { background:var(--surface2);color:var(--muted);border:1px solid var(--border);font-size:0.75rem;padding:6px 12px; }
+  .btn-eg:hover { color:var(--text); }
+  .speed-wrap { display:flex;align-items:center;gap:8px;margin-left:auto; }
+  .speed-wrap label { font-size:0.72rem;color:var(--muted); }
+  input[type=range] { accent-color:var(--orange);cursor:pointer;width:90px; }
+
+  /* ORANGE GRID */
+  #orange-grid { display:inline-grid;gap:4px;margin-bottom:14px; }
+  .cell {
+    width:52px;height:52px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+    font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;cursor:pointer;
+    border:2px solid transparent;transition:all 0.25s;position:relative;user-select:none;
+  }
+  .cell.empty { background:#1a1a2e;border-color:#2a2a3e;color:#3b3b5c; }
+  .cell.fresh { background:#10b98122;border-color:#10b981;color:var(--green); }
+  .cell.rotten { background:#ef444422;border-color:var(--red);color:var(--red); }
+  .cell.rotting { background:#f9731622;border-color:var(--orange);color:var(--orange);animation:pulse 0.4s ease; }
+  .cell.done { background:#f9731633;border-color:#f97316aa;color:#fb923c; }
+  .cell.source { background:#ef444433;border-color:var(--red);color:var(--red);box-shadow:0 0 12px #ef444455; }
+  @keyframes pulse { 0%{transform:scale(1)} 50%{transform:scale(1.15)} 100%{transform:scale(1)} }
+  .cell-minute { position:absolute;bottom:2px;right:5px;font-size:9px;color:var(--amber);font-family:'JetBrains Mono',monospace; }
+
+  .grid-legend { display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px; }
+  .leg-item { display:flex;align-items:center;gap:6px;font-size:0.72rem;color:var(--muted); }
+  .leg-dot { width:12px;height:12px;border-radius:3px; }
+  .click-hint { font-size:0.72rem;color:var(--muted);margin-bottom:12px; }
+
+  /* LOG */
+  .log-area { background:var(--surface2);border-radius:10px;padding:14px;margin-top:14px;min-height:60px; }
+  .log-title { font-size:0.68rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px; }
+  #log-text { font-size:0.8rem;color:var(--green);line-height:1.9; }
+  #queue-text { font-size:0.75rem;color:var(--amber);line-height:1.7;margin-top:6px; }
+
+  /* COMPLEXITY */
+  .comp-grid { display:grid;grid-template-columns:1fr 1fr;gap:14px; }
+  @media(max-width:560px) { .comp-grid { grid-template-columns:1fr; } }
+  .comp-box { background:var(--surface2);border-radius:10px;padding:16px;border:1px solid var(--border); }
+  .comp-box h4 { font-family:'Syne',sans-serif;font-weight:800;font-size:0.88rem;margin-bottom:12px; }
+  .comp-line { display:flex;justify-content:space-between;align-items:flex-start;padding:6px 0;border-bottom:1px solid #1a1a2a;gap:8px; }
+  .comp-line:last-child { border-bottom:none; }
+  .comp-what { color:var(--muted);font-size:0.74rem;flex:1; }
+  .comp-explain { color:#4a5568;font-size:0.7rem;margin-top:2px;line-height:1.5; }
+  .comp-val { font-size:0.8rem;font-family:'Syne',sans-serif;font-weight:800;flex-shrink:0; }
+
+  pre { background:var(--surface2);border-radius:10px;padding:16px;font-size:0.76rem;
+    line-height:1.85;overflow-x:auto;border:1px solid var(--border);margin-top:10px; }
+  .kw{color:var(--accent)} .fn{color:var(--cyan)} .cm{color:#3d4a5c;font-style:italic}
+  .nm{color:var(--amber)} .st{color:var(--green)} .op{color:var(--orange)}
+
+  .insight-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:14px; }
+  .insight { background:var(--surface2);border-radius:10px;padding:14px;border:1px solid var(--border); }
+  .insight-q { font-family:'Syne',sans-serif;font-weight:800;font-size:0.85rem;margin-bottom:8px; }
+  .insight-a { font-size:0.76rem;color:#a0aec0;line-height:1.7; }
+
+  .final-strip { background:var(--surface2);border-radius:12px;padding:18px;margin-top:16px;
+    border:1px solid #f9731633;display:flex;gap:24px;flex-wrap:wrap;align-items:center; }
+  .final-item .label { font-size:0.64rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px; }
+  .final-item .val { font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem; }
+
+  .stats-bar { display:flex;gap:10px;flex-wrap:wrap;margin-top:12px; }
+  .stat { background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 14px; }
+  .stat .sl { font-size:0.64rem;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:3px; }
+  .stat .sv { font-family:'Syne',sans-serif;font-weight:800;font-size:1rem; }
+
+  .vs-table { width:100%;border-collapse:collapse;font-size:0.77rem;margin-top:10px; }
+  .vs-table th { background:var(--surface2);color:var(--muted);padding:8px 12px;text-align:left;
+    border-bottom:1px solid var(--border);font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase; }
+  .vs-table td { padding:9px 12px;border-bottom:1px solid #1a1a2a;vertical-align:top;color:#a0aec0; }
+  .vs-table tr:last-child td { border-bottom:none; }
+  .vs-table strong { color:var(--text); }
+</style>
+</head>
+<body>
+<div class="noise"></div>
+<div class="grid-bg"></div>
+<div class="wrap">
+
+<h1>Rotten Oranges</h1>
+<p class="sub">// Multi-Source BFS · Time & Space O(M×N) · Grid Graph — Ekdam Detail Mein</p>
+
+<!-- CONCEPT -->
+<div class="section">
+  <div class="sec-title"><div class="dot" style="background:var(--orange)"></div>
+    <span style="color:var(--orange)">Course Schedule se kya alag hai?</span>
+  </div>
+  <div class="card c-orange">
+    <table class="vs-table">
+      <thead><tr><th>Cheez</th><th>Course Schedule</th><th>Rotten Oranges</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Graph type</strong></td><td>Explicit adj list banate hain</td><td>Grid itself = graph. Cell = node, 4 neighbors = edges</td></tr>
+        <tr><td><strong>BFS sources</strong></td><td>Single source (indegree=0 wale)</td><td><strong style="color:var(--orange)">Multi-source</strong> — saare rotten oranges ek saath queue mein!</td></tr>
+        <tr><td><strong>Goal</strong></td><td>Cycle detect karo</td><td>Min time nikalo, ya -1 agar possible nahi</td></tr>
+        <tr><td><strong>Visited tracking</strong></td><td>indegree se handle</td><td>Cell value 2 ho gayi = visited</td></tr>
+        <tr><td><strong>Answer</strong></td><td>count == n?</td><td>Fresh oranges remaining == 0? → minutes</td></tr>
+      </tbody>
+    </table>
+    <div style="background:#f9731611;border:1px solid #f9731633;border-radius:8px;padding:12px;margin-top:14px;font-size:0.8rem;color:#a0aec0;line-height:1.8">
+      <strong style="color:var(--orange)">Multi-Source BFS ka concept:</strong> Ek baar mein <strong style="color:var(--text)">saare rotten oranges</strong> ko queue mein daalo.
+      Phir BFS chalaao — har minute ek "level" hai. Level-by-level spread hota hai rot, exactly like ripples in a pond from <strong style="color:var(--text)">multiple stones simultaneously.</strong>
+    </div>
+  </div>
+</div>
+
+<!-- INTERACTIVE GRID -->
+<div class="section">
+  <div class="sec-title"><div class="dot" style="background:var(--cyan)"></div>
+    <span style="color:var(--cyan)">Interactive Grid — Click to toggle, then Run BFS</span>
+  </div>
+  <div class="card c-cyan">
+    <div class="grid-controls">
+      <button class="btn btn-eg" onclick="loadEg(0)">Example 1</button>
+      <button class="btn btn-eg" onclick="loadEg(1)">Example 2 (impossible)</button>
+      <button class="btn btn-eg" onclick="loadEg(2)">Example 3 (multi-source)</button>
+      <button class="btn btn-reset" onclick="resetGrid()">↺ Reset</button>
+      <button class="btn btn-run" onclick="runBFS()">▶ Run BFS</button>
+      <div class="speed-wrap"><label>Speed:</label><input type="range" id="speed" min="100" max="900" value="450"></div>
+    </div>
+    <p class="click-hint">// Click any cell to cycle: Empty → Fresh → Rotten → Empty</p>
+    <div class="grid-legend">
+      <div class="leg-item"><div class="leg-dot" style="background:#10b98133;border:1px solid #10b981"></div>Fresh (1)</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#ef444433;border:1px solid var(--red)"></div>Rotten (2)</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#1a1a2e;border:1px solid #2a2a3e"></div>Empty (0)</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#f9731633;border:1px solid var(--orange)"></div>Just rotted</div>
+    </div>
+    <div id="orange-grid"></div>
+    <div class="stats-bar" id="stats-bar"></div>
+    <div class="log-area">
+      <div class="log-title">// BFS Log</div>
+      <div id="log-text">— press Run BFS —</div>
+      <div id="queue-text"></div>
+    </div>
+  </div>
+</div>
+
+<!-- CODE + COMPLEXITY -->
+<div class="section">
+  <div class="sec-title"><div class="dot" style="background:var(--amber)"></div>
+    <span style="color:var(--amber)">Code + Time Complexity — Har line ka hisaab</span>
+  </div>
+  <div class="card c-amber">
+    <pre><span class="kw">def</span> <span class="fn">orangesRotting</span>(grid):
+    rows, cols = len(grid), len(grid[<span class="nm">0</span>])  <span class="cm">← O(1)</span>
+    queue = deque()
+    fresh = <span class="nm">0</span>
+
+    <span class="cm"># ① Grid scan — saare cells ek baar dekho</span>
+    <span class="kw">for</span> r <span class="kw">in</span> range(rows):                 <span class="cm">←</span>
+        <span class="kw">for</span> c <span class="kw">in</span> range(cols):             <span class="cm">←  O(M×N)  — M=rows, N=cols</span>
+            <span class="kw">if</span> grid[r][c] == <span class="nm">2</span>:           <span class="cm">←  har cell ek baar check</span>
+                queue.append((r, c, <span class="nm">0</span>))    <span class="cm">← rotten → queue mein (multi-source!)</span>
+            <span class="kw">elif</span> grid[r][c] == <span class="nm">1</span>:
+                fresh += <span class="nm">1</span>               <span class="cm">← fresh count track karo</span>
+
+    <span class="cm"># ② BFS — level by level (minute by minute)</span>
+    minutes = <span class="nm">0</span>
+    dirs = [(<span class="nm">-1</span>,<span class="nm">0</span>),(<span class="nm">1</span>,<span class="nm">0</span>),(<span class="nm">0</span>,<span class="nm">-1</span>),(<span class="nm">0</span>,<span class="nm">1</span>)]  <span class="cm">← 4 directions</span>
+
+    <span class="kw">while</span> queue:
+        r, c, minute = queue.popleft()   <span class="cm">← O(1) per dequeue</span>
+        <span class="kw">for</span> dr, dc <span class="kw">in</span> dirs:             <span class="cm">← 4 neighbors check karo</span>
+            nr, nc = r+dr, c+dc
+            <span class="kw">if</span> (<span class="nm">0</span> <= nr < rows <span class="kw">and</span>       <span class="cm">← bounds check O(1)</span>
+                <span class="nm">0</span> <= nc < cols <span class="kw">and</span>
+                grid[nr][nc] == <span class="nm">1</span>):      <span class="cm">← fresh hai?</span>
+                grid[nr][nc] = <span class="nm">2</span>         <span class="cm">← rot karo (visited mark)</span>
+                fresh -= <span class="nm">1</span>
+                minutes = minute + <span class="nm">1</span>
+                queue.append((nr, nc, minute+<span class="nm">1</span>))  <span class="cm">← next minute</span>
+    <span class="cm">#  Total BFS: har cell max ek baar queue mein → O(M×N)</span>
+
+    <span class="kw">return</span> minutes <span class="kw">if</span> fresh == <span class="nm">0</span> <span class="kw">else</span> <span class="nm">-1</span>  <span class="cm">← O(1)</span></pre>
+
+    <div class="comp-grid" style="margin-top:16px">
+      <div class="comp-box">
+        <h4 style="color:var(--amber)">⏱ Time Complexity</h4>
+        <div class="comp-line">
+          <div class="comp-what">Grid scan (nested loop)<div class="comp-explain">M rows × N cols — har cell ek baar visit</div></div>
+          <div class="comp-val" style="color:var(--cyan)">O(M×N)</div>
+        </div>
+        <div class="comp-line">
+          <div class="comp-what">BFS — node processing<div class="comp-explain">Har cell max ek baar queue mein aati hai. Rotten ho gayi = dobara nahi aayegi.</div></div>
+          <div class="comp-val" style="color:var(--cyan)">O(M×N)</div>
+        </div>
+        <div class="comp-line">
+          <div class="comp-what">BFS — edge traversal<div class="comp-explain">Har cell ke 4 neighbors check karo. Total = 4 × M×N = O(M×N)</div></div>
+          <div class="comp-val" style="color:var(--cyan)">O(M×N)</div>
+        </div>
+        <div style="margin-top:12px;padding:10px;background:#f59e0b11;border-radius:8px;border:1px solid #f59e0b33">
+          <div style="font-size:0.68rem;color:var(--muted);margin-bottom:4px">TOTAL TIME</div>
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:var(--amber)">O(M × N)</div>
+          <div style="font-size:0.7rem;color:#718096;margin-top:4px">M = rows, N = cols. Har cell sirf ek baar process hoti hai.</div>
+        </div>
+      </div>
+      <div class="comp-box">
+        <h4 style="color:var(--green)">💾 Space Complexity</h4>
+        <div class="comp-line">
+          <div class="comp-what">Queue (deque)<div class="comp-explain">Worst case: saari M×N cells ek saath queue mein (e.g. checkerboard pattern — alternate rotten)</div></div>
+          <div class="comp-val" style="color:var(--green)">O(M×N)</div>
+        </div>
+        <div class="comp-line">
+          <div class="comp-what">Grid modification (in-place)<div class="comp-explain">Grid khud hi visited array hai — cell 2 ho gayi = visited. Extra array nahi chahiye!</div></div>
+          <div class="comp-val" style="color:var(--green)">O(1)</div>
+        </div>
+        <div class="comp-line">
+          <div class="comp-what">dirs array, counters<div class="comp-explain">Constant size variables</div></div>
+          <div class="comp-val" style="color:var(--green)">O(1)</div>
+        </div>
+        <div style="margin-top:12px;padding:10px;background:#10b98111;border-radius:8px;border:1px solid #10b98133">
+          <div style="font-size:0.68rem;color:var(--muted);margin-bottom:4px">TOTAL SPACE</div>
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:var(--green)">O(M × N)</div>
+          <div style="font-size:0.7rem;color:#718096;margin-top:4px">Queue dominate karta hai — worst case saari cells queue mein.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- INSIGHTS -->
+<div class="section">
+  <div class="sec-title"><div class="dot" style="background:var(--accent)"></div>
+    <span style="color:var(--accent)">Interview Follow-ups — Ye zaroor poochhe jaate hain</span>
+  </div>
+  <div class="card c-green">
+    <div class="insight-grid">
+      <div class="insight">
+        <div class="insight-q" style="color:var(--orange)">Q: Multi-source kyun? Single source kyun nahi?</div>
+        <div class="insight-a">Agar ek ek rotten orange se separate BFS chalate, toh har source ke liye O(M×N) lagta — total O(R × M×N) jahan R = rotten count. <strong style="color:var(--text)">Multi-source BFS sab sources ek saath process karta hai — sirf O(M×N).</strong> Real time simulate karta hai — minute 0 pe saare rotten simultaneously spread karte hain.</div>
+      </div>
+      <div class="insight">
+        <div class="insight-q" style="color:var(--cyan)">Q: Visited array kyun nahi banaya?</div>
+        <div class="insight-a">Grid khud hi visited track kar raha hai! <strong style="color:var(--text)">Cell 1 hai = fresh (unvisited), Cell 2 hai = rotten (visited).</strong> In-place modification se extra O(M×N) space bachta hai. Agar original grid preserve karna ho toh alag visited array banao.</div>
+      </div>
+      <div class="insight">
+        <div class="insight-q" style="color:var(--green)">Q: -1 kab return karte hain?</div>
+        <div class="insight-a">BFS complete hone ke baad agar <strong style="color:var(--text)">fresh > 0</strong> hai toh koi fresh orange reachable nahi tha (empty cell se surrounded tha). Return -1. Agar fresh == 0 already initially, return 0 — no time needed.</div>
+      </div>
+      <div class="insight">
+        <div class="insight-q" style="color:var(--amber)">Q: Minutes kaise track karte hain?</div>
+        <div class="insight-a">Do approaches: <strong style="color:var(--text)">(1) Queue mein (r, c, minute) store karo</strong> — simple. (2) Level-by-level BFS — queue ka current size leke ek poora level process karo, phir minute++. Dono O(M×N) hain. Tuple approach zyada readable hai interviews mein.</div>
+      </div>
+      <div class="insight">
+        <div class="insight-q" style="color:var(--pink)">Q: 4 directions kyun, 8 kyun nahi?</div>
+        <div class="insight-a">Problem statement mein specifically <strong style="color:var(--text)">4-directionally adjacent</strong> likha hai (up, down, left, right). Diagonal movement allowed nahi. Agar 8-directional hota toh dirs array mein 4 aur tuples add karo.</div>
+      </div>
+      <div class="insight">
+        <div class="insight-q" style="color:var(--cyan)">Q: Course Schedule se analogy?</div>
+        <div class="insight-a">Bilkul same Kahn's BFS! <strong style="color:var(--text)">Rotten orange = node with indegree 0</strong> (no dependency). Fresh neighbors = dependent nodes. Jaise Kahn's mein count track kiya, yahan fresh count track karte hain. Both detect "unreachable" nodes.</div>
+      </div>
+    </div>
+
+    <div class="final-strip">
+      <div class="final-item"><div class="label">Time</div><div class="val" style="color:var(--amber)">O(M×N)</div></div>
+      <div class="final-item"><div class="label">Space</div><div class="val" style="color:var(--green)">O(M×N)</div></div>
+      <div style="flex:1;min-width:260px;font-size:0.78rem;color:#718096;line-height:1.9;border-left:1px solid var(--border);padding-left:20px">
+        <strong style="color:var(--text)">"We do a single grid scan O(M×N) to initialize. Then BFS processes each cell at most once — O(M×N). Each cell checks 4 neighbors — still O(M×N) total. Queue holds at most M×N cells. Hence O(M×N) time and space."</strong>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+<script>
+const EXAMPLES = [
+  [[2,1,1],[1,1,0],[0,1,1]],           // ans: 4
+  [[2,1,1],[0,1,1],[1,0,1]],           // ans: -1
+  [[2,1,1],[1,1,2],[0,1,1]],           // multi-source, ans: 2
+];
+
+let grid = [];
+let animating = false;
+
+function loadEg(i) {
+  if (animating) return;
+  grid = EXAMPLES[i].map(r => [...r]);
+  renderGrid();
+  clearLog();
+}
+
+function renderGrid(colors={}) {
+  const rows = grid.length, cols = grid[0].length;
+  const el = document.getElementById('orange-grid');
+  el.style.gridTemplateColumns = `repeat(${cols}, 52px)`;
+  el.innerHTML = '';
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const div = document.createElement('div');
+      div.className = 'cell';
+      const key = `${r},${c}`;
+      const v = grid[r][c];
+      const state = colors[key];
+      if (state === 'rotting') div.className = 'cell rotting';
+      else if (state === 'done') div.className = 'cell done';
+      else if (v === 0) div.className = 'cell empty';
+      else if (v === 1) div.className = 'cell fresh';
+      else if (v === 2) div.className = 'cell rotten';
+
+      div.textContent = v === 0 ? '·' : v === 1 ? '🟢' : '🔴';
+      if (colors[key+'_min']) {
+        const m = document.createElement('div');
+        m.className = 'cell-minute';
+        m.textContent = `t=${colors[key+'_min']}`;
+        div.appendChild(m);
+      }
+      div.onclick = () => { if (!animating) { grid[r][c] = (grid[r][c]+1)%3; renderGrid(); updateStats(); } };
+      el.appendChild(div);
+    }
+  }
+  updateStats();
+}
+
+function updateStats() {
+  const rows = grid.length, cols = grid[0].length;
+  let fresh=0, rotten=0, empty=0;
+  for(let r=0;r<rows;r++) for(let c=0;c<cols;c++) {
+    if(grid[r][c]===1) fresh++;
+    else if(grid[r][c]===2) rotten++;
+    else empty++;
+  }
+  document.getElementById('stats-bar').innerHTML = `
+    <div class="stat"><div class="sl">Grid</div><div class="sv" style="color:var(--cyan)">${rows}×${cols}</div></div>
+    <div class="stat"><div class="sl">Total Cells (M×N)</div><div class="sv" style="color:var(--text)">${rows*cols}</div></div>
+    <div class="stat"><div class="sl">Fresh 🟢</div><div class="sv" style="color:var(--green)">${fresh}</div></div>
+    <div class="stat"><div class="sl">Rotten 🔴</div><div class="sv" style="color:var(--red)">${rotten}</div></div>
+    <div class="stat"><div class="sl">Empty ·</div><div class="sv" style="color:var(--muted)">${empty}</div></div>
+    <div class="stat"><div class="sl">Max Space (queue)</div><div class="sv" style="color:var(--amber)">O(${rows*cols})</div></div>
+  `;
+}
+
+function clearLog() {
+  document.getElementById('log-text').textContent = '— press Run BFS —';
+  document.getElementById('queue-text').textContent = '';
+}
+
+function resetGrid() {
+  if (animating) return;
+  grid = EXAMPLES[0].map(r=>[...r]);
+  renderGrid(); clearLog();
+}
+
+function delay(ms) { return new Promise(r=>setTimeout(r,ms)); }
+
+async function runBFS() {
+  if (animating) return;
+  animating = true;
+  const logEl = document.getElementById('log-text');
+  const qEl = document.getElementById('queue-text');
+  const spd = () => parseInt(document.getElementById('speed').value);
+
+  // Work on copy
+  const g = grid.map(r=>[...r]);
+  const rows = g.length, cols = g[0].length;
+  const queue = [];
+  let fresh = 0;
+  const colors = {};
+  const minuteMap = {};
+
+  // Init
+  for(let r=0;r<rows;r++) for(let c=0;c<cols;c++) {
+    if(g[r][c]===2) { queue.push([r,c,0]); colors[`${r},${c}`]='source'; minuteMap[`${r},${c}`]=0; }
+    else if(g[r][c]===1) fresh++;
+  }
+
+  logEl.textContent = `Init: ${queue.length} rotten source(s) in queue. Fresh count: ${fresh}`;
+  qEl.textContent = `Queue: [${queue.map(([r,c,m])=>`(${r},${c},t=${m})`).join(', ')}]`;
+  renderGrid({...colors, ...Object.fromEntries(Object.entries(minuteMap).map(([k,v])=>[k+'_min',v]))});
+  await delay(spd());
+
+  const dirs=[[-1,0],[1,0],[0,-1],[0,1]];
+  let minutes = 0;
+  let head = 0;
+
+  while(head < queue.length) {
+    const [r,c,minute] = queue[head++];
+    for(const [dr,dc] of dirs) {
+      const nr=r+dr, nc=c+dc;
+      if(nr>=0&&nr<rows&&nc>=0&&nc<cols&&g[nr][nc]===1) {
+        g[nr][nc]=2;
+        fresh--;
+        minutes = minute+1;
+        queue.push([nr,nc,minute+1]);
+        colors[`${nr},${nc}`]='rotting';
+        minuteMap[`${nr},${nc}`]=minute+1;
+
+        logEl.textContent = `Minute ${minute+1}: (${r},${c}) → rots (${nr},${nc}). Fresh remaining: ${fresh}`;
+        const remaining = queue.slice(head).map(([r,c,m])=>`(${r},${c},t=${m})`);
+        qEl.textContent = `Queue tail: [${remaining.slice(0,6).join(', ')}${remaining.length>6?'...':''}]`;
+        renderGrid({...colors, ...Object.fromEntries(Object.entries(minuteMap).map(([k,v])=>[k+'_min',v]))});
+        await delay(spd());
+
+        colors[`${nr},${nc}`]='done';
+      }
+    }
+    if(colors[`${r},${c}`]==='source') colors[`${r},${c}`]='done';
+    renderGrid({...colors, ...Object.fromEntries(Object.entries(minuteMap).map(([k,v])=>[k+'_min',v]))});
+  }
+
+  const ans = fresh===0 ? minutes : -1;
+  logEl.innerHTML = fresh===0
+    ? `<span style="color:var(--green)">✓ All oranges rotted! Answer = ${minutes} minutes</span>`
+    : `<span style="color:var(--red)">✗ Impossible! ${fresh} fresh orange(s) unreachable. Answer = -1</span>`;
+  qEl.textContent = `Queue empty. Cells processed = ${Object.keys(minuteMap).length}. O(M×N) = O(${rows*cols})`;
+  animating = false;
+}
+
+// Init
+grid = EXAMPLES[0].map(r=>[...r]);
+renderGrid();
+</script>
+</body>
+</html>

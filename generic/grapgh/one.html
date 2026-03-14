@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Graph Hero — Ash's L7 Prep</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a25;
+    --border: #2a2a3a;
+    --accent: #00ff88;
+    --accent2: #ff6b35;
+    --accent3: #7c3aed;
+    --must: #ff6b35;
+    --good: #00bfff;
+    --bonus: #a855f7;
+    --text: #e8e8f0;
+    --muted: #666680;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,136,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .header {
+    padding: 40px 48px 20px;
+    position: relative; z-index: 1;
+    border-bottom: 1px solid var(--border);
+  }
+  .header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+  }
+  .header h1 span { color: var(--accent); }
+  .header p { color: var(--muted); font-size: 0.8rem; margin-top: 6px; }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    min-height: calc(100vh - 100px);
+    position: relative; z-index: 1;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    border-right: 1px solid var(--border);
+    padding: 24px 0;
+    position: sticky;
+    top: 0;
+    height: calc(100vh - 100px);
+    overflow-y: auto;
+  }
+  .sidebar::-webkit-scrollbar { width: 3px; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--border); }
+
+  .sidebar-label {
+    font-size: 0.6rem;
+    letter-spacing: 3px;
+    color: var(--muted);
+    padding: 0 24px 10px;
+    text-transform: uppercase;
+  }
+
+  .q-item {
+    padding: 14px 24px;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .q-item:hover { background: var(--surface); }
+  .q-item.active {
+    background: var(--surface2);
+    border-left-color: var(--accent);
+  }
+  .q-item.done .q-name { opacity: 0.5; text-decoration: line-through; }
+  .q-badge {
+    font-size: 0.55rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+  .badge-must { background: rgba(255,107,53,0.2); color: var(--must); }
+  .badge-good { background: rgba(0,191,255,0.2); color: var(--good); }
+  .badge-bonus { background: rgba(168,85,247,0.2); color: var(--bonus); }
+  .q-name { font-size: 0.75rem; line-height: 1.3; }
+  .q-tag { font-size: 0.6rem; color: var(--muted); display: block; margin-top: 2px; }
+
+  .check-btn {
+    margin-left: auto;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    cursor: pointer;
+    flex-shrink: 0;
+    background: transparent;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .check-btn.done { background: var(--accent); border-color: var(--accent); }
+  .check-btn svg { display: none; }
+  .check-btn.done svg { display: block; }
+
+  /* MAIN CONTENT */
+  .main {
+    padding: 40px 48px;
+    overflow-y: auto;
+  }
+
+  .q-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .q-number {
+    font-family: 'Syne', sans-serif;
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--border);
+    line-height: 1;
+    min-width: 60px;
+  }
+  .q-title-block h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+  }
+  .q-title-block h2 span { color: var(--accent); }
+  .q-meta {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .tag {
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid;
+  }
+  .tag-algo { border-color: var(--accent); color: var(--accent); }
+  .tag-pattern { border-color: var(--accent2); color: var(--accent2); }
+  .tag-level { border-color: var(--accent3); color: var(--accent3); }
+
+  .section {
+    margin-bottom: 32px;
+  }
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .insight-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 20px 24px;
+    font-size: 0.82rem;
+    line-height: 1.8;
+    color: var(--text);
+  }
+  .insight-box.orange { border-left-color: var(--accent2); }
+  .insight-box.purple { border-left-color: var(--accent3); }
+
+  .think-block {
+    background: rgba(0,255,136,0.03);
+    border: 1px solid rgba(0,255,136,0.15);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+  .think-block .think-q {
+    font-size: 0.75rem;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .think-block .think-a {
+    font-size: 0.8rem;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  pre, code {
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .code-block {
+    background: #0d0d15;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .code-header {
+    background: var(--surface2);
+    padding: 8px 16px;
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .copy-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.6rem;
+    padding: 2px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    transition: all 0.2s;
+    letter-spacing: 1px;
+  }
+  .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+  pre {
+    padding: 20px;
+    font-size: 0.78rem;
+    line-height: 1.7;
+    overflow-x: auto;
+    color: #c9d1d9;
+  }
+  .kw { color: #ff79c6; }
+  .fn { color: #50fa7b; }
+  .cm { color: #6272a4; font-style: italic; }
+  .st { color: #f1fa8c; }
+  .nm { color: #bd93f9; }
+  .op { color: #ff79c6; }
+
+  .complexity-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .complexity-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 20px;
+    text-align: center;
+  }
+  .complexity-card .label {
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .complexity-card .value {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .cx-why {
+    font-size: 0.72rem;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-top: 6px;
+  }
+  .cx-breakdown {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .cx-row {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 16px;
+    padding: 11px 18px;
+    border-bottom: 1px solid var(--border);
+    align-items: start;
+  }
+  .cx-row:last-child { border-bottom: none; }
+  .cx-term {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--accent2);
+    padding-top: 1px;
+    white-space: nowrap;
+  }
+  .cx-desc {
+    font-size: 0.75rem;
+    color: var(--text);
+    line-height: 1.6;
+  }
+  .cx-interview-line {
+    background: rgba(124,58,237,0.08);
+    border: 1px solid rgba(124,58,237,0.25);
+    border-radius: 6px;
+    padding: 12px 16px;
+    font-size: 0.76rem;
+    line-height: 1.6;
+    color: #c4b5fd;
+  }
+
+  .steps-list {
+    counter-reset: steps;
+    list-style: none;
+  }
+  .steps-list li {
+    counter-increment: steps;
+    display: flex;
+    gap: 14px;
+    margin-bottom: 14px;
+    align-items: flex-start;
+  }
+  .steps-list li::before {
+    content: counter(steps);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    color: var(--accent);
+    flex-shrink: 0;
+    font-weight: 600;
+  }
+  .steps-list li .step-text {
+    font-size: 0.8rem;
+    line-height: 1.7;
+    padding-top: 2px;
+  }
+
+  .interview-qa {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .iq {
+    background: var(--surface2);
+    padding: 14px 18px;
+    font-size: 0.78rem;
+    color: var(--accent2);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+  }
+  .iq:hover { background: rgba(255,107,53,0.1); }
+  .ia {
+    padding: 14px 18px;
+    font-size: 0.78rem;
+    line-height: 1.7;
+    color: var(--text);
+    display: none;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .ia.open { display: block; }
+
+  .nav-btns {
+    display: flex;
+    gap: 12px;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+  .nav-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    transition: all 0.2s;
+    letter-spacing: 1px;
+  }
+  .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .nav-btn.primary { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
+  .nav-btn.primary:hover { background: #00cc6e; }
+
+  .hidden { display: none; }
+  
+  em { color: var(--accent2); font-style: normal; }
+  strong { color: var(--accent); font-weight: 600; }
+  
+  .pitfall { 
+    background: rgba(255,107,53,0.06);
+    border: 1px solid rgba(255,107,53,0.25);
+    border-radius: 6px;
+    padding: 14px 18px;
+    font-size: 0.78rem;
+    line-height: 1.7;
+    margin-bottom: 10px;
+  }
+  .pitfall::before { content: '⚠️  '; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>GRAPH <span>HERO</span></h1>
+  <p>Ash's L7 Graph Prep — 7 questions, zero shortcuts // ek ek karke hero banega</p>
+</div>
+
+<div class="layout">
+  <div class="sidebar">
+    <div class="sidebar-label">Questions</div>
+    <div id="qlist"></div>
+  </div>
+  <div class="main" id="main-content"></div>
+</div>
+
+<script>
+const questions = [
+  {
+    id: 0,
+    name: "Rotten Oranges",
+    tier: "must",
+    algo: "Multi-Source BFS",
+    pattern: "Matrix BFS",
+    level: "Medium",
+    lc: "994",
+    content: {
+      intuition: `<strong>Problem:</strong> Grid mein fresh aur rotten oranges hain. Har minute, ek rotten orange apne 4 adjacent fresh oranges ko rotten kar deta hai. Minimum minutes kaune chahiye sabko rotten karne ke liye?<br><br>
+<strong>Why Multi-Source BFS?</strong> Socho — agar sirf ek rotten orange hota, toh normal BFS chalate. But yahan <em>multiple</em> rotten oranges hain, aur woh <em>saath saath</em> spread karte hain. Yeh exactly "simultaneous spreading" hai — Multi-Source BFS ka sweet spot.<br><br>
+<strong>Key Insight:</strong> Pehle <em>saare</em> rotten oranges ko queue mein daalo. Phir level-by-level BFS chalo. Har level = 1 minute. Last level ka number = answer.`,
+      
+      whyNotDFS: `DFS depth-first jaata hai — ek path pe jaake wapas aata hai. Yahan hume "minimum time" chahiye, jo shortest-path equivalent hai. BFS level-by-level process karta hai, isliye natural way hai time count karne ka.<br><br>DSU yahan useless hai kyunki yeh static connectivity ke liye hai — dynamic spreading ke liye nahi.`,
+
+      algorithm: [
+        "Grid scan karo: saare (2) ko queue mein daalo, fresh oranges count karo",
+        "BFS shuru karo — queue se process karo level by level",
+        "Har rotten orange ke 4 neighbors check karo",
+        "Agar neighbor fresh hai → rotten mark karo, queue mein daalo, fresh count ghataao",
+        "Ek poora level process hone ke baad minutes++",
+        "End mein: agar fresh_count > 0 → return -1, else return minutes-1"
+      ],
+
+      code: `<span class="kw">from</span> collections <span class="kw">import</span> deque
+
+<span class="kw">def</span> <span class="fn">orangesRotting</span>(grid):
+    num_rows, num_cols = len(grid), len(grid[<span class="nm">0</span>])
+    queue = deque()
+    fresh_count = <span class="nm">0</span>
+    
+    <span class="cm"># Step 1: Multi-source init — saare rotten queue mein</span>
+    <span class="kw">for</span> row <span class="kw">in</span> range(num_rows):
+        <span class="kw">for</span> col <span class="kw">in</span> range(num_cols):
+            <span class="kw">if</span> grid[row][col] == <span class="nm">2</span>:
+                queue.append((row, col, <span class="nm">0</span>))  <span class="cm"># (row, col, elapsed_time)</span>
+            <span class="kw">elif</span> grid[row][col] == <span class="nm">1</span>:
+                fresh_count += <span class="nm">1</span>
+    
+    <span class="cm"># Edge case: no fresh oranges</span>
+    <span class="kw">if</span> fresh_count == <span class="nm">0</span>: <span class="kw">return</span> <span class="nm">0</span>
+    
+    directions = [(<span class="nm">-1</span>,<span class="nm">0</span>),(<span class="nm">1</span>,<span class="nm">0</span>),(<span class="nm">0</span>,<span class="nm">-1</span>),(<span class="nm">0</span>,<span class="nm">1</span>)]
+    minutes_elapsed = <span class="nm">0</span>
+    
+    <span class="cm"># Step 2: BFS — simultaneous spread</span>
+    <span class="kw">while</span> queue:
+        row, col, elapsed_time = queue.popleft()
+        <span class="kw">for</span> delta_row, delta_col <span class="kw">in</span> directions:
+            next_row = row + delta_row
+            next_col = col + delta_col
+            <span class="kw">if</span> (<span class="nm">0</span> <= next_row < num_rows <span class="kw">and</span> 
+                <span class="nm">0</span> <= next_col < num_cols <span class="kw">and</span> 
+                grid[next_row][next_col] == <span class="nm">1</span>):
+                grid[next_row][next_col] = <span class="nm">2</span>  <span class="cm"># mark rotten</span>
+                fresh_count -= <span class="nm">1</span>
+                minutes_elapsed = elapsed_time + <span class="nm">1</span>
+                queue.append((next_row, next_col, elapsed_time + <span class="nm">1</span>))
+    
+    <span class="kw">return</span> minutes_elapsed <span class="kw">if</span> fresh_count == <span class="nm">0</span> <span class="kw">else</span> <span class="nm">-1</span>`,
+
+      complexity: {
+        time: "O(M × N)",
+        timeWhy: "Har cell exactly ek baar queue mein aata hai",
+        space: "O(M × N)",
+        spaceWhy: "Worst case: poori grid queue mein ek saath",
+        breakdown: [
+          { term: "Time: O(M×N)", desc: "Grid ke M×N cells mein se har ek exactly ek baar BFS queue mein push aur pop hota hai. Har cell ke liye 4 neighbors check hote hain — constant. Toh total work = O(4 × M×N) = O(M×N)." },
+          { term: "Space: O(M×N)", desc: "Queue mein worst case mein saare cells ek saath ho sakte hain — e.g. ek corner mein rotten, baaki sab fresh, sab ek hi minute mein rotten ho jaayein. Grid in-place modify karte hain toh alag visited array nahi chahiye." },
+          { term: "Kya O(1) space possible?", desc: "Nahi. BFS ke liye queue fundamental hai. DFS se kar sakte hain lekin woh recursion stack bhi O(M×N) lega. In-place marking se ek O(M×N) visited array bachta hai — yahi optimization hai." },
+        ],
+        interviewLine: "Time O(M×N) kyunki har cell exactly once process hota hai. Space O(M×N) kyunki queue worst case mein poori grid hold kar sakti hai. In-place grid modification se separate visited set ki zaroorat nahi padti."
+      },
+
+      pitfalls: [
+        "Minutes ko last processed time se lo — ek extra minute add mat karo",
+        "Edge case: grid mein koi fresh nahi → 0 return karo turant",
+        "Islands: kuch fresh oranges kabhi nahi reach honge → -1",
+        "Queue mein time saath mein store karo OR level-by-level BFS karo alag se"
+      ],
+
+      interview: [
+        {
+          q: "Why not DFS here?",
+          a: "DFS gives you ONE path's minimum, not the global minimum across multiple sources spreading simultaneously. BFS guarantees that the first time you reach a node, it's via the shortest path."
+        },
+        {
+          q: "Can you do this without storing time in queue?",
+          a: "Yes! Process queue level by level. `while queue: for _ in range(len(queue)): process...` — har outer iteration = 1 minute."
+        },
+        {
+          q: "What if grid is modified? Can we avoid it?",
+          a: "Use a visited set `{(r,c)}` instead of modifying grid. Same complexity, no mutation."
+        }
+      ]
+    }
+  },
+  {
+    id: 1,
+    name: "Course Schedule",
+    tier: "must",
+    algo: "Topo Sort",
+    pattern: "Cycle Detection / Kahn's",
+    level: "Medium",
+    lc: "207",
+    content: {
+      intuition: `<strong>Problem:</strong> n courses hain, kuch ke prerequisites hain. Kya possible hai saare complete karna?<br><br>
+<strong>Translation:</strong> Yeh ek directed graph problem hai. Edge A→B matlab "A complete karo B ke pehle." Question hai: <em>kya is graph mein cycle hai?</em> Agar cycle hai → impossible (A requires B, B requires A — deadlock). Agar no cycle → topological order exist karta hai → possible.<br><br>
+<strong>Two approaches:</strong> Kahn's Algorithm (BFS-based, in-degree) ya DFS with coloring. Dono valid hain, Kahn's thoda more intuitive hai interviews mein.`,
+
+      whyNotDFS: `DFS bhi work karta hai with 3-color marking (WHITE/GRAY/BLACK). GRAY node pe wapas aao → cycle. Kahn's BFS-based hai — more iterative, easier to explain under pressure. Dono O(V+E) hain. Kahn's prefer karo agar in-degree naturally count kar sako.`,
+
+      algorithm: [
+        "Adjacency list banao aur har node ka in-degree count karo",
+        "Saare in-degree = 0 nodes ko queue mein daalo (koi prerequisite nahi)",
+        "BFS: queue se node nikalo, processed count++",
+        "Uske saare neighbors ka in-degree 1 se ghataao",
+        "Agar kisi neighbor ka in-degree 0 ho jaaye → queue mein daalo",
+        "End mein: processed == n → no cycle → return True"
+      ],
+
+      code: `<span class="kw">from</span> collections <span class="kw">import</span> deque
+
+<span class="kw">def</span> <span class="fn">canFinish</span>(numCourses, prerequisites):
+    <span class="cm"># Build graph + in-degree array</span>
+    graph = [[] <span class="kw">for</span> _ <span class="kw">in</span> range(numCourses)]
+    indegree = [<span class="nm">0</span>] * numCourses
+    
+    <span class="kw">for</span> course, pre <span class="kw">in</span> prerequisites:
+        graph[pre].append(course)   <span class="cm"># pre → course</span>
+        indegree[course] += <span class="nm">1</span>
+    
+    <span class="cm"># Start with all courses that have no prereqs</span>
+    queue = deque([course_id <span class="kw">for</span> course_id <span class="kw">in</span> range(numCourses) <span class="kw">if</span> indegree[course_id] == <span class="nm">0</span>])
+    processed = <span class="nm">0</span>
+    
+    <span class="kw">while</span> queue:
+        node = queue.popleft()
+        processed += <span class="nm">1</span>
+        
+        <span class="kw">for</span> neighbor <span class="kw">in</span> graph[node]:
+            indegree[neighbor] -= <span class="nm">1</span>
+            <span class="kw">if</span> indegree[neighbor] == <span class="nm">0</span>:
+                queue.append(neighbor)
+    
+    <span class="kw">return</span> processed == numCourses  <span class="cm"># True = no cycle</span>`,
+
+      complexity: {
+        time: "O(V + E)",
+        timeWhy: "Har node aur edge exactly ek baar process hoti hai",
+        space: "O(V + E)",
+        spaceWhy: "Graph + indegree array + queue ka combined space",
+        breakdown: [
+          { term: "Time: O(V)", desc: "V = numCourses. Har course exactly ek baar queue mein aata hai (jab in-degree 0 hoti hai) aur ek baar process hota hai. Total node processing = O(V)." },
+          { term: "Time: O(E)", desc: "E = prerequisites.length. Har prerequisite edge exactly ek baar traverse hoti hai jab hum us node ke neighbors iterate karte hain indegree ghataane ke liye. Total edge work = O(E)." },
+          { term: "Space: O(V+E)", desc: "Adjacency list mein V nodes aur E edges store hote hain = O(V+E). Indegree array = O(V). Queue maximum V elements hold kar sakti hai = O(V). Total = O(V+E)." },
+          { term: "DFS approach?", desc: "DFS bhi O(V+E) time aur O(V) space (recursion stack) leta hai. Practically same — Kahn's iterative hone ki wajah se stack overflow risk nahi hai for large graphs." },
+        ],
+        interviewLine: "V = courses, E = prerequisites. Har course ek baar process hota hai, har prerequisite edge ek baar traverse — isliye O(V+E). Space bhi O(V+E) — adjacency list dominant term hai."
+      },
+
+      pitfalls: [
+        "Edge direction matter karta hai — [a,b] matlab b→a (b is prereq of a)",
+        "Self-loop = cycle, edge case check karo",
+        "processed count == numCourses check karo, not queue empty",
+        "Course Schedule II mein actual order return karna hai — wahi order mein processed list build karo"
+      ],
+
+      interview: [
+        {
+          q: "DFS approach kaise kaam karta hai?",
+          a: "3 states: 0=unvisited, 1=visiting(gray), 2=visited(black). DFS mein agar gray node pe aao → cycle. Gray = currently on recursion stack."
+        },
+        {
+          q: "Kahn's vs DFS — kab kya use karein?",
+          a: "Kahn's iterative hai, BFS-based — easier to debug, no stack overflow risk. DFS recursive hai — code compact but needs careful state tracking. Both O(V+E). Interviews mein Kahn's zyada predictable hai."
+        },
+        {
+          q: "Course Schedule II — kaise modify karein?",
+          a: "Same code, bas ek `result` list banao. Jab bhi node queue se nikalo, result mein append karo. Return `result if len(result) == numCourses else []`"
+        }
+      ]
+    }
+  },
+  {
+    id: 2,
+    name: "Network Delay Time",
+    tier: "must",
+    algo: "Dijkstra",
+    pattern: "Shortest Path / Min Heap",
+    level: "Medium",
+    lc: "743",
+    content: {
+      intuition: `<strong>Problem:</strong> n nodes hain, weighted directed edges hain. Source node k se signal bhejte hain — kitna time lagega sabhi nodes tak pahunchne mein?<br><br>
+<strong>Translation:</strong> Single-source shortest path. Source k se baaki sabhi nodes tak minimum distance nikalo. Answer = <em>maximum</em> of all shortest distances (kyunki signal tab complete maana jaayega jab last node pe bhi pahunch jaaye).<br><br>
+<strong>Why Dijkstra?</strong> Weighted graph, positive weights, single source → Dijkstra. BFS sirf unweighted graphs pe kaam karta hai (ya uniform weight). DFS shortest path guarantee nahi karta.`,
+
+      whyNotDFS: `BFS = unweighted shortest path. Dijkstra = weighted. Yahan har edge ka alag cost hai, toh BFS wrong answer dega. Dijkstra greedily always processes the node with minimum known distance — min-heap se efficiently.<br><br>Bellman-Ford bhi work karta hai lekin O(VE) hai — Dijkstra O((V+E) log V) hai min-heap ke saath. Dijkstra prefer karo jab no negative weights.`,
+
+      algorithm: [
+        "Adjacency list banao: {node: [(neighbor, weight), ...]",
+        "Min-heap initialize karo: [(0, k)] — distance 0, source node k",
+        "dist array banao: dist[k]=0, baaki infinity",
+        "Heap se minimum distance node nikalo",
+        "Agar already visited → skip",
+        "Neighbors ko relax karo: agar new_dist < dist[neighbor] → update + heap push",
+        "End mein: max(dist.values()) return karo, agar infinity hai → -1"
+      ],
+
+      code: `<span class="kw">import</span> heapq
+
+<span class="kw">def</span> <span class="fn">networkDelayTime</span>(times, n, k):
+    <span class="cm"># Build adjacency list</span>
+    graph = {node: [] <span class="kw">for</span> node <span class="kw">in</span> range(<span class="nm">1</span>, n+<span class="nm">1</span>)}
+    <span class="kw">for</span> src, dst, weight <span class="kw">in</span> times:
+        graph[src].append((dst, weight))
+    
+    <span class="cm"># Dijkstra with min-heap</span>
+    min_heap = [(<span class="nm">0</span>, k)]        <span class="cm"># (curr_dist, curr_node)</span>
+    min_dist = {node: float(<span class="st">'inf'</span>) <span class="kw">for</span> node <span class="kw">in</span> range(<span class="nm">1</span>, n+<span class="nm">1</span>)}
+    min_dist[k] = <span class="nm">0</span>
+    visited = set()
+    
+    <span class="kw">while</span> min_heap:
+        curr_dist, curr_node = heapq.heappop(min_heap)
+        
+        <span class="kw">if</span> curr_node <span class="kw">in</span> visited: <span class="kw">continue</span>  <span class="cm"># already finalized</span>
+        visited.add(curr_node)
+        
+        <span class="kw">for</span> neighbor, edge_weight <span class="kw">in</span> graph[curr_node]:
+            new_dist = curr_dist + edge_weight
+            <span class="kw">if</span> new_dist < min_dist[neighbor]:
+                min_dist[neighbor] = new_dist
+                heapq.heappush(min_heap, (new_dist, neighbor))
+    
+    max_delay = max(min_dist.values())
+    <span class="kw">return</span> max_delay <span class="kw">if</span> max_delay != float(<span class="st">'inf'</span>) <span class="kw">else</span> <span class="nm">-1</span>`,
+
+      complexity: {
+        time: "O((V + E) log V)",
+        timeWhy: "Har edge ke liye ek heap push — log V cost per operation",
+        space: "O(V + E)",
+        spaceWhy: "Adjacency list + heap mein O(E) entries possible",
+        breakdown: [
+          { term: "Time: O(V log V)", desc: "Har node exactly ek baar visited set mein jaata hai. Har pop operation O(log V) hai (min-heap se). V nodes × log V per pop = O(V log V)." },
+          { term: "Time: O(E log V)", desc: "Har edge relaxation pe ek heappush hoti hai — O(log V) per push. E edges hain toh worst case E pushes = O(E log V). Total = O((V+E) log V)." },
+          { term: "Space: O(V+E)", desc: "Adjacency list = O(V+E). min_dist dictionary = O(V). visited set = O(V). Heap mein worst case O(E) stale entries ho sakti hain (ek node ke multiple entries). Dominant term = O(E)." },
+          { term: "Fibonacci Heap variant", desc: "Theoretically O(E + V log V) possible hai Fibonacci heap se — decrease-key O(1) amortized hota hai. Lekin practically implement karna complex hai, interview mein binary heap (heapq) standard hai." },
+          { term: "Dense vs Sparse graph", desc: "Sparse graph (E ≈ V): O(V log V). Dense graph (E ≈ V²): O(V² log V). Dense graphs ke liye simple O(V²) Dijkstra without heap better ho sakta hai. Interview mein sparse assume karo unless stated." },
+        ],
+        interviewLine: "O((V+E) log V) — V nodes process hote hain (log V each for heap pop), E edges relax hoti hain (log V each for heap push). Space O(V+E) — heap mein stale entries ki wajah se O(E) possible entries."
+      },
+
+      pitfalls: [
+        "Visited set zaroori hai — bina iske, heap mein stale entries reprocess honge",
+        "1-indexed nodes hain is problem mein — careful with range",
+        "Negative weights? → Dijkstra fail karta hai → Bellman-Ford use karo",
+        "max(dist.values()) — agar koi node unreachable → infinity → return -1"
+      ],
+
+      interview: [
+        {
+          q: "Why visited set? Why not just check if new_dist < dist?",
+          a: "Heap mein ek node ke multiple entries ho sakti hain (stale, higher distance wali). Without visited, hum unhe reprocess karenge. Visited se pehli baar finalize hone par skip kar dete hain baaki ko."
+        },
+        {
+          q: "Bellman-Ford vs Dijkstra?",
+          a: "Dijkstra: O((V+E)logV), positive weights only. Bellman-Ford: O(VE), negative weights handle karta hai, negative cycle detect karta hai. Interview mein: weights positive hain → Dijkstra, negative possible hain → Bellman-Ford."
+        },
+        {
+          q: "What if multiple sources?",
+          a: "Multi-source Dijkstra — saare sources ko distance 0 ke saath heap mein daalo. Same as multi-source BFS but weighted."
+        }
+      ]
+    }
+  },
+  {
+    id: 3,
+    name: "Number of Provinces",
+    tier: "must",
+    algo: "Union-Find",
+    pattern: "Connected Components",
+    level: "Medium",
+    lc: "547",
+    content: {
+      intuition: `<strong>Problem:</strong> n cities hain. isConnected[i][j] = 1 matlab city i aur j directly connected hain. Provinces count karo — yani connected components.<br><br>
+<strong>Why Union-Find?</strong> Yeh exactly Union-Find ka home turf hai: <em>"merge groups, count distinct groups."</em> Har friendship ko Union karo. End mein distinct parents count karo = provinces.<br><br>
+<strong>BFS/DFS bhi kaam karega</strong> — lekin Union-Find yahan elegant hai kyunki operations simple hain: union(i,j) for each edge, phir count distinct roots.`,
+
+      whyNotDFS: `BFS/DFS bhi O(V+E) hai — dono valid. Union-Find ka advantage: near O(1) per operation with path compression + rank. Interview mein Union-Find ko yahan prefer karo because it shows you know <em>when</em> to use it. Agar graph mein dynamic edge additions ho rahi hain → Union-Find clearly better.`,
+
+      algorithm: [
+        "Parent array banao: parent[i] = i (each city is its own province)",
+        "Rank array banao for union by rank",
+        "isConnected matrix iterate karo: agar isConnected[i][j] == 1 → union(i, j)",
+        "Union: find parents of both, agar different → merge by rank",
+        "Find: path compression ke saath — parent[x] = find(parent[x])",
+        "End mein: count distinct parents (where parent[i] == i)"
+      ],
+
+      code: `<span class="kw">def</span> <span class="fn">findCircleNum</span>(isConnected):
+    n = len(isConnected)
+    parent = list(range(n))  <span class="cm"># parent[i] = i initially</span>
+    rank = [<span class="nm">0</span>] * n
+    
+    <span class="kw">def</span> <span class="fn">find</span>(x):
+        <span class="kw">if</span> parent[x] != x:
+            parent[x] = find(parent[x])  <span class="cm"># path compression</span>
+        <span class="kw">return</span> parent[x]
+    
+    <span class="kw">def</span> <span class="fn">union</span>(x, y):
+        root_x, root_y = find(x), find(y)
+        <span class="kw">if</span> root_x == root_y: <span class="kw">return</span>   <span class="cm"># already same component</span>
+        <span class="cm"># union by rank</span>
+        <span class="kw">if</span> rank[root_x] < rank[root_y]:
+            root_x, root_y = root_y, root_x
+        parent[root_y] = root_x
+        <span class="kw">if</span> rank[root_x] == rank[root_y]:
+            rank[root_x] += <span class="nm">1</span>
+    
+    <span class="cm"># Process all connections</span>
+    <span class="kw">for</span> city_a <span class="kw">in</span> range(n):
+        <span class="kw">for</span> city_b <span class="kw">in</span> range(city_a+<span class="nm">1</span>, n):  <span class="cm"># upper triangle only</span>
+            <span class="kw">if</span> isConnected[city_a][city_b] == <span class="nm">1</span>:
+                union(city_a, city_b)
+    
+    <span class="cm"># Count distinct roots</span>
+    <span class="kw">return</span> sum(<span class="nm">1</span> <span class="kw">for</span> city <span class="kw">in</span> range(n) <span class="kw">if</span> find(city) == city)`,
+
+      complexity: {
+        time: "O(n² · α(n))",
+        timeWhy: "n² matrix iterate + near-O(1) union-find operations",
+        space: "O(n)",
+        spaceWhy: "Sirf parent aur rank arrays — O(n) each",
+        breakdown: [
+          { term: "Time: O(n²)", desc: "isConnected ek n×n matrix hai. Hum upper triangle iterate karte hain = n×(n-1)/2 ≈ O(n²) iterations. Yeh dominant term hai." },
+          { term: "Time: α(n) per op", desc: "α = inverse Ackermann function. Practically α(n) ≤ 4 for any realistic n (even n = 10^80). Path compression + union by rank ke saath har find/union almost O(1) hai." },
+          { term: "Total: O(n² · α(n))", desc: "≈ O(n²) practically. n² iterations × α(n) per union-find op. Since α(n) is essentially constant, yeh O(n²) hi hai in practice." },
+          { term: "Space: O(n)", desc: "parent array = O(n). rank array = O(n). Koi adjacency list nahi banate — directly matrix use karte hain. Total space = O(n), matrix ka space count nahi karte (given as input)." },
+          { term: "BFS/DFS comparison", desc: "BFS/DFS bhi O(n²) time (matrix traverse) aur O(n) space (visited array + queue/stack). Practically same. DSU ka advantage: dynamic edge additions ke liye O(α(n)) per query — BFS/DFS ko repeat karna padega." },
+        ],
+        interviewLine: "n² kyunki matrix iterate karna padta hai. α(n) per union-find op — inverse Ackermann, essentially constant. Space O(n) — sirf parent aur rank arrays, no adjacency list needed."
+      },
+
+      pitfalls: [
+        "Diagonal skip karo ya ignore karo — isConnected[i][i] always 1 hai",
+        "Upper triangle only iterate karo (j starts from i+1) — symmetric matrix hai",
+        "find() call path compression ke saath karo count mein bhi",
+        "α(n) = inverse Ackermann — practically constant, almost O(1)"
+      ],
+
+      interview: [
+        {
+          q: "Union-Find vs BFS/DFS — kab kya?",
+          a: "Static graph, connected components count karna hai → dono work. Dynamic edge additions (online algorithm) → Union-Find clearly wins. BFS/DFS repeated additions ke saath O(V+E) per query hoga; Union-Find O(α(n)) per operation."
+        },
+        {
+          q: "Path compression kya karta hai?",
+          a: "find(x) ke time pe, directly root ko parent banao. Tree flat ho jaati hai. Amortized O(α(n)) per find — inverse Ackermann, for all practical purposes O(1)."
+        },
+        {
+          q: "Number of Islands bhi DSU se solve ho sakta hai?",
+          a: "Haan — har cell ko node maano, adjacent '1' cells ko union karo. But there BFS/DFS cleaner hai. DSU tab shine karta hai jab islands dynamically add ho rahi hain (Number of Islands II)."
+        }
+      ]
+    }
+  },
+  {
+    id: 4,
+    name: "Clone Graph",
+    tier: "good",
+    algo: "BFS/DFS",
+    pattern: "Deep Copy with HashMap",
+    level: "Medium",
+    lc: "133",
+    content: {
+      intuition: `<strong>Problem:</strong> Undirected graph diya hai ek node ke reference ke saath. Poora graph deep copy karo.<br><br>
+<strong>Core Challenge:</strong> Cycles hain graph mein. Bina tracking ke infinite loop ho jaayega. <em>Visited map use karo:</em> original_node → cloned_node. Agar already cloned hai → us clone ko return karo, naya mat banao.<br><br>
+<strong>Why BFS/DFS?</strong> Graph traversal problem hai — nodes visit karo, clone karo, neighbors connect karo. HashMap visited tracking ke saath dono kaam karte hain.`,
+
+      whyNotDFS: `Dono BFS aur DFS chalenge. DFS recursive code clean hota hai. BFS iterative — no recursion stack overflow risk for very deep graphs. Union-Find yahan useless — hume structure copy karna hai, merge nahi karna.`,
+
+      algorithm: [
+        "HashMap banao: original → clone",
+        "Root ka clone banao, map mein daalo",
+        "BFS: queue mein original nodes daalo",
+        "Har original node ke neighbors iterate karo",
+        "Agar neighbor already cloned nahi → clone karo + queue mein daalo",
+        "Current node ke clone ke neighbors mein cloned neighbor add karo"
+      ],
+
+      code: `<span class="kw">def</span> <span class="fn">cloneGraph</span>(node):
+    <span class="kw">if not</span> node: <span class="kw">return None</span>
+    
+    <span class="cm"># DFS approach — cleaner</span>
+    cloned = {}  <span class="cm"># original → clone</span>
+    
+    <span class="kw">def</span> <span class="fn">dfs</span>(node):
+        <span class="kw">if</span> node <span class="kw">in</span> cloned:
+            <span class="kw">return</span> cloned[node]  <span class="cm"># already cloned, return it</span>
+        
+        clone = Node(node.val)  <span class="cm"># create clone</span>
+        cloned[node] = clone    <span class="cm"># MARK before recursing (cycle prevention)</span>
+        
+        <span class="kw">for</span> neighbor <span class="kw">in</span> node.neighbors:
+            clone.neighbors.append(dfs(neighbor))
+        
+        <span class="kw">return</span> clone
+    
+    <span class="kw">return</span> dfs(node)`,
+
+      complexity: {
+        time: "O(V + E)",
+        timeWhy: "Har node ek baar visit, har edge ek baar traverse",
+        space: "O(V)",
+        spaceWhy: "HashMap mein V entries + recursion stack O(V)",
+        breakdown: [
+          { term: "Time: O(V)", desc: "Har original node exactly ek baar DFS mein visit hota hai — cloned map mein check karte hain, already cloned → immediate return. V nodes × O(1) per node = O(V)." },
+          { term: "Time: O(E)", desc: "Har node ke neighbors iterate karte hain — total across all nodes = E (total edges in graph). Undirected graph mein har edge do baar count hoti hai (both directions), toh still O(E)." },
+          { term: "Space: O(V) - HashMap", desc: "cloned dictionary mein V entries hain — ek per original node. Yeh dominant space term hai." },
+          { term: "Space: O(V) - Recursion", desc: "DFS recursion stack maximum graph ki depth tak jaata hai. Worst case (linear graph/chain) = O(V). Average case (balanced graph) = O(log V). Isliye space = O(V)." },
+          { term: "BFS approach space?", desc: "BFS mein bhi O(V) space — queue + cloned map. Recursion stack nahi hoti, toh stack overflow risk nahi. Very deep/large graphs ke liye BFS safer choice hai." },
+        ],
+        interviewLine: "O(V+E) time — V nodes visit + E edges traverse. Space O(V) — HashMap V entries + recursion stack up to O(V) deep. BFS se same complexity but no stack overflow risk."
+      },
+
+      pitfalls: [
+        "clone MAP mein daalo PEHLE recursion se — cycle ke case mein infinite loop rokne ke liye",
+        "Node ka val copy karo, neighbors separately attach karo",
+        "Agar node None hai → None return karo",
+        "Shallow copy mat karo — original ke neighbor references mat lagao"
+      ],
+
+      interview: [
+        {
+          q: "Cycle kaise handle karta hai yeh approach?",
+          a: "cloned[node] = clone — yeh line recursion ke andar jaane se pehle execute hoti hai. Agar cycle se wapas aate hain same node pe, `if node in cloned` true hoga aur existing clone return ho jaayega."
+        },
+        {
+          q: "BFS version kaise likhoge?",
+          a: "Queue mein original nodes daalo. `cloned[node] = Node(node.val)` pehle karo. Phir neighbors loop mein: agar not cloned → clone karo, queue mein daalo. Har neighbor ka clone current node ke clone ke neighbors mein add karo."
+        }
+      ]
+    }
+  },
+  {
+    id: 5,
+    name: "Is Graph Bipartite?",
+    tier: "good",
+    algo: "Graph Coloring",
+    pattern: "BFS/DFS 2-Coloring",
+    level: "Medium",
+    lc: "785",
+    content: {
+      intuition: `<strong>Problem:</strong> Graph ko 2 groups mein divide kar sakte hain kya, jahan koi edge same group ke 2 nodes ko connect na kare?<br><br>
+<strong>Intuition:</strong> 2-coloring problem hai. Ek node ko RED, saare neighbors ko BLUE, unke neighbors ko RED... agar kabhi same color ke 2 adjacent nodes mil jaayein → not bipartite.<br><br>
+<strong>Mathematical fact:</strong> Graph bipartite hai ↔ graph mein koi odd-length cycle nahi hai. 2-coloring exactly yahi check karta hai.`,
+
+      whyNotDFS: `Union-Find yahan fit nahi — hume coloring chahiye, merging nahi. Dijkstra/Topo sort irrelevant. BFS ya DFS dono kaam karte hain. Important: graph disconnected ho sakta hai — saare components check karo.`,
+
+      algorithm: [
+        "Color array banao: -1 = uncolored, 0 = red, 1 = blue",
+        "Har unvisited node se BFS/DFS shuru karo (disconnected graph handle)",
+        "Current node ko color do, neighbors ko opposite color",
+        "Agar neighbor already colored AND same color hai → False return karo",
+        "Agar poora graph 2-color ho jaaye → True"
+      ],
+
+      code: `<span class="kw">from</span> collections <span class="kw">import</span> deque
+
+<span class="kw">def</span> <span class="fn">isBipartite</span>(graph):
+    n = len(graph)
+    color = [-<span class="nm">1</span>] * n  <span class="cm"># -1 = uncolored</span>
+    
+    <span class="kw">for</span> start <span class="kw">in</span> range(n):
+        <span class="kw">if</span> color[start] != -<span class="nm">1</span>: <span class="kw">continue</span>  <span class="cm"># already colored</span>
+        
+        <span class="cm"># BFS from this component</span>
+        queue = deque([start])
+        color[start] = <span class="nm">0</span>
+        
+        <span class="kw">while</span> queue:
+            node = queue.popleft()
+            
+            <span class="kw">for</span> neighbor <span class="kw">in</span> graph[node]:
+                <span class="kw">if</span> color[neighbor] == -<span class="nm">1</span>:
+                    color[neighbor] = <span class="nm">1</span> - color[node]  <span class="cm"># flip: 0→1 or 1→0</span>
+                    queue.append(neighbor)
+                <span class="kw">elif</span> color[neighbor] == color[node]:
+                    <span class="kw">return False</span>  <span class="cm"># same color adjacent → not bipartite</span>
+    
+    <span class="kw">return True</span>`,
+
+      complexity: {
+        time: "O(V + E)",
+        timeWhy: "Har node ek baar color hota, har edge ek baar check hoti",
+        space: "O(V)",
+        spaceWhy: "Color array + BFS queue — dono O(V)",
+        breakdown: [
+          { term: "Time: O(V)", desc: "Har node exactly ek baar color assign hota hai. Color check immediate hai — O(1). V nodes × O(1) = O(V)." },
+          { term: "Time: O(E)", desc: "Har edge dono directions se check hoti hai (undirected graph) — woh `graph[node]` iterate karne mein cover hota hai. Total edge traversals = O(E)." },
+          { term: "Space: O(V) - color array", desc: "color[] array — n elements. Yeh primary space usage hai." },
+          { term: "Space: O(V) - queue", desc: "BFS queue mein worst case O(V) nodes — e.g., star graph jahan center se sab connected hain, sab neighbors ek saath queue mein aate hain." },
+          { term: "Disconnected graph overhead", desc: "Outer for loop se sab components cover hote hain — no extra space. Same O(V+E) total. Agar koi component bipartite nahi → turant False return, wasted work nahi hota." },
+        ],
+        interviewLine: "O(V+E) standard graph traversal complexity. Space O(V) — color array + queue. Disconnected graph ka outer loop koi extra complexity add nahi karta — total still O(V+E)."
+      },
+
+      pitfalls: [
+        "Disconnected graph! Outer for loop zaroori hai — sirf ek component check karna wrong hai",
+        "`1 - color[node]` elegant way hai color flip karne ka (0→1, 1→0)",
+        "Self-loops ka case: agar self-loop hai → kabhi bipartite nahi ho sakta"
+      ],
+
+      interview: [
+        {
+          q: "Bipartite aur odd cycles ka connection?",
+          a: "Graph bipartite hai if and only if koi odd-length cycle nahi hai. 2-coloring attempt karte time odd cycle milega to same color pe clash hoga — exactly wahi hum detect karte hain."
+        },
+        {
+          q: "Real-world use case?",
+          a: "Recommendation systems (users ↔ products), matching problems (job applicants ↔ positions), social networks mein mutual friend groups. Bipartite graphs matching algorithms (Hungarian, Hopcroft-Karp) efficiently solve karte hain."
+        }
+      ]
+    }
+  },
+  {
+    id: 6,
+    name: "Detect Cycle (Directed)",
+    tier: "must",
+    algo: "DFS Recursion",
+    pattern: "3-State Coloring",
+    level: "Medium",
+    lc: "207 / custom",
+    content: {
+      intuition: `<strong>Problem:</strong> Directed graph mein cycle hai ya nahi?<br><br>
+<strong>Key Insight:</strong> Undirected graph mein cycle detect karna alag hai — bas visited check karo. Directed mein, sirf visited nahi dekhna — dekhna hai ki node <em>current recursion stack</em> mein hai ya nahi.<br><br>
+<strong>3-State approach:</strong> 
+<em>WHITE (0)</em> = unvisited.
+<em>GRAY (1)</em> = currently being processed (on recursion stack).
+<em>BLACK (2)</em> = fully processed, no cycle from here.
+<br><br>Agar DFS mein GRAY node pe wapas aao → cycle hai (back edge mili).`,
+
+      whyNotDFS: `BFS bhi detect kar sakta hai via Kahn's (if processed < n → cycle). DFS with 3-coloring zyada direct hai cycle detection ke liye. Kahn's prefer karo agar topological order bhi chahiye. Pure cycle detection ke liye 3-color DFS cleaner hai.`,
+
+      algorithm: [
+        "State array banao: 0=WHITE, 1=GRAY, 2=BLACK",
+        "Har unvisited node pe DFS karo",
+        "DFS start: node ko GRAY mark karo (on stack)",
+        "Neighbors iterate karo: agar GRAY → cycle detected!",
+        "Agar WHITE → recursive DFS karo",
+        "DFS end: node ko BLACK mark karo (done)",
+        "Agar koi bhi node cycle return kare → True"
+      ],
+
+      code: `<span class="kw">def</span> <span class="fn">hasCycle</span>(n, edges):
+    graph = [[] <span class="kw">for</span> _ <span class="kw">in</span> range(n)]
+    <span class="kw">for</span> src, dst <span class="kw">in</span> edges:
+        graph[src].append(dst)
+    
+    WHITE, GRAY, BLACK = <span class="nm">0</span>, <span class="nm">1</span>, <span class="nm">2</span>
+    state = [WHITE] * n
+    
+    <span class="kw">def</span> <span class="fn">dfs</span>(node):
+        state[node] = GRAY  <span class="cm"># on recursion stack</span>
+        
+        <span class="kw">for</span> neighbor <span class="kw">in</span> graph[node]:
+            <span class="kw">if</span> state[neighbor] == GRAY:
+                <span class="kw">return True</span>   <span class="cm"># back edge → cycle!</span>
+            <span class="kw">if</span> state[neighbor] == WHITE:
+                <span class="kw">if</span> dfs(neighbor): <span class="kw">return True</span>
+        
+        state[node] = BLACK  <span class="cm"># fully processed</span>
+        <span class="kw">return False</span>
+    
+    <span class="kw">for</span> node <span class="kw">in</span> range(n):
+        <span class="kw">if</span> state[node] == WHITE:
+            <span class="kw">if</span> dfs(node): <span class="kw">return True</span>
+    
+    <span class="kw">return False</span>`,
+
+      complexity: {
+        time: "O(V + E)",
+        timeWhy: "Har node ek baar fully process hota — WHITE→GRAY→BLACK",
+        space: "O(V)",
+        spaceWhy: "State array + recursion stack — dono O(V)",
+        breakdown: [
+          { term: "Time: O(V)", desc: "Har node exactly ek baar GRAY hota aur exactly ek baar BLACK hota. BLACK node pe wapas aayein toh recursion nahi karte — O(1) return. Toh V nodes × O(1) processing = O(V)." },
+          { term: "Time: O(E)", desc: "Har directed edge exactly ek baar check hoti hai jab us edge ke source node ka DFS chal raha ho. Total across all nodes = O(E)." },
+          { term: "Space: O(V) - state array", desc: "state[] array — V entries for WHITE/GRAY/BLACK. O(V) space." },
+          { term: "Space: O(V) - recursion stack", desc: "DFS recursion stack maximum graph ki longest path ki length tak jaata hai. Worst case (simple path graph) = O(V). Agar stack overflow concern ho → iterative DFS ya Kahn's use karo." },
+          { term: "Kahn's vs DFS space", desc: "Kahn's (BFS-based): O(V+E) space — adjacency list + indegree array + queue. DFS: O(V) space — sirf state array + call stack. Pure space mein DFS wins, but Kahn's iterative hone ki wajah se more robust." },
+        ],
+        interviewLine: "O(V+E) — har node ek baar GRAY hota, har edge ek baar traverse. Space O(V) — state array + recursion stack. Stack overflow risk hai for V=10^4+ → prefer Kahn's iterative approach in production."
+      },
+
+      pitfalls: [
+        "Undirected cycle detection different hai — parent track karo, not gray state",
+        "BLACK node pe aana OK hai — woh already processed hai, no cycle from there",
+        "Disconnected graph: outer for loop zaroori hai",
+        "Stack overflow for large graphs: iterative DFS ya Kahn's consider karo"
+      ],
+
+      interview: [
+        {
+          q: "Undirected vs Directed cycle detection difference?",
+          a: "Undirected: visited + parent track karo. Agar visited node mila jo parent nahi hai → cycle. Directed: 3-color (WHITE/GRAY/BLACK). GRAY = on current path → cycle. Sirf visited check karna directed mein wrong hoga — valid cross-edges bhi visited honge."
+        },
+        {
+          q: "Kahn's algorithm se cycle kaise detect karein?",
+          a: "Topo sort chalaao. Agar processed nodes count < n → kuch nodes cycle mein hain aur kabhi in-degree 0 nahi hue. Yeh indirect but elegant approach hai."
+        },
+        {
+          q: "Back edge kya hota hai directed graph mein?",
+          a: "DFS tree mein ek descendant se ancestor ki taraf edge. Yahi cycle indicate karta hai directed graph mein. Forward aur cross edges cycle indicate nahi karte."
+        }
+      ]
+    }
+  }
+];
+
+const tierOrder = ['must', 'good', 'bonus'];
+const done = new Set();
+let current = 0;
+
+function renderSidebar() {
+  const list = document.getElementById('qlist');
+  list.innerHTML = questions.map((q, i) => `
+    <div class="q-item ${i === current ? 'active' : ''} ${done.has(i) ? 'done' : ''}" onclick="goTo(${i})">
+      <span class="q-badge badge-${q.tier}">${q.tier.toUpperCase()}</span>
+      <span>
+        <span class="q-name">${q.name}</span>
+        <span class="q-tag">${q.algo}</span>
+      </span>
+      <button class="check-btn ${done.has(i) ? 'done' : ''}" onclick="event.stopPropagation(); toggleDone(${i})">
+        <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+          <path d="M1 4L3.5 6.5L9 1" stroke="#000" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+  `).join('');
+}
+
+function renderMain() {
+  const q = questions[current];
+  const c = q.content;
+  const main = document.getElementById('main-content');
+
+  main.innerHTML = `
+    <div class="q-header">
+      <div class="q-number">0${current+1}</div>
+      <div class="q-title-block">
+        <h2>${q.name.split(' ').map((w,i) => i===q.name.split(' ').length-1 ? `<span>${w}</span>` : w).join(' ')}</h2>
+        <div class="q-meta">
+          <span class="tag tag-algo">${q.algo}</span>
+          <span class="tag tag-pattern">${q.pattern}</span>
+          <span class="tag tag-level">${q.level}</span>
+          <span class="tag" style="border-color:var(--muted);color:var(--muted)">LC #${q.lc}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Intuition & Why This Algorithm</div>
+      <div class="insight-box">${c.intuition}</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Why NOT DFS/BFS/DSU?</div>
+      <div class="insight-box orange">${c.whyNotDFS}</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Algorithm — Step by Step</div>
+      <ul class="steps-list">
+        ${c.algorithm.map(s => `<li><span class="step-text">${s}</span></li>`).join('')}
+      </ul>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Clean Code</div>
+      <div class="code-block">
+        <div class="code-header">
+          Python 3
+          <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+        </div>
+        <pre>${c.code}</pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Time & Space Complexity</div>
+      <div class="complexity-grid">
+        <div class="complexity-card">
+          <div class="label">Time</div>
+          <div class="value">${c.complexity.time}</div>
+          <div class="cx-why">${c.complexity.timeWhy}</div>
+        </div>
+        <div class="complexity-card">
+          <div class="label">Space</div>
+          <div class="value">${c.complexity.space}</div>
+          <div class="cx-why">${c.complexity.spaceWhy}</div>
+        </div>
+      </div>
+      <div class="cx-breakdown">
+        ${c.complexity.breakdown.map(b => `
+          <div class="cx-row">
+            <span class="cx-term">${b.term}</span>
+            <span class="cx-desc">${b.desc}</span>
+          </div>
+        `).join('')}
+      </div>
+      ${c.complexity.interviewLine ? `<div class="cx-interview-line">💬 &nbsp;${c.complexity.interviewLine}</div>` : ''}
+    </div>
+
+    <div class="section">
+      <div class="section-title">Common Pitfalls</div>
+      ${c.pitfalls.map(p => `<div class="pitfall">${p}</div>`).join('')}
+    </div>
+
+    <div class="section">
+      <div class="section-title">Interview Q&A</div>
+      ${c.interview.map((qa, i) => `
+        <div class="interview-qa">
+          <div class="iq" onclick="toggleQA(this)">
+            <span>Q: ${qa.q}</span>
+            <span>▸</span>
+          </div>
+          <div class="ia">A: ${qa.a}</div>
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="nav-btns">
+      ${current > 0 ? `<button class="nav-btn" onclick="goTo(${current-1})">← Previous</button>` : ''}
+      <button class="nav-btn primary" onclick="markDoneAndNext()">Mark Done ${current < questions.length-1 ? '& Next →' : '✓'}</button>
+      ${current < questions.length-1 ? `<button class="nav-btn" onclick="goTo(${current+1})">Next →</button>` : ''}
+    </div>
+  `;
+}
+
+function goTo(i) {
+  current = i;
+  renderSidebar();
+  renderMain();
+  document.getElementById('main-content').scrollTop = 0;
+}
+
+function toggleDone(i) {
+  if (done.has(i)) done.delete(i);
+  else done.add(i);
+  renderSidebar();
+}
+
+function markDoneAndNext() {
+  done.add(current);
+  if (current < questions.length - 1) goTo(current + 1);
+  else renderSidebar();
+}
+
+function toggleQA(el) {
+  const ia = el.nextElementSibling;
+  ia.classList.toggle('open');
+}
+
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'COPIED!';
+    setTimeout(() => btn.textContent = 'COPY', 1500);
+  });
+}
+
+renderSidebar();
+renderMain();
+</script>
+</body>
+</html>

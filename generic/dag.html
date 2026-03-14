@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAG — DFS & BFS Visual</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --border: #1e1e2e;
+    --accent: #7c3aed;
+    --accent2: #06b6d4;
+    --accent3: #f59e0b;
+    --green: #10b981;
+    --red: #ef4444;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --visited: #7c3aed44;
+    --node-default: #1e1e2e;
+    --node-stroke: #3b3b5c;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  .noise {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  }
+  .grid-bg {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: linear-gradient(var(--border) 1px, transparent 1px),
+                      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.3;
+  }
+  .container { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 32px 20px; }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    line-height: 1;
+    background: linear-gradient(135deg, #fff 0%, var(--accent2) 60%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+  }
+  .subtitle {
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-bottom: 36px;
+    letter-spacing: 0.05em;
+  }
+
+  /* CONCEPT CARDS */
+  .concepts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin-bottom: 36px;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+  .card.dag::before { background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+  .card.dfs::before { background: linear-gradient(90deg, var(--accent3), var(--red)); }
+  .card.bfs::before { background: linear-gradient(90deg, var(--accent2), var(--green)); }
+  .card-tag {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+  }
+  .dag .card-tag { color: var(--accent2); }
+  .dfs .card-tag { color: var(--accent3); }
+  .bfs .card-tag { color: var(--accent2); }
+  .card p { color: #a0aec0; font-size: 0.8rem; line-height: 1.7; }
+  .card .highlight { color: var(--text); font-weight: 600; }
+
+  /* ALGO SELECTOR */
+  .algo-bar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .algo-btn {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 8px 20px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.05em;
+  }
+  .algo-btn:hover { border-color: var(--accent); color: var(--text); }
+  .algo-btn.active-dfs { background: #f59e0b22; border-color: var(--accent3); color: var(--accent3); }
+  .algo-btn.active-bfs { background: #06b6d422; border-color: var(--accent2); color: var(--accent2); }
+  .speed-label { color: var(--muted); font-size: 0.75rem; margin-left: auto; }
+  .speed-slider { accent-color: var(--accent); cursor: pointer; }
+
+  /* MAIN VIZ */
+  .viz-area {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  svg#dag {
+    width: 100%;
+    height: 380px;
+    display: block;
+  }
+  .node-circle {
+    fill: var(--node-default);
+    stroke: var(--node-stroke);
+    stroke-width: 2;
+    transition: fill 0.3s, stroke 0.3s;
+    cursor: pointer;
+  }
+  .node-circle:hover { stroke: var(--accent2); }
+  .node-label {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 15px;
+    fill: var(--text);
+    text-anchor: middle;
+    dominant-baseline: central;
+    pointer-events: none;
+  }
+  .edge-arrow {
+    fill: none;
+    stroke: #3b3b5c;
+    stroke-width: 2;
+    marker-end: url(#arrow);
+    transition: stroke 0.3s;
+  }
+
+  /* LOG */
+  .log-row {
+    display: flex;
+    gap: 16px;
+    padding: 0 20px 20px;
+  }
+  .log-box {
+    flex: 1;
+    background: #0d0d14;
+    border-radius: 8px;
+    padding: 12px;
+    min-height: 80px;
+  }
+  .log-title {
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  #log-output {
+    font-size: 0.8rem;
+    color: var(--green);
+    line-height: 1.8;
+    word-break: break-all;
+  }
+  #stack-queue {
+    font-size: 0.8rem;
+    color: var(--accent3);
+    line-height: 1.8;
+  }
+
+  /* STEPS */
+  .steps-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  @media(max-width:600px) { .steps-grid { grid-template-columns: 1fr; } }
+  .step-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .step-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .step-card.dfs h3 { color: var(--accent3); }
+  .step-card.bfs h3 { color: var(--accent2); }
+  .step-list { list-style: none; }
+  .step-list li {
+    font-size: 0.78rem;
+    color: #a0aec0;
+    padding: 4px 0;
+    padding-left: 16px;
+    position: relative;
+    line-height: 1.6;
+  }
+  .step-list li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--muted);
+  }
+  .step-list li strong { color: var(--text); }
+
+  /* USE CASES */
+  .usecase-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+  .usecase-section h3 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+  .uc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+  .uc-item {
+    background: #0d0d14;
+    border-radius: 8px;
+    padding: 12px;
+    border-left: 2px solid var(--accent);
+  }
+  .uc-item.bfs-uc { border-left-color: var(--accent2); }
+  .uc-algo {
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .uc-algo.dfs-label { color: var(--accent3); }
+  .uc-algo.bfs-label { color: var(--accent2); }
+  .uc-title { font-weight: 600; font-size: 0.82rem; color: var(--text); margin-bottom: 4px; }
+  .uc-desc { font-size: 0.74rem; color: #718096; line-height: 1.5; }
+
+  .ctrl-btn {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    padding: 10px 24px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.15s;
+    letter-spacing: 0.05em;
+  }
+  .btn-run {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 0 20px #7c3aed44;
+  }
+  .btn-run:hover { background: #6d28d9; transform: translateY(-1px); }
+  .btn-reset {
+    background: var(--surface);
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+  .btn-reset:hover { color: var(--text); border-color: var(--muted); }
+  .controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
+
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+  .tag-cycle { background: #ef444422; color: var(--red); border: 1px solid #ef444444; }
+  .tag-directed { background: #7c3aed22; color: var(--accent); border: 1px solid #7c3aed44; }
+  .tag-acyclic { background: #10b98122; color: var(--green); border: 1px solid #10b98144; }
+</style>
+</head>
+<body>
+<div class="noise"></div>
+<div class="grid-bg"></div>
+<div class="container">
+
+  <h1>DAG — Visual Guide</h1>
+  <p class="subtitle">// Directed Acyclic Graph · DFS vs BFS · When to use what</p>
+
+  <div class="concepts">
+    <div class="card dag">
+      <div class="card-tag">DAG kya hai?</div>
+      <p>
+        <span class="highlight">D</span>irected — edges ek direction mein jaate hain (A→B, B nahi ja sakta A).<br><br>
+        <span class="highlight">A</span>cyclic — koi cycle nahi hoga. Ek baar visit kiya node, wapas nahi aayenge.<br><br>
+        <span class="highlight">G</span>raph — nodes aur edges ka collection.<br><br>
+        <span class="highlight">Real life:</span> Task scheduling, Git commits, build systems (webpack), course prerequisites.
+      </p>
+      <br>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <span class="tag tag-directed">DIRECTED</span>
+        <span class="tag tag-acyclic">NO CYCLES</span>
+        <span class="tag tag-cycle">CYCLE = NOT DAG</span>
+      </div>
+    </div>
+    <div class="card dfs">
+      <div class="card-tag">DFS — Depth First</div>
+      <p>
+        Ek path pe <span class="highlight">jitna deep ja sake</span>, phir backtrack karo.<br><br>
+        <span class="highlight">Stack</span> use karta hai (ya recursion call stack).<br><br>
+        Jaise maze solve karna — ek direction mein jaao, dead end mila toh wapas aao.<br><br>
+        <span class="highlight">Best for:</span> Topological sort, cycle detection, pathfinding.
+      </p>
+    </div>
+    <div class="card bfs">
+      <div class="card-tag">BFS — Breadth First</div>
+      <p>
+        Pehle <span class="highlight">saare neighbors</span> visit karo, phir unke neighbors.<br><br>
+        <span class="highlight">Queue</span> use karta hai (FIFO).<br><br>
+        Jaise stone ko pond mein daalao — ripples layer by layer failti hain.<br><br>
+        <span class="highlight">Best for:</span> Shortest path, level order, dependency resolution.
+      </p>
+    </div>
+  </div>
+
+  <!-- VIZ -->
+  <div class="algo-bar">
+    <button class="algo-btn active-dfs" id="btn-dfs" onclick="selectAlgo('dfs')">DFS</button>
+    <button class="algo-btn" id="btn-bfs" onclick="selectAlgo('bfs')">BFS</button>
+    <button class="ctrl-btn btn-run" onclick="runAlgo()">▶ Run</button>
+    <button class="ctrl-btn btn-reset" onclick="resetViz()">↺ Reset</button>
+    <span class="speed-label">Speed:</span>
+    <input type="range" class="speed-slider" id="speed" min="200" max="1500" value="700" style="width:100px">
+  </div>
+
+  <div class="viz-area">
+    <svg id="dag" viewBox="0 0 800 360">
+      <defs>
+        <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#4a4a6a"/>
+        </marker>
+        <marker id="arrow-active" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#7c3aed"/>
+        </marker>
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+          <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <!-- edges drawn by JS -->
+      <g id="edges-g"></g>
+      <!-- nodes drawn by JS -->
+      <g id="nodes-g"></g>
+    </svg>
+    <div class="log-row">
+      <div class="log-box">
+        <div class="log-title">// Visit Order</div>
+        <div id="log-output">— press Run —</div>
+      </div>
+      <div class="log-box">
+        <div class="log-title">// Stack / Queue state</div>
+        <div id="stack-queue">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP BY STEP -->
+  <div class="steps-grid">
+    <div class="step-card dfs">
+      <h3>🔴 DFS — Step by Step</h3>
+      <ul class="step-list">
+        <li><strong>Push</strong> start node onto Stack</li>
+        <li><strong>Pop</strong> top node, mark visited</li>
+        <li><strong>Push</strong> unvisited neighbors onto stack</li>
+        <li><strong>Repeat</strong> until stack empty</li>
+        <li>Time: <strong>O(V + E)</strong> · Space: <strong>O(V)</strong></li>
+      </ul>
+    </div>
+    <div class="step-card bfs">
+      <h3>🔵 BFS — Step by Step</h3>
+      <ul class="step-list">
+        <li><strong>Enqueue</strong> start node into Queue</li>
+        <li><strong>Dequeue</strong> front node, mark visited</li>
+        <li><strong>Enqueue</strong> unvisited neighbors</li>
+        <li><strong>Repeat</strong> until queue empty</li>
+        <li>Time: <strong>O(V + E)</strong> · Space: <strong>O(V)</strong></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- USE CASES -->
+  <div class="usecase-section">
+    <h3>// Real Interview Scenarios — DFS vs BFS choose karo</h3>
+    <div class="uc-grid">
+      <div class="uc-item">
+        <div class="uc-algo dfs-label">DFS</div>
+        <div class="uc-title">Topological Sort</div>
+        <div class="uc-desc">Task dependencies, build order, course prerequisites. DFS + finish time = topo order.</div>
+      </div>
+      <div class="uc-item">
+        <div class="uc-algo dfs-label">DFS</div>
+        <div class="uc-title">Cycle Detection in DAG</div>
+        <div class="uc-desc">Visited + InStack arrays. Back edge milaa toh cycle hai. DFS naturally captures this.</div>
+      </div>
+      <div class="uc-item bfs-uc">
+        <div class="uc-algo bfs-label">BFS</div>
+        <div class="uc-title">Shortest Path (unweighted)</div>
+        <div class="uc-desc">Word Ladder, 0-1 BFS, minimum steps. BFS guarantees shortest path in unweighted graphs.</div>
+      </div>
+      <div class="uc-item bfs-uc">
+        <div class="uc-algo bfs-label">BFS (Kahn's)</div>
+        <div class="uc-title">Topo Sort alternate</div>
+        <div class="uc-desc">In-degree based. Better when you need level-wise processing or parallel task simulation.</div>
+      </div>
+      <div class="uc-item">
+        <div class="uc-algo dfs-label">DFS</div>
+        <div class="uc-title">Connected Components</div>
+        <div class="uc-desc">Islands, regions. DFS faster to implement for simple reachability problems.</div>
+      </div>
+      <div class="uc-item bfs-uc">
+        <div class="uc-algo bfs-label">BFS</div>
+        <div class="uc-title">Level Order / Distance</div>
+        <div class="uc-desc">Tree levels, distance from source, multi-source BFS (01-matrix, rotting oranges).</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;font-size:0.78rem;color:#718096;line-height:1.9">
+    <span style="font-family:'Syne',sans-serif;font-weight:800;color:var(--accent);font-size:0.9rem">// The Golden Rule, bhai —</span><br>
+    <strong style="color:var(--text)">Shortest path chahiye?</strong> → BFS. Unweighted = BFS. Weighted = Dijkstra.<br>
+    <strong style="color:var(--text)">Dependency order chahiye?</strong> → DFS (post-order) ya Kahn's BFS.<br>
+    <strong style="color:var(--text)">Cycle detect karna hai?</strong> → DFS with visited+inStack.<br>
+    <strong style="color:var(--text)">Memory concern hai?</strong> → DFS (stack ~ depth), BFS (queue ~ width). Wide graph = DFS better. Deep tree = BFS better.<br>
+    <strong style="color:var(--text)">DAG pe DP karna hai?</strong> → Topo sort first, phir DP in topo order.
+  </div>
+
+</div>
+
+<script>
+// Graph definition
+const nodes = [
+  { id: 'A', x: 400, y: 50 },
+  { id: 'B', x: 200, y: 150 },
+  { id: 'C', x: 600, y: 150 },
+  { id: 'D', x: 100, y: 270 },
+  { id: 'E', x: 310, y: 270 },
+  { id: 'F', x: 520, y: 270 },
+  { id: 'G', x: 700, y: 270 },
+];
+const edges = [
+  ['A','B'], ['A','C'],
+  ['B','D'], ['B','E'],
+  ['C','F'], ['C','G'],
+  ['E','F'],
+];
+const adj = {};
+nodes.forEach(n => adj[n.id] = []);
+edges.forEach(([u,v]) => adj[u].push(v));
+
+let currentAlgo = 'dfs';
+let animating = false;
+
+// Draw graph
+function drawGraph(colors = {}) {
+  const sg = document.getElementById('edges-g');
+  const ng = document.getElementById('nodes-g');
+  sg.innerHTML = '';
+  ng.innerHTML = '';
+
+  edges.forEach(([u, v]) => {
+    const nu = nodes.find(n => n.id === u);
+    const nv = nodes.find(n => n.id === v);
+    const R = 28;
+    const dx = nv.x - nu.x, dy = nv.y - nu.y;
+    const dist = Math.sqrt(dx*dx+dy*dy);
+    const sx = nu.x + dx/dist*R, sy = nu.y + dy/dist*R;
+    const ex = nv.x - dx/dist*R, ey = nv.y - dy/dist*R;
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', sx); line.setAttribute('y1', sy);
+    line.setAttribute('x2', ex); line.setAttribute('y2', ey);
+    line.setAttribute('class', 'edge-arrow');
+    const activeEdge = colors[u] === 'visiting' || colors[u] === 'done';
+    line.setAttribute('stroke', activeEdge ? '#3b3b5c' : '#2a2a3e');
+    line.setAttribute('marker-end', 'url(#arrow)');
+    sg.appendChild(line);
+  });
+
+  nodes.forEach(n => {
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    c.setAttribute('cx', n.x); c.setAttribute('cy', n.y); c.setAttribute('r', 28);
+    c.setAttribute('class', 'node-circle');
+
+    const state = colors[n.id] || 'default';
+    if (state === 'visiting') {
+      c.setAttribute('fill', currentAlgo === 'dfs' ? '#f59e0b33' : '#06b6d433');
+      c.setAttribute('stroke', currentAlgo === 'dfs' ? '#f59e0b' : '#06b6d4');
+      c.setAttribute('stroke-width', '3');
+      c.setAttribute('filter', 'url(#glow)');
+    } else if (state === 'done') {
+      c.setAttribute('fill', currentAlgo === 'dfs' ? '#f59e0b22' : '#06b6d422');
+      c.setAttribute('stroke', currentAlgo === 'dfs' ? '#f59e0b88' : '#06b6d488');
+    } else {
+      c.setAttribute('fill', '#1a1a2e');
+      c.setAttribute('stroke', '#3b3b5c');
+    }
+
+    const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    t.setAttribute('x', n.x); t.setAttribute('y', n.y);
+    t.setAttribute('class', 'node-label');
+    t.textContent = n.id;
+    if (state === 'visiting') t.setAttribute('fill', currentAlgo === 'dfs' ? '#f59e0b' : '#06b6d4');
+    else if (state === 'done') t.setAttribute('fill', currentAlgo === 'dfs' ? '#f59e0baa' : '#06b6d4aa');
+
+    g.appendChild(c); g.appendChild(t);
+    ng.appendChild(g);
+  });
+}
+
+function selectAlgo(algo) {
+  currentAlgo = algo;
+  document.getElementById('btn-dfs').className = 'algo-btn' + (algo === 'dfs' ? ' active-dfs' : '');
+  document.getElementById('btn-bfs').className = 'algo-btn' + (algo === 'bfs' ? ' active-bfs' : '');
+  resetViz();
+}
+
+function resetViz() {
+  if (animating) return;
+  drawGraph();
+  document.getElementById('log-output').textContent = '— press Run —';
+  document.getElementById('stack-queue').textContent = '—';
+}
+
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+async function runAlgo() {
+  if (animating) return;
+  animating = true;
+  const speed = () => parseInt(document.getElementById('speed').value);
+  const visited = {};
+  const order = [];
+  const colors = {};
+  const logEl = document.getElementById('log-output');
+  const sqEl = document.getElementById('stack-queue');
+  logEl.textContent = '';
+  sqEl.textContent = '';
+
+  if (currentAlgo === 'dfs') {
+    const stack = ['A'];
+    while (stack.length > 0) {
+      sqEl.textContent = `Stack: [ ${stack.join(', ')} ]`;
+      const node = stack.pop();
+      if (visited[node]) continue;
+      visited[node] = true;
+      colors[node] = 'visiting';
+      order.push(node);
+      logEl.textContent = `Visited: ${order.join(' → ')}`;
+      drawGraph({...colors});
+      await delay(speed());
+      // push neighbors reverse so left is processed first
+      const neighbors = [...adj[node]].reverse();
+      neighbors.forEach(nb => { if (!visited[nb]) stack.push(nb); });
+      colors[node] = 'done';
+      drawGraph({...colors});
+    }
+    sqEl.textContent = `Stack: [ ] — empty, done!`;
+  } else {
+    // BFS
+    const queue = ['A'];
+    visited['A'] = true;
+    colors['A'] = 'visiting';
+    while (queue.length > 0) {
+      sqEl.textContent = `Queue: [ ${queue.join(', ')} ]`;
+      const node = queue.shift();
+      order.push(node);
+      colors[node] = 'visiting';
+      logEl.textContent = `Visited: ${order.join(' → ')}`;
+      drawGraph({...colors});
+      await delay(speed());
+      adj[node].forEach(nb => {
+        if (!visited[nb]) {
+          visited[nb] = true;
+          queue.push(nb);
+        }
+      });
+      colors[node] = 'done';
+      drawGraph({...colors});
+    }
+    sqEl.textContent = `Queue: [ ] — empty, done!`;
+  }
+  logEl.innerHTML += `<br><span style="color:#7c3aed">✓ Complete!</span>`;
+  animating = false;
+}
+
+drawGraph();
+</script>
+</body>
+</html>

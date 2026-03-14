@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LRU Cache — Visual Explainer</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #0f0f18;
+    --bg3: #14141f;
+    --border: #1e1e2e;
+    --accent: #7f5af0;
+    --accent2: #2cb67d;
+    --accent3: #ff6b6b;
+    --accent4: #ffd166;
+    --text: #fffffe;
+    --muted: #6e6e8a;
+    --glow: rgba(127,90,240,0.3);
+    --glow2: rgba(44,182,125,0.3);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* noise overlay */
+  body::before {
+    content:'';
+    position:fixed; inset:0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events:none; z-index:0; opacity:0.4;
+  }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 40px 24px; position: relative; z-index: 1; }
+
+  /* HEADER */
+  header { margin-bottom: 60px; }
+  .tag { font-size: 11px; letter-spacing: 3px; color: var(--accent); text-transform: uppercase; margin-bottom: 12px; }
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(36px, 6vw, 72px);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -2px;
+    background: linear-gradient(135deg, #fff 30%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .subtitle { color: var(--muted); font-size: 13px; margin-top: 12px; }
+
+  /* COMPLEXITY PILLS */
+  .complexity-row { display: flex; gap: 12px; margin: 32px 0; flex-wrap: wrap; }
+  .pill {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 100px; padding: 8px 16px; font-size: 12px;
+  }
+  .pill-label { color: var(--muted); }
+  .pill-value { color: var(--accent2); font-weight: 700; }
+  .pill-op { color: var(--accent4); }
+
+  /* SECTION TITLES */
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 20px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-title::after { content:''; flex:1; height:1px; background: var(--border); }
+
+  /* INTERACTIVE DEMO */
+  .demo-box {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .demo-box::before {
+    content:'';
+    position:absolute; top:-60px; right:-60px;
+    width:200px; height:200px;
+    background: radial-gradient(circle, var(--glow) 0%, transparent 70%);
+    pointer-events:none;
+  }
+
+  /* cache controls */
+  .controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 28px; align-items: center; }
+  .inp {
+    background: var(--bg3); border: 1px solid var(--border);
+    color: var(--text); font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; padding: 10px 14px; border-radius: 8px;
+    width: 100px; outline: none; transition: border-color 0.2s;
+  }
+  .inp:focus { border-color: var(--accent); }
+  .inp::placeholder { color: var(--muted); }
+  .btn {
+    padding: 10px 20px; border-radius: 8px; border: none;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    font-weight: 700; cursor: pointer; transition: all 0.2s;
+    letter-spacing: 1px; text-transform: uppercase;
+  }
+  .btn-put { background: var(--accent); color: #fff; }
+  .btn-put:hover { background: #6944d4; box-shadow: 0 0 20px var(--glow); }
+  .btn-get { background: var(--accent2); color: #0a0a0f; }
+  .btn-get:hover { background: #22a06b; box-shadow: 0 0 20px var(--glow2); }
+  .btn-reset { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+  .btn-reset:hover { color: var(--text); border-color: var(--muted); }
+  .cap-label { color: var(--muted); font-size: 12px; margin-left: 8px; }
+
+  /* LINKED LIST VIZ */
+  .ll-container {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px; margin-bottom: 20px;
+    min-height: 120px; overflow-x: auto;
+  }
+  .ll-label { font-size: 10px; color: var(--muted); letter-spacing: 2px; margin-bottom: 16px; text-transform: uppercase; }
+  .ll-row { display: flex; align-items: center; gap: 0; flex-wrap: nowrap; min-height: 70px; }
+
+  .node-wrap { display: flex; align-items: center; gap: 0; }
+
+  .node {
+    display: flex; flex-direction: column; align-items: center;
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 10px; padding: 10px 14px; min-width: 70px;
+    position: relative; transition: all 0.35s cubic-bezier(.23,1,.32,1);
+  }
+  .node.sentinel {
+    border-color: #2a2a3e; background: #0d0d18;
+    opacity: 0.6;
+  }
+  .node.sentinel .node-key { color: var(--muted); }
+  .node.fresh { border-color: var(--accent2); box-shadow: 0 0 16px var(--glow2); animation: pop 0.4s cubic-bezier(.23,1,.32,1); }
+  .node.evicted { border-color: var(--accent3); box-shadow: 0 0 16px rgba(255,107,107,0.3); animation: shake 0.3s ease; }
+  .node.accessed { border-color: var(--accent4); box-shadow: 0 0 16px rgba(255,209,102,0.3); animation: pulse 0.4s ease; }
+
+  @keyframes pop {
+    0% { transform: scale(0.6) translateY(-10px); opacity:0; }
+    100% { transform: scale(1) translateY(0); opacity:1; }
+  }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+  }
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+  }
+
+  .node-key { font-size: 16px; font-weight: 700; color: var(--text); }
+  .node-val { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .node-badge {
+    position: absolute; top: -8px; left: 50%; transform: translateX(-50%);
+    font-size: 9px; padding: 2px 7px; border-radius: 100px;
+    text-transform: uppercase; letter-spacing: 1px; font-weight: 700; white-space: nowrap;
+  }
+  .badge-mru { background: var(--accent2); color: #0a0a0f; }
+  .badge-lru { background: var(--accent3); color: #fff; }
+
+  .arrow {
+    font-size: 18px; color: var(--muted); padding: 0 6px;
+    display: flex; align-items: center; gap: 0; flex-shrink: 0;
+  }
+  .arrow-double { display: flex; flex-direction: column; align-items: center; font-size: 10px; color: #3a3a5a; gap: 1px; }
+
+  /* CACHE DICT VIZ */
+  .dict-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; }
+  .dict-entry {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 12px;
+    transition: all 0.3s ease;
+  }
+  .dict-entry.highlight { border-color: var(--accent); background: rgba(127,90,240,0.08); }
+  .dict-entry.evict { border-color: var(--accent3); background: rgba(255,107,107,0.08); }
+  .dict-key { font-size: 11px; color: var(--muted); }
+  .dict-arrow { font-size: 10px; color: var(--accent); margin: 2px 0; }
+  .dict-ptr { font-size: 12px; color: var(--accent2); font-weight: 700; }
+
+  /* LOG */
+  .log-box {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 8px; height: 120px; overflow-y: auto;
+    padding: 12px; font-size: 11px;
+  }
+  .log-entry { padding: 3px 0; border-bottom: 1px solid #12121c; }
+  .log-entry:last-child { border: none; }
+  .log-put { color: var(--accent); }
+  .log-get-hit { color: var(--accent2); }
+  .log-get-miss { color: var(--accent3); }
+  .log-evict { color: var(--accent4); }
+
+  /* RESULT TOAST */
+  .result-toast {
+    position: fixed; top: 24px; right: 24px;
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 20px;
+    font-size: 13px; z-index: 100;
+    transform: translateX(120%); transition: transform 0.3s cubic-bezier(.23,1,.32,1);
+    max-width: 280px;
+  }
+  .result-toast.show { transform: translateX(0); }
+  .result-toast.hit { border-color: var(--accent2); }
+  .result-toast.miss { border-color: var(--accent3); }
+
+  /* CODE SECTION */
+  .code-panels { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 48px; }
+  @media(max-width:700px) { .code-panels { grid-template-columns: 1fr; } }
+
+  .code-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden;
+  }
+  .code-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px; border-bottom: 1px solid var(--border);
+    background: var(--bg3);
+  }
+  .code-title { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; }
+  .code-complexity { font-size: 11px; color: var(--accent2); }
+  pre {
+    padding: 20px; font-size: 11.5px; line-height: 1.8;
+    overflow-x: auto; margin: 0;
+  }
+  .kw { color: var(--accent); }
+  .fn { color: var(--accent2); }
+  .cm { color: #3a3a5c; font-style: italic; }
+  .st { color: var(--accent4); }
+  .num { color: #ff9f43; }
+
+  /* EXPLANATION CARDS */
+  .exp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-bottom: 48px; }
+  .exp-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px;
+    position: relative; overflow: hidden;
+  }
+  .exp-card::after {
+    content: attr(data-num);
+    position: absolute; right: 16px; bottom: 12px;
+    font-family: 'Syne', sans-serif;
+    font-size: 60px; font-weight: 800;
+    color: var(--border); line-height: 1;
+    pointer-events: none;
+  }
+  .exp-icon { font-size: 28px; margin-bottom: 12px; }
+  .exp-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+  .exp-body { font-size: 12px; color: var(--muted); line-height: 1.8; }
+  .exp-body b { color: var(--text); }
+
+  /* POINTER EXPLAINER */
+  .pointer-box {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 28px; margin-bottom: 48px;
+  }
+  .mem-diagram { display: flex; gap: 32px; align-items: flex-start; flex-wrap: wrap; margin-top: 20px; }
+  .mem-block {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px 20px; font-size: 12px;
+    min-width: 160px;
+  }
+  .mem-block-title { color: var(--muted); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+  .mem-addr { color: var(--accent4); }
+  .mem-field { display: flex; justify-content: space-between; gap: 16px; padding: 4px 0; border-bottom: 1px solid #12121c; }
+  .mem-field:last-child { border: none; }
+  .mem-fname { color: var(--muted); }
+  .mem-fval { color: var(--accent2); }
+  .mem-arrow-row { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 11px; padding: 8px 0; }
+
+  /* WALKTHROUGH */
+  .steps-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .step-chip {
+    padding: 6px 14px; border-radius: 100px; font-size: 11px;
+    border: 1px solid var(--border); background: var(--bg3);
+    color: var(--muted); cursor: default; transition: all 0.2s;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .step-chip.done { border-color: var(--accent2); color: var(--accent2); background: rgba(44,182,125,0.08); }
+  .step-chip.active { border-color: var(--accent); color: var(--text); background: rgba(127,90,240,0.15); box-shadow: 0 0 12px var(--glow); }
+  .step-chip.evict-chip { border-color: var(--accent3); }
+
+  .step-explain {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px 20px; min-height: 80px;
+    font-size: 12px; line-height: 1.9; color: var(--muted);
+    transition: all 0.3s ease;
+  }
+  .step-explain b { color: var(--text); }
+  .step-explain .why { color: var(--accent4); }
+  .step-explain .op { color: var(--accent2); font-weight: 700; }
+  .step-explain .evict { color: var(--accent3); font-weight: 700; }
+
+  /* walkthrough linked list */
+  .wll-container {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px 20px; margin: 12px 0;
+    overflow-x: auto;
+  }
+  .wll-label { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .divider { height: 1px; background: var(--border); margin: 48px 0; }
+
+  .grid-bg {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(127,90,240,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(127,90,240,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <header>
+    <div class="tag">Data Structures · Interview Prep</div>
+    <h1>LRU Cache</h1>
+    <p class="subtitle">Least Recently Used · Doubly Linked List + HashMap · O(1) get & put</p>
+
+    <div class="complexity-row">
+      <div class="pill">
+        <span class="pill-label">Time</span>
+        <span class="pill-value">O(1)</span>
+        <span class="pill-op">get / put</span>
+      </div>
+      <div class="pill">
+        <span class="pill-label">Space</span>
+        <span class="pill-value">O(capacity)</span>
+      </div>
+      <div class="pill">
+        <span class="pill-label">Structure</span>
+        <span class="pill-value">HashMap</span>
+        <span class="pill-op">+ DLL</span>
+      </div>
+      <div class="pill">
+        <span class="pill-label">Eviction</span>
+        <span class="pill-value">LRU</span>
+        <span class="pill-op">tail.prev</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- GUIDED WALKTHROUGH -->
+  <div class="section-title">Guided Walkthrough</div>
+  <div class="demo-box" style="margin-bottom:20px;">
+    <div style="font-family:'Syne',sans-serif; font-size:14px; font-weight:700; margin-bottom:6px; color:var(--text);">
+      Step-by-step — ek ek karke dekh kya ho raha hai
+    </div>
+    <div style="font-size:11px; color:var(--muted); margin-bottom:20px;">Capacity = 3. Har step mein explanation dikhega.</div>
+
+    <div class="steps-row" id="steps-row"></div>
+
+    <div class="step-explain" id="step-explain"></div>
+
+    <div style="display:flex; gap:10px; margin-top:16px; flex-wrap:wrap;">
+      <button class="btn btn-get" onclick="prevStep()" id="btn-prev" disabled>← Prev</button>
+      <button class="btn btn-put" onclick="nextStep()" id="btn-next">Next →</button>
+      <button class="btn btn-reset" onclick="resetWalkthrough()">Reset Walkthrough</button>
+      <span style="color:var(--muted); font-size:12px; align-self:center;" id="step-counter">Step 0 / 7</span>
+    </div>
+  </div>
+
+  <!-- INTERACTIVE DEMO -->
+  <div class="section-title">Freeplay Demo</div>
+  <div class="demo-box">
+    <div class="controls">
+      <input class="inp" id="inp-key" placeholder="key" maxlength="6">
+      <input class="inp" id="inp-val" placeholder="value" maxlength="6">
+      <button class="btn btn-put" onclick="doPut()">PUT</button>
+      <button class="btn btn-get" onclick="doGet()">GET</button>
+      <button class="btn btn-reset" onclick="doReset()">RESET</button>
+      <span class="cap-label">capacity = <span id="cap-display" style="color:var(--accent4)">3</span></span>
+    </div>
+
+    <!-- Linked List -->
+    <div class="ll-container">
+      <div class="ll-label">Doubly Linked List — MRU (left) → LRU (right)</div>
+      <div class="ll-row" id="ll-row"></div>
+    </div>
+
+    <!-- Dict -->
+    <div style="margin-bottom:16px">
+      <div style="font-size:10px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; margin-bottom:10px;">HashMap (cache dict)</div>
+      <div class="dict-grid" id="dict-grid"></div>
+      <div id="dict-empty" style="font-size:12px; color:var(--muted); display:none">// empty</div>
+    </div>
+
+    <!-- Log -->
+    <div style="font-size:10px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; margin-bottom:8px;">Operation Log</div>
+    <div class="log-box" id="log-box"></div>
+  </div>
+
+  <!-- CONCEPT CARDS -->
+  <div class="section-title">Core Concepts</div>
+  <div class="exp-grid">
+    <div class="exp-card" data-num="01">
+      <div class="exp-icon">🔗</div>
+      <div class="exp-title">Why Doubly Linked List?</div>
+      <div class="exp-body">
+        Deletion from <b>any position in O(1)</b> — dono taraf ke pointers hain (prev + next), toh node ko directly unlink kar sakte hain bina traverse kiye. Singly linked list mein prev nahi hota, O(n) lagta.
+      </div>
+    </div>
+    <div class="exp-card" data-num="02">
+      <div class="exp-icon">🗺️</div>
+      <div class="exp-title">Why HashMap?</div>
+      <div class="exp-body">
+        HashMap stores <b>key → Node reference</b>. Directly us node tak pahuncho in O(1). Bina map ke list traverse karna padta — O(n). Dono milao → O(1) everywhere.
+      </div>
+    </div>
+    <div class="exp-card" data-num="03">
+      <div class="exp-icon">📍</div>
+      <div class="exp-title">Sentinel Nodes (HEAD/TAIL)</div>
+      <div class="exp-body">
+        Dummy HEAD aur TAIL nodes hain — actual data nahi, sirf <b>boundary markers</b>. Isse edge cases (empty list, single node) automatically handle hote hain. Real nodes hamesha HEAD.next se TAIL.prev ke beech rehte hain.
+      </div>
+    </div>
+    <div class="exp-card" data-num="04">
+      <div class="exp-icon">⚡</div>
+      <div class="exp-title">MRU = HEAD.next, LRU = TAIL.prev</div>
+      <div class="exp-body">
+        Most Recently Used hamesha <b>HEAD ke baad</b> insert hota. Least Recently Used hamesha <b>TAIL ke pehle</b> hota. Eviction? Bas tail.prev delete karo — O(1).
+      </div>
+    </div>
+    <div class="exp-card" data-num="05">
+      <div class="exp-icon">🔄</div>
+      <div class="exp-title">GET = Delete + Re-Add</div>
+      <div class="exp-body">
+        Jab koi node access hoti hai, woh <b>list se unlink</b> hoti hai aur <b>front pe relink</b> — object wahi ka wahi, sirf pointers change hote hain. HashMap reference unchanged rehta, object alive rehta.
+      </div>
+    </div>
+    <div class="exp-card" data-num="06">
+      <div class="exp-icon">🗑️</div>
+      <div class="exp-title">Eviction Strategy</div>
+      <div class="exp-body">
+        Jab <b>capacity exceed ho</b> — tail.prev node evict hoti hai (LRU). Usse DLL se unlink karo, HashMap se delete karo. Node mein <b>key store honi chahiye</b> taki dict se delete kar sako.
+      </div>
+    </div>
+  </div>
+
+  <!-- POINTER EXPLAINER -->
+  <div class="section-title">Python Reference Model</div>
+  <div class="pointer-box">
+    <div style="font-family:'Syne',sans-serif; font-size:15px; font-weight:700; margin-bottom:8px;">
+      cache["a"] is an arrow, not a box
+    </div>
+    <div style="font-size:12px; color:var(--muted); line-height:1.8; margin-bottom:20px;">
+      Jab tu <code style="color:var(--accent2)">_delete(cache["a"])</code> karta hai — object delete nahi hota.
+      Sirf DLL ke pointers change hote hain. <code style="color:var(--accent2)">cache["a"]</code> abhi bhi usi object ki taraf point karta hai.
+      Phir <code style="color:var(--accent2)">_add(cache["a"])</code> usi object ko front pe relink kar deta hai.
+    </div>
+    <div class="mem-diagram">
+      <div class="mem-block">
+        <div class="mem-block-title">cache dict</div>
+        <div class="mem-field"><span class="mem-fname">"a"</span><span class="mem-fval">→ 0x7f4a <span style="color:var(--accent)">↗</span></span></div>
+        <div class="mem-field"><span class="mem-fname">"b"</span><span class="mem-fval">→ 0x7f8b <span style="color:var(--accent)">↗</span></span></div>
+      </div>
+      <div style="font-size:24px; color:var(--muted); align-self:center;">→</div>
+      <div class="mem-block">
+        <div class="mem-block-title">Node object @ <span class="mem-addr">0x7f4a</span></div>
+        <div class="mem-field"><span class="mem-fname">key</span><span class="mem-fval">"a"</span></div>
+        <div class="mem-field"><span class="mem-fname">value</span><span class="mem-fval">42</span></div>
+        <div class="mem-field"><span class="mem-fname">prev</span><span class="mem-fval">→ HEAD</span></div>
+        <div class="mem-field"><span class="mem-fname">next</span><span class="mem-fval">→ 0x7f8b</span></div>
+      </div>
+      <div style="font-size:11px; color:var(--muted); align-self:center; max-width:200px; line-height:1.7;">
+        <span style="color:var(--accent4)">after _delete:</span><br>
+        prev/next change hote hain but <span style="color:var(--accent2)">cache["a"] → 0x7f4a</span> unchanged.<br><br>
+        <span style="color:var(--accent4)">after _add:</span><br>
+        same 0x7f4a ko front pe wire karo. Done.
+      </div>
+    </div>
+  </div>
+
+  <!-- CODE PANELS -->
+  <div class="section-title">Annotated Code</div>
+  <div class="code-panels">
+
+    <div class="code-card">
+      <div class="code-header">
+        <span class="code-title">_add & _delete</span>
+        <span class="code-complexity">O(1)</span>
+      </div>
+      <pre><span class="kw">def</span> <span class="fn">_add</span>(self, node):
+    <span class="cm"># Always add after HEAD (MRU pos)</span>
+    node.prev = self.head
+    node.next = self.head.next
+    self.head.next.prev = node  <span class="cm"># old front's prev</span>
+    self.head.next = node       <span class="cm"># head points to new</span>
+
+<span class="kw">def</span> <span class="fn">_delete</span>(self, node):
+    <span class="cm"># Wire prev and next around node</span>
+    _prev = node.prev
+    _next = node.next
+    _prev.next = _next   <span class="cm"># Bug fix: not `next`</span>
+    _next.prev = _prev</pre>
+    </div>
+
+    <div class="code-card">
+      <div class="code-header">
+        <span class="code-title">get</span>
+        <span class="code-complexity">O(1)</span>
+      </div>
+      <pre><span class="kw">def</span> <span class="fn">get</span>(self, key):
+    <span class="kw">if</span> key <span class="kw">in</span> self.cache:
+        node = self.cache[key]
+        <span class="cm"># Move to front (now MRU)</span>
+        self._delete(node)  <span class="cm"># unlink</span>
+        self._add(node)     <span class="cm"># relink at front</span>
+        <span class="cm"># Same object, just rewired!</span>
+        <span class="kw">return</span> node.value  <span class="cm"># .value, not .val</span>
+    <span class="kw">return</span> -<span class="num">1</span></pre>
+    </div>
+
+    <div class="code-card">
+      <div class="code-header">
+        <span class="code-title">put</span>
+        <span class="code-complexity">O(1)</span>
+      </div>
+      <pre><span class="kw">def</span> <span class="fn">put</span>(self, key, value):
+    <span class="kw">if</span> key <span class="kw">in</span> self.cache:
+        self._delete(self.cache[key])
+    new_node = Node(key, value)  <span class="cm"># store key!</span>
+    self._add(new_node)          <span class="cm"># same node add karo</span>
+    self.cache[key] = new_node
+    <span class="kw">if</span> len(self.cache) > self.capacity:
+        lru = self.tail.prev
+        self._delete(lru)
+        <span class="kw">del</span> self.cache[lru.key]  <span class="cm"># needs key attr</span></pre>
+    </div>
+
+    <div class="code-card">
+      <div class="code-header">
+        <span class="code-title">4 Bugs Fixed</span>
+        <span class="code-complexity" style="color:var(--accent3)">Critical</span>
+      </div>
+      <pre><span class="cm"># Bug 1: _delete used builtin `next`</span>
+_prev.next = _next  <span class="cm"># was: = next ❌</span>
+
+<span class="cm"># Bug 2: wrong node added to DLL</span>
+self._add(new_node) <span class="cm"># was: Node(val) ❌</span>
+
+<span class="cm"># Bug 3: Node had no key attr</span>
+Node(key, value)    <span class="cm"># was: Node(val) ❌</span>
+
+<span class="cm"># Bug 4: wrong attr name</span>
+node.value          <span class="cm"># was: node.val ❌</span></pre>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- TOAST -->
+<div class="result-toast" id="toast"></div>
+
+<script>
+const CAPACITY = 3;
+// ─── WALKTHROUGH ───────────────────────────────────────────────
+const STEPS = [
+  {
+    label: 'PUT a 1',
+    type: 'put', key: 'a', val: '1',
+    explain: `<b>PUT("a", 1)</b> — cache mein pehli entry.<br>
+    <span class="op">→ Node("a",1) banao, HEAD ke baad add karo.</span><br>
+    <span class="why">Cache: {a→Node} | DLL: H ↔ [a] ↔ T</span>`
+  },
+  {
+    label: 'PUT b 2',
+    type: 'put', key: 'b', val: '2',
+    explain: `<b>PUT("b", 2)</b> — second entry.<br>
+    <span class="op">→ Node("b",2) HEAD ke baad insert hoga — ab "b" MRU hai, "a" LRU.</span><br>
+    <span class="why">Cache: {a,b} | DLL: H ↔ [b] ↔ [a] ↔ T</span>`
+  },
+  {
+    label: 'PUT c 3',
+    type: 'put', key: 'c', val: '3',
+    explain: `<b>PUT("c", 3)</b> — capacity (3) full ho gayi!<br>
+    <span class="op">→ "c" MRU bana, "a" ab LRU (tail.prev).</span><br>
+    <span class="why">Cache: {a,b,c} | DLL: H ↔ [c] ↔ [b] ↔ [a] ↔ T</span>`
+  },
+  {
+    label: 'GET b',
+    type: 'get', key: 'b',
+    explain: `<b>GET("b")</b> — HIT ✓ Cache mein hai!<br>
+    <span class="op">→ "b" ko DELETE karo DLL se, phir HEAD ke baad ADD karo.</span><br>
+    Same Node object, sirf <b>pointers rewire</b> hue. "b" ab MRU.<br>
+    <span class="why">DLL: H ↔ [b] ↔ [c] ↔ [a] ↔ T | "a" still LRU</span>`
+  },
+  {
+    label: 'PUT d 4',
+    type: 'put', key: 'd', val: '4',
+    explain: `<b>PUT("d", 4)</b> — capacity exceed! <span class="evict">EVICTION!</span><br>
+    <span class="op">→ tail.prev = "a" — yeh LRU hai, isko nikaalo.</span><br>
+    <b>_delete(lru_node)</b> + <b>del cache["a"]</b> — isiliye Node mein key store karni padti hai!<br>
+    <span class="why">DLL: H ↔ [d] ↔ [b] ↔ [c] ↔ T | "a" evicted 🗑️</span>`
+  },
+  {
+    label: 'GET a',
+    type: 'get', key: 'a',
+    explain: `<b>GET("a")</b> — MISS ✗ "a" toh evict ho chuka hai!<br>
+    <span class="evict">→ cache mein "a" nahi → return -1</span><br>
+    <span class="why">Yehi hai LRU ka kaam — least recently used ko bahar karo.</span>`
+  },
+  {
+    label: 'PUT a 99',
+    type: 'put', key: 'a', val: '99',
+    explain: `<b>PUT("a", 99)</b> — "a" wapas aaya naye value ke saath! <span class="evict">EVICTION!</span><br>
+    <span class="op">→ Capacity full hai, LRU = "c" evict hoga.</span><br>
+    <span class="why">DLL: H ↔ [a] ↔ [d] ↔ [b] ↔ T | "c" evicted 🗑️</span>`
+  },
+];
+
+let wStep = 0;
+let wHead, wTail, wMap;
+
+function wInitCache() {
+  wHead = { key:'HEAD', value:'', prev:null, next:null, sentinel:true };
+  wTail = { key:'TAIL', value:'', prev:null, next:null, sentinel:true };
+  wHead.next = wTail; wTail.prev = wHead;
+  wMap = {};
+}
+
+function wNodeAdd(n) {
+  n.prev = wHead; n.next = wHead.next;
+  wHead.next.prev = n; wHead.next = n;
+}
+function wNodeDel(n) {
+  const p=n.prev, nx=n.next; p.next=nx; nx.prev=p;
+}
+
+function wExecuteStep(s) {
+  if (s.type === 'put') {
+    if (wMap[s.key]) wNodeDel(wMap[s.key]);
+    const nd = { key: s.key, value: s.val, prev:null, next:null };
+    wNodeAdd(nd); wMap[s.key] = nd;
+    if (Object.keys(wMap).length > CAPACITY) {
+      const lru = wTail.prev;
+      wNodeDel(lru); delete wMap[lru.key];
+    }
+  } else {
+    if (wMap[s.key]) { wNodeDel(wMap[s.key]); wNodeAdd(wMap[s.key]); }
+  }
+}
+
+function renderWalkthrough() {
+  // chips
+  const row = document.getElementById('steps-row');
+  row.innerHTML = '';
+  STEPS.forEach((s, i) => {
+    const c = document.createElement('div');
+    c.className = 'step-chip' +
+      (i < wStep ? ' done' : '') +
+      (i === wStep - 1 ? ' active' : '') +
+      (s.type==='put' && s.val && i < wStep && STEPS[i].label.includes('d 4') || STEPS[i].label.includes('a 99') ? ' evict-chip' : '');
+    c.textContent = s.label;
+    row.appendChild(c);
+  });
+
+  // explain
+  const ex = document.getElementById('step-explain');
+  if (wStep === 0) {
+    ex.innerHTML = '<span style="color:var(--muted)">Press <b style="color:var(--text)">Next →</b> to start the walkthrough.</span>';
+  } else {
+    ex.innerHTML = STEPS[wStep-1].explain;
+
+    // render mini DLL
+    let dll = '<div class="wll-container"><div class="wll-label">Current State</div><div style="display:flex;align-items:center;gap:0;flex-wrap:nowrap;">';
+    let cur = wHead;
+    const wNodes = [];
+    while(cur) { wNodes.push(cur); cur = cur.next; }
+    const realW = wNodes.filter(x=>!x.sentinel);
+
+    wNodes.forEach((n,i) => {
+      if(i>0) dll += '<div style="padding:0 5px;font-size:11px;color:#2a2a4a;">←→</div>';
+      const isMRU = !n.sentinel && n === realW[0];
+      const isLRU = !n.sentinel && n === realW[realW.length-1];
+      const isActive = !n.sentinel && n.key === (STEPS[wStep-1].key);
+      const borderCol = n.sentinel ? '#2a2a3e' : isActive ? 'var(--accent4)' : isMRU ? 'var(--accent2)' : isLRU ? 'var(--accent3)' : 'var(--border)';
+      dll += `<div style="background:var(--bg3);border:1px solid ${borderCol};border-radius:8px;padding:8px 12px;min-width:58px;text-align:center;position:relative;">`;
+      if(isMRU) dll += `<div style="position:absolute;top:-8px;left:50%;transform:translateX(-50%);font-size:8px;background:var(--accent2);color:#000;padding:1px 6px;border-radius:100px;">MRU</div>`;
+      if(isLRU) dll += `<div style="position:absolute;top:-8px;left:50%;transform:translateX(-50%);font-size:8px;background:var(--accent3);color:#fff;padding:1px 6px;border-radius:100px;">LRU</div>`;
+      dll += `<div style="font-size:14px;font-weight:700;color:${n.sentinel?'#3a3a5a':'var(--text)'};">${n.sentinel?(n.key==='HEAD'?'H':'T'):n.key}</div>`;
+      if(!n.sentinel) dll += `<div style="font-size:10px;color:var(--muted);">${n.value}</div>`;
+      dll += `</div>`;
+    });
+    dll += '</div></div>';
+    ex.innerHTML = STEPS[wStep-1].explain + dll;
+  }
+
+  document.getElementById('step-counter').textContent = `Step ${wStep} / ${STEPS.length}`;
+  document.getElementById('btn-prev').disabled = wStep === 0;
+  document.getElementById('btn-next').disabled = wStep === STEPS.length;
+}
+
+function nextStep() {
+  if (wStep >= STEPS.length) return;
+  wExecuteStep(STEPS[wStep]);
+  wStep++;
+  renderWalkthrough();
+}
+function prevStep() {
+  if (wStep <= 0) return;
+  wStep--;
+  wInitCache();
+  for(let i=0; i<wStep; i++) wExecuteStep(STEPS[i]);
+  renderWalkthrough();
+}
+function resetWalkthrough() {
+  wStep = 0; wInitCache(); renderWalkthrough();
+}
+
+// ─── FREEPLAY ──────────────────────────────────────────────────
+let head, tail, cacheMap, opLog;
+
+function initCache() {
+  head = { key: 'HEAD', value: '', prev: null, next: null, sentinel: true };
+  tail = { key: 'TAIL', value: '', prev: null, next: null, sentinel: true };
+  head.next = tail;
+  tail.prev = head;
+  cacheMap = {};
+  opLog = [];
+  render();
+}
+
+function nodeAdd(node) {
+  node.prev = head;
+  node.next = head.next;
+  head.next.prev = node;
+  head.next = node;
+}
+
+function nodeDelete(node) {
+  const p = node.prev, n = node.next;
+  p.next = n;
+  n.prev = p;
+}
+
+function doPut() {
+  const k = document.getElementById('inp-key').value.trim();
+  const v = document.getElementById('inp-val').value.trim();
+  if (!k || !v) { showToast('Enter key & value', 'miss'); return; }
+  let evicted = null;
+  if (cacheMap[k]) nodeDelete(cacheMap[k]);
+  const node = { key: k, value: v, prev: null, next: null, fresh: true };
+  nodeAdd(node);
+  cacheMap[k] = node;
+  if (Object.keys(cacheMap).length > CAPACITY) {
+    const lru = tail.prev;
+    nodeDelete(lru);
+    evicted = lru.key;
+    delete cacheMap[lru.key];
+  }
+  const msg = evicted
+    ? `PUT(${k}, ${v}) → evicted "${evicted}"`
+    : `PUT(${k}, ${v})`;
+  log(msg, evicted ? 'log-evict' : 'log-put');
+  render(k, null, evicted);
+  showToast(evicted ? `Evicted "${evicted}" (LRU)` : `PUT "${k}" = ${v}`, evicted ? 'miss' : 'hit');
+  setTimeout(() => { if (cacheMap[k]) delete cacheMap[k].fresh; render(null); }, 600);
+}
+
+function doGet() {
+  const k = document.getElementById('inp-key').value.trim();
+  if (!k) { showToast('Enter a key', 'miss'); return; }
+  if (cacheMap[k]) {
+    const node = cacheMap[k];
+    node.accessed = true;
+    nodeDelete(node);
+    nodeAdd(node);
+    log(`GET(${k}) → ${node.value} ✓`, 'log-get-hit');
+    render(k, k, null);
+    showToast(`GET "${k}" → ${node.value} (HIT ✓)`, 'hit');
+    setTimeout(() => { delete node.accessed; render(null); }, 600);
+  } else {
+    log(`GET(${k}) → -1 (MISS)`, 'log-get-miss');
+    render(null, null, null);
+    showToast(`GET "${k}" → -1 (MISS ✗)`, 'miss');
+  }
+}
+
+function doReset() { initCache(); log('— reset —', 'log-put'); }
+
+function render(freshKey, accessedKey, evictedKey) {
+  // linked list
+  const row = document.getElementById('ll-row');
+  row.innerHTML = '';
+  let cur = head;
+  let idx = 0;
+  const nodes = [];
+  while (cur) { nodes.push(cur); cur = cur.next; }
+
+  nodes.forEach((n, i) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'node-wrap';
+
+    // arrow between
+    if (i > 0) {
+      const arr = document.createElement('div');
+      arr.className = 'arrow-double';
+      arr.innerHTML = '<span>←</span><span>→</span>';
+      arr.style.cssText = 'padding:0 6px; font-size:11px; color:#2a2a4a;';
+      wrap.appendChild(arr);
+    }
+
+    const nd = document.createElement('div');
+    nd.className = 'node' + (n.sentinel ? ' sentinel' : '');
+    if (!n.sentinel) {
+      if (n.fresh || n.key === freshKey) nd.classList.add('fresh');
+      else if (n.accessed || n.key === accessedKey) nd.classList.add('accessed');
+    }
+
+    // badges for first and last real nodes
+    const realNodes = nodes.filter(x => !x.sentinel);
+    if (realNodes.length > 0 && !n.sentinel) {
+      if (n === realNodes[0]) {
+        const b = document.createElement('div');
+        b.className = 'node-badge badge-mru';
+        b.textContent = 'MRU';
+        nd.appendChild(b);
+      } else if (n === realNodes[realNodes.length-1]) {
+        const b = document.createElement('div');
+        b.className = 'node-badge badge-lru';
+        b.textContent = 'LRU';
+        nd.appendChild(b);
+      }
+    }
+
+    const key = document.createElement('div');
+    key.className = 'node-key';
+    key.textContent = n.sentinel ? (n.key === 'HEAD' ? '⬡H' : 'T⬡') : n.key;
+
+    const val = document.createElement('div');
+    val.className = 'node-val';
+    val.textContent = n.sentinel ? 'sentinel' : `val: ${n.value}`;
+
+    nd.appendChild(key);
+    nd.appendChild(val);
+    wrap.appendChild(nd);
+    row.appendChild(wrap);
+  });
+
+  // dict
+  const grid = document.getElementById('dict-grid');
+  const empty = document.getElementById('dict-empty');
+  const keys = Object.keys(cacheMap);
+  if (keys.length === 0) {
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+  } else {
+    empty.style.display = 'none';
+    grid.innerHTML = '';
+    keys.forEach(k => {
+      const e = document.createElement('div');
+      e.className = 'dict-entry' + (k === freshKey || k === accessedKey ? ' highlight' : '') + (k === evictedKey ? ' evict' : '');
+      e.innerHTML = `<div class="dict-key">"${k}"</div><div class="dict-arrow">→</div><div class="dict-ptr">Node(${cacheMap[k].value})</div>`;
+      grid.appendChild(e);
+    });
+  }
+}
+
+function log(msg, cls) {
+  opLog.unshift({ msg, cls });
+  if (opLog.length > 50) opLog.pop();
+  const box = document.getElementById('log-box');
+  box.innerHTML = opLog.map(e => `<div class="log-entry ${e.cls}">${e.msg}</div>`).join('');
+}
+
+let toastTimer;
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `result-toast ${type} show`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// keyboard shortcuts
+document.getElementById('inp-val').addEventListener('keydown', e => { if(e.key==='Enter') doPut(); });
+document.getElementById('inp-key').addEventListener('keydown', e => { if(e.key==='Enter') doGet(); });
+
+initCache();
+wInitCache();
+renderWalkthrough();
+</script>
+</body>
+</html>

@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clone Graph — BFS & DFS</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0a0a0f;--surface:#111118;--surface2:#0d0d14;--border:#1e1e2e;
+    --accent:#7c3aed;--cyan:#06b6d4;--amber:#f59e0b;--green:#10b981;
+    --red:#ef4444;--pink:#ec4899;--text:#e2e8f0;--muted:#64748b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospace;min-height:100vh;}
+  .noise{position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");}
+  .grid-bg{position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);
+    background-size:48px 48px;opacity:0.22;}
+  .wrap{position:relative;z-index:1;max-width:1020px;margin:0 auto;padding:36px 20px 60px;}
+
+  h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(1.8rem,4vw,3rem);
+    background:linear-gradient(120deg,#fff 0%,var(--cyan) 45%,var(--accent) 100%);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    line-height:1.1;margin-bottom:6px;}
+  .sub{color:var(--muted);font-size:0.8rem;margin-bottom:36px;letter-spacing:0.06em;}
+
+  .sec-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.05rem;
+    margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+  .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .section{margin-bottom:28px;}
+
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;position:relative;overflow:hidden;}
+  .card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+  .card.c-cyan::before{background:linear-gradient(90deg,var(--cyan),var(--accent));}
+  .card.c-amber::before{background:linear-gradient(90deg,var(--amber),var(--pink));}
+  .card.c-green::before{background:linear-gradient(90deg,var(--green),var(--cyan));}
+  .card.c-accent::before{background:linear-gradient(90deg,var(--accent),var(--pink));}
+
+  /* ALGO TOGGLE */
+  .algo-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px;}
+  .abtn{font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;
+    padding:8px 20px;border-radius:8px;border:1px solid var(--border);
+    background:var(--surface2);color:var(--muted);cursor:pointer;transition:all 0.2s;letter-spacing:0.04em;}
+  .abtn:hover{border-color:var(--cyan);color:var(--text);}
+  .abtn.active-bfs{background:#06b6d422;border-color:var(--cyan);color:var(--cyan);}
+  .abtn.active-dfs{background:#7c3aed22;border-color:var(--accent);color:var(--accent);}
+  .btn{font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;
+    padding:8px 20px;border-radius:8px;border:none;cursor:pointer;transition:all 0.15s;letter-spacing:0.04em;}
+  .btn-run{background:var(--cyan);color:#000;}
+  .btn-run:hover{background:#22d3ee;transform:translateY(-1px);}
+  .btn-reset{background:var(--surface2);color:var(--muted);border:1px solid var(--border);}
+  .btn-eg{background:var(--surface2);color:var(--muted);border:1px solid var(--border);font-size:0.75rem;padding:6px 12px;}
+  .speed-wrap{display:flex;align-items:center;gap:8px;margin-left:auto;}
+  .speed-wrap label{font-size:0.72rem;color:var(--muted);}
+  input[type=range]{accent-color:var(--cyan);cursor:pointer;width:90px;}
+
+  /* DUAL SVG */
+  .dual-svg{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+  @media(max-width:580px){.dual-svg{grid-template-columns:1fr;}}
+  .svg-wrap{background:var(--surface2);border-radius:10px;border:1px solid var(--border);overflow:hidden;}
+  .svg-label{font-size:0.68rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;padding:8px 12px 0;font-family:'Syne',sans-serif;font-weight:700;}
+  svg.graph-svg{width:100%;height:220px;display:block;}
+
+  /* NODE STYLES */
+  .nd{fill:#1a1a2e;stroke:#3b3b5c;stroke-width:2;transition:all 0.3s;cursor:pointer;}
+  .nd.current{fill:#06b6d433;stroke:var(--cyan);stroke-width:3;filter:drop-shadow(0 0 8px #06b6d4aa);}
+  .nd.cloned{fill:#7c3aed33;stroke:var(--accent);stroke-width:2.5;filter:drop-shadow(0 0 6px #7c3aed88);}
+  .nd.done{fill:#10b98122;stroke:#10b981;stroke-width:2;}
+  .nd.processing{fill:#f59e0b22;stroke:var(--amber);stroke-width:2.5;}
+  .nl{font-family:'Syne',sans-serif;font-weight:800;font-size:14px;fill:var(--text);text-anchor:middle;dominant-baseline:central;pointer-events:none;}
+  .el{fill:none;stroke:#2a2a3e;stroke-width:2;transition:stroke 0.3s;}
+  .el.active-e{stroke:var(--cyan);}
+
+  /* HASHMAP TABLE */
+  .hmap{margin-top:12px;}
+  .hmap-title{font-size:0.68rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;}
+  .hmap-row{display:flex;align-items:center;gap:0;margin-bottom:4px;font-size:0.78rem;opacity:0;transition:opacity 0.3s;animation:fadein 0.3s forwards;}
+  @keyframes fadein{to{opacity:1;}}
+  .hmap-key{background:#06b6d422;border:1px solid #06b6d444;border-radius:6px 0 0 6px;
+    padding:5px 12px;color:var(--cyan);font-weight:600;min-width:90px;text-align:center;}
+  .hmap-arrow{background:var(--surface2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+    padding:5px 8px;color:var(--muted);}
+  .hmap-val{background:#7c3aed22;border:1px solid #7c3aed44;border-radius:0 6px 6px 0;
+    padding:5px 12px;color:var(--accent);font-weight:600;min-width:90px;text-align:center;}
+  .hmap-neighbors{background:var(--surface2);border:1px solid var(--border);border-radius:0 6px 6px 0;
+    padding:5px 12px;color:#a0aec0;font-size:0.72rem;margin-left:4px;border-radius:6px;}
+
+  /* LOG */
+  .log-area{background:var(--surface2);border-radius:10px;padding:14px;margin-top:12px;min-height:50px;}
+  .log-title{font-size:0.68rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;}
+  #log-text{font-size:0.79rem;color:var(--green);line-height:1.9;}
+  #ds-text{font-size:0.75rem;color:var(--amber);line-height:1.7;margin-top:5px;}
+
+  /* CODE */
+  pre{background:var(--surface2);border-radius:10px;padding:16px;font-size:0.75rem;
+    line-height:1.9;overflow-x:auto;border:1px solid var(--border);margin-top:10px;}
+  .kw{color:var(--accent)}.fn{color:var(--cyan)}.cm{color:#3d4a5c;font-style:italic}.nm{color:var(--amber)}.op{color:var(--pink)}
+
+  /* COMPLEXITY */
+  .comp-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;}
+  @media(max-width:560px){.comp-grid{grid-template-columns:1fr;}}
+  .comp-box{background:var(--surface2);border-radius:10px;padding:16px;border:1px solid var(--border);}
+  .comp-box h4{font-family:'Syne',sans-serif;font-weight:800;font-size:0.88rem;margin-bottom:12px;}
+  .comp-line{display:flex;justify-content:space-between;align-items:flex-start;padding:6px 0;border-bottom:1px solid #1a1a2a;gap:8px;}
+  .comp-line:last-child{border-bottom:none;}
+  .comp-what{color:var(--muted);font-size:0.74rem;flex:1;}
+  .comp-explain{color:#4a5568;font-size:0.7rem;margin-top:2px;line-height:1.5;}
+  .comp-val{font-size:0.8rem;font-family:'Syne',sans-serif;font-weight:800;flex-shrink:0;}
+
+  .insight-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:14px;}
+  .insight{background:var(--surface2);border-radius:10px;padding:14px;border:1px solid var(--border);}
+  .insight-q{font-family:'Syne',sans-serif;font-weight:800;font-size:0.85rem;margin-bottom:8px;}
+  .insight-a{font-size:0.76rem;color:#a0aec0;line-height:1.7;}
+
+  .final-strip{background:var(--surface2);border-radius:12px;padding:18px;margin-top:16px;
+    border:1px solid #06b6d433;display:flex;gap:24px;flex-wrap:wrap;align-items:center;}
+  .final-item .label{font-size:0.64rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px;}
+  .final-item .val{font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;}
+
+  .tab-bar{display:flex;gap:0;margin-bottom:-1px;position:relative;z-index:1;}
+  .tab{font-family:'Syne',sans-serif;font-weight:700;font-size:0.8rem;padding:8px 18px;
+    border:1px solid var(--border);background:var(--surface2);color:var(--muted);
+    cursor:pointer;transition:all 0.2s;letter-spacing:0.04em;}
+  .tab:first-child{border-radius:8px 0 0 0;}
+  .tab:last-child{border-radius:0 8px 0 0;}
+  .tab.active-tab{background:var(--surface);color:var(--text);border-bottom-color:var(--surface);}
+  .tab-content{display:none;}
+  .tab-content.active-tc{display:block;}
+</style>
+</head>
+<body>
+<div class="noise"></div>
+<div class="grid-bg"></div>
+<div class="wrap">
+
+<h1>Clone Graph</h1>
+<p class="sub">// HashMap + BFS/DFS · Deep Copy · O(V+E) Time & Space</p>
+
+<!-- KEY INSIGHT -->
+<div class="section">
+  <div class="sec-title"><div class="dot" style="background:var(--cyan)"></div>
+    <span style="color:var(--cyan)">Ye problem mein actually kya karna hai?</span>
+  </div>
+  <div class="card c-cyan">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;">
+      <div style="background:var(--surface2);border-radius:10px;padding:14px;border:1px solid var(--border);">
+        <div style="font-family:'Syne',sans-serif;font-weight:800;color:var(--cyan);margin-bottom:8px;">Problem</div>
+        <div style="font-size:0.78rem;color:#a0aec0;line-height:1.8;">
+          Ek undirected graph diya hai as adjacency list. Har node ke paas <code style="color:var(--amber)">val</code> aur <code style="color:var(--amber)">neighbors[]</code> hai.<br><br>
+          <strong style="color:var(--text)">Deep copy banao</strong> — naye nodes, naye neighbor pointers. Original graph ka koi reference nahi hona chahiye clone mein.
+        </div>
+      </div>
+      <div style="background:var(--surface2);border-radius:10px;padding:14px;border:1px solid var(--border);">
+        <div style="font-family:'Syne',sans-serif;font-weight:800;color:var(--amber);margin-bottom:8px;">The Catch — Cycle!</div>
+        <div style="font-size:0.78rem;color:#a0aec0;line-height:1.8;">
+          Graph mein <strong style="color:var(--text)">cycles ho sakti hain</strong>. Agar sirf recursion karo bina tracking ke → <strong style="color:var(--red)">infinite loop!</strong><br><br>
+          Solution: <strong style="color:var(--text)">HashMap</strong> rakhte hain jisme <code style="color:var(--cyan)">original_node → clone_node</code> mapping hoti hai. Agar node already clone ho chuki hai, wahi return karo.
+        </div>
+      </div>
+      <div style="background:var(--surface2);border-radius:10px;padding:14px;border:1px solid var(--border);">
+        <div style="font-family:'Syne',sans-serif;font-weight:800;color:var(--green);margin-bottom:8px;">HashMap = Visited + Memo</div>
+        <div style="font-size:0.78rem;color:#a0aec0;line-height:1.8;">
+          HashMap <strong style="color:var(--text)">double kaam</strong> karta hai:<br>
+          1. <strong style="color:var(--cyan)">Visited</strong> — ye node dekh li hai<br>
+          2. <strong style="color:var(--accent)">Memoization</strong> — clone node already bani hai, reuse karo<br><br>
+          Rotten Oranges mein grid khud visited tha, yahan HashMap visited hai.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- INTERACTIVE VIZ -->
+<div class="section">
+  <div class="sec-title"><div class="dot" style="background:var(--accent)"></div>
+    <span style="color:var(--accent)">Live Visualization — Original vs Clone</span>
+  </div>
+  <div class="card c-accent">
+    <div class="algo-bar">
+      <button class="abtn active-bfs" id="btn-bfs" onclick="selectAlgo('bfs')">BFS</button>
+      <button class="abtn" id="btn-dfs" onclick="selectAlgo('dfs')">DFS</button>
+      <button class="btn-eg btn" onclick="loadEg(0)">Example 1</button>
+      <button class="btn-eg btn" onclick="loadEg(1)">Example 2 (cycle)</button>
+      <button class="btn-eg btn" onclick="loadEg(2)">Example 3 (complex)</button>
+      <button class="btn btn-reset" onclick="resetViz()">↺ Reset</button>
+      <button class="btn btn-run" onclick="runAlgo()">▶ Run</button>
+      <div class="speed-wrap"><label>Speed:</label><input type="range" id="speed" min="150" max="1200" value="600"></div>
+    </div>
+
+    <div class="dual-svg">
+      <div class="svg-wrap">
+        <div class="svg-label">// Original Graph</div>
+        <svg class="graph-svg" id="orig-svg" viewBox="0 0 320 200">
+          <defs>
+            <marker id="arr-o" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L6,3 z" fill="#3b3b5c"/>
+            </marker>
+          </defs>
+          <g id="orig-edges"></g><g id="orig-nodes"></g>
+        </svg>
+      </div>
+      <div class="svg-wrap">
+        <div class="svg-label">// Cloned Graph (being built)</div>
+        <svg class="graph-svg" id="clone-svg" viewBox="0 0 320 200">
+          <defs>
+            <marker id="arr-c" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L6,3 z" fill="#7c3aed"/>
+            </marker>
+          </defs>
+          <g id="clone-edges"></g><g id="clone-nodes"></g>
+        </svg>
+      </div>
+    </div>
+
+    <!-- HASHMAP -->
+    <div class="hmap">
+      <div class="hmap-title">// HashMap — original → clone (visited tracker)</div>
+      <div id="hmap-rows"></div>
+    </div>
+
+    <div class="log-area">
+      <div class="log-title">// Step Log</div>
+      <div id="log-text">— select algo and press Run —</div>
+      <div id="ds-text"></div>
+    </div>
+  </div>
+</div>
+
+<!-- CODE TABS -->
+<div class="section">
+  <div class="sec-title"><div class="dot" style="background:var(--amber)"></div>
+    <span style="color:var(--amber)">Code — BFS & DFS dono</span>
+  </div>
+  <div class="card c-amber">
+    <div class="tab-bar">
+      <div class="tab active-tab" id="tab-bfs" onclick="switchTab('bfs')">BFS</div>
+      <div class="tab" id="tab-dfs" onclick="switchTab('dfs')">DFS (Recursive)</div>
+    </div>
+
+    <div class="tab-content active-tc" id="tc-bfs">
+<pre><span class="kw">def</span> <span class="fn">cloneGraph</span>(node):
+    <span class="kw">if not</span> node: <span class="kw">return</span> <span class="nm">None</span>          <span class="cm">← edge case</span>
+
+    cloned = {}                         <span class="cm">← HashMap: original → clone</span>
+    cloned[node] = Node(node.val)       <span class="cm">← ① pehla node clone karo</span>
+    queue = deque([node])               <span class="cm">← ② BFS start karo original se</span>
+
+    <span class="kw">while</span> queue:
+        curr = queue.popleft()          <span class="cm">← original node</span>
+
+        <span class="kw">for</span> neighbor <span class="kw">in</span> curr.neighbors:
+            <span class="kw">if</span> neighbor <span class="kw">not in</span> cloned:
+                cloned[neighbor] = Node(neighbor.val)  <span class="cm">← naya clone banao</span>
+                queue.append(neighbor)  <span class="cm">← BFS mein add karo</span>
+
+            <span class="cm"># clone ka neighbor = cloned version of original neighbor</span>
+            cloned[curr].neighbors.append(cloned[neighbor])
+
+    <span class="kw">return</span> cloned[node]               <span class="cm">← starting node ka clone return karo</span>
+
+<span class="cm"># Time: O(V+E) — har node ek baar, har edge ek baar</span>
+<span class="cm"># Space: O(V) — HashMap mein V entries, Queue max V nodes</span></pre>
+    </div>
+
+    <div class="tab-content" id="tc-dfs">
+<pre><span class="kw">def</span> <span class="fn">cloneGraph</span>(node):
+    cloned = {}                         <span class="cm">← HashMap: original → clone</span>
+
+    <span class="kw">def</span> <span class="fn">dfs</span>(node):
+        <span class="kw">if not</span> node: <span class="kw">return</span> <span class="nm">None</span>
+
+        <span class="kw">if</span> node <span class="kw">in</span> cloned:              <span class="cm">← ① already cloned? return it!</span>
+            <span class="kw">return</span> cloned[node]        <span class="cm">   (yahi cycle handle karta hai)</span>
+
+        clone = Node(node.val)          <span class="cm">← ② naya node banao</span>
+        cloned[node] = clone            <span class="cm">← ③ PEHLE map mein daalo (cycle se pehle!)</span>
+
+        <span class="kw">for</span> neighbor <span class="kw">in</span> node.neighbors:
+            clone.neighbors.append(     <span class="cm">← ④ recursively clone neighbor</span>
+                dfs(neighbor)
+            )
+
+        <span class="kw">return</span> clone
+
+    <span class="kw">return</span> dfs(node)
+
+<span class="cm"># Key insight: cloned[node] = clone ko DFS jaane SE PEHLE set karo</span>
+<span class="cm"># Warna cycle mein infinite recursion hoga!</span>
+<span class="cm"># Time: O(V+E) · Space: O(V) — hashmap + call stack</span></pre>
+    </div>
+
+    <div class="comp-grid">
+      <div class="comp-box">
+        <h4 style="color:var(--amber)">⏱ Time Complexity</h4>
+        <div class="comp-line">
+          <div class="comp-what">Node visit (clone banana)<div class="comp-explain">Har node exactly ek baar HashMap mein aata hai. V nodes total.</div></div>
+          <div class="comp-val" style="color:var(--cyan)">O(V)</div>
+        </div>
+        <div class="comp-line">
+          <div class="comp-what">Neighbor traversal<div class="comp-explain">Har edge ek baar process hoti hai — neighbor loop mein. Undirected hai toh har edge 2 baar dikhti hai but still O(E).</div></div>
+          <div class="comp-val" style="color:var(--cyan)">O(E)</div>
+        </div>
+        <div style="margin-top:12px;padding:10px;background:#f59e0b11;border-radius:8px;border:1px solid #f59e0b33">
+          <div style="font-size:0.68rem;color:var(--muted);margin-bottom:4px">TOTAL TIME</div>
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:var(--amber)">O(V + E)</div>
+        </div>
+      </div>
+      <div class="comp-box">
+        <h4 style="color:var(--green)">💾 Space Complexity</h4>
+        <div class="comp-line">
+          <div class="comp-what">HashMap (cloned dict)<div class="comp-explain">V nodes ke liye V entries — ek per original node.</div></div>
+          <div class="comp-val" style="color:var(--green)">O(V)</div>
+        </div>
+        <div class="comp-line">
+          <div class="comp-what">BFS Queue / DFS Call Stack<div class="comp-explain">BFS: worst case V nodes queue mein. DFS: call stack depth = longest path = O(V) worst case.</div></div>
+          <div class="comp-val" style="color:var(--green)">O(V)</div>
+        </div>
+        <div class="comp-line">
+          <div class="comp-what">Cloned nodes + edges<div class="comp-explain">Output graph khud V nodes + E edges store karta hai — but ye output space hai, usually separate count karte hain.</div></div>
+          <div class="comp-val" style="color:var(--green)">O(V+E)</div>
+        </div>
+        <div style="margin-top:12px;padding:10px;background:#10b98111;border-radius:8px;border:1px solid #10b98133">
+          <div style="font-size:0.68rem;color:var(--muted);margin-bottom:4px">AUX SPACE</div>
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:var(--green)">O(V)</div>
+          <div style="font-size:0.7rem;color:#718096;margin-top:3px">HashMap + queue/stack. Output space alag.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- INSIGHTS -->
+<div class="section">
+  <div class="sec-title"><div class="dot" style="background:var(--green)"></div>
+    <span style="color:var(--green)">Interview Follow-ups</span>
+  </div>
+  <div class="card c-green">
+    <div class="insight-grid">
+      <div class="insight">
+        <div class="insight-q" style="color:var(--cyan)">Q: HashMap pehle kyun set karte hain DFS mein?</div>
+        <div class="insight-a">
+          <strong style="color:var(--text)">Cycle handle karne ke liye.</strong> Agar node 1 → node 2 → node 1 cycle hai, aur hum 1 ko process kar rahe hain uske neighbor 2 mein jaate hain, 2 se wapas 1 pe aate hain. <strong style="color:var(--text)">Agar HashMap mein 1 already hai → return karo. Nahi hai → infinite loop.</strong> Isliye <code style="color:var(--amber)">cloned[node] = clone</code> neighbors se PEHLE.
+        </div>
+      </div>
+      <div class="insight">
+        <div class="insight-q" style="color:var(--amber)">Q: BFS vs DFS — kaunsa better?</div>
+        <div class="insight-a">
+          Dono O(V+E). <strong style="color:var(--text)">BFS slightly safer</strong> in interviews — no stack overflow risk for large graphs. DFS elegant hai but very deep graph (V=10^5) pe Python mein recursion limit hit ho sakta hai. <code style="color:var(--amber)">sys.setrecursionlimit</code> ya iterative DFS use karo.
+        </div>
+      </div>
+      <div class="insight">
+        <div class="insight-q" style="color:var(--green)">Q: Shallow copy vs Deep copy?</div>
+        <div class="insight-a">
+          <strong style="color:var(--text)">Shallow copy:</strong> Same node objects, bas pointers copy kiye — original graph hi return ho jaata.<br>
+          <strong style="color:var(--text)">Deep copy (ye problem):</strong> Brand new Node objects banate hain same values ke saath, naye neighbor pointers. Original aur clone completely independent.
+        </div>
+      </div>
+      <div class="insight">
+        <div class="insight-q" style="color:var(--pink)">Q: Rotten Oranges se kya alag hai?</div>
+        <div class="insight-a">
+          Rotten Oranges mein grid khud visited tracker tha (cell value 2 = visited). Clone Graph mein <strong style="color:var(--text)">nodes immutable hain</strong> — unhe modify nahi kar sakte. Isliye external HashMap chahiye. Plus HashMap double kaam karta hai — visited + actual clone store.
+        </div>
+      </div>
+      <div class="insight">
+        <div class="insight-q" style="color:var(--cyan)">Q: null/None node handle kaise?</div>
+        <div class="insight-a">
+          Edge case — <code style="color:var(--amber)">if not node: return None</code>. Empty graph possible hai. Ye pehli cheez check karo. BFS mein starting node ke saath hi queue mein daal dete hain, toh null already handle ho jaata hai.
+        </div>
+      </div>
+      <div class="insight">
+        <div class="insight-q" style="color:var(--amber)">Q: Node class kaise hoti hai?</div>
+        <div class="insight-a">
+          <code style="color:var(--amber)">class Node:<br>&nbsp;&nbsp;def __init__(self, val):<br>&nbsp;&nbsp;&nbsp;&nbsp;self.val = val<br>&nbsp;&nbsp;&nbsp;&nbsp;self.neighbors = []</code><br>
+          <strong style="color:var(--text)">Undirected graph</strong> hai — agar edge 1-2 hai toh 1.neighbors mein 2 bhi hai aur 2.neighbors mein 1 bhi.
+        </div>
+      </div>
+    </div>
+
+    <div class="final-strip">
+      <div class="final-item"><div class="label">Time</div><div class="val" style="color:var(--amber)">O(V+E)</div></div>
+      <div class="final-item"><div class="label">Aux Space</div><div class="val" style="color:var(--green)">O(V)</div></div>
+      <div style="flex:1;min-width:260px;font-size:0.78rem;color:#718096;line-height:1.9;border-left:1px solid var(--border);padding-left:20px">
+        <strong style="color:var(--text)">"We traverse each node once and each edge once — O(V+E). The HashMap stores V entries for visited tracking and clone references. Queue/stack holds at most V nodes. Aux space O(V)."</strong>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+// Graph examples: nodes 1-based, edges undirected
+const EXAMPLES = [
+  { n:3, edges:[[1,2],[2,3]] },
+  { n:4, edges:[[1,2],[2,3],[3,4],[4,1],[1,3]] }, // cycle
+  { n:5, edges:[[1,2],[1,3],[2,4],[3,4],[4,5],[2,5]] },
+];
+
+let currentAlgo = 'bfs';
+let animating = false;
+let currentEg = 0;
+
+// Node positions for each example
+const POSITIONS = [
+  [{x:80,y:100},{x:160,y:60},{x:240,y:100}],
+  [{x:100,y:60},{x:220,y:60},{x:220,y:150},{x:100,y:150}],
+  [{x:60,y:100},{x:140,y:50},{x:140,y:150},{x:220,y:100},{x:280,y:60}],
+];
+
+function selectAlgo(a) {
+  currentAlgo = a;
+  document.getElementById('btn-bfs').className = 'abtn' + (a==='bfs'?' active-bfs':'');
+  document.getElementById('btn-dfs').className = 'abtn' + (a==='dfs'?' active-dfs':'');
+  resetViz();
+}
+
+function switchTab(t) {
+  ['bfs','dfs'].forEach(x => {
+    document.getElementById('tab-'+x).className = 'tab' + (x===t?' active-tab':'');
+    document.getElementById('tc-'+x).className = 'tab-content' + (x===t?' active-tc':'');
+  });
+}
+
+function loadEg(i) {
+  if(animating) return;
+  currentEg = i;
+  resetViz();
+}
+
+function buildAdj(eg) {
+  const adj = {};
+  for(let i=1;i<=eg.n;i++) adj[i]=[];
+  eg.edges.forEach(([a,b]) => { adj[a].push(b); adj[b].push(a); });
+  return adj;
+}
+
+function drawGraph(svgId, adj, n, positions, nodeStates={}, edgeStates={}, showClone=false) {
+  const eg = EXAMPLES[currentEg];
+  const eL = document.getElementById(svgId.replace('svg','edges'));
+  const nL = document.getElementById(svgId.replace('svg','nodes'));
+  eL.innerHTML=''; nL.innerHTML='';
+
+  const color = showClone ? 'var(--accent)' : 'var(--cyan)';
+  const drawn = new Set();
+
+  // Edges
+  Object.entries(adj).forEach(([u, neighbors]) => {
+    neighbors.forEach(v => {
+      const key = [Math.min(+u,v), Math.max(+u,v)].join('-');
+      if(drawn.has(key)) return;
+      drawn.add(key);
+      const pu = positions[+u-1], pv = positions[+v-1];
+      if(!pu||!pv) return;
+      const dx=pv.x-pu.x,dy=pv.y-pu.y,dist=Math.sqrt(dx*dx+dy*dy)||1;
+      const R=20;
+      const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+      line.setAttribute('x1',pu.x+dx/dist*R); line.setAttribute('y1',pu.y+dy/dist*R);
+      line.setAttribute('x2',pv.x-dx/dist*R); line.setAttribute('y2',pv.y-dy/dist*R);
+      line.setAttribute('stroke', edgeStates[key] ? color : '#2a2a3e');
+      line.setAttribute('stroke-width','2');
+      eL.appendChild(line);
+    });
+  });
+
+  // Nodes
+  for(let i=1;i<=n;i++) {
+    const p = positions[i-1];
+    if(!p) continue;
+    const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+    const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('cx',p.x); c.setAttribute('cy',p.y); c.setAttribute('r',20);
+    const state = nodeStates[i]||'default';
+    if(state==='current') { c.setAttribute('fill','#06b6d433');c.setAttribute('stroke','var(--cyan)');c.setAttribute('stroke-width','3');c.setAttribute('filter','drop-shadow(0 0 8px #06b6d4aa)'); }
+    else if(state==='cloned') { c.setAttribute('fill','#7c3aed33');c.setAttribute('stroke','var(--accent)');c.setAttribute('stroke-width','2.5'); }
+    else if(state==='done') { c.setAttribute('fill','#10b98122');c.setAttribute('stroke','#10b981');c.setAttribute('stroke-width','2'); }
+    else { c.setAttribute('fill','#1a1a2e');c.setAttribute('stroke','#3b3b5c');c.setAttribute('stroke-width','2'); }
+
+    const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('x',p.x); t.setAttribute('y',p.y);
+    t.setAttribute('text-anchor','middle'); t.setAttribute('dominant-baseline','central');
+    t.setAttribute('font-family','Syne,sans-serif'); t.setAttribute('font-weight','800');
+    t.setAttribute('font-size','14'); t.setAttribute('fill','var(--text)');
+    t.textContent = i;
+    g.appendChild(c); g.appendChild(t);
+    nL.appendChild(g);
+  }
+}
+
+function addHmapRow(orig, clone, neighbors) {
+  const wrap = document.getElementById('hmap-rows');
+  const row = document.createElement('div');
+  row.className = 'hmap-row';
+  row.innerHTML = `<div class="hmap-key">Node ${orig}</div><div class="hmap-arrow"> → </div><div class="hmap-val">Clone(${clone})</div><div class="hmap-neighbors">neighbors: [${neighbors.join(', ')}]</div>`;
+  wrap.appendChild(row);
+}
+
+function resetViz() {
+  if(animating) return;
+  document.getElementById('hmap-rows').innerHTML='';
+  document.getElementById('log-text').textContent='— select algo and press Run —';
+  document.getElementById('ds-text').textContent='';
+  const eg = EXAMPLES[currentEg];
+  const adj = buildAdj(eg);
+  const pos = POSITIONS[currentEg];
+  drawGraph('orig-svg', adj, eg.n, pos);
+  drawGraph('clone-svg', adj, eg.n, pos, {}, {}, true);
+}
+
+function delay(ms){return new Promise(r=>setTimeout(r,ms));}
+
+async function runAlgo() {
+  if(animating) return;
+  animating = true;
+  document.getElementById('hmap-rows').innerHTML='';
+  const eg = EXAMPLES[currentEg];
+  const adj = buildAdj(eg);
+  const pos = POSITIONS[currentEg];
+  const spd = () => parseInt(document.getElementById('speed').value);
+  const logEl = document.getElementById('log-text');
+  const dsEl = document.getElementById('ds-text');
+
+  const origStates = {}, cloneStates = {};
+  const hmapData = {}; // node -> clone neighbors built so far
+
+  function redraw(edgeStates={}) {
+    drawGraph('orig-svg', adj, eg.n, pos, origStates, edgeStates, false);
+    drawGraph('clone-svg', adj, eg.n, pos, cloneStates, edgeStates, true);
+  }
+
+  if(currentAlgo === 'bfs') {
+    const cloned = {};
+    const queue = [1];
+    cloned[1] = 1;
+    cloneStates[1] = 'cloned';
+    hmapData[1] = [];
+    addHmapRow(1, 1, []);
+    logEl.textContent = `BFS Start: Node 1 clone banao, queue mein daalo`;
+    dsEl.textContent = `Queue: [1]`;
+    redraw();
+    await delay(spd());
+
+    let head = 0;
+    while(head < queue.length) {
+      const curr = queue[head++];
+      origStates[curr] = 'current';
+      cloneStates[curr] = 'current';
+      logEl.textContent = `Processing Node ${curr} — neighbors check karo`;
+      dsEl.textContent = `Queue: [${queue.slice(head).join(', ')}]`;
+      redraw();
+      await delay(spd());
+
+      for(const nb of adj[curr]) {
+        if(!(nb in cloned)) {
+          cloned[nb] = nb;
+          queue.push(nb);
+          cloneStates[nb] = 'cloned';
+          hmapData[nb] = [];
+          addHmapRow(nb, nb, []);
+          logEl.textContent = `Node ${curr} → neighbor ${nb}: naya clone banao, queue mein add karo`;
+          dsEl.textContent = `Queue: [${queue.slice(head).join(', ')}]`;
+          redraw();
+          await delay(spd());
+        }
+        hmapData[curr].push(nb);
+        // update hashmap row
+        document.getElementById('hmap-rows').innerHTML='';
+        Object.entries(hmapData).forEach(([k,v]) => addHmapRow(k,k,v));
+        logEl.textContent = `Clone(${curr}).neighbors.append(Clone(${nb})) ✓`;
+        redraw();
+        await delay(spd()*0.7);
+      }
+      origStates[curr] = 'done';
+      cloneStates[curr] = 'done';
+      redraw();
+    }
+  } else {
+    // DFS
+    const cloned = {};
+    const order = [];
+
+    async function dfs(node) {
+      if(node in cloned) {
+        logEl.textContent = `Node ${node} already in HashMap → return clone, skip`;
+        return;
+      }
+      cloned[node] = node;
+      origStates[node] = 'current';
+      cloneStates[node] = 'cloned';
+      hmapData[node] = [];
+      addHmapRow(node, node, []);
+      logEl.textContent = `DFS(${node}): clone banao, HashMap mein PEHLE daalo (cycle safety!)`;
+      dsEl.textContent = `Call Stack: [${Object.keys(cloned).join(' → ')}]`;
+      redraw();
+      await delay(spd());
+
+      for(const nb of adj[node]) {
+        logEl.textContent = `DFS(${node}) → neighbor ${nb}: recursion...`;
+        await delay(spd()*0.5);
+        await dfs(nb);
+        hmapData[node].push(nb);
+        document.getElementById('hmap-rows').innerHTML='';
+        Object.entries(hmapData).forEach(([k,v]) => addHmapRow(k,k,v));
+        logEl.textContent = `Clone(${node}).neighbors.append(Clone(${nb})) ✓`;
+        redraw();
+        await delay(spd()*0.6);
+      }
+      origStates[node] = 'done';
+      cloneStates[node] = 'done';
+      redraw();
+    }
+
+    await dfs(1);
+  }
+
+  logEl.innerHTML = `<span style="color:var(--green)">✓ Done! All ${eg.n} nodes cloned. HashMap has ${eg.n} entries.</span>`;
+  dsEl.textContent = `Time: O(V+E) = O(${eg.n}+${eg.edges.length}) · Space: O(V) = O(${eg.n})`;
+  animating = false;
+}
+
+// Init
+resetViz();
+</script>
+</body>
+</html>

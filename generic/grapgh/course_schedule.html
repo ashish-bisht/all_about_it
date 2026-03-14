@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Course Schedule — Complexity & Graph Deep Dive</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #0d0d14;
+    --border: #1e1e2e;
+    --accent: #7c3aed;
+    --cyan: #06b6d4;
+    --amber: #f59e0b;
+    --green: #10b981;
+    --red: #ef4444;
+    --pink: #ec4899;
+    --text: #e2e8f0;
+    --muted: #64748b;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    min-height: 100vh;
+  }
+  .noise {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  }
+  .grid-bg {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 48px 48px; opacity: 0.25;
+  }
+  .wrap { position: relative; z-index: 1; max-width: 1000px; margin: 0 auto; padding: 36px 20px 60px; }
+
+  h1 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(1.8rem,4vw,3rem);
+    background: linear-gradient(120deg, #fff 0%, var(--cyan) 50%, var(--accent) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    line-height: 1.1; margin-bottom: 6px; }
+  .sub { color: var(--muted); font-size: 0.8rem; margin-bottom: 40px; letter-spacing: 0.06em; }
+
+  /* SECTION */
+  .section { margin-bottom: 32px; }
+  .sec-title {
+    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem;
+    margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+  }
+  .sec-title .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  /* CARD */
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 20px; position: relative; overflow: hidden;
+  }
+  .card::before { content:''; position:absolute; top:0;left:0;right:0; height:2px; }
+  .card.c-cyan::before { background: linear-gradient(90deg, var(--cyan), var(--accent)); }
+  .card.c-amber::before { background: linear-gradient(90deg, var(--amber), var(--pink)); }
+  .card.c-green::before { background: linear-gradient(90deg, var(--green), var(--cyan)); }
+  .card.c-accent::before { background: linear-gradient(90deg, var(--accent), var(--pink)); }
+
+  /* INPUT SECTION */
+  .input-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; }
+  label { font-size: 0.78rem; color: var(--muted); }
+  input[type=number], input[type=text] {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text); font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem; padding: 8px 12px; outline: none; width: 80px;
+    transition: border-color 0.2s;
+  }
+  input[type=text] { width: 280px; }
+  input:focus { border-color: var(--cyan); }
+  .btn {
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem;
+    padding: 8px 20px; border-radius: 8px; border: none; cursor: pointer;
+    transition: all 0.15s; letter-spacing: 0.05em;
+  }
+  .btn-primary { background: var(--cyan); color: #000; }
+  .btn-primary:hover { background: #22d3ee; transform: translateY(-1px); }
+  .btn-secondary { background: var(--surface); color: var(--muted); border: 1px solid var(--border); }
+  .btn-secondary:hover { color: var(--text); border-color: var(--muted); }
+
+  /* SVG GRAPH */
+  #graph-svg { width: 100%; height: 300px; display: block; background: var(--surface2); border-radius: 10px; margin-bottom: 16px; }
+  .node-c { fill: #1a1a2e; stroke: #3b3b5c; stroke-width: 2; transition: all 0.3s; }
+  .node-c.in0 { fill: #06b6d422; stroke: var(--cyan); }
+  .node-label-svg { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 13px; fill: var(--text); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+  .indegree-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; fill: var(--amber); text-anchor: middle; pointer-events: none; }
+
+  /* INDEGREE TABLE */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+  th { background: var(--surface2); color: var(--muted); padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; }
+  td { padding: 8px 12px; border-bottom: 1px solid #1a1a2a; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.68rem; font-weight: 600; }
+  .badge-cyan { background: #06b6d422; color: var(--cyan); border: 1px solid #06b6d444; }
+  .badge-amber { background: #f59e0b22; color: var(--amber); border: 1px solid #f59e0b44; }
+  .badge-green { background: #10b98122; color: var(--green); border: 1px solid #10b98144; }
+  .badge-red { background: #ef444422; color: var(--red); border: 1px solid #ef444444; }
+
+  /* COMPLEXITY BREAKDOWN */
+  .complexity-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media(max-width:600px) { .complexity-grid { grid-template-columns: 1fr; } }
+  .comp-box { background: var(--surface2); border-radius: 10px; padding: 16px; border: 1px solid var(--border); }
+  .comp-box h4 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 0.9rem; margin-bottom: 12px; }
+  .comp-line { display: flex; justify-content: space-between; align-items: flex-start; padding: 6px 0; border-bottom: 1px solid #1a1a2a; gap: 8px; }
+  .comp-line:last-child { border-bottom: none; }
+  .comp-what { color: var(--muted); font-size: 0.75rem; flex: 1; }
+  .comp-val { font-size: 0.75rem; text-align: right; flex-shrink: 0; }
+  .comp-explain { color: #718096; font-size: 0.72rem; margin-top: 3px; line-height: 1.5; }
+
+  /* BIG O PILL */
+  .big-o {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 4px 12px; font-size: 0.9rem;
+    font-family: 'Syne', sans-serif; font-weight: 800;
+  }
+  .final-box {
+    background: var(--surface2); border-radius: 12px; padding: 20px;
+    border: 1px solid var(--border); margin-top: 16px;
+    display: flex; gap: 20px; align-items: center; flex-wrap: wrap;
+  }
+  .final-item { text-align: center; }
+  .final-label { font-size: 0.65rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+  .final-val { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.4rem; }
+
+  /* CODE BLOCK */
+  pre {
+    background: var(--surface2); border-radius: 10px; padding: 16px;
+    font-size: 0.78rem; line-height: 1.8; overflow-x: auto;
+    border: 1px solid var(--border); margin-top: 12px;
+  }
+  .kw { color: var(--accent); }
+  .fn { color: var(--cyan); }
+  .cm { color: #4a5568; font-style: italic; }
+  .st { color: var(--green); }
+  .nm { color: var(--amber); }
+  .op { color: var(--pink); }
+
+  /* LIVE STATS */
+  .stats-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
+  .stat-pill {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 14px; font-size: 0.75rem;
+  }
+  .stat-pill .stat-label { color: var(--muted); font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 3px; }
+  .stat-pill .stat-val { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem; }
+
+  .edge-path { fill: none; stroke: #2a2a3e; stroke-width: 1.8; marker-end: url(#arr); transition: stroke 0.3s; }
+  .edge-path.highlight { stroke: var(--cyan); }
+
+  .info-strip {
+    background: #06b6d40d; border: 1px solid #06b6d422;
+    border-radius: 8px; padding: 12px 16px; font-size: 0.78rem;
+    color: #a0aec0; line-height: 1.7; margin-top: 12px;
+  }
+  .info-strip strong { color: var(--text); }
+</style>
+</head>
+<body>
+<div class="noise"></div>
+<div class="grid-bg"></div>
+<div class="wrap">
+
+  <h1>Course Schedule</h1>
+  <p class="sub">// Time & Space Complexity · Graph Construction · Kahn's BFS — Ekdam Detail Mein</p>
+
+  <!-- STEP 1: GRAPH BANANA -->
+  <div class="section">
+    <div class="sec-title">
+      <div class="dot" style="background:var(--cyan)"></div>
+      <span style="color:var(--cyan)">STEP 1 — Graph banao (Adjacency List)</span>
+    </div>
+    <div class="card c-cyan">
+      <div class="input-row">
+        <label>n (courses):</label>
+        <input type="number" id="inp-n" value="5" min="2" max="8">
+        <label>prerequisites [course,pre]:</label>
+        <input type="text" id="inp-edges" value="1,0 2,0 3,1 4,2 3,2">
+        <button class="btn btn-primary" onclick="buildGraph()">Build Graph</button>
+        <button class="btn btn-secondary" onclick="loadExample(0)">Eg 1</button>
+        <button class="btn btn-secondary" onclick="loadExample(1)">Eg 2 (cycle)</button>
+      </div>
+
+      <svg id="graph-svg" viewBox="0 0 700 280">
+        <defs>
+          <marker id="arr" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L7,3 z" fill="#3b3b5c"/>
+          </marker>
+          <marker id="arr-hi" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L7,3 z" fill="#06b6d4"/>
+          </marker>
+          <filter id="glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <g id="edges-layer"></g>
+        <g id="nodes-layer"></g>
+      </svg>
+
+      <div class="table-wrap">
+        <table id="adj-table">
+          <thead><tr><th>Node</th><th>Adj List (neighbors)</th><th>In-degree</th><th>Construction Cost</th></tr></thead>
+          <tbody id="adj-tbody"></tbody>
+        </table>
+      </div>
+
+      <div class="stats-row" id="stats-row"></div>
+
+      <div class="info-strip" id="build-info">
+        Graph banate waqt kya hota hai? Har prerequisite <strong>[course, pre]</strong> ke liye:
+        <strong>adj[pre].append(course)</strong> → ek directed edge add hoti hai.
+        Simultaneously <strong>indegree[course] += 1</strong>.
+        Yeh loop <strong>E baar</strong> chalta hai jahan E = total prerequisites.
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2: TIME COMPLEXITY -->
+  <div class="section">
+    <div class="sec-title">
+      <div class="dot" style="background:var(--amber)"></div>
+      <span style="color:var(--amber)">STEP 2 — Time Complexity — Har line ka hisaab</span>
+    </div>
+    <div class="card c-amber">
+      <pre id="code-block"><span class="kw">def</span> <span class="fn">canFinish</span>(numCourses, prerequisites):
+    <span class="cm"># ① Adjacency list + indegree initialize</span>
+    adj = defaultdict(list)          <span class="cm">← O(V)  — V nodes ke liye</span>
+    indegree = [<span class="nm">0</span>] * numCourses       <span class="cm">← O(V)  — V size array</span>
+
+    <span class="cm"># ② Edges process karo</span>
+    <span class="kw">for</span> course, pre <span class="kw">in</span> prerequisites:  <span class="cm">← O(E)  — E = len(prerequisites)</span>
+        adj[pre].append(course)       <span class="cm">← O(1)  amortized per append</span>
+        indegree[course] += <span class="nm">1</span>         <span class="cm">← O(1)  per operation</span>
+    <span class="cm">#                         Total so far: O(V + E)</span>
+
+    <span class="cm"># ③ Queue mein 0-indegree nodes daalo</span>
+    queue = deque([i <span class="kw">for</span> i <span class="kw">in</span> range(numCourses)
+                   <span class="kw">if</span> indegree[i] == <span class="nm">0</span>])   <span class="cm">← O(V)</span>
+
+    count = <span class="nm">0</span>
+    <span class="cm"># ④ BFS loop</span>
+    <span class="kw">while</span> queue:
+        node = queue.popleft()       <span class="cm">← O(1) — har node ek baar hi aayega</span>
+        count += <span class="nm">1</span>                   <span class="cm">← O(1)</span>
+        <span class="kw">for</span> neighbor <span class="kw">in</span> adj[node]:  <span class="cm">← Total across ALL iterations = O(E)</span>
+            indegree[neighbor] -= <span class="nm">1</span>  <span class="cm">← O(1)</span>
+            <span class="kw">if</span> indegree[neighbor] == <span class="nm">0</span>:
+                queue.append(neighbor)<span class="cm">← O(1)</span>
+    <span class="cm">#                         Total BFS: O(V + E)</span>
+
+    <span class="kw">return</span> count == numCourses     <span class="cm">← O(1)</span></pre>
+
+      <div class="complexity-grid" style="margin-top:16px">
+        <div class="comp-box">
+          <h4 style="color:var(--amber)">⏱ Time — Step by Step</h4>
+          <div class="comp-line">
+            <div class="comp-what">adj + indegree init<div class="comp-explain">V nodes ke liye empty list/0 create karo</div></div>
+            <div class="comp-val"><span class="big-o"><span style="color:var(--cyan)">O(V)</span></span></div>
+          </div>
+          <div class="comp-line">
+            <div class="comp-what">Prerequisites loop<div class="comp-explain">Har edge ek baar process hoti hai. E = prerequisites.length</div></div>
+            <div class="comp-val"><span class="big-o"><span style="color:var(--cyan)">O(E)</span></span></div>
+          </div>
+          <div class="comp-line">
+            <div class="comp-what">Initial queue build<div class="comp-explain">Saare V nodes check karo agar indegree==0</div></div>
+            <div class="comp-val"><span class="big-o"><span style="color:var(--cyan)">O(V)</span></span></div>
+          </div>
+          <div class="comp-line">
+            <div class="comp-what">BFS — node processing<div class="comp-explain">Har node exactly ONCE queue mein aata hai → O(V) total</div></div>
+            <div class="comp-val"><span class="big-o"><span style="color:var(--cyan)">O(V)</span></span></div>
+          </div>
+          <div class="comp-line">
+            <div class="comp-what">BFS — edge traversal<div class="comp-explain">adj[node] ke neighbors — sabke milake total E edges hain. Ek edge ek baar hi dekhte hain.</div></div>
+            <div class="comp-val"><span class="big-o"><span style="color:var(--cyan)">O(E)</span></span></div>
+          </div>
+          <div style="margin-top:12px;padding:10px;background:#f59e0b11;border-radius:8px;border:1px solid #f59e0b33">
+            <div style="font-size:0.7rem;color:var(--muted);margin-bottom:4px">TOTAL TIME</div>
+            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;color:var(--amber)">O(V + E)</div>
+            <div style="font-size:0.72rem;color:#718096;margin-top:4px">V = numCourses, E = prerequisites.length</div>
+          </div>
+        </div>
+
+        <div class="comp-box">
+          <h4 style="color:var(--green)">💾 Space — Kya store ho raha hai</h4>
+          <div class="comp-line">
+            <div class="comp-what">adj (adjacency list)<div class="comp-explain">V nodes ke liye lists. Total entries = E (ek per edge)</div></div>
+            <div class="comp-val"><span class="big-o"><span style="color:var(--green)">O(V+E)</span></span></div>
+          </div>
+          <div class="comp-line">
+            <div class="comp-what">indegree array<div class="comp-explain">V size ka array, ek int per node</div></div>
+            <div class="comp-val"><span class="big-o"><span style="color:var(--green)">O(V)</span></span></div>
+          </div>
+          <div class="comp-line">
+            <div class="comp-what">Queue (deque)<div class="comp-explain">Worst case: saare V nodes ek saath queue mein (star graph — sab ek node ke neighbors)</div></div>
+            <div class="comp-val"><span class="big-o"><span style="color:var(--green)">O(V)</span></span></div>
+          </div>
+          <div class="comp-line">
+            <div class="comp-what">count variable<div class="comp-explain">Bas ek integer</div></div>
+            <div class="comp-val"><span class="big-o"><span style="color:var(--green)">O(1)</span></span></div>
+          </div>
+          <div style="margin-top:12px;padding:10px;background:#10b98111;border-radius:8px;border:1px solid #10b98133">
+            <div style="font-size:0.7rem;color:var(--muted);margin-bottom:4px">TOTAL SPACE</div>
+            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;color:var(--green)">O(V + E)</div>
+            <div style="font-size:0.72rem;color:#718096;margin-top:4px">adj list dominate karta hai — V+E entries</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3: KEY INSIGHTS -->
+  <div class="section">
+    <div class="sec-title">
+      <div class="dot" style="background:var(--accent)"></div>
+      <span style="color:var(--accent)">STEP 3 — Interview mein poochhe jaane wale follow-ups</span>
+    </div>
+    <div class="card c-accent">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">
+
+        <div style="background:var(--surface2);border-radius:10px;padding:14px;border:1px solid var(--border)">
+          <div style="color:var(--cyan);font-family:'Syne',sans-serif;font-weight:800;margin-bottom:8px;font-size:0.9rem">Q: Har edge ek baar kyun?</div>
+          <div style="color:#a0aec0;font-size:0.78rem;line-height:1.7">
+            Jab hum <code style="color:var(--amber)">node</code> ko process karte hain, uski adj list ek baar traverse hoti hai.
+            Node ko queue se nikalne ke baad woh <strong style="color:var(--text)">dobara queue mein nahi aata</strong>
+            (indegree sirf decrease hoti hai, 0 se neecha nahi jaati).
+            Toh total edge traversals = E.
+          </div>
+        </div>
+
+        <div style="background:var(--surface2);border-radius:10px;padding:14px;border:1px solid var(--border)">
+          <div style="color:var(--amber);font-family:'Syne',sans-serif;font-weight:800;margin-bottom:8px;font-size:0.9rem">Q: Space O(V) ya O(V+E)?</div>
+          <div style="color:#a0aec0;font-size:0.78rem;line-height:1.7">
+            <strong style="color:var(--text)">O(V+E)</strong> — adj list mein total E entries hain (ek per directed edge).
+            V nodes + E edge entries = V+E.
+            Agar dense graph ho (E ≈ V²), toh space O(V²) ho sakta hai practically.
+          </div>
+        </div>
+
+        <div style="background:var(--surface2);border-radius:10px;padding:14px;border:1px solid var(--border)">
+          <div style="color:var(--green);font-family:'Syne',sans-serif;font-weight:800;margin-bottom:8px;font-size:0.9rem">Q: Cycle kaise detect hoti hai?</div>
+          <div style="color:#a0aec0;font-size:0.78rem;line-height:1.7">
+            Cycle mein phansa node ka <strong style="color:var(--text)">indegree kabhi 0 nahi hoga</strong>
+            (uska predecessor bhi cycle mein hai, uska bhi process nahi hoga).
+            Toh <code style="color:var(--amber)">count &lt; numCourses</code> → cycle hai.
+          </div>
+        </div>
+
+        <div style="background:var(--surface2);border-radius:10px;padding:14px;border:1px solid var(--border)">
+          <div style="color:var(--pink);font-family:'Syne',sans-serif;font-weight:800;margin-bottom:8px;font-size:0.9rem">Q: Course Schedule II kaise?</div>
+          <div style="color:#a0aec0;font-size:0.78rem;line-height:1.7">
+            Same code, bas <code style="color:var(--amber)">result = []</code> banao aur
+            har node process hone pe <code style="color:var(--amber)">result.append(node)</code>.
+            End mein <code style="color:var(--amber)">return result if len==n else []</code>.
+            Result automatically topological order mein hoga!
+          </div>
+        </div>
+
+        <div style="background:var(--surface2);border-radius:10px;padding:14px;border:1px solid var(--border)">
+          <div style="color:var(--cyan);font-family:'Syne',sans-serif;font-weight:800;margin-bottom:8px;font-size:0.9rem">Q: V aur E worst case kya?</div>
+          <div style="color:#a0aec0;font-size:0.78rem;line-height:1.7">
+            V = numCourses (up to 2000 in LC).
+            E = prerequisites.length (up to 5000 in LC).
+            Theoretically E can be V*(V-1) in dense directed graph.
+            <strong style="color:var(--text)">Isliye O(V+E) likhte hain, O(V²) nahi</strong> — sparse graph assume karte hain.
+          </div>
+        </div>
+
+        <div style="background:var(--surface2);border-radius:10px;padding:14px;border:1px solid var(--border)">
+          <div style="color:var(--amber);font-family:'Syne',sans-serif;font-weight:800;margin-bottom:8px;font-size:0.9rem">Q: Adjacency Matrix kyun nahi?</div>
+          <div style="color:#a0aec0;font-size:0.78rem;line-height:1.7">
+            Matrix space = O(V²). Dense graphs ke liye okay, but
+            <strong style="color:var(--text)">sparse graphs pe wasteful</strong>.
+            Edge traversal bhi O(V) per node ho jaata (pura row scan karo).
+            Adj list preferred for sparse graphs.
+          </div>
+        </div>
+      </div>
+
+      <!-- FINAL SUMMARY -->
+      <div style="background:var(--surface2);border-radius:12px;padding:20px;margin-top:16px;border:1px solid #7c3aed33">
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;color:var(--accent);margin-bottom:16px">// Final Answer — Interviewer ko yahi bolna hai</div>
+        <div style="display:flex;gap:24px;flex-wrap:wrap;margin-bottom:16px">
+          <div>
+            <div style="font-size:0.65rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px">Time Complexity</div>
+            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;color:var(--amber)">O(V + E)</div>
+          </div>
+          <div>
+            <div style="font-size:0.65rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px">Space Complexity</div>
+            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;color:var(--green)">O(V + E)</div>
+          </div>
+          <div>
+            <div style="font-size:0.65rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px">Where</div>
+            <div style="font-size:0.82rem;color:#a0aec0;margin-top:6px;line-height:1.8">V = numCourses<br>E = len(prerequisites)</div>
+          </div>
+        </div>
+        <div style="font-size:0.78rem;color:#718096;line-height:1.9;border-top:1px solid var(--border);padding-top:14px">
+          <strong style="color:var(--text)">"We process each vertex once (O(V)) and each edge once (O(E)) during BFS.
+          The adjacency list stores V vertices and E edges total, and the queue holds at most V nodes — hence O(V+E) time and space."</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const examples = [
+  { n: 5, edges: '1,0 2,0 3,1 4,2 3,2' },
+  { n: 3, edges: '0,1 1,2 2,0' }, // cycle
+];
+
+function loadExample(i) {
+  document.getElementById('inp-n').value = examples[i].n;
+  document.getElementById('inp-edges').value = examples[i].edges;
+  buildGraph();
+}
+
+function buildGraph() {
+  const n = parseInt(document.getElementById('inp-n').value) || 4;
+  const edgeStr = document.getElementById('inp-edges').value.trim();
+  const prerequisites = edgeStr ? edgeStr.split(/\s+/).map(s => s.split(',').map(Number)) : [];
+
+  // Build adj + indegree
+  const adj = Array.from({length: n}, () => []);
+  const indegree = new Array(n).fill(0);
+  prerequisites.forEach(([c, p]) => {
+    if (p < n && c < n) { adj[p].push(c); indegree[c]++; }
+  });
+
+  // Layout nodes in circle
+  const cx = 350, cy = 140, r = Math.min(110, 50 + n * 12);
+  const positions = Array.from({length: n}, (_, i) => ({
+    x: cx + r * Math.cos((2 * Math.PI * i / n) - Math.PI/2),
+    y: cy + r * Math.sin((2 * Math.PI * i / n) - Math.PI/2),
+    id: i
+  }));
+
+  drawSVG(positions, adj, indegree, n);
+  drawTable(adj, indegree, n, prerequisites.length);
+  drawStats(n, prerequisites.length, indegree);
+}
+
+function drawSVG(pos, adj, indegree, n) {
+  const el = document.getElementById('edges-layer');
+  const nl = document.getElementById('nodes-layer');
+  el.innerHTML = ''; nl.innerHTML = '';
+
+  // Edges
+  adj.forEach((neighbors, u) => {
+    neighbors.forEach(v => {
+      const pu = pos[u], pv = pos[v];
+      const R = 22;
+      const dx = pv.x - pu.x, dy = pv.y - pu.y;
+      const dist = Math.sqrt(dx*dx+dy*dy) || 1;
+      const sx = pu.x + dx/dist*R, sy = pu.y + dy/dist*R;
+      const ex = pv.x - dx/dist*(R+4), ey = pv.y - dy/dist*(R+4);
+      const path = document.createElementNS('http://www.w3.org/2000/svg','line');
+      path.setAttribute('x1',sx); path.setAttribute('y1',sy);
+      path.setAttribute('x2',ex); path.setAttribute('y2',ey);
+      path.setAttribute('stroke', '#3b3b5c');
+      path.setAttribute('stroke-width','1.8');
+      path.setAttribute('marker-end','url(#arr)');
+      el.appendChild(path);
+    });
+  });
+
+  // Nodes
+  pos.forEach(p => {
+    const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+    const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('cx',p.x); c.setAttribute('cy',p.y); c.setAttribute('r',22);
+    const isZero = indegree[p.id] === 0;
+    c.setAttribute('fill', isZero ? '#06b6d422' : '#1a1a2e');
+    c.setAttribute('stroke', isZero ? '#06b6d4' : '#3b3b5c');
+    c.setAttribute('stroke-width', isZero ? '2.5' : '1.5');
+    if (isZero) c.setAttribute('filter','url(#glow)');
+
+    const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('x',p.x); t.setAttribute('y',p.y);
+    t.setAttribute('text-anchor','middle'); t.setAttribute('dominant-baseline','central');
+    t.setAttribute('font-family','Syne,sans-serif'); t.setAttribute('font-weight','800');
+    t.setAttribute('font-size','13'); t.setAttribute('fill', isZero ? '#06b6d4' : '#e2e8f0');
+    t.textContent = p.id;
+
+    const ideg = document.createElementNS('http://www.w3.org/2000/svg','text');
+    ideg.setAttribute('x',p.x); ideg.setAttribute('y',p.y+32);
+    ideg.setAttribute('text-anchor','middle');
+    ideg.setAttribute('font-family','JetBrains Mono,monospace');
+    ideg.setAttribute('font-size','9'); ideg.setAttribute('fill','#f59e0b');
+    ideg.textContent = `in:${indegree[p.id]}`;
+
+    g.appendChild(c); g.appendChild(t); g.appendChild(ideg);
+    nl.appendChild(g);
+  });
+}
+
+function drawTable(adj, indegree, n, E) {
+  const tbody = document.getElementById('adj-tbody');
+  tbody.innerHTML = '';
+  for (let i = 0; i < n; i++) {
+    const tr = document.createElement('tr');
+    const inDeg = indegree[i];
+    const isZero = inDeg === 0;
+    tr.innerHTML = `
+      <td><strong style="color:var(--cyan);font-family:'Syne',sans-serif;font-weight:800">${i}</strong></td>
+      <td style="color:#a0aec0">${adj[i].length ? `[${adj[i].join(', ')}]` : '<span style="color:#4a5568">[]  — leaf node</span>'}</td>
+      <td>
+        <span class="badge ${isZero ? 'badge-cyan' : inDeg > 2 ? 'badge-red' : 'badge-amber'}">${inDeg}</span>
+        ${isZero ? '<span style="font-size:0.68rem;color:var(--cyan);margin-left:6px">→ starts in queue</span>' : ''}
+      </td>
+      <td style="color:#718096;font-size:0.72rem">
+        ${adj[i].length} edge${adj[i].length !== 1 ? 's' : ''} added → O(${adj[i].length}) contribution
+      </td>
+    `;
+    tbody.appendChild(tr);
+  }
+}
+
+function drawStats(n, E, indegree) {
+  const zeroCount = indegree.filter(x => x === 0).length;
+  document.getElementById('stats-row').innerHTML = `
+    <div class="stat-pill"><div class="stat-label">V (Vertices)</div><div class="stat-val" style="color:var(--cyan)">${n}</div></div>
+    <div class="stat-pill"><div class="stat-label">E (Edges)</div><div class="stat-val" style="color:var(--amber)">${E}</div></div>
+    <div class="stat-pill"><div class="stat-label">V+E</div><div class="stat-val" style="color:var(--accent)">${n+E}</div></div>
+    <div class="stat-pill"><div class="stat-label">Initial Queue Size</div><div class="stat-val" style="color:var(--green)">${zeroCount}</div></div>
+    <div class="stat-pill"><div class="stat-label">Complexity</div><div class="stat-val" style="color:var(--text);font-size:0.9rem">O(${n}+${E})</div></div>
+  `;
+}
+
+// Init
+buildGraph();
+</script>
+</body>
+</html>

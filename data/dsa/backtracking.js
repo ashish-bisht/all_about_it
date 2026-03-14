@@ -724,42 +724,43 @@ Must use <code>res.append(path[:])</code>!`,
                     "SKIP 1: []  -> PICK 2: [2] -> Done",
                     "            -> SKIP 2: [] -> Done"
                 ],
-                codeTitle: "Python Solution (Pick/No-Pick)",
-                code: `def subsets(nums):
-    res = []
-    def backtrack(i, path):
-        if i == len(nums):
-            res.append(path[:])
-            return
-        
-        # PICK
-        path.append(nums[i])
-        backtrack(i + 1, path)
-        path.pop()
-        
-        # NO-PICK
-        backtrack(i + 1, path)
-        
-    backtrack(0, [])
-    return res`,
+                codeTitle: "Python Solution (Backtracking)",
+                code: `class Solution:
+    def subsets(self, nums: list[int]) -> list[list[int]]:
+        res = []
+        subset = []
+
+        def backtrack(start: int):
+            res.append(subset[:])   # snapshot current subset
+
+            for i in range(start, len(nums)):
+                subset.append(nums[i])   # choose
+                backtrack(i + 1)         # explore
+                subset.pop()             # un-choose
+
+        backtrack(0)
+        return res
+
+# Time:  O(n * 2^n)  — 2^n subsets, each costs O(n) to copy
+# Space: O(n)        — recursion depth + subset buffer`,
                 strategy: `<strong>Pick/No-Pick Strategy:</strong><br><strong>Step 1:</strong> At each element, make TWO recursive calls.<br><strong>Step 2:</strong> PICK: append element, recurse <code>i+1</code>, then pop (backtrack).<br><strong>Step 3:</strong> NO-PICK: just recurse <code>i+1</code> without the element.<br><br><strong>Why it works:</strong> Binary decision tree generates all 2^N subsets. Every leaf node is a valid subset.`,
-                codeDetailed: `def subsets_detailed(nums):
-    res = []
-    def backtrack(i, path):
-        if i == len(nums):
-            res.append(path[:]) # COPY!
-            return
-        
-        # PICK
-        path.append(nums[i])
-        backtrack(i + 1, path)
-        path.pop()
-        
-        # NO-PICK
-        backtrack(i + 1, path)
-    
-    backtrack(0, [])
-    return res`
+                codeDetailed: `class Solution:
+    def subsets(self, nums: list[int]) -> list[list[int]]:
+        res = []
+        subset = []
+
+        def backtrack(start: int):
+            # har node par current subset valid hai
+            res.append(subset[:])
+
+            # start se aage ke elements try karo
+            for i in range(start, len(nums)):
+                subset.append(nums[i])   # choose
+                backtrack(i + 1)         # recurse with next index
+                subset.pop()             # undo (backtrack)
+
+        backtrack(0)
+        return res`
             }
         },
         {
