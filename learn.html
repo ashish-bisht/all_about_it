@@ -8,7 +8,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <meta name="theme-color" content="#818cf8">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🔥</text></svg>">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🔥</text></svg>">
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="style.css">
     <!-- JetBrains Mono for code -->
@@ -768,7 +769,6 @@
             color: var(--danger);
         }
 
-        /* --- Stagger Animation for Focus View Sections --- */
         .focus-animate {
             opacity: 0;
             transform: translateY(16px);
@@ -1405,6 +1405,77 @@
                 font-size: 0.7rem;
             }
         }
+
+        /* --- Focus View Tab Bar --- */
+        .focus-tabs {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            margin-bottom: 28px;
+            padding: 6px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+        }
+
+        .focus-tab-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 10px;
+            border: 1px solid transparent;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            font-family: inherit;
+        }
+
+        .focus-tab-btn:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-main);
+        }
+
+        .focus-tab-btn.active {
+            background: rgba(94, 92, 230, 0.15);
+            color: var(--primary);
+            border-color: rgba(94, 92, 230, 0.25);
+        }
+
+        .focus-tab-panel {
+            display: none;
+            opacity: 0;
+        }
+
+        .focus-tab-panel.active {
+            display: block;
+            opacity: 1;
+            animation: tabFadeIn 0.2s ease;
+        }
+
+        @keyframes tabFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .focus-tab-btn {
+                padding: 7px 12px;
+                font-size: 0.76rem;
+                gap: 4px;
+            }
+        }
     </style>
 </head>
 
@@ -1449,7 +1520,8 @@
     </div>
 
     <!-- Reading Mode Toggle (focus view) -->
-    <div id="reading-toggle" style="display:none; position:fixed; bottom:calc(16px + env(safe-area-inset-bottom)); left:16px; z-index:2000; display:flex; gap:8px; flex-wrap:wrap;">
+    <div id="reading-toggle"
+        style="display:none; position:fixed; bottom:calc(16px + env(safe-area-inset-bottom)); left:16px; z-index:2000; display:flex; gap:8px; flex-wrap:wrap;">
         <button id="reading-toggle-btn" class="ctrl" style="padding:8px 12px; border-radius:10px;" title="Reading mode">
             <i class="fas fa-book"></i> Reading
         </button>
@@ -1549,124 +1621,74 @@
                 </div>`;
             };
 
-            // Build TOC entries dynamically (Visual FIRST)
-            const tocItems = [];
-            if (learn.visual) tocItems.push({ id: 'sec-visual', label: 'Visual', icon: '👁️' });
-            tocItems.push({ id: 'sec-crux', label: 'Crux', icon: '💡' });
-            if (learn.quickAlgo && learn.quickAlgo.length > 0) tocItems.push({ id: 'sec-mentalmap', label: 'Mental Map', icon: '🧠' });
-            tocItems.push({ id: 'sec-code', label: 'Code', icon: '💻' });
-            if (learn.strategy) tocItems.push({ id: 'sec-strategy', label: 'Strategy', icon: '♟️' });
-            if (learn.dryRun) tocItems.push({ id: 'sec-dryrun', label: 'Dry Run', icon: '▶️' });
-            if (learn.trap) tocItems.push({ id: 'sec-trap', label: 'Traps', icon: '⚠️' });
-            if (learn.codeDetailed) tocItems.push({ id: 'sec-deepdive', label: 'Deep Dive', icon: '🔬' });
+            // Build tab definitions dynamically — Crux first (always), then others
+            const tabs = [];
+            tabs.push({ id: 'tab-crux', label: 'Crux', icon: '💡' });
+            if (learn.visual) tabs.push({ id: 'tab-visual', label: 'Visual', icon: '👁️' });
+            if (learn.quickAlgo && learn.quickAlgo.length > 0) tabs.push({ id: 'tab-mentalmap', label: 'Mental Map', icon: '🧠' });
+            tabs.push({ id: 'tab-code', label: 'Code', icon: '💻' });
+            if (learn.strategy) tabs.push({ id: 'tab-strategy', label: 'Strategy', icon: '♟️' });
+            if (learn.dryRun) tabs.push({ id: 'tab-dryrun', label: 'Dry Run', icon: '▶️' });
+            if (learn.trap) tabs.push({ id: 'tab-trap', label: 'Traps', icon: '⚠️' });
+            if (learn.codeDetailed) tabs.push({ id: 'tab-deepdive', label: 'Deep Dive', icon: '🔬' });
 
             // Prev/Next question logic
             const prevQ = index > 0 ? currentTopicData.questions[index - 1] : null;
             const nextQ = index < currentTopicData.questions.length - 1 ? currentTopicData.questions[index + 1] : null;
 
-            // Build sidebar links (Visual FIRST)
-            const sidebarLinks = [];
-            if (learn.visual) sidebarLinks.push({ id: 'sec-visual', label: 'Visual Intuition', icon: 'fas fa-eye', emoji: '👁️' });
-            sidebarLinks.push({ id: 'sec-crux', label: 'Crux & Complexity', icon: 'fas fa-lightbulb', emoji: '💡' });
-            if (learn.quickAlgo && learn.quickAlgo.length > 0) sidebarLinks.push({ id: 'sec-mentalmap', label: 'Mental Map', icon: 'fas fa-route', emoji: '🧠' });
-            sidebarLinks.push({ id: 'sec-code', label: 'Solution Code', icon: 'fas fa-code', emoji: '💻' });
-            if (learn.strategy) sidebarLinks.push({ id: 'sec-strategy', label: 'Strategy', icon: 'fas fa-chess', emoji: '♟️' });
-            if (learn.dryRun) sidebarLinks.push({ id: 'sec-dryrun', label: 'Execution Trace', icon: 'fas fa-play-circle', emoji: '▶️' });
-            if (learn.trap) sidebarLinks.push({ id: 'sec-trap', label: 'Common Traps', icon: 'fas fa-exclamation-triangle', emoji: '⚠️' });
-            if (learn.codeDetailed) sidebarLinks.push({ id: 'sec-deepdive', label: 'Deep Dive', icon: 'fas fa-microscope', emoji: '🔬' });
-
             contentDiv.innerHTML = `
-                <div class="focus-layout">
+                <div style="padding: 16px 0; max-width: 900px; margin: 0 auto;">
 
-                <!-- LEFT SIDEBAR -->
-                <aside class="focus-sidebar">
-                    <div class="sidebar-label">On this page</div>
-                    <nav class="sidebar-nav" id="sidebar-nav">
-                        ${sidebarLinks.map((s, i) =>
-                '<a class="sidebar-link' + (i === 0 ? ' active' : '') + '" data-target="' + s.id + '" onclick="scrollToSection(\'' + s.id + '\')">' +
-                '<span class="sidebar-icon"><i class="' + s.icon + '"></i></span>' +
-                '<span class="sidebar-text">' + s.label + '</span>' +
-                '</a>'
-            ).join('')}
-                    </nav>
-
-                    <div class="sidebar-progress">
-                        <div class="sidebar-progress-label">
-                            <span>Question</span>
-                            <span>${index + 1} / ${currentTopicData.questions.length}</span>
-                        </div>
-                        <div class="sidebar-progress-bar">
-                            <div class="sidebar-progress-fill" style="width:${Math.round(((index + 1) / currentTopicData.questions.length) * 100)}%"></div>
-                        </div>
-                    </div>
-
-                    <div class="sidebar-actions">
-                        ${q.leetcodeUrl ? '<a href="' + q.leetcodeUrl + '" target="_blank" class="sidebar-action-btn"><i class="fas fa-external-link-alt"></i> LeetCode</a>' : ''}
-                        ${prevQ ? '<a class="sidebar-action-btn" onclick="openQuestion(' + (index - 1) + ')"><i class="fas fa-arrow-left"></i> ' + prevQ.title + '</a>' : ''}
-                        ${nextQ ? '<a class="sidebar-action-btn" onclick="openQuestion(' + (index + 1) + ')"><i class="fas fa-arrow-right"></i> ' + nextQ.title + '</a>' : ''}
-                    </div>
-                </aside>
-
-                <!-- MAIN CONTENT -->
-                <div class="focus-main">
-                <div style="padding: 16px 0;">
-
-                    <!-- 1. HEADER (Compact) -->
+                    <!-- HEADER -->
                     <div class="focus-animate" style="margin-bottom: 24px; border-bottom:1px solid var(--border); padding-bottom:18px;">
-                        <div style="display:flex; justify-content:space-between; align-items:start;">
+                        <div style="display:flex; justify-content:space-between; align-items:start; gap:16px;">
                             <div>
-                                <h1 style="font-size:2.2rem; font-weight:800; letter-spacing:-0.5px; margin-bottom:8px; background: linear-gradient(135deg, #fff 0%, #94a3b8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                                <h1 style="font-size:2rem; font-weight:800; letter-spacing:-0.5px; margin-bottom:8px; background: linear-gradient(135deg, #fff 0%, #94a3b8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
                                     ${q.title}
                                 </h1>
-                                <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
-                                     <span style="color:var(--text-muted); font-size:0.9rem; display:flex; align-items:center; gap:6px;">
+                                <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                                    <span style="color:var(--text-muted); font-size:0.88rem; display:flex; align-items:center; gap:6px;">
                                         <i class="${currentTopicData.icon}" style="color:var(--primary)"></i> ${currentTopicData.title}
-                                     </span>
-                                     <span style="color:var(--border);">|</span>
-                                     <span class="tile-badge ${q.difficulty === 'Must Do' ? 'must' : (q.difficulty === 'Good to Do' ? 'good' : 'bonus')}" style="font-size:0.7rem;">
+                                    </span>
+                                    <span style="color:var(--border);">|</span>
+                                    <span class="tile-badge ${q.difficulty === 'Must Do' ? 'must' : (q.difficulty === 'Good to Do' ? 'good' : 'bonus')}" style="font-size:0.7rem;">
                                         ${q.difficulty}
-                                     </span>
-                                     ${q.tags ? q.tags.map(t => '<span class="tile-tag" style="font-size:0.7rem;">' + t + '</span>').join('') : ''}
+                                    </span>
+                                    ${q.tags ? q.tags.map(t => '<span class="tile-tag" style="font-size:0.7rem;">' + t + '</span>').join('') : ''}
                                 </div>
                             </div>
-
-                            <button onclick="backToGrid()" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--text-muted); font-size:0.85rem; cursor:pointer; transition:all 0.2s; padding:8px 14px; border-radius:8px; display:flex; align-items:center; gap:6px;" title="Back to List (Esc)">
-                                <i class="fas fa-th-large"></i> Grid
-                            </button>
+                            <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+                                <span style="color:var(--text-muted); font-size:0.8rem; font-weight:600; white-space:nowrap;">${index + 1} / ${currentTopicData.questions.length}</span>
+                                <button onclick="backToGrid()" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--text-muted); font-size:0.82rem; cursor:pointer; transition:all 0.2s; padding:7px 13px; border-radius:8px; display:flex; align-items:center; gap:6px; font-family:inherit;" title="Back to List (Esc)">
+                                    <i class="fas fa-th-large"></i> Grid
+                                </button>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- TOC (Jump to Section) -->
-                    <div class="focus-toc focus-animate">
-                        ${tocItems.map(t => '<a class="toc-chip" onclick="document.getElementById(\'' + t.id + '\').scrollIntoView({behavior:\'smooth\', block:\'start\'})">' + t.icon + ' ' + t.label + '</a>').join('')}
+                    <!-- TAB BAR -->
+                    <div class="focus-tabs">
+                        ${tabs.map((t, i) =>
+                '<button class="focus-tab-btn' + (i === 0 ? ' active' : '') + '" data-tab="' + t.id + '" onclick="switchFocusTab(\'' + t.id + '\')">' +
+                t.icon + ' ' + t.label +
+                '</button>'
+            ).join('')}
                     </div>
 
-                    <!-- 1. VISUAL INTUITION (THE MOST IMPORTANT — FIRST!) -->
-                    ${learn.visual ? `
-                    <div class="pro-section focus-animate" id="sec-visual">
-                         <div class="pro-header">
-                            <i class="fas fa-eye" style="color:#22d3ee"></i> Visual Intuition
-                         </div>
-                         <div class="visual-container">${learn.visual}</div>
-                    </div>` : ''}
+                    <!-- TAB PANELS -->
 
-                    <!-- 2. CRUX + COMPLEXITY (Side by Side) -->
-                    <div class="insight-bar focus-animate" id="sec-crux">
+                    <!-- CRUX + COMPLEXITY -->
+                    <div class="focus-tab-panel active" data-panel="tab-crux">
                         ${q.problem ? `
-                        <div class="pro-section" id="sec-problem" style="margin-top:0;">
+                        <div class="pro-section" style="margin-top:0; margin-bottom:20px;">
                             <div class="pro-header">
                                 <i class="fas fa-bullseye" style="color:var(--primary)"></i> Problem Goal
                             </div>
-                            <div class="pro-content">
-                                <p>${q.problem}</p>
-                            </div>
-                        </div>
-                        ` : ''}
-                        <div class="insight-card">
+                            <div class="pro-content"><p>${q.problem}</p></div>
+                        </div>` : ''}
+                        <div class="insight-card" style="margin-bottom:20px;">
                             <div class="insight-label">The Crux</div>
-                            <div class="insight-text">
-                                ${learn.crux || "No crux available. Focus on the strategy."}
-                            </div>
+                            <div class="insight-text">${learn.crux || "No crux available. Focus on the strategy."}</div>
                         </div>
                         <div class="complexity-panel">
                             <div class="complexity-item time">
@@ -1688,12 +1710,24 @@
                         </div>
                     </div>
 
-                    <!-- 3. QUICK MENTAL MAP (Structured Walkthrough) -->
+                    <!-- VISUAL INTUITION -->
+                    ${learn.visual ? `
+                    <div class="focus-tab-panel" data-panel="tab-visual">
+                        <div class="pro-section" style="margin-top:0;">
+                            <div class="pro-header">
+                                <i class="fas fa-eye" style="color:#22d3ee"></i> Visual Intuition
+                            </div>
+                            <div class="visual-container">${learn.visual}</div>
+                        </div>
+                    </div>` : ''}
+
+                    <!-- MENTAL MAP -->
                     ${learn.quickAlgo && learn.quickAlgo.length > 0 ? `
-                    <div class="mental-map-section focus-animate" id="sec-mentalmap">
-                        <div class="section-title"><i class="fas fa-route" style="color:#8b5cf6"></i> Quick Mental Map</div>
-                        <div class="mental-map-steps">
-                            ${learn.quickAlgo.map((line, i) => {
+                    <div class="focus-tab-panel" data-panel="tab-mentalmap">
+                        <div class="mental-map-section" style="margin-bottom:0;">
+                            <div class="section-title"><i class="fas fa-route" style="color:#8b5cf6"></i> Quick Mental Map</div>
+                            <div class="mental-map-steps">
+                                ${learn.quickAlgo.map((line, i) => {
                 const parts = line.split(/\s+#\s+/);
                 const codePart = parts[0].trimEnd();
                 const commentPart = parts.length > 1 ? parts.slice(1).join(' # ') : '';
@@ -1703,88 +1737,74 @@
                     '<div class="mm-step-body">' +
                     '<code class="mm-code">' + escapeHtml(codePart.trim()) + '</code>' +
                     (commentPart ? '<span class="mm-comment">' + commentPart + '</span>' : '') +
-                    '</div>' +
-                    '</div>';
+                    '</div></div>';
             }).join('')}
+                            </div>
                         </div>
                     </div>` : ''}
 
-                    <!-- 4. CODE (Visible by Default!) -->
-                    <div class="focus-animate" style="margin-bottom:28px;" id="sec-code">
-                        <div class="section-title"><i class="fas fa-code" style="color:var(--safe)"></i> Solution Code</div>
+                    <!-- CODE -->
+                    <div class="focus-tab-panel" data-panel="tab-code">
+                        <div class="section-title" style="margin-bottom:16px;"><i class="fas fa-code" style="color:var(--safe)"></i> Solution Code</div>
                         ${learn.code ? renderCodeSections(learn.code, learn.codeTitle) : ''}
                     </div>
 
-                    <!-- (Visual moved to top) -->
-
-                    <!-- 6. STRATEGY -->
+                    <!-- STRATEGY -->
                     ${learn.strategy ? `
-                    <div class="pro-section focus-animate" id="sec-strategy">
-                        <div class="pro-header">
-                            <i class="fas fa-chess" style="color:var(--primary)"></i> Strategy
+                    <div class="focus-tab-panel" data-panel="tab-strategy">
+                        <div class="pro-section" style="margin-top:0;">
+                            <div class="pro-header">
+                                <i class="fas fa-chess" style="color:var(--primary)"></i> Strategy
+                            </div>
+                            <div class="pro-content"><p>${learn.strategy}</p></div>
                         </div>
-                        <div class="pro-content"><p>${learn.strategy}</p></div>
                     </div>` : ''}
 
-                    <!-- 7. EXECUTION TRACE (DryRun Timeline) -->
+                    <!-- DRY RUN -->
                     ${learn.dryRun ? `
-                    <div class="pro-section focus-animate" id="sec-dryrun">
-                        <div class="pro-header">
-                            <i class="fas fa-play-circle" style="color:var(--warning)"></i> Execution Trace
-                        </div>
-                        <div class="dryrun-timeline">
-                            ${Array.isArray(learn.dryRun)
-                        ? learn.dryRun.map((step, i) =>
-                            '<div class="dryrun-step">' +
-                            '<div class="dryrun-text">' + step + '</div>' +
-                            '</div>'
-                        ).join('')
+                    <div class="focus-tab-panel" data-panel="tab-dryrun">
+                        <div class="pro-section" style="margin-top:0;">
+                            <div class="pro-header">
+                                <i class="fas fa-play-circle" style="color:var(--warning)"></i> Execution Trace
+                            </div>
+                            <div class="dryrun-timeline">
+                                ${Array.isArray(learn.dryRun)
+                        ? learn.dryRun.map(step => '<div class="dryrun-step"><div class="dryrun-text">' + step + '</div></div>').join('')
                         : '<div class="pro-content">' + learn.dryRun + '</div>'}
+                            </div>
                         </div>
                     </div>` : ''}
 
-                    <!-- 8. COMMON TRAPS -->
+                    <!-- TRAPS -->
                     ${learn.trap ? `
-                    <div class="pro-section focus-animate" id="sec-trap">
-                        <div class="pro-header" style="color:var(--danger); border-color:rgba(255, 69, 58, 0.3);">
-                            <i class="fas fa-exclamation-triangle"></i> Common Traps
-                        </div>
-                        <div class="trap-content">
-                            ${learn.trap}
+                    <div class="focus-tab-panel" data-panel="tab-trap">
+                        <div class="pro-section" style="margin-top:0;">
+                            <div class="pro-header" style="color:var(--danger); border-color:rgba(255,69,58,0.3);">
+                                <i class="fas fa-exclamation-triangle"></i> Common Traps
+                            </div>
+                            <div class="trap-content">${learn.trap}</div>
                         </div>
                     </div>` : ''}
 
-                    <!-- 9. DEEP DIVE (Collapsible) -->
+                    <!-- DEEP DIVE -->
                     ${learn.codeDetailed ? `
-                    <div class="collapsible-section crux focus-animate" onclick="toggleCollapsible(this)" style="margin-top:24px;" id="sec-deepdive">
-                        <div class="collapsible-header">
-                            <div class="collapsible-header-left">
-                                <span class="collapsible-header-icon"><i class="fas fa-microscope"></i></span>
-                                <span class="collapsible-header-title">Line-by-Line Deep Dive</span>
+                    <div class="focus-tab-panel" data-panel="tab-deepdive">
+                        <div class="code-panel">
+                            <div class="code-panel-header">
+                                <span class="code-panel-dots"></span>
+                                <span class="code-panel-title">Detailed Walkthrough</span>
+                                <button class="copy-btn" onclick="copyCode('focus-code-detailed')"><i class="fas fa-copy"></i> Copy</button>
                             </div>
-                            <i class="fas fa-chevron-down collapsible-arrow"></i>
-                        </div>
-                        <div class="collapsible-content">
-                            <div class="collapsible-inner" style="padding:0;">
-                                <div class="code-panel" style="border:none; border-radius:0; box-shadow:none;">
-                                    <div class="code-panel-header">
-                                        <span class="code-panel-dots"></span>
-                                        <span class="code-panel-title">Detailed Walkthrough</span>
-                                        <button class="copy-btn" onclick="event.stopPropagation(); copyCode('focus-code-detailed')"><i class="fas fa-copy"></i> Copy</button>
-                                    </div>
-                                    <pre><code id="focus-code-detailed" class="language-python">${escapeHtml(learn.codeDetailed)}</code></pre>
-                                </div>
-                            </div>
+                            <pre><code id="focus-code-detailed" class="language-python">${escapeHtml(learn.codeDetailed)}</code></pre>
                         </div>
                     </div>` : ''}
 
-                    <!-- 10. LEETCODE + PREV/NEXT NAV -->
-                    <div class="focus-animate" style="margin-top:32px;">
+                    <!-- PREV/NEXT NAV -->
+                    <div style="margin-top:36px;">
                         ${q.leetcodeUrl ? `
-                        <a href="${q.leetcodeUrl}" target="_blank" class="btn btn-primary" style="padding:14px 28px; font-size:1rem; border-radius:50px; margin-bottom:20px; display:inline-flex;">
+                        <a href="${q.leetcodeUrl}" target="_blank" class="btn btn-primary" style="padding:12px 24px; font-size:0.95rem; border-radius:50px; margin-bottom:20px; display:inline-flex;">
                             <i class="fas fa-rocket"></i> Solve on LeetCode
                         </a>` : ''}
-
                         <div class="question-nav">
                             <button class="question-nav-btn ${!prevQ ? 'disabled' : ''}" onclick="${prevQ ? 'openQuestion(' + (index - 1) + ')' : ''}">
                                 <i class="fas fa-arrow-left"></i>
@@ -1805,8 +1825,6 @@
                     </div>
 
                 </div>
-                </div> <!-- /.focus-main -->
-                </div> <!-- /.focus-layout -->
             `;
 
             // Store current question index for keyboard nav
@@ -1835,8 +1853,7 @@
                 codeEl.innerHTML = html;
             });
 
-            // Setup sidebar scroll spy
-            setupSidebarObserver();
+            // (Sidebar observer not needed — tabs replace sidebar navigation)
 
             // Switch Nav button to "Back to List"
             const navBtn = document.getElementById('nav-back-btn');
@@ -1890,7 +1907,19 @@
             }
         }
 
-
+        // --- Tab switching for focus view ---
+        function switchFocusTab(tabId) {
+            document.querySelectorAll('.focus-tab-btn').forEach(b =>
+                b.classList.toggle('active', b.dataset.tab === tabId)
+            );
+            document.querySelectorAll('.focus-tab-panel').forEach(p =>
+                p.classList.toggle('active', p.dataset.panel === tabId)
+            );
+            // Re-run hljs on code tabs (needed if switching to code tab for first time)
+            if (tabId === 'tab-code' || tabId === 'tab-deepdive') {
+                if (window.hljs) hljs.highlightAll();
+            }
+        }
 
         function filterQuestions(priority) {
             const tiles = document.querySelectorAll('.question-tile');
