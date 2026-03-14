@@ -821,25 +821,25 @@ SKIP: <code>backtrack(i+1, ...)</code> (Move on)`,
 Must check <code>if sum > target</code> and ensure numbers are positive!`,
                 dryRun: ["Detailed dry run..."],
                 codeTitle: "Python Solution (Unbounded)",
-                code: `def combinationSum(candidates, target):
-    res = []
-    def backtrack(i, path, total):
-        if total == target:
-            res.append(path[:])
-            return
-        if i >= len(candidates) or total > target:
-            return
-        
-        # PICK (Stay at i)
-        path.append(candidates[i])
-        backtrack(i, path, total + candidates[i])
-        path.pop()
-        
-        # SKIP (Move to i+1)
-        backtrack(i + 1, path, total)
-        
-    backtrack(0, [], 0)
-    return res`,
+                code: `class Solution:
+    def combinationSum(self, candidates: list[int], target: int) -> list[list[int]]:
+        res = []
+        path = []
+
+        def backtrack(start: int, remaining: int):
+            if remaining == 0:
+                res.append(path[:])  # found a valid combo
+                return
+            if remaining < 0:
+                return              # overshot, prune
+
+            for i in range(start, len(candidates)):
+                path.append(candidates[i])
+                backtrack(i, remaining - candidates[i])  # i, not i+1 → reuse allowed
+                path.pop()
+
+        backtrack(0, target)
+        return res`,
                 strategy: `<strong>Unbounded Knapsack Strategy:</strong><br><strong>Step 1:</strong> Sort candidates for pruning. Loop from <code>start</code>.<br><strong>Step 2:</strong> PICK: recurse with SAME index <code>i</code> (reuse allowed). SKIP: move to <code>i+1</code>.<br><strong>Step 3:</strong> Prune: if <code>candidates[i] > remain</code>, break (sorted = all future elements too big).<br><br><strong>Key difference from Subsets:</strong> PICK stays at <code>i</code>, not <code>i+1</code>.`,
                 codeDetailed: `def combinationSum_detailed(candidates, target):
     """

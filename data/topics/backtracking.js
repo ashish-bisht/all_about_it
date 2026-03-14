@@ -9,7 +9,6 @@
 const topic_backtracking = {
     id: "backtracking",
     title: "Backtracking Mastery",
-            problem: "Goal: Solve the problem 'Backtracking Mastery' and return the required output as per the prompt.",
     description: "Principal Engineer DSA • Part 2",
     color: "#4c1d95",
     icon: "fas fa-chess-queen",
@@ -481,7 +480,6 @@ Same diagonal formula for ANY cell:
         {
             id: "permutations",
             title: "Permutations",
-            problem: "Goal: Solve the problem 'Permutations' and return the required output as per the prompt.",
             leetcodeUrl: "https://leetcode.com/problems/permutations/",
             difficulty: "Must Do",
             priority: "🔴",
@@ -655,7 +653,6 @@ Each permutation: copy array to result = O(N)<br><br>
         {
             id: "subsets",
             title: "Subsets",
-            problem: "Goal: Solve the problem 'Subsets' and return the required output as per the prompt.",
             leetcodeUrl: "https://leetcode.com/problems/subsets/",
             difficulty: "Must Do",
             priority: "🔴",
@@ -774,7 +771,6 @@ Must use <code>res.append(path[:])</code>!`,
         {
             id: "combination-sum",
             title: "Combination Sum",
-            problem: "Goal: Solve the problem 'Combination Sum' and return the required output as per the prompt.",
             leetcodeUrl: "https://leetcode.com/problems/combination-sum/",
             difficulty: "Must Do",
             priority: "🔴",
@@ -830,25 +826,25 @@ SKIP: <code>backtrack(i+1, ...)</code> (Move on)`,
 Must check <code>if sum > target</code> and ensure numbers are positive!`,
                 dryRun: ["Detailed dry run..."],
                 codeTitle: "Python Solution (Unbounded)",
-                code: `def combinationSum(candidates, target):
-    res = []
-    def backtrack(i, path, total):
-        if total == target:
-            res.append(path[:])
-            return
-        if i >= len(candidates) or total > target:
-            return
-        
-        # PICK (Stay at i)
-        path.append(candidates[i])
-        backtrack(i, path, total + candidates[i])
-        path.pop()
-        
-        # SKIP (Move to i+1)
-        backtrack(i + 1, path, total)
-        
-    backtrack(0, [], 0)
-    return res`,
+                code: `class Solution:
+    def combinationSum(self, candidates: list[int], target: int) -> list[list[int]]:
+        res = []
+        path = []
+
+        def backtrack(start: int, remaining: int):
+            if remaining == 0:
+                res.append(path[:])  # found a valid combo
+                return
+            if remaining < 0:
+                return              # overshot, prune
+
+            for i in range(start, len(candidates)):
+                path.append(candidates[i])
+                backtrack(i, remaining - candidates[i])  # i, not i+1 → reuse allowed
+                path.pop()
+
+        backtrack(0, target)
+        return res`,
                 strategy: `<strong>Unbounded Knapsack Strategy:</strong><br><strong>Step 1:</strong> Sort candidates for pruning. Loop from <code>start</code>.<br><strong>Step 2:</strong> PICK: recurse with SAME index <code>i</code> (reuse allowed). SKIP: move to <code>i+1</code>.<br><strong>Step 3:</strong> Prune: if <code>candidates[i] > remain</code>, break (sorted = all future elements too big).<br><br><strong>Key difference from Subsets:</strong> PICK stays at <code>i</code>, not <code>i+1</code>.`,
                 codeDetailed: `def combinationSum_detailed(candidates, target):
     """
@@ -875,7 +871,6 @@ Must check <code>if sum > target</code> and ensure numbers are positive!`,
         {
             id: "word-search",
             title: "Word Search",
-            problem: "Goal: Solve the problem 'Word Search' and return the required output as per the prompt.",
             leetcodeUrl: "https://leetcode.com/problems/word-search/",
             difficulty: "Must Do",
             priority: "🔴",
@@ -1008,7 +1003,6 @@ If you don't unmark, other paths can't use this cell!`,
         {
             id: "sudoku-solver",
             title: "Sudoku Solver",
-            problem: "Goal: Solve the problem 'Sudoku Solver' and return the required output as per the prompt.",
             leetcodeUrl: "https://leetcode.com/problems/sudoku-solver/",
             difficulty: "Bonus",
             priority: "🟡",
